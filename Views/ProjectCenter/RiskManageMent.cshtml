@@ -1,0 +1,608 @@
+﻿@model  SmartSys.BL.Project.TaskDetails
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".CustListDrp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+
+    $(function () {
+
+        $(".VendListDrp").select2({
+            placeholder: "Please Select a Vendor ",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    function minmax(value, min, max) {
+        if (parseInt(value) < min || isNaN(value))
+            return 0;
+        else if (parseInt(value) > max)
+            return 100;
+        else return value;
+    }
+
+    $(document).ready(function () {
+
+        $('#StatusDetail').change(function (event) {
+            var ddlValue = $('#StatusDetail').val();
+            var PercentCom = $('#txtPerComp').val();
+            if (ddlValue.toString() == "30") {
+                $('#txtPerComp').val(100);
+            }
+            if (ddlValue == 29) {
+                if (PercentCom == 100) {
+                    $('#txtPerComp').val(99);
+                }
+            }
+        });
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var TaskName = $('#TaskName').val();
+            var StartDate = $('#StartDate').val();
+            var EndDate = $('#EndDate').val();
+            var ResourceID = $('#Employee').val();
+            var Statuscode = $('#StatusDetail').val();
+            var Comments = $('#Comments').val();
+            var AllowClose = $('#AllowClose').val();
+            //if (StartDate > EndDate)
+            //{   alert("End Date Should be Greater Than StartDate");
+            //    return false;
+            //}
+            if (Statuscode.toString() == "31")
+            {
+                if (AllowClose != "Yes")
+                {
+                    alert("You do not Have Permission to close this Case/Risk.Only Creator Close this Case/Risk");
+                    return false;
+                }                
+            }
+           
+            if (TaskName.toString() == "") {
+                alert("Please Enter Title");
+                return false;
+            }
+            if (StartDate.toString() == "") {
+                alert("Please Select StartDate ");
+                return false;
+            }
+            if (EndDate.toString() == "") {
+                alert("Please Select EndDate ");
+                return false;
+            }
+            if (ResourceID.toString() == "") {
+                alert("Please Select Resourcee ");
+                return false;
+            }
+            if (Statuscode.toString() == "") {
+                alert("Please Select Status code ");
+                return false;
+            }
+            @*if(@Model.TaskID > 0)
+            {
+                if (Comments.toString() == "") {
+                    alert("Please  Enter Comments ");
+                    return false;
+                }
+            }*@
+
+            $("#Risk").unbind('submit').submit();
+        });
+    });
+</script>
+
+
+@if (Model.TaskID > 0)
+{
+    if (Model.TskType == "Risk")
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Risk Task
+    </div>
+    }
+    else
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+            Edit Case Task
+        </div>
+    }
+
+}
+else
+{
+    if (Model.Type == "Risk")
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Create Risk Task
+        </div>
+    }
+    else
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Create Case Task
+        </div>
+    }
+}
+
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@{
+
+    var gridCommentDetail = new WebGrid(source: Model.LstCommentList, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+}
+@using (Html.BeginForm("RiskManageMent", "ProjectCenter", FormMethod.Post, new { Id = "Risk" }))
+{
+    <html>
+    <body>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <label style="color:red" class="glyphicon glyphicon-book  text-info">&nbsp;Project Name:</label>
+
+                    </td>
+                    <td>
+                         @Html.HiddenFor(model => model.AllowClose,new { id="AllowClose"})
+                        <label class="glyphicon  text-info">&nbsp; @Model.ProjectName</label>
+                    </td>
+                </tr>
+            </table>
+         
+                        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                            <tr>
+                                <td>
+                                    @if (Model.Type == "Risk")
+                                    {
+                                        <label for="ItemName">Risk Title:</label>
+                                    }
+                                    else
+                                    {
+                                        <label for="ItemName">Case Title:</label>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.HiddenFor(model => model.Type)
+                                        @Html.HiddenFor(model => model.ProjectId)
+                                        @Html.HiddenFor(model => model.CommentId)
+                                        @Html.HiddenFor(model => model.TaskID)
+                                        @Html.TextBoxFor(model => model.TaskName, new { @class = "form-control", id = "TaskName", Style = "width:450px;" })
+                                        @Html.ValidationMessageFor(model => model.TaskName)
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <label for="ItemName">Start Date:</label>
+                                </td>
+                                <td>
+                                    <div class="">
+
+                                        @Html.EJ().DatePicker("StartDate").DateFormat("MM/dd/yyyy").Value(Model.StartDate)
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <label for="ItemName">End Date:</label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.EJ().DatePicker("EndDate").DateFormat("MM/dd/yyyy").Value(Model.EndDate)
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="ItemName">Resources:</label>
+                                </td>
+                                <td>
+                                    <div class="">
+
+
+                                        @Html.EJ().DropDownList("Employee").Datasource((IEnumerable<object>)ViewBag.Employee).DropDownListFields(f => f.ID("EmpId").Value("EmpId").Text("EmpName").Selected("selected")).ShowCheckbox(true).Width("350").WatermarkText("Select a Resources")
+                                        @*@Html.DropDownList("Employee", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Select Resource", new { id = "Employee", @Class = "form-control" })*@
+                                        @Html.ValidationMessageFor(model => model.ResourceID)
+                                    </div>
+                                </td>
+
+
+                                @if (Model.TaskID > 0)
+                                {
+                                    <td>
+                                        <label for="ItemName">Status:</label>
+                                    </td>
+                                    <td>
+                                        <div class="">
+                                            @Html.DropDownListFor(model => model.Statuscode, new List<SelectListItem>
+                         {
+                                         new SelectListItem() {Text = "In Progress", Value="29"},
+                                         new SelectListItem() {Text = "Complete", Value="30"},
+                                         new SelectListItem() {Text = "Closed", Value="31"},
+                                         new SelectListItem() {Text = "Cancelled", Value="32"},
+                                         new SelectListItem() {Text = "OnHold", Value="33"},
+
+                         },
+                       "Please Select Status", new { @class = "text-danger form-control",  id = "StatusDetail" })
+                                            @Html.ValidationMessageFor(model => model.Statuscode)
+                                        </div>
+                                    </td>
+                                }
+                                <td>
+                                    <label for="ItemName">Percent Complete:</label>
+                                </td>
+                                <td>
+                                    <input type="number" name="txtPerComp" id="txtPerComp" min="0" value="@Model.Progress" max="100" maxlength="5" class="form-control" onkeyup="this.value = minmax(this.value, 0, 100)" />
+                                </td>
+                            </tr>
+
+
+                        </table>
+
+                        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                            <tr>
+                                <td width="75px">
+                                    <label for="">Vendor:</label>
+                                </td>
+                                <td ></td>
+                                @if (ViewBag.ProjVendor != null)
+                                {
+                                    <td>
+                                        @Html.TextBox("Vendor", (string)ViewBag.ProjVendor, new { @class = "VendListDrp form-control", @readonly = "readonly" , Style = "width:250px;" })
+                                    </td>
+                                }
+                                else
+                                {
+                                    if (Enumerable.Count(ViewBag.VendorList) > 0)
+                                    {
+                                        <td>
+                                            @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Please Select Vendor --", new { Style = "width:250px;",id = "VendorId", @class = "VendListDrp form-control" })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <div class="alert alert-info" role="alert">
+                                                <label>There is no any vendor Assigned To You</label>
+                                            </div>
+                                        </td>
+
+                                    }
+
+
+                                }
+                                <td width="200px"></td>
+
+                                <td>
+                                    <label for="">Customer:</label>
+                                </td>
+                               
+
+                                @if (ViewBag.ProjCustomer != null)
+                                {
+                                    <td>
+                                        @Html.TextBox("Customer", (string)ViewBag.ProjCustomer, new { Style = "width:250px;", @class = "CustListDrp form-control",  @readonly = "readonly" })
+                                    </td>
+                                }
+                                else
+                                {
+                                    if (Enumerable.Count(ViewBag.CustList) > 0)
+                                    {
+                                        <td>@Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustList, "Please Select Customer --", new { Style = "width:250px;", id = "CustomerId", @class = "CustListDrp form-control" })</td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <div class="alert alert-info" role="alert">
+                                                <label>There is no any Customer Assigned To You</label>
+                                            </div>
+                                        </td>
+
+                                    }
+                                }
+
+                            </tr>
+                        </table>
+
+
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <label for="ItemName">Description:</label>
+                    </td>
+                    <td>
+                        @if (Model.Statuscode == 24)
+                        {
+                            <div class="">
+                                @Html.TextAreaFor(model => model.Description, new { @readonly = true, @style = "Width: 470Px; max-width: 1000px;", @class = "form-control" })
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="">
+                                @Html.TextAreaFor(model => model.Description, new { @style = "Width: 480Px; max-width: 1000px;", @class = "form-control" })
+                            </div>
+                        }
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </td>
+                </tr>
+            </table>
+           
+            <table style="margin-left:20px;">
+                @if (Model.TaskID > 0)
+                {
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="ItemName">Comments:</label>
+                                    </td>
+                                    <td>
+                                        <div class="">
+                                            @Html.TextArea("Comments", new { @style = "Width: 980Px; max-width: 1000px;", id = "Comments", @class = "form-control" })
+
+                                            @Html.ValidationMessageFor(model => model.Comments)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                }
+
+            </table>
+            <br><br>
+            <div style="width:100%">
+                @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("Comments").Text("Comments").ContentTemplate(
+                @<div>
+
+                    @if (Model.LstCommentList.Count > 0)
+                    {
+                        @(Html.EJ().Grid<SmartSys.BL.Project.TaskDetails>("grdcommentList")
+                        .Datasource(Model.LstCommentList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("Comments").HeaderText("Comments").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Status").HeaderText("Status").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("CommentedBy").HeaderText("Commented By").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                        )
+                    }
+
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is no Comment Detail!!!</label>
+                        </div>
+                    }
+                </div>);
+               if (Model.TaskID > 0)
+               {
+                   data.Add().ID("AttachMent").Text("Attachment").ContentTemplate(
+                    @<div>
+
+                        <table>
+                            <tr>
+                                <td >
+                                    <button class="btn-xs btn-info glyphicon glyphicon-leaf UploadDoc" type="button"> Upload</button>
+
+                                </td>
+                            </tr>
+                        </table>
+
+                        @if (Model.LstProjectTaskDoc.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.Project.TaskDetails>("grdattachmntList")
+         .Datasource(Model.LstProjectTaskDoc)
+
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+           .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu();
+                contextMenu.DisableDefaultItems();
+                contextMenu.CustomContextMenuItems(c =>
+                {
+                    c.AddItem("Add1", "Add Record");
+                });
+
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("FileName").HeaderText("File Name").TextAlign(TextAlign.Center).Width(160).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(80).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(80).Visible(true).Add();
+            col.HeaderText("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+
+        })
+
+         .ClientSideEvents(eve =>
+         {
+             eve.ActionBegin("toolClickAttch");
+             eve.ActionComplete("complete");
+             eve.ContextClick("contextclickKYC");
+         })
+
+                                )
+                            </div>
+                          
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Attachment Details !!!</label>
+                            </div>
+                        }
+                    </div>);
+               }
+           })
+        .SelectedItemIndex(0)
+        .Render();}
+
+            </div>
+            <table style="margin-left:30px;">
+                <tr>
+                    @*@if (Model.Modal == 0)
+                        {
+                                    <td>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+
+                                    </td>
+                        }
+
+                        else
+
+                        {*@
+                    @if (ViewBag.Type == "Risk" || ViewBag.Type == "Case" )
+                    {
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Index';" );"> Back</button>
+                    </td>
+                    }
+                    else if (ViewBag.Type == "Project" || ViewBag.Type == null)
+                    {
+                        <td>
+                            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Index';" );"> Back</button>
+                        </td>
+                    }
+                    else if (ViewBag.Type == "proviews")
+                    {
+                        <td>
+                            @Html.ActionLink(" Back", "GetCaseRiskList", "ProViews", new { ProjectId = Model.ProjectId }, new { @class = "btn-sm btn-info glyphicon glyphicon-hand-left" })
+
+                        </td>
+                    }
+                    <td>
+                     
+                            <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                     
+                    </td>
+                    @if (Model.LstCommentList.Count > 0)
+                    {
+                        <td>
+                            @Html.ActionLink(" Send Mail", "SendRiskCaseAlerts", new { ProjectId = Model.ProjectId, TaskId = Model.TaskID }, new { @class = "btn-sm btn-info glyphicon glyphicon-send" })
+                        </td>
+                    }
+
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+<script type="text/x-jsrender" id="OpenDoc">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download black" href="/ProjectCenter/PrjectDocDownload?TaskID=@Model.TaskID&amp;ProjectId=@Model.ProjectId&amp;Filename={{:FileName}}"> Open</a>
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('.UploadDoc').click(function (e) {
+               @*@Html.ActionLink(" Create", "CreateVendorContactDetails", new { VendorId = Model.VendorId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+
+            document.getElementById("Title12").innerHTML = 'Add Document';
+
+            var path = '@Url.Content("~/ProjectCenter/ProjectTaskAttachment")' + "?ProjectId=" + @Model.ProjectId + "&TaskId=" + @Model.TaskID  + "&Path=" 
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+</script>
+
+    @{
+
+        Html.EJ()
+            .Dialog("CreateContactDetails")
+            .Title("<a id='Title12'></a>")
+            .Width(1200)
+            .Height(500)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+
+    <script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+    </script>
+    <script>
+        function contextclickKYC(args) {
+            if (args.text == "Add Record") {
+                document.getElementById("Title12").innerHTML = 'Add Attachment';
+                var tempData = args.text;
+                var grid = $("#grdattachmntList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+            
+                var path = '@Url.Content("~/ProjectCenter/ProjectTaskAttachment")' + "?ProjectId=" + @Model.ProjectId + "&TaskID=" + @Model.TaskID 
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            }
+
+
+        }
+    </script>

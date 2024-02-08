@@ -1,0 +1,77 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelSix
+
+@{
+    ViewBag.Title = "DataLevelSix";
+}
+
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table style="padding-bottom:10px">
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Item Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ItemName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>MPN:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.MPN, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+   
+    <tr class="spaceUnder">
+        <td>
+            <label>Vendor Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.VendorName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Allocated By:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.AllocatedBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Time Taken(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Remark:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Remark, new { @style = "width: 280px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+<table>
+    <tr class="spaceUnder">
+        <td style="width:125px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Description, new { @style = "width: 480px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()
+
+
+
+

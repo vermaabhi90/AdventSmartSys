@@ -1,0 +1,176 @@
+﻿@model IEnumerable<SmartSys.BL.SysAssetsModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "SysAssetsList";
+}
+
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Assets List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateSysAssets", null, new { AssetId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.AdminBL>("grdSysAssetsGrid")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+        }))
+              //.ContextMenuSettings(contextMenu =>
+              //{
+              //    contextMenu.EnableContextMenu()
+              //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+              //    //.CustomContextMenuItems(new List<string> { "Edit Asset Details", "Edit" })
+              //    .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit Asset Details", "Edit" } });
+
+              //})
+
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit_Asset_Details", "Edit Asset Details");
+                      c.AddItem("Delete_Record", "Delete Record");
+                  });
+
+              })
+
+       .AllowSorting()
+               .PageSettings(p => { p.PageSize(20); })
+       .EnableHeaderHover()
+       .AllowResizing()
+       .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+       .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+       .EnableAltRow(true)
+       .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+       .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("AssetId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(40).Add();
+            //   col.Field("AssetTypeId").HeaderText("Asset Type ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(40).Add();
+            col.Field("AssetType").HeaderText("Asset Type").TextAlign(TextAlign.Left).Width(110).Add();
+            col.Field("AssetName").HeaderText("Asset Name").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("Description").HeaderText("Description").Width(150).Add();
+            col.Field("AssetInDate").HeaderText("Asset In Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(110).Add();
+            col.Field("ManufacturerDetails").HeaderText("Manufacturer").TextAlign(TextAlign.Left).Width(110).Add();
+            col.Field("Quantity").HeaderText("Quantity").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("TotalQty").HeaderText("Total Quantity").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("Cost").HeaderText("Cost").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("DepRate").HeaderText("DepRate").Width(80).Add();
+            col.Field("CityName").HeaderText("City").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("countryName").HeaderText("Country").TextAlign(TextAlign.Left).Width(110).Add();
+            col.Field("AssetAcRef").HeaderText("Asset Reference").Width(100).Add();
+            col.Field("DisposalDate").HeaderText("Disposal Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(80).Add();
+            col.Field("DisposalValue").HeaderText("Disposal Value").TextAlign(TextAlign.Left).Width(40).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(110).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(150).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                {
+                    CssClass = "EditBtn",
+                    Text = "Edit",
+                    Click = "onClick",
+                    ContentType = ContentType.ImageTextImage,
+                    PrefixIcon = "e-edit",
+                    Height = "22px",
+                    Size = ButtonSize.Mini
+                }).Add();
+
+            })
+                    .TemplateID("#edit")
+                    .IsUnbound(true)
+                    .TextAlign(TextAlign.Left)
+                    .AllowFiltering(false)
+                    .Width(90)
+                    .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+
+                     eve.ContextClick("contextclick");
+
+                 })
+
+        )
+    </div>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/CreateSysAssets?AssetId={{:AssetId}}"></a>
+    </script>
+
+    <script type="text/javascript">
+    function contextopen(sender) {
+
+        var context = this._conmenu.element;
+    }
+
+    function contextclick(sender) {
+    }
+    </script>
+
+    <script type="text/javascript">
+
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Admin/CreateSysAssets")' + "?AssetId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Asset Details") {
+                var tempData = args.text;
+
+                var grid = $("#grdSysAssetsGrid").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var AssetId = result[0]["AssetId"];
+
+                var path = '@Url.Content("~/Admin/CreateSysAssets")' + "?AssetId=" + AssetId
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Delete Record")
+                {
+                    var tempData = args.text;
+                    var grid = $("#grdSysAssetsGrid").ejGrid("instance");
+
+                    var result = this.getSelectedRecords();
+                    var AssetId = result[0]["AssetId"];
+
+                    var agree = confirm("Are you sure you want to delete this record from the Grid?");
+                    if (agree)
+                    {
+                          var path = '@Url.Content("~/Admin/DeleteAssetDetails")' + "?AssetId=" + AssetId
+                            event.preventDefault();
+                            window.location.replace(path);
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+
+                          
+                }
+    }
+    </script>
+

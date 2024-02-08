@@ -1,0 +1,90 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.ReceiptModel>
+
+@{
+    ViewBag.Title = "GetReviewPurchaseReceiptList";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Purchase Receipt Review List
+</div>
+<br />
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.ReceiptModel>("grdDetailList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportReviewPurchaseReceiptList")))
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu();
+            contextMenu.DisableDefaultItems();
+            contextMenu.CustomContextMenuItems(c =>
+            {
+                c.AddItem("View_Detail", "View Detail");
+            });
+
+        })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ReceiptId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("CompanyName").HeaderText("Company Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            //  col.Field("County").HeaderText("County").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("FreightForwarderName").HeaderText("Freight Forwarder").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("FFRef_No").HeaderText("FFRef_No").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("Currency").HeaderText("Currency").ValidationRules(v => v.AddRule("required", true)).Width(60).Add();
+            // col.Field("PaymentTerm").HeaderText("Payment Term").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("freightCharges").HeaderText("Freight Charges").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.HeaderText("View")
+           .Template("#edit")
+           .AllowFiltering(false)
+       
+       .TextAlign(TextAlign.Center)
+       .Width(50)
+       .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-book" href="/Enquiry/ReviewdPurchaseReceipt?ReceiptId={{:ReceiptId}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+        
+        if (args.text == "View Detail") {
+                var tempData = args.text;
+                var grid = $("#grdDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var ReceiptId = result[0]["ReceiptId"];
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + ReceiptId
+                event.preventDefault();
+                window.location.replace(path);
+            }
+    }
+
+</script>

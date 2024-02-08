@@ -1,0 +1,131 @@
+﻿@model IEnumerable<SmartSys.BL.CompanyLibraryModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "GetLibraryList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+
+    Library List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateLibrary", new { tabIndex = 0, DocId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+    <div id="Grid"></div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SalaryComponentmodel>("LibraryList")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                     .PageSettings(p => { p.PageSize(20); })
+                      .EnableAltRow(true)
+          .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportGetLibraryList")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+                 c.AddItem("Open_Attachment", "Open Attachment");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("DocId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CompCode").HeaderText("CompCode").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+
+            col.Field("DocName").HeaderText("DocName").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("FileName").HeaderText("File Name").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("CreatedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Download").Template("#download").Width(90).Add();
+
+            col.HeaderText("Edit").Template("#edit")
+
+
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+        )
+    </div>
+
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/CreateLibrary?DocId={{:DocId}}&amp;tabIndex=0"></a>
+
+    </script>
+
+    <script id="download" type="text/x-jsrender">
+        {{if FileName =='0' || FileName ==''  }}
+
+        {{else}}
+        <a class="btn-xs btn-info  glyphicon glyphicon-eye-open" href="/Admin/DownloadFile?DocId={{:DocId}}&amp;Filename={{:FileName}}"> Open </a>
+        {{/if}}
+    </script>
+
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var tempData = args.text;
+            var grid = $("#LibraryList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocId = result[0]["DocId"];
+            var path = '@Url.Content("~/Admin/CreateLibrary")' + "?DocId=" + 0 + "&tabIndex=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#LibraryList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var DocId = result[0]["DocId"];
+                var path = '@Url.Content("~/Admin/CreateLibrary")' + "?DocId=" + DocId + "&tabIndex=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Open Attachment") {
+                    var tempData = args.text;
+                    var grid = $("#LibraryList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var DocId = result[0]["DocId"];
+                    var FileName = result[0]["FileName"];
+
+                    if (FileName == "")
+                    {
+                        alert("Attachment Not Found");
+                        return false
+                    }
+
+                    var path = '@Url.Content("~/Admin/DownloadFile")' + "?DocId=" + DocId + "&FileName=" + FileName
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+    }
+
+    </script>

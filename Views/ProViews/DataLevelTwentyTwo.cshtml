@@ -1,0 +1,42 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwentyTwo
+
+@{
+    ViewBag.Title = "DataLevelTwentyTwo";
+}
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Sales Order No:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.SalesOrderNo_, new { @readonly = "readonly", @class = "form-control" })
+        </td>        
+
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Nav PO Number:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.PONumber, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Posting Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("PostingDate").Value(Model.PostingDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>        
+    </tr>
+
+</table>
+
+@Html.EJ().ScriptManager()
+

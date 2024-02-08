@@ -1,0 +1,215 @@
+﻿
+@model  SmartSys.BL.DW.ItemApproverMap
+
+@{
+    ViewBag.Title = "DW Item Approver  ";
+    var gridApprover = new WebGrid(source: Model.SelectApproverLst, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridSelectApprover");
+
+
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.Del').on('click', function (e) {
+            event.preventDefault();
+            var Item_Id = @Model.Item_Id;
+            var CompName = $(this).closest('.Del').attr('CompCode');
+            var Item_Name = @Model.Item_Name;
+            var ItemId = $(this).closest('.Del').attr('ItemId');
+            var ModifiedBy = $(this).closest('.Del').attr('ModifiedBy');
+            var ItemName = $(this).closest('.Del').attr('ItemName');
+
+            var agree = confirm("Are you sure to delete ?");
+            if (agree)
+            {
+                var path = '@Url.Content("~/DWItem/DeleteSelPendingApprover")' + "?Item_Id=" + Item_Id + "&CompName=" + CompName + "&Item_Name=" + Item_Name + "&ItemId=" + ItemId + "&ModifiedBy=" + ModifiedBy + "&ItemName=" + ItemName
+
+                    event.preventDefault();
+                    window.location.replace(path);
+            }
+            else
+            {
+                return false;
+            }
+
+          
+
+        });
+    });
+</script>
+<script>
+
+    $(document).ready(function (e) {
+        $('.Review').on('click', function (e) {
+            var apprvallist = @Model.SelectApproverLst.Count;
+            if(apprvallist <=  0)
+            {
+                alert("Please select atleast one Item");
+                return false;
+            }
+        });
+    });
+
+</script>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Item Mapping Approval
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Refresh", "RefreshApprovealList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.DW.ItemApproverMap>("grdItemApprovarList")
+                .Datasource((IEnumerable<object>)@Model.lstApprover)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        .EnablePersistence(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportItemApproverMapLst")))
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item").ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("Item_Id").HeaderText("Item Id").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("Item_Name").HeaderText(" External Item Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CompName").HeaderText("Company Name").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(180).Add();
+
+            col.HeaderText("Select").Width(50).Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                          
+                           Text = "Select",
+                           Click = "onClick",
+                           ContentType = ContentType.TextAndImage,
+                           PrefixIcon = "e-icon e-handup",
+                          
+                           Size = ButtonSize.Large
+                       }).Add();
+
+            })
+
+            
+            .TextAlign(TextAlign.Left)
+            
+              .AllowFiltering(false)
+            .Add();
+        })
+    )
+</div>
+<script id="BtnTemplate" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-transfer" href="/DWItem/AddtoList?ItemId={{:ItemId}} &ItemName={{:ItemName}} &Item_Id = {{:Item_Id}} &Item_Name = {{:Item_Name}} &CompName = {{:CompName}} &ModifiedBy = {{:ModifiedBy}} "> </a>
+</script>
+<script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdItemApprovarList").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ItemId = record["ItemId"];
+        var ItemName = record["ItemName"];
+        var Item_Id = record["Item_Id"];
+       
+        var Item_Name = record["Item_Name"];
+        var CompName = record["CompName"];
+        var ModifiedBy = record["ModifiedBy"];
+        var path = '@Url.Content("~/DWItem/AddtoList")' + "?Item_Id=" + Item_Id + "&Item_Name=" + Item_Name + "&ItemId=" + ItemId + "&ItemName=" + ItemName + "&CompName=" + CompName + "&ModifiedBy=" + ModifiedBy
+       
+        event.preventDefault();
+        window.location.replace(path);
+    }
+</script>
+<br><br>
+<table>
+    <tr>
+        <td>
+            @if (Model.SelectApproverLst != null)
+            {
+
+                if (Model.SelectApproverLst.Count > 0)
+                {
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.DW.SelectPenddingApproveList>("grdApproverList")
+                .Datasource((IEnumerable<object>)@Model.SelectApproverLst)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+       .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("Item ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item Name").ValidationRules(v => v.AddRule("required", true)).Width(180).Add();
+            col.Field("Item_Id").HeaderText("External Item Id").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Item_Name").HeaderText(" External Item Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CompName").HeaderText("Company Name").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(180).Add();
+            col.HeaderText("Remove").Template("#RemoveItem").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                        )
+                    </div>
+                  
+                }
+            }
+            else
+            {
+
+            }
+        </td>
+    </tr>
+
+</table>
+<table>
+    <tr>
+        <td>
+            <div class="btn" aria-label="...">
+                <a class="save btn-xs buttonCss btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("ApvRejItem", "DWItem", new { statusCode = 24 })'>
+                    Approve
+                </a>
+            </div>
+        </td>
+        <td>
+            <div class="btn" aria-label="...">
+                <a class="save btn-xs buttonCss btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("ApvRejItem", "DWItem", new { statusCode = 25 })'>
+                    Reject
+                </a>
+            </div>
+        </td>
+        <td>
+            <div class="btn" aria-label="...">
+                <a class="save btn-xs buttonCss btn-warning glyphicon glyphicon-remove-circle" href='@Url.Action("ApvRejItem", "DWItem", new { statusCode = 20 })'>
+                    Cancel
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<script id="RemoveItem" type="text/x-jsrender">
+
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DWItem/DeleteSelPendingApprover?CompCode={{:CompName}}&amp;Item_Id={{:Item_Id}}&amp;Item_Name={{:Item_Name}}&amp;ItemId={{:ItemId}}&amp;ItemName={{:ItemName}}&amp;ModifiedBy={{:ModifiedBy}}">  Remove</a>
+
+</script>

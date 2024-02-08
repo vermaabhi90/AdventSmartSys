@@ -1,0 +1,88 @@
+﻿@model SmartSys.BL.DataHub.DHEvent
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Create  Event
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var EventName = $('#EventName').val();
+            var Description = $('#Description').val();
+            if (EventName.toString() == "") {
+                alert("Please Enter EventName Name ");
+                return false;
+            }
+            if (Description.toString() == "") {
+                alert("Please Enter Description ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); 
+        });
+    });
+</script>
+@using (Html.BeginForm("Create", "DHEvent", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="EventName">Event Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EventName, new { @class = "form-control", id = "EventName" })
+                        @Html.ValidationMessageFor(model => model.EventName)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control", id = "Description" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="isDeleted">Deleted</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isDeleted)
+                        @Html.ValidationMessageFor(model => model.isDeleted)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                  </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

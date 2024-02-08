@@ -1,0 +1,202 @@
+﻿@model SmartSys.BL.SysEmployeeAssetsModel
+
+@{
+    ViewBag.Title = "CreateAssetDetails";
+}
+
+<style type="text/css">
+    .modal-content {
+        width: 1000px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+
+@*<script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+   
+        $("#AllocationDate").datepicker({
+            minDate: -10, maxDate: "+1M +10D", numberOfMonths: 2
+        });
+    });
+</script>*@
+
+@if (Model.AssetId > 0)
+{
+    <div class="page-header" lass="page-header glyphicon glyphicon-pencil  text-info " style="margin-left:15px">
+        Edit Asset Details
+
+    </div>
+}
+else
+{
+    <div class="page-header" lass="page-header glyphicon glyphicon-pencil  text-info " style="margin-left:15px">
+        Create Asset  Details
+
+    </div>
+}
+
+
+<script type="text/javascript">
+        $(document).ready(function () {         
+            $('#Validation').click(function (e)
+            {
+                var Assetname = $('#Assetname').val();
+                var AllocationDate = $('#AllocationDate').val();
+
+                if (Assetname.toString() == "") {
+                    alert("Please Select Asset Name");
+                    return false;
+                }
+                if (AllocationDate.toString() == "" || AllocationDate.toString() == "1/1/0001 12:00:00 AM") {
+                    alert("Please Select Allocation Date");
+                    return false;
+                }
+            });
+        });
+</script>
+
+
+
+@using (Html.BeginForm())
+{
+
+    <html>
+    <body>
+        <table style="margin-left:15px">
+            <tr>
+                <td>
+                    <label>
+                        Asset Name
+                    </label>
+                </td>
+                @if (Model.AssetId == 0)
+                {
+                    <td>
+                        <div class="navbar-text">
+                            @Html.DropDownList("AssetId", (IEnumerable<SelectListItem>)ViewBag.AssetDropDown, "Please Select Asset Name", new { id = "Assetname", style = "width:410px",@class="form-control" })
+                            @Html.ValidationMessageFor(model => model.AssetId, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.AssetName, new { @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.AssetName, "", new { @class = "text-danger" })
+                        </div>
+
+                    </td>
+
+                    @Html.HiddenFor(model => model.AssetId, new { @class = "form-control" })
+                }
+                @Html.HiddenFor(model => model.EmpId, new { @class = "form-control" })
+                <td>
+                    <label>
+                        Allocation Date
+                    </label>
+                </td>
+                @if (Model.AssetId == 0)
+                {
+                    <td>
+                        <div class="navbar-text">                          
+                            <input type="date" id="AllocationDate" name="AllocationDate" value="@DateTime.Now" />
+                                   @Html.ValidationMessageFor(model => model.AllocationDate, "", new { @class = "text-danger" })</div>
+                    </td>
+                }
+
+                else
+                {
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.AllocationDate, new { @readonly = "readonly", id = "AllocationDate" })
+                            @Html.ValidationMessageFor(model => model.AllocationDate, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                }
+
+            </tr>
+            @if (Model.AssetId > 0)
+            {
+                <tr>
+                    <td>
+                        <label>
+                            Created By
+                        </label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>
+                            Created Date
+                        </label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+
+                </tr>
+            }
+            @if (Model.AssetId > 0)
+            {
+                <tr>
+                    <td>
+                        <label>
+                            Modified By
+                        </label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>
+                            Modified Date
+                        </label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+            }
+            @Html.HiddenFor(model => model.ModifiedBy, new { @readonly = "readonly" })
+        </table>
+
+
+
+        <table style="margin-left:15px">
+            <tr>
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn btn-info glyphicon glyphicon-save save" id="Validation"> Save</button>
+                    </div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+@*// onclick="ValidateForm()"*@
+
+

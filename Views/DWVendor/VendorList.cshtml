@@ -1,0 +1,284 @@
+﻿
+@model SmartSys.BL.DW.VendorListModel
+@using Syncfusion.JavaScript.Models
+@using SmartSys.Utility;
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Vendor List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateVendor", new { VendorId = 0, tabIndex = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemList")
+                       .Datasource((IEnumerable<object>)@Model.vendorGedList)
+        .AllowFiltering()
+        .AllowPaging()
+         .PageSettings(p => { p.PageSize(20); })
+                                            .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                                            {
+                                                items.AddTool(ToolBarItems.ExcelExport);
+                                                items.AddTool(ToolBarItems.Search);
+
+                                            }))
+
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+         //      //.CustomContextMenuItems(new List<string> { "Edit Vendor", "Map Vendor" })
+         //      .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit" } });
+
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Vendor", "Edit Vendor");
+                 c.AddItem("Map_Vendor", "Map Vendor");
+             });
+
+         })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("VendorId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("VendorName").HeaderText("Name").Width(280).Add();
+            col.Field("Region").HeaderText("Region").Width(70).Add();
+            col.Field("City").HeaderText("City").Width(80).Add();
+            col.Field("State").HeaderText("State").Width(80).Add();
+            col.Field("Country").HeaderText("Country").Width(80).Add();
+            //foreach (var obj in ViewBag.lstCompany)
+            //{
+            //    col.Field(obj.CompCode.ToString()).HeaderText(obj.CompName).Template(true).TemplateID(obj.CompTemplet).TextAlign(TextAlign.Center).Width(80).Add();
+            //}
+            //col.Field("SAJMapStatus").HeaderText("SAJ").Template(true).TemplateID("#columnTemplateSAJ").TextAlign(TextAlign.Center).Width(70).Add();
+            //col.Field("DPKMapStatus").HeaderText("DPK").Template(true).TemplateID("#columnTemplateDPK").TextAlign(TextAlign.Center).Width(70).Add();
+            //col.Field("ADVENTMapStatus").HeaderText("ADVENT").Template(true).TemplateID("#columnTemplateADVENT").TextAlign(TextAlign.Center).Width(85).Add();
+            //col.Field("BOMMapStatus").HeaderText("BOM").TemplateID("#columnTemplateBOM").TextAlign(TextAlign.Center).Width(70).Add();
+            //col.Field("TimeSheetMapStatus").Visible(false).HeaderText("Time Sheet").Template(true).TemplateID("#columnTemplateTimeSheet").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("IsActive").HeaderText("Active").TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("IsManufacturer").HeaderText("IsManufacturer").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(150).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(130).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#CustomerEdit")
+
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Left)
+            .Width(50)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .HeaderTextAlign(TextAlign.Center)
+            .Add();
+            if (Enumerable.Count(ViewBag.lstCompany) > 0)
+            {
+                col.HeaderText("Mapping").Commands(command =>
+                {
+                    command.Type(UnboundType.Edit)
+
+                           .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                           {
+                               CssClass = "EditBtn",
+                               Text = "Map",
+                               ContentType = ContentType.ImageTextImage,
+                               PrefixIcon = "e-edit",
+                               Height = "22px",
+                               Size = ButtonSize.Mini
+                           }).Add();
+
+                }).Template("#Mapping")
+               .IsUnbound(true)
+               .TextAlign(TextAlign.Left)
+               .Width(80)
+               .AllowFiltering(false)
+                .TextAlign(TextAlign.Center)
+                .HeaderTextAlign(TextAlign.Center)
+               .Add();
+            }
+            if (Model.AllowBrand)
+            {
+                col.HeaderText("Brand Allocate").Commands(command =>
+                {
+                    command.Type(UnboundType.Edit)
+
+                           .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                           {
+                               CssClass = "EditBtn",
+                               Text = "Map",
+                               ContentType = ContentType.ImageTextImage,
+                               PrefixIcon = "e-edit",
+                               Height = "22px",
+                               Size = ButtonSize.Mini
+                           }).Add();
+
+                }).Template("#BrandAllocate")
+                   .IsUnbound(true)
+                   .TextAlign(TextAlign.Left)
+                   .Width(80)
+                   .AllowFiltering(false)
+                    .TextAlign(TextAlign.Center)
+                    .HeaderTextAlign(TextAlign.Center)
+                   .Add();
+            }
+        })
+                   .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+    <script type="text/x-jsrender" id="Mapping">
+        <a class="btn-xs btn-info  glyphicon glyphicon-transfer black" href="/DWVendor/GetVendorMappingList?VendorId={{:VendorId}}&amp;VendorName={{:VendorName}}"></a>
+    </script>
+
+    <script type="text/x-jsrender" id="CustomerEdit">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/DWVendor/CreateVendor?VendorId={{:VendorId}}&amp;tabIndex=0"></a>
+    </script>
+
+    <script type="text/x-jsrender" id="BrandAllocate">
+        <a class="btn-xs btn-info  glyphicon glyphicon-briefcase black" href="/DWVendor/AllocateVendorBrand?VendorId={{:VendorId}}&amp;VendorName={{:VendorName}}"></a>
+    </script>
+
+    <script type="text/x-jsrender" id="columnTemplateBOM">
+        {{if BOMMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if BOMMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if BOMMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if BOMMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if BOMMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateSAJ">
+        {{if SAJMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if SAJMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if SAJMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if SAJMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if SAJMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateADVENT">
+        {{if ADVENTMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateDPK">
+        {{if DPKMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if DPKMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if DPKMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if DPKMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if DPKMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateTimeSheet">
+        {{if TimeSheetMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+
+    <script id="APPROVED" type="text/x-jsrender">
+        <span class="glyphicon glyphicon-ok" style="color:green">
+            Yes
+        </span>
+    </script>
+    <script id="REJECTED" type="text/x-jsrender">
+        <span class="glyphicon glyphicon-remove" style="color:red">
+            Rej
+        </span>
+    </script>
+    <script id="NEW" type="text/x-jsrender">
+        <span>
+            PR
+        </span>
+    </script>
+    <script id="REVIEWED" type="text/x-jsrender">
+        <span>
+            PA
+        </span>
+    </script>
+    <script id="MISSINGMAPPING" type="text/x-jsrender">
+        <span class="glyphicon glyphicon-remove" style="color:red">
+            No
+        </span>
+    </script>
+
+
+    <script>
+        function contextclick(args) {
+
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/DWVendor/CreateVendor")' + "?VendorId=" + 0 + "&tabIndex=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Vendor") {
+                    var tempData = args.text;
+                    var grid = $("#grdItemList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var VendorId = result[0]["VendorId"];
+                    var path = '@Url.Content("~/DWVendor/CreateVendor")' + "?VendorId=" + VendorId + "&tabIndex=" + 0
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+                else
+                    if (args.text == "Map Vendor") {
+                        var tempData = args.text;
+                        var grid = $("#grdItemList").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var VendorName = result[0]["VendorName"];
+                        var VendorId = result[0]["VendorId"];
+                        var path = '@Url.Content("~/DWVendor/GetVendorMappingList")' + "?VendorId=" + VendorId + "&VendorName=" + VendorName
+                        event.preventDefault();
+                        window.location.replace(path);
+
+                    }
+        }
+
+    </script>

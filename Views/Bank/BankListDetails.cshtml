@@ -1,0 +1,110 @@
+﻿@model IEnumerable<SmartSys.BL.Bank.BankDetailModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "BankListDetails";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Bank Details List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateBankDetails", null, new { }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Bank.BankDetailModel>("grdBankDetailList")
+                 .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+          .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+         .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportBankdetailLst")))
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit1", "Edit Record");
+                      c.AddItem("Delete1", "Delete Record");
+                  });
+
+              })
+
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("BankId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("BankName").HeaderText("Bank Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("IFSCCode").HeaderText("IFSC Code").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(122).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").TextAlign(TextAlign.Left).Width(122).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Center).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Width(180).TextAlign(TextAlign.Left).Format("{0:MM/dd/yyyy }").Add();
+            col.HeaderText("Edit").Template("#OutputTemplate").Width(90).Add();
+
+        })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+    <script type="text/x-jsrender" id="OutputTemplate">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Bank/EditBankDetails?BankId={{:BankId}}"></a>
+
+    </script>
+
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Bank/CreateBankDetails")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdBankDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var BankId = result[0]["BankId"];
+                var path = '@Url.Content("~/Bank/EditBankDetails")' + "?BankId=" + BankId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else
+                if (args.text == "Delete Record") {
+                    var tempData = args.text;
+                    var grid = $("#grdBankDetailList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var BankId = result[0]["BankId"];
+
+                    var agree = confirm("Are you sure you want to delete this Item from the Grid?");
+                    if (agree)
+                    {
+                        var path = '@Url.Content("~/Bank/DeleteBankDetails")' + "?BankId=" + BankId
+                        event.preventDefault();
+                        window.location.replace(path);
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+
+                }
+    }
+
+    </script>

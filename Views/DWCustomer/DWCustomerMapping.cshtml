@@ -1,0 +1,221 @@
+﻿@model SmartSys.BL.DW.CustomerMappingModel
+
+
+
+@{
+    var grid = new WebGrid(source: Model.GridList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "Mappedgrid");
+}
+
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $(".custDrpdwn").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#CompCode').change(function (event) {          
+            var ddlValue = $('#CompCode').val();
+            var path = '@Url.Content("~/DWCustomer/GetClientCustomerList")' + "?CompCode=" + ddlValue
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+        $('.xyz').on('click', function (e) {
+            e.preventDefault();
+            var CompName = $(this).closest('.xyz').attr('CompName');
+            var Sysid = $(this).closest('.xyz').attr('CustomerId');
+            var CustomerName = $(this).closest('.xyz').attr('CustomerName');                     
+           var agree=confirm("Are you sure to delete ?")
+           if (agree) {
+                    var path = '@Url.Content("~/DWCustomer/DeleteCustomerMapping")' + "?CompName=" + CompName + "&CustomerId=" + Sysid + "&CustomerName=" + CustomerName                   
+                    event.preventDefault();
+                    window.location.replace(path);
+           }
+            else
+           {
+               return false;
+           }
+          
+
+        });
+
+        $('.AddItem').on('click', function (event) {
+
+            var Customer_No = $('#CompCustomer').val();
+            var CustomerName = $('#FlStr').val();
+            var CompCode = $('#CompCode').val();
+            var CustomerId = $('#CustomerId').val();
+            if (Customer_No == null || Customer_No.toString() == "")
+            {
+                alert("Please Select External Customer Name");
+                return false;
+            }
+            var path = '@Url.Content("~/DWCustomer/SaveCustomerMapping")' + "?Customer_No=" + Customer_No + "&CompCode=" + CompCode + "&CustomerId=" + CustomerId + "&CustomerName=" + CustomerName
+            event.preventDefault();
+            window.location.replace(path);
+        });
+        $('.GetMap').click(function (event) {
+
+            var CustomerName = $("#FlStr").val();
+            var CompCode = $('#CompCode').val();
+            var CustomerId = $('#CustomerId').val();
+            var path = '@Url.Content("~/DWCustomer/GetAutoMapping")' + "?CustomerName=" + escape(CustomerName) + "&CompCode=" + CompCode + "&CustomerId=" + CustomerId
+            event.preventDefault();
+            window.location.replace(path);
+
+        });
+    });
+</script>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Customer Mapping
+</div>
+
+@using (Html.BeginForm("Edit", "RDSEngine", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+
+        <table>
+
+            <tr>
+                <td>
+                    <div class="navbar-text  glyphicon glyphicon-user">
+                        Customer Name
+                    </div>
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { id = "FlStr", @readonly = "readonly", @class = "CustomerName form-control" } })
+                    @Html.Hidden("CustomerId", null, new { @id = "CustomerId" })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-text glyphicon glyphicon-globe">
+                        Company
+                    </div>
+                </td>
+
+                <td>
+                    @Html.DropDownList("selectedComp", (IEnumerable<SelectListItem>)ViewBag.VendorMapList, "-Select Company Name-", new {@class= "Dropdown form-control", id = "CompCode", style = "width:310px" })
+
+                </td>
+
+                @if (Model.lstClientMapCustomerList != null && Model.lstClientMapCustomerList.Count > 0)
+                {
+                    <td>
+                        <div class="navbar-text  glyphicon glyphicon-user">
+                            Customer
+                        </div>
+                    </td>
+                    <td>
+
+                        @Html.DropDownList("ComCustomerID", (IEnumerable<SelectListItem>)ViewBag.ComVendorList, "", new { @class = "custDrpdwn form-control", id = "CompCustomer" ,@style="width=100px"})
+                    </td>
+                    <td style="width:37px"></td>
+                    if (Model.AutoMapBtn != null && Model.AutoMapBtn.ToString() != "")
+                    {
+                        <td>
+                            <button type="button" value="Get Mapping" id="GetMap" class="GetMap btn-sm btn-info  glyphicon glyphicon-leaf black"> Create Customer</button>
+
+                        </td>
+                    }
+                }
+                else
+                {
+                    <td>
+                        <span>No Connection Avaliable, Please try later.</span>
+                    </td>
+                }
+
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td>
+                    @if (Model.GridList != null && Model.GridList.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.DW.CustomerMappingModel>("grdCustmapList")
+                .Datasource((IEnumerable<object>)@Model.GridList)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+       .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("CompName").HeaderText("Company").Width(100).Add();
+            col.Field("CompCustomerID").HeaderText("Customer NO").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CompCustomerName").HeaderText("Customer Name").Width(180).Add();
+            col.HeaderText("Delete").Template("#RemoveItem").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                            )
+                        </div>
+
+                       
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Infornation about Costomer List !!!</label>
+                        </div>
+
+                    }
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'CustomerList';" );"> Back</button>
+                        <button type="button" value="Save Mapping" class="AddItem btn-xs btn-info glyphicon glyphicon-save"> Save Mapping</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+<script id="RemoveItem" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DWCustomer/DeleteCustomerMapping?CompName={{:CompName}}&amp;CustomerId=@Model.CustomerId&amp;CustomerName=@Model.CustomerName">  Delete</a>
+</script>

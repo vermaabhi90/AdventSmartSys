@@ -1,0 +1,48 @@
+﻿@model SmartSys.BL.DW.ItemModel
+
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Item List
+</div>
+<br />
+<div style="position:relative">
+@(Html.EJ().Grid<SmartSys.BL.DataHub.DHEvent>("grdEventList")
+               .Datasource(ds =>
+                ds.URL("/DWItem/GetDigiKeyItemData").Offline(true))
+                .AllowPaging()
+                .AllowFiltering()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel).EnableCaseSensitivity(true); })
+                .EnableHeaderHover()
+                .AllowResizing()
+                .AllowScrolling()
+                .AllowSorting()
+                .ScrollSettings(col => { col.Width(1250).Height(500); })
+                .PageSettings(page => { page.PageSize(20); })
+        .Columns(col =>
+        {
+            col.Field("ItemName").HeaderText("Item Name").Width(300).Add();
+            col.Field("BrandName").HeaderText("Brand Name").Width(150).Add();
+            col.Field("BrandId").HeaderText("BrandId").Visible(false).Width(150).Add();
+            col.Field("CompanyPartNo").HeaderText("Company Part No").Width(150).Add();
+            col.Field("MPN").HeaderText("MPN").Width(150).Add();
+        })
+         .ClientSideEvents(eve => { eve.RowSelected("RowSelected"); })
+)
+</div>
+<input type="button" value="Add Record" id="SelectRecord"  class="btn btn-success" >
+<script>
+    function RowSelected() {
+        var obj = $("#grdEventList").ejGrid("instance");
+        var ItemName = obj.getSelectedRecords()[0].ItemName;
+        var BrandId = obj.getSelectedRecords()[0].BrandId;
+        var MPN = obj.getSelectedRecords()[0].MPN;      
+        $(document).ready(function () {
+            $('#SelectRecord').click(function (e) {
+                var path = '@Url.Content("~/DWItem/CreateItem")' + "?ItemName=" + ItemName + "&BrandId=" + BrandId + "&MPN=" + MPN
+                event.preventDefault();
+                window.location.replace(path);
+            });
+        });
+    }
+</script>
+@Html.EJ().ScriptManager()

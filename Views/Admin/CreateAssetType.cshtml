@@ -1,0 +1,130 @@
+﻿@model SmartSys.BL.SyaAssetTypeModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@if (Model.AssetTypeId == 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Asset Type
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit  Asset Type
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var AssetType = $('#AssetType').val();
+            var Description = $('#Description').val();
+            var parentAssetType = $('#parentAssetType').val();
+
+            if (parentAssetType.toString() == "" || parentAssetType.toString() == "--Please Select--") {
+                alert("Please Select Parent Asset Type");
+                return false;
+            }
+            if (AssetType.toString() == "") {
+                alert("Please Enter Asset Type");
+                return false;
+            }
+
+            if (Description.toString() == "") {
+                alert("Please Enter Description");
+                return false;
+            }
+            
+
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                @if (Model.AssetTypeId > 0)
+                {
+                    <td>
+                        <label for="UserId">ID</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.TextBoxFor(model => model.AssetTypeId, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.AssetType)
+                        </div>
+
+                        @*else
+                        {
+                            <div class="">
+                                @Html.TextBoxFor(model => model.AssetTypeId, new { @class = "form-control", id = "AssetTypeID" })
+                                @Html.ValidationMessageFor(model => model.AssetType)
+                            </div>
+                        }*@
+                    </td>
+                }
+                <td>
+                    <label>Parent Asset Type  </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ParentAssetTypeId", (IEnumerable<SelectListItem>)ViewBag.parentAssetType, "--Please Select--", new { @class = "form-control", id = "parentAssetType", style = "width:260px" })
+                        @Html.ValidationMessageFor(model => model.ParentAssetTypeId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="UserId">Asset Type</label>
+                </td>
+                <td>
+                    @if (Model.AssetTypeId > 0)
+                    {
+                        <div class="">
+                            @Html.TextBoxFor(model => model.AssetType, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.AssetType)
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="">
+                            @Html.TextBoxFor(model => model.AssetType, new { @class = "form-control", id = "AssetType" })
+                            @Html.ValidationMessageFor(model => model.AssetType)
+                        </div>
+                    }
+                </td>
+                <td>
+                    <label for="UserId">Description:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "Description", @style = "Width:300px" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'AssetTypeList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>                  
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+}
+
+

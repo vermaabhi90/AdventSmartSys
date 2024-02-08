@@ -1,0 +1,99 @@
+﻿@model SmartSys.BL.EmployeeModel
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var LastDateOfWork = $('#LastDateOfWork').val();
+            var Designation = $('#Designation').val();
+            var Deleted = $('#IsDelet').val();
+         
+            if (LastDateOfWork.toString() == "") {
+                alert("Please Enter Date ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Enable And Disable Employee
+</div>
+    @using (Html.BeginForm("DeleteEmployee", "Admin", FormMethod.Post, new { Id = "Form1" }))
+    {
+        <html>
+        <body>
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+                        <label>
+                            Employee Id
+                        </label>
+                    </td>
+                    <td>
+                        <div>
+                            @Html.EditorFor(model => model.EmpId, new { htmlAttributes = new { @readonly = "readonly" , @class="form-control"} })
+                            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label style="padding-top:10px">
+                            Date
+                        </label>
+                    </td>
+                    <td>
+
+                        <div style="padding-top:10px">
+                            @Html.EJ().DatePicker("LastDateOfWork").Value(Model.LastDateOfWork).DateFormat("MM/dd/yyyy")
+                            @Html.ValidationMessageFor(model => model.LastDateOfWork, "", new { @class = "text-danger" })
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label style="padding-top:10px">
+                            De-Active
+                        </label>
+                    </td>
+                    <td>
+                        <div style="padding-top:10px">
+                            @Html.EditorFor(model => model.Deleted ,new { id="IsDelet"})
+                            @Html.ValidationMessageFor(model => model.Deleted, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label style="padding-top:10px">
+                            Remark
+                        </label>
+                    </td>
+                    <td>
+                        <div style="padding-top:10px">
+                            @Html.EditorFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                            <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save glyphicon glyphicon-save save"> Save</button>
+                    </td>
+                </tr>
+            </table>
+        </body>
+    </html>
+
+    }
+@Html.EJ().ScriptManager()

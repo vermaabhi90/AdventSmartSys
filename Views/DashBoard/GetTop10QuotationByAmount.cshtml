@@ -1,0 +1,251 @@
+﻿@model List<SmartSys.BL.Enquiry.QuotationModel>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+    google.load("visualization", "1", { packages: ["corechart"] });
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Task', 'link', 'Hours per Day'],
+
+          ['@Model[0].QuotationNumber.ToString()', '@Model[0].EnqId', @Model[0].Amount],
+          ['@Model[1].QuotationNumber.ToString()', '@Model[1].EnqId', @Model[1].Amount],
+          ['@Model[2].QuotationNumber.ToString()', '@Model[2].EnqId', @Model[2].Amount],
+          ['@Model[3].QuotationNumber.ToString()', '@Model[3].EnqId', @Model[3].Amount],
+          ['@Model[4].QuotationNumber.ToString()', '@Model[4].EnqId', @Model[4].Amount],
+          ['@Model[5].QuotationNumber', '@Model[5].EnqId',@Model[5].Amount],
+          ['@Model[6].QuotationNumber', '@Model[6].EnqId',@Model[6].Amount],
+          ['@Model[7].QuotationNumber', '@Model[7].EnqId',@Model[7].Amount],
+          ['@Model[8].QuotationNumber', '@Model[8].EnqId',@Model[8].Amount],
+          ['@Model[9].QuotationNumber', '@Model[9].EnqId',@Model[9].Amount]
+
+        ]);
+
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 2]);
+
+        var options = {
+            title: 'Top 10 Quotation',
+            is3D: true,
+
+            colors: ['#e0440e', '#A9DFBF', '#AF7AC5', '#EC7063', '#F4D03F', '#138D75', '#FF5733', '#FF00FF', '#0101DF', '#FF0000']
+        };
+
+        var chart = new google.visualization.PieChart(
+          document.getElementById('chart_div1'));
+        chart.draw(view, options);
+
+        var selectHandler = function (e) {
+            var selection = chart.getSelection();
+            if (selection.length) {
+                var EnqId = data.getValue(selection[0].row, 1);
+
+                var path = '@Url.Action("GetQuotationDetail")';
+                var path2 = '@Url.Action("GetQuotItemList")';
+                $.ajax({
+                    type: 'POST',
+                    url: path, // we are calling json method
+                    dataType: 'json',
+                    data: { EnqId: EnqId },
+                    success: function (serverdata) {
+                        data = serverdata;
+                        $.each(data, function (index, item) {
+                            $('#Cust').val(item.CustomerName)
+                            $('#Term').val(item.Terms)
+
+                            $('#QuotationNumber').val(item.QuotationNumber)
+                   
+                            $('#QuotDate').val(item.QuotationDate)
+                            $('#Status').val(item.Status)
+                            $('#ModifiedBy').val(item.ModifiedBy)
+                            $('#ModifiedDate').val(item.modifyDt)
+                            $('#divLoading').show();
+                            $.ajax({
+                                type: 'POST',
+                                url: path2, // we are calling json method
+                                dataType: 'json',
+                                data: { EnqId: EnqId },
+                                success: function (serverdata1) {
+                                    data1 = serverdata1;
+                                    var row = "";
+                                    $.each(data1, function (index, item) {
+
+                                        row += "<tr><td>" + item.ItemId + "</td><td>" + item.ItemName + "</td><td>" + item.Remark + "</td><td>" + item.ModifiedBy + "</td><td>" + item.modifyDt + "</td></tr>";
+                                    
+                                    });
+                                    $("#Items").html(row);
+
+                                },
+
+                                error: function (ex) {
+                                    alert('Failed to retrieve .' + ex);
+                                }
+                            });
+                        });
+
+
+                    },
+
+                    error: function (ex) {
+                        alert('Failed to retrieve .' + ex);
+                    }
+                });
+
+
+            }
+
+            //window.location = data.getValue(chart.getSelection()[0]['row'], 1);
+
+        }
+         // Add our selection handler.
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+
+    }
+</script>
+
+
+<div id="chart_div1" style=" background-color :white;border-color:blue;
+           border-width:2px;
+            border-style:solid;min-height:300px"></div>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Cancel').click(function () {
+            $('#divLoading').hide();
+        })
+    })
+</script>
+
+
+
+
+
+<style>
+   #table-wrapper {
+  position:relative;
+}
+   table { border-collapse:collapse }
+#table-scroll {
+  height:150px;
+  overflow:auto;  
+  margin-top:20px;
+}
+#table-wrapper table {
+  width:100%;
+
+}
+#table-wrapper table * {
+  background:#808080;
+  color:black;
+}
+#table-wrapper table thead th .text {
+  position:absolute;   
+  top:-20px;
+  z-index:2;
+  height:20px;
+  width:35%;
+  border:1px solid red;
+}
+</style>
+
+<!---------------------------QUOTDETAILS-------------------------------->
+<div id="divLoading" style="margin: 0px; padding: 0px; position: relative; right: 0px; top: 0px; width: 100%; height: 50%; background-color: #666666; z-index:  1000; opacity:.99; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        <div style="margin: 0px; padding: 0px; position: fixed;opacity :1;
+        left:200px; top: 10px;bottom:x; width: 70%;bottom:50px; height: 70%; background-color: #72a9ae; z-index:  1000;">
+            <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Quotation Detail
+            </div>
+
+            <table style="margin-left:20px;border-collapse:collapse">
+                <tr >
+                    <td>
+                        <label>Customer Name:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("test", "", new { id = "Cust" })
+                    </td>
+
+                    <td>
+                        <label>Term:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("Term", "", new { id = "Term" })
+                    </td>
+                </tr>
+                <tr style="height:15px"></tr>
+                <tr>
+                    <td>
+                        <label>Quotation Number:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("Term", "", new { id = "QuotationNumber" })
+                    </td>
+                    <td>
+                        <label>QuotDate:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("QuotationDate", "", new { id = "QuotDate" })
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label>Status:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("Status", "", new { id = "Status" })
+                    </td> 
+
+                    <td>
+                        <label>ModifiedBy:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("ModifiedBy", "", new { id = "ModifiedBy" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>ModifiedDate:</label>
+                    </td>
+                    <td>
+                        @Html.TextBox("ModifiedDate", "", new { id = "ModifiedDate" })
+                    </td>
+                </tr>
+            </table>
+            <div id="table-wrapper">
+                <div id="table-scroll">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                            <tr style="background-color:#000000;color:white">
+                                <th>Id</th>
+                                <th class="center">Item Name(s)</th>
+                                <th class="center">Remark(s)</th>
+                                <th class="center">ModifiedBy(s)</th>
+                                <th class="center">ModifiedDate(s)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="Items"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <br />
+            <table style="margin-left:0px">
+                <tr>
+
+                    <td>
+                        <button type="button" class="btn btn-warning glyphicon glyphicon-save save" id="Cancel" onclick="window.location.reload()"> Cancel</button>
+
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+            </div>

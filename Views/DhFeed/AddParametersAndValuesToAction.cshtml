@@ -1,0 +1,75 @@
+﻿@model SmartSys.BL.DHFeedActionParam
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(document).ready(function(e) {
+
+        $("#FormAddParameters").submit(function (e) {
+            e.preventDefault();
+            var ParamName = $("#txtParamName").val();
+            $.ajax({
+                url: "/DhFeed/ValidateParamName",
+                data: { strParamName: ParamName,iSequenceNo: @Model.SequenceNO },
+                dataType: "json",
+                type: "POST",
+                error: function () {
+                    return;
+                },
+                success: function (data) {
+                    if(data)
+                    {
+                        alert("Parameter Name '" + ParamName + "' already added. Please enter unique parameter name.");
+                        $("#txtParamName").focus();
+                    }
+                    else
+                    {
+                        $("#FormAddParameters").unbind('submit').submit();
+                    }
+                }
+
+            });
+
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm("AddParametersAndValuesToAction", "DhFeed", FormMethod.Post, new { id = "FormAddParameters" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="modal-body">
+        <fieldset>
+            <legend>DHFeedActionParam</legend>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.ParamName)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.ParamName, new { @id = "txtParamName" })
+                @Html.ValidationMessageFor(model => model.ParamName)
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Value)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.Value, new { @id = "txtParamValue" })
+                @Html.ValidationMessageFor(model => model.Value)
+            </div>
+
+
+
+            <p>
+
+                <div>
+                    <button type="submit" value="Add Parameters" name="Submit" class="btn btn-info glyphicon glyphicon-plus-sign"> Save</button>
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                </div>
+            </p>
+        </fieldset>
+    </div>
+}

@@ -1,0 +1,435 @@
+﻿@model IEnumerable<SmartSys.BL.InventoryAgeingAnalysisModel>
+
+@{
+    ViewBag.Title = "GetInventoryAgeingAnalysisList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Inventory Ageing Analysis List
+</div>
+<div>
+    <table>
+        <tr>
+            <td><label>Company</label></td>
+            <td>
+                <div class="">
+                    <input type="text" value="Advent" name="CompCode" id="CompCode" />                    
+                </div>
+            </td>
+            <td>
+                <label>As Of Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("AsOfdate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>           
+            <td>
+                <div class="">
+                    <input type="button" id="Submit" value="Submit" onclick="SubmitDate()" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+                                            top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+                                            opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<div id="GridList">
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.InventoryAgeingAnalysisModel>("InventoryAgeingAnalysis")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Add_Comments", "Add Comments");
+                                                c.AddItem("View_History", "View History");
+                                            });
+                                        })
+                                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("ItemNo").HeaderText("Item No").TextAlign(TextAlign.Left).Width(40).Add();
+            col.Field("Description").HeaderText("Part No").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("make").HeaderText("Make").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();           
+            col.Field("UnitCost").HeaderText("Unit Cost").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("NintyPlus").HeaderText("More than 91 Days Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("NintyPlusValue").HeaderText("More than 91 Days Value").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("SixtyToNinty").HeaderText("61 to 90 Days Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("SixtyToNintyValue").HeaderText("61 to 90 Days Value").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("ThirtytoSixty").HeaderText("31 to 60 Days Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("ThirtytoSixtyValue").HeaderText("31 to 60 Days Value").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("ZerotoThirty").HeaderText("0 to 30 Days Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("ZerotoThirtyValue").HeaderText("0 to 30 Days Value").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("TotalQty").HeaderText("TotalQty").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("TotalValue").HeaderText("Inventory Value").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Status_OB").HeaderText("Status").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Customer").HeaderText("Customer").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("SONO").HeaderText("SONO").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Quantity").HeaderText("Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("OutstandingQuantity").HeaderText("Outstanding Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#GridList').hide();      
+    });
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "View History") {
+            $("#ShowHistory").ejDialog("open");           
+            var grid = $("#InventoryAgeingShowHistory").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ItemNo = result[0]["ItemNo"];
+            var Description = result[0]["Description"];
+            //alert(ItemNo)
+            //alert(Description)
+            $.ajax({
+                url: "/DhFeed/ShowInvAgingAdvent",
+                dataType: 'json',
+                type: "POST",
+                data: { Description: Description, ItemNo: ItemNo },
+                success: function (MPRList) {
+                    var obj = $("#InventoryAgeingShowHistory").ejGrid("instance")
+                    obj.dataSource(MPRList);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+            @*var path = '@Url.Content("~/DhFeed/ShowInvAgingAdvent")' + "?Description=" + Description + "&ItemNo=" + ItemNo;
+            $("#ShowHistory").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+            $("#ShowHistory").ejDialog("open");*@
+        }
+        else if (args.text == "Add Comments") {
+
+            var tempData = args.text;
+            $("#dialogIcon").ejDialog("open");
+            var grid = $("#grdVendrespLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ItemNo = result[0]["ItemNo"];
+            var Description = result[0]["Description"];
+            var make = result[0]["make"];
+            var UnitCost = result[0]["UnitCost"];        
+            var Quantity = result[0]["Quantity"];
+            var InventoryValue = result[0]["TotalValue"];           
+            $('#ItemNo').val(ItemNo);
+            $('#Description').val(Description);
+            $('#make').val(make);
+            $('#UnitCost').val(UnitCost);           
+            $('#Quantity').val(Quantity);
+            $('#InventoryValue').val(InventoryValue);
+            $('#Comments').val("");
+            var ItemNo = result[0]["ItemNo"];
+            var Description = result[0]["Description"];
+            var Make = result[0]["make"];
+            var CompCode = $('#CompCode').val();           
+            $.ajax({
+                url: "/DhFeed/ShowInvAgingAdvent",
+                dataType: 'json',
+                type: "POST",
+                data: { Description: Description, ItemNo: ItemNo},
+                success: function (MPRList) {
+
+                    var obj = $("#InventoryAgeing").ejGrid("instance")
+                    obj.dataSource(MPRList);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+            //event.preventDefault();
+            //window.location.replace(path);
+        }
+    }
+</script>
+<script>
+    function SubmitDate() {
+        var CompCode = $('#CompCode').val();
+        var AsOfDate = $('#AsOfdate').val();        
+        if (AsOfDate == null)
+        {
+            alert("Enter As Of Date Date");
+            return false;
+
+        }       
+        $("#divLoading").show();
+        $.ajax({
+            url: "/DhFeed/GetInventoryAgeingAnalysisDate",
+            dataType: 'json',
+            type: "POST",
+            data: { CompCode: CompCode, AsOfDate: AsOfDate },
+            success: function (List) {
+
+                var obj = $("#InventoryAgeingAnalysis").ejGrid("instance")
+                obj.dataSource(List);
+                $('#GridList').show();
+                $("#divLoading").hide();
+            },
+            error: function (req, status, err) {
+            console.log('something went wrong', status, err);
+        }
+    })
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ShowHistory")
+        .Title("<a id='Title'>View History</a>")
+        .Width(1200)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<div>
+                <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.InventoryAgeingAnalysisModel>("InventoryAgeingShowHistory")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("ItemNo").HeaderText("Item No").TextAlign(TextAlign.Left).Width(40).Add();
+                    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();                   
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                  )
+               </div>
+ </div>).Render();}
+<script>
+    function openDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+</script>
+
+@{Html.EJ().Dialog("dialogIcon").Title("Add Comments").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Add Comments
+        </div>
+        <table>
+            <tr>
+                <td width="80px">
+                    <label>
+                        Item No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="ItemNo" class="form-control" readonly />
+                        @*<input type="text" id="ItemId" class="form-control" readonly style="display:none" />
+                    <input type="text" id="BrandId" class="form-control" readonly style="display:none" />*@
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Description:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Description" class="form-control" readonly />
+                    </div>
+                </td>
+
+                <td>
+                    <label>
+                        Make:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="make" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>UnitCost</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="UnitCost" class="form-control" readonly />
+                    </div>
+                </td>           
+                <td>
+                    <label>
+                        Quantity:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Quantity" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        InventoryValue:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="InventoryValue" class="form-control" readonly />
+                    </div>
+                </td>               
+            </tr>
+        </table>
+        <table style="margin-left:15px">
+            <tr>
+                <td>
+                    <label>
+                        Comments:
+                    </label>
+                </td>
+                <td width="32px"></td>
+                <td>
+                    <div class="">
+                        @Html.TextArea("Comments", new { Id = "Comments", @class = "form-control", @style = "min-width:500px" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table style="margin-left:100px">
+            <tr>
+                <td>
+                    @*<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>*@
+                    <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " data-dismiss="modal" id="Save"> Save</button>
+                </td>
+                <td style="width:50px"></td>
+            </tr>
+        </table>
+        <div>
+            <div>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.InventoryAgeingAnalysisModel>("InventoryAgeing")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>)
+          .Width(1200)
+          .Height(700)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Save').click(function () {
+            var ItemNo = $('#ItemNo').val();
+            var Description = $('#Description').val();
+            var Make = $('#Make').val();
+            var UnitCost = $('#UnitCost').val();
+            var Comments = $('#Comments').val();
+            var AsOfDate = $('#AsOfdate').val();
+            var CompCode = $('#CompCode').val();
+            if(Comments =="")
+            {
+                alert("Please Enter Comments");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/DhFeed/SaveInvAgingAdvent",
+                data: { ItemNo: ItemNo, Description: Description, Comment: Comments },
+                success: function (ErrorCode) {
+                    toastr.success("Saved Successfully!");
+                    $.ajax({
+                        url: "/DhFeed/GetInventoryAgeingAnalysisDate",
+                        dataType: 'json',
+                        type: "POST",
+                        data: { CompCode: CompCode, AsOfDate: AsOfDate},
+                        success: function (List) {
+                            var obj = $("#InventoryAgeingAnalysis").ejGrid("instance")
+                            obj.dataSource(List);
+                            $('#GridList').show();
+                            $("#divLoading").hide();
+                            $("#dialogIcon").ejDialog("close");
+                        },
+                        error: function (req, status, err) {
+                            console.log('something went wrong', status, err);
+                        }
+                    })
+                   //alert("Saved Successfully")
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+          //  window.location.reload();
+        });
+    });
+</script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+
+

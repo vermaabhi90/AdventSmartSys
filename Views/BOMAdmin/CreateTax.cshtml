@@ -1,0 +1,726 @@
+﻿@model SmartSys.BL.BOMAdmin.TaxModel
+@{
+    ViewBag.Title = "CreateTax";
+}
+@if (Model.TaxId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Tax Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Tax Detail
+    </div>
+}
+@{
+    var gridTaxOnTax = new WebGrid(source: Model.TaxOnTaxList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridAdressDetail");
+}
+@{
+    var gridTax = new WebGrid(source: Model.TaxGrid, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridAdressDetail");
+}
+<style type="text/css">
+    .modal-content {
+        width: 1000px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 800px;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+@if (Model.TaxId > 0)
+{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('#taxontaxlbl').hide();
+        $('#taxontaxddl').hide();
+        $('#Add').hide();
+        $('#gridEvent').hide();
+        $('#alert').hide();
+
+        $('#TaxType').change(function (event) {
+            //var xotval = $('#TaxType').val();
+            var xotval = $("#TaxType option:selected").text();
+
+            if (xotval == "Tax On Tax")
+            {
+
+                $('#taxontaxlbl').show();
+                $('#taxontaxddl').show();
+                $('#Add').show();
+                $('#gridEvent').show();
+                $('#alert').show();
+
+            }
+            else if (xotval != "Tax on Tax")
+            {
+                $('#taxontaxlbl').hide();
+                $('#taxontaxddl').hide();
+                $('#Add').hide();
+                $('#gridEvent').hide();
+                $('#alert').hide();
+
+            }
+        });
+
+    });
+    </script>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#taxontaxlbl').hide();
+        $('#taxontaxddl').hide();
+        $('#Addcreateeeeee').hide();
+        //$('#gridEvent').hide();
+        //$('#alert').hide();
+
+        $('#TaxType').change(function (event) {
+
+            //var xotval = $('#TaxType').val();
+            var xotval = $("#TaxType option:selected").text();
+
+
+
+            if (xotval == "Tax On Tax") {
+
+                $('#taxontaxlbl').show();
+                $('#taxontaxddl').show();
+                $('#Addcreateeeeee').show();
+               $('#gridEvent').show();
+                $('#alert').show();
+
+            }
+            else if (xotval != "Tax on Tax") {
+                $('#taxontaxlbl').hide();
+                $('#taxontaxddl').hide();
+                $('#Addcreateeeeee').hide();
+                $('#gridEvent').hide();
+                $('#alert').hide();
+
+            }
+        });
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('#Add').click(function () {
+
+
+            var Taxid = $('#Taxid').val();
+            var ParentTaxId = $('#TaxOnTax').val();
+            var TaxType= $('#TaxType').val();
+            var TaxName = $("#TaxName").val();
+            var TaxOnTax = $("#TaxOnTax Option:Selected").text();
+            var TaxValue = $('#TaxValue').val();
+
+
+            if (ParentTaxId.toString() == "")
+            {
+                alert ("Please select Tax On Tax from the Dropdown")
+                return false;
+            }
+            var path = '@Url.Content("~/BOMAdmin/AddTaxOnTaxLIst")' + "?Taxid=" + Taxid + "&ChildTaxId=" + ParentTaxId + "&TaxType=" + TaxType+"&TaxName=" + TaxName + "&TaxOnTax=" + TaxOnTax + "&TaxValue=" + TaxValue
+            event.preventDefault();
+            window.location.replace(path);
+
+            @*var url = '@Url.Action("AddTaxOnTaxLIst","Admin")';
+                var data = { Taxid: Taxid, ParentTaxId: ParentTaxId};
+                $.post(url, data, function (result)*@
+
+
+
+            });
+
+            });
+</script>
+@if (Model.TaxId > 0)
+{
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        $(".Delll").click(function (e) {
+
+            var ParentTaxId = $(this).closest('.Del').attr('ChildTaxId');
+            var Taxid = $(this).closest('.Del').attr('TaxId');
+            var ParentTaxName = $(this).closest('.Del').attr('ParentTaxName');
+            alert(ParentTaxName);
+            return false;
+            var agree = confirm("Are you sure you want to delete this Item from the Grid?");
+            if (agree) {
+                var data = { TaxId: Taxid, ChildTaxId: ParentTaxId ,ChildTaxName:ParentTaxName};
+                var url = '@Url.Action("DeleteTaxOnTaxDetails", "BOMAdmin")';
+                $.post(url, data)
+            }
+            else {
+                return false;
+            }
+
+        });
+    });
+    </script>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var xotval = $("#TaxType option:selected").text();
+
+
+        if (xotval == "Tax On Tax") {
+            $('#taxontaxlbl').show();
+            $('#taxontaxddl').show();
+            $('#Addcreateeeeee').show();
+            $('#Add').show();
+            $('#TaxType').show();
+            $('#gridEvent').show();
+            $('#alert').show();
+        }
+
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return true;
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('#Addcreateeeeee').click(function () {
+
+            var TaxName = $("#TaxName").val();
+
+            //var Description = $('#Description').val();
+
+            var TaxValue = $("#TaxValue").val();
+
+            var TaxTypeId = $("#TaxType").val();
+            var TaxType = $("#TaxType Option:Selected").text();
+
+
+            var TaxOnTaxId = $("#TaxOnTax").val();
+            var TaxOnTax = $("#TaxOnTax Option:Selected").text();
+
+            if (TaxName.toString() == "") {
+                alert("Please Enter a Tax Name")
+                return false;
+            }
+            if (TaxValue.toString() == 0) {
+                alert("Please Enter TaxRate Value greater than Zero")
+                return false;
+            }
+            if (TaxValue.toString() == "") {
+                alert("Please enter the Tax Rate");
+                return false;
+            }
+            var regex = /^\d+(.\d+)?$/;
+            if (regex.test(TaxValue) == false) {
+                alert("Enter correct Tax Rate")
+                return false;
+            }
+
+
+            if (TaxOnTaxId.toString() == "") {
+                alert("Please select Tax On Tax from the Dropdown")
+                return false;
+            }
+
+            var path = '@Url.Content("~/BOMAdmin/AddTaxOnTaxLIstCreate")' + "?TaxName=" + TaxName + "&TaxTypeId=" + TaxTypeId + "&TaxOnTaxId=" + TaxOnTaxId + "&TaxType=" + TaxType + "&TaxOnTax=" + TaxOnTax  + "&TaxValue=" + TaxValue
+            event.preventDefault();
+            window.location.replace(path);
+
+
+            @*var url = '@Url.Action("AddTaxOnTaxLIstCreate", "Admin")';
+            var data = { TaxName: TaxName, TaxTypeId: TaxTypeId, TaxOnTaxId: TaxOnTaxId, TaxType: TaxType, TaxOnTax: TaxOnTax };
+            $.post(url, data, function (result) {*@
+
+            //});
+
+        });
+
+    });
+</script>
+@if (Model.TaxId == 0)
+{
+    <script>
+    $(document).ready
+    (
+
+    function (event) {
+
+        $('#Validation').click(function () {
+            var TaxName = $('#TaxName').val();
+            var TaxType = $('#TaxType').val();
+            var TaxValue = $('#TaxValue').val();
+            var TaxOnTax = $('#TaxOnTax').val();
+
+
+            if (TaxName.toString() == "") {
+                alert("please enter the TaxName ")
+                return false;
+
+            }
+            if (TaxValue.toString() == "") {
+                alert("Please enter the Tax Rate");
+                return false;
+            }
+            var regex = /^\d+(.\d+)?$/;
+            if (regex.test(TaxValue) == false) {
+                alert("Enter correct Tax Rate")
+                return false;
+            }
+            if (TaxValue.toString() == 0) {
+                alert("Please Enter TaxRate Value greater than Zero")
+                return false;
+            }
+            if(TaxValue.toString()=="")
+            {
+                alert("Please enter appropriate TaxRate value")
+                return false
+            }
+
+            if (TaxType.toString() == "") {
+                alert("please select Tax Type from the Dropdown menu");
+                return false;
+            }
+
+
+
+            //if (TaxValue.toString() == 0 && TaxType.toString()=="3") {
+            //    alert("Your Tax Rate is Zero please enter Value")
+            //    return false;
+            //}
+
+            //if (TaxValue.toString() == 0) {
+            //    var agree = confirm("Are you sure you want to put your Tax Rate as 0?");
+            //    if (agree) {
+
+            //        return false;
+            //    }
+            //    else {
+            //        alert("Please enter value for taxrate")
+            //        return false;
+
+            //    }
+
+            //}
+
+            if(TaxType.toString()=="3" && @Model.TaxGrid.Count==0 && TaxOnTax.toString()==""&& @Model.TaxId==0)
+            {
+                alert("Please Select TaxOnTax");
+                return false;
+            }
+            if(TaxType.toString()=="3" && @Model.TaxGrid.Count==0 && TaxOnTax.toString!=""&& @Model.TaxId==0)
+            {
+                alert("Please Click On Add Button");
+                return false;
+            }
+
+            //if(TaxOnTax.toString()=="")
+            //{
+            //    alert("please select TaxOnTax from the Dropdown menu");
+            //    return false;
+            //}
+           @*if(@Model.TaxId>0)
+            {
+                if(TaxType.toString()=="3" && TaxOnTax.toString()=="" && @Model.TaxOnTaxList.Count==0)
+                {
+                    alert("Please select TaxOnTax");
+                    return false;
+                }
+                if(TaxType.toString()=="3" && TaxOnTax.toString!="" && @Model.TaxOnTaxList.Count==0)
+                {
+                    alert("Please Click On Add Button");
+                    return false;
+                }
+            }*@
+
+
+            var path = '@Url.Content("~/Tax/CreateTax")'
+            event.preventDefault();
+            window.location.replace(path);
+
+            //  $('#form').unbind('submit').submit();
+        });
+
+    });
+
+    </script>
+}
+@if (Model.TaxId > 0)
+{
+    <script>
+        $(document).ready
+        (
+
+        function (event) {
+
+            $('#Validation').click(function () {
+                var TaxName = $('#TaxName').val();
+                var TaxType = $('#TaxType').val();
+                var TaxValue = $('#TaxValue').val();
+                var TaxOnTax = $('#TaxOnTax').val();
+
+
+                if (TaxName.toString() == "") {
+                    alert("please enter the TaxName ")
+                    return false;
+
+                }
+                if (TaxValue.toString() == 0) {
+                    alert("Please Enter TaxRate Value greater than Zero");
+                    return false;
+                }
+                if (TaxValue.toString() == "") {
+                    alert("Please enter the Tax Rate");
+                    return false;
+                }
+                var regex = /^\d+(.\d+)?$/;
+                if (regex.test(TaxValue) == false) {
+                    alert("Enter correct Tax Rate");
+                    return false;
+                }
+
+
+                //if(TaxValue.toString()=="")
+                //{
+                //    alert("Please enter appropriate TaxRate value ");
+                //    return false;
+                //}
+                if (TaxType.toString() == "") {
+                    alert("please select Tax Type from the Dropdown menu");
+                    return false;
+                }
+
+
+
+                if(TaxType.toString()=="3" && TaxOnTax.toString()=="" && @Model.TaxOnTaxList.Count==0)
+                    {
+
+                   alert("Please select TaxOnTax");
+                        return false;
+                    }
+                    if(TaxType.toString()=="3" && TaxOnTax.toString!="" && @Model.TaxOnTaxList.Count==0)
+                    {
+                        alert("Please Click On Add Button");
+                        return false;
+                    }
+
+
+                var path = '@Url.Content("~/BOMAdmin/CreateTax")'
+                event.preventDefault();
+                window.location.replace(path);
+
+                //  $('#form').unbind('submit').submit();
+            });
+
+        });
+    </script>
+
+}
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.Del').on('click', function (e) {
+
+            e.preventDefault();
+            var TaxOnTaxId = $(this).closest('.Del').attr('TaxOnTaxId');
+            var agree= confirm("Are you sure you want to delete this Item from the Grid?");
+            if (agree)
+            {
+                var path = '@Url.Content("~/BOMAdmin/DeleteEventAction")' + "?TaxOnTaxId=" + TaxOnTaxId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else
+            {
+                return false;
+            }
+        });
+    });
+</script>
+
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            var xotval = $('#TaxType').val()
+            if (xotval == "Tax on Tax") {
+                $('#taxontaxlbl').show();
+                $('#taxontaxddl').show();
+                $('#Add').show();
+                $('#gridEvent').show();
+                $('#alert').show();
+            }
+
+        });
+
+    </script>*@
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+
+    <br>
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr style="height:20px">
+
+
+
+            @Html.HiddenFor(model => model.TaxId)
+            @if (Model.TaxId > 0)
+            {
+                <td>
+                    <label for="TaxId">TaxId </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TaxId, new { @class = "form-control", @readonly = "readonly", id = "Taxid" })
+
+                        @Html.ValidationMessageFor(model => model.TaxId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            }
+
+            <td>
+                <label for="TaxName">TaxName:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TaxName, new { @class = "form-control", id = "TaxName" })
+                    @Html.ValidationMessageFor(model => model.TaxName, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+
+        </tr>
+
+      
+        <tr>
+            <td>
+                <label for="TaxRate">TaxRate:</label>
+
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TaxRate, new { @class = "form-control", id = "TaxValue" })
+                    @Html.ValidationMessageFor(model => model.TaxRate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="TaxType">TaxType:</label>
+            </td>
+            <td>
+
+                <div class="">
+
+                    @Html.DropDownList("TaxType", (IEnumerable<SelectListItem>)ViewBag.GetTypeList, "Please Select TaxType", new { @class = "form-control", style = "width:250px", id = "TaxType" })
+
+                    @Html.ValidationMessageFor(model => model.TaxType, "", new { @class = "text-danger" })
+                </div>
+
+
+
+            </td>
+            @if (Model.TaxId > 0)
+            {
+                <td id="taxontaxlbl">
+                    <label> Tax On Tax</label>
+                </td>
+                <td id="taxontaxddl">
+                    <div class="">
+                        @Html.DropDownList("taxname1", (IEnumerable<SelectListItem>)ViewBag.taxdetaillist, "--Please Select Tax Type--", new { @class = "form-control", id = "TaxOnTax", style = "width:210px" })
+                        @Html.ValidationMessageFor(model => model.TaxName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <button type="button" class="Save btn-xs buttonCss btn-info glyphicon glyphicon-save" id="Add">Add</button>
+
+                </td>
+            }
+
+            @if (Model.TaxId == 0)
+            {
+                <td id="taxontaxlbl">
+                    <label> Tax On Tax</label>
+                </td>
+                <td id="taxontaxddl">
+                    <div class="">
+                        @Html.DropDownList("taxname1", (IEnumerable<SelectListItem>)ViewBag.taxdetaillist, "--Please Select Tax Type--", new { @class = "form-control", id = "TaxOnTax", style = "width:210px" })
+                        @Html.ValidationMessageFor(model => model.TaxName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <button type="button" class="Save btn-xs buttonCss btn-info glyphicon glyphicon-save" id="Addcreateeeeee">Add</button>
+
+                </td>
+            }
+
+        </tr>
+    </table>
+
+    <span></span>
+
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        @if (Model.TaxId > 0)
+        {
+            <tr>
+                <td>
+                    @if (Model.TaxOnTaxList.Count > 0)
+                    {
+                        <div id="gridEvent">
+                            @gridTaxOnTax.GetHtml(
+                                        tableStyle: "webgrid",
+                                        alternatingRowStyle: "webgrid-alt",
+                                        headerStyle: "webgrid-header",
+                                        selectedRowStyle: "webgrid-select",
+                                        mode: WebGridPagerModes.All,
+                                        firstText: "<<First",
+                                        previousText: "<Previous",
+                                        nextText: ">Next",
+                                        lastText: ">>Last",
+                                        columns: new[]{
+                                        gridTaxOnTax.Column("TaxId","Tax Id"),
+                                        gridTaxOnTax.Column("TaxName","Tax Name"),
+                                        //gridTaxOnTax.Column("TaxType","TaxType"),
+                                        gridTaxOnTax.Column("ChildTaxId","Child Tax Id"),
+                                        gridTaxOnTax.Column("ParentTaxName","Child Tax Name"),
+                                         gridTaxOnTax.Column(header:"Delete",format:(item) => Html.ActionLink("Delete","DeleteTaxOnTaxDetails","BOMAdmin",
+                                             new  {TaxId=item.taxId,ChildTaxId=item.ChildTaxId,ChildTaxName=item.ParentTaxName}, new{TaxId=item.taxId,ChildTaxId=item.ChildTaxId,ChildTaxName=item.ParentTaxName}
+                                   ))
+
+
+                                          })
+                        </div>
+                    }
+
+                    else
+                    {
+                        <div class="alert alert-info" role="alert" id="alert">
+                            <label>
+                                Sorry! There is No Information about Tax On Tax Details for this Tax. If Tax On Tax is applicable for this particular
+                                Tax than select Tax On Tax from Tax Type and click ADD!!!
+                            </label>
+                        </div>
+
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+    if (Model.TaxId == 0)
+    {
+        <table>
+            <tr>
+                &nbsp;
+            </tr>
+            <tr>
+                <td>
+                    @if (Model.TaxGrid.Count > 0)
+                    {
+                        <div id="gridEvent">
+                            @gridTax.GetHtml(
+                                        tableStyle: "webgrid",
+                                        alternatingRowStyle: "webgrid-alt",
+                                        headerStyle: "webgrid-header",
+                                        selectedRowStyle: "webgrid-select",
+                                        mode: WebGridPagerModes.All,
+                                        firstText: "<<First",
+                                        previousText: "<Previous",
+                                        nextText: ">Next",
+                                        lastText: ">>Last",
+                                        columns: new[]{
+                                        //gridTaxOnTax.Column("TaxId","TaxId"),
+                                        //gridTaxOnTax.Column("TaxName","TaxName"),
+                                        gridTaxOnTax.Column("TaxName","Tax Name"),
+                                       //  gridTaxOnTax.Column("TaxOnTaxId","TaX On Tax ID"),
+                                        gridTaxOnTax.Column("TaxOnTax","TaX On Tax"),
+                                        gridTaxOnTax.Column(header:"Delete",format:(item) => Html.ActionLink("Delete", "DeleteEventAction","BOMAdmin",new {TaxOnTaxId=item.TaxOnTaxId,TaxOnTaxName=item.TaxOnTax},new {@TaxOnTaxId=item.TaxOnTaxId,TaxOnTaxName=item.TaxOnTax}))
+                                         })
+
+                        </div>
+                    }
+
+                    else
+                    {
+
+                        @*<div class="alert alert-info" role="alert" id="alert">
+                                <label>
+                                    Sorry! There is No Information about Tax On Tax Details for this Tax.
+                                </label>
+                            </div>*@
+
+                    }
+                </td>
+            </tr>
+        </table>
+    }
+    <table>
+        <tr>
+            <td>
+                   
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetTaxList';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save  save" id="Validation"> Save</button>
+            </td>
+        </tr>
+
+    </table>
+}

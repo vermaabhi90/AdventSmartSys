@@ -1,0 +1,274 @@
+﻿@model SmartSys.BL.SysDashBoardModel
+
+
+@{
+    ViewBag.Title = "Dashboard Map ";
+
+}
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["MSG"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["MSG"])');
+            return false;
+        }
+    });
+
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+            $('.xyz').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).closest('.xyz').attr('DashboardId');
+            var Uid = parseInt($('#Uid').val());
+           var agree=confirm("Are you sure to delete ?")
+               if (agree) {
+                    var path = '@Url.Content("~/Admin/DeleteClientEmp")' + "?lstDashBoard=" + id + "&Uid=" + Uid
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+
+
+
+        });
+          $('.Add').click(function (event) {
+
+            var lstDashBoard = $('#lstDashBoard').val();
+            var Sequence =$('#Sequence').val();
+            var Uid = parseInt($('#Uid').val());
+            var UserName = $('#UName').val();
+            var Description = $("#lstDashBoard option:selected").text();
+            if (Sequence.toString() == null || Sequence.toString() == 0)
+            {
+                alert("Please Enter Sequence");
+                return false;
+            }
+            if (lstDashBoard.toString() != "") {
+                var path = '@Url.Content("~/Admin/AddClientEmp")' + "?lstDashBoard=" + lstDashBoard + "&Sequence=" + Sequence + "&Uid=" + Uid + "&UserName=" + UserName + "&Description=" + Description
+                event.href = path;
+                $(this).attr('href', path);
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else {
+                alert("Please Select DashBooard list");
+                return false;
+            }
+        });
+    });
+</script>
+<style type="text/css">
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 800px;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Dashboard Map
+</div>
+
+@using (Html.BeginForm("", "Admin", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label>DashBoard</label>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DropDownList("lstDashBoard", (IEnumerable<SelectListItem>)ViewBag.LstDashBoard, new { style = "width:250px", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label>User Name</label>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.TextBox("f", Model.UserName, new { @readonly = "", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Sequence</label>
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Sequence, new { id = "Sequence", @class = "form-control", @type = "number" })
+                </td>
+
+                <td>
+                    <input type="hidden" value="@Model.UserId" id="Uid" name="Uid" />
+                    <input type="hidden" value="@Model.UserName" id="UName" name="UName" />
+                </td>
+
+                
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-field">
+                        <button type="button" class="Add  btn-xs btn-info glyphicon glyphicon-plus"> Add</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    @if (Model.lstUserDashBoard != null)
+                    {
+                        @*<div id="gridEvent">
+                            @gridDashBoard.GetHtml(
+                     tableStyle: "webgrid",
+                    alternatingRowStyle: "webgrid-alt",
+                     headerStyle: "webgrid-header",
+                     selectedRowStyle: "webgrid-select",
+                    mode: WebGridPagerModes.All,
+                    firstText: "<<First",
+                    previousText: "<Previous",
+                    nextText: ">Next",
+                    lastText: ">>Last",
+                    columns: new[]{
+                    gridDashBoard.Column("UserId","User Id"),
+                    gridDashBoard.Column("UserName","User Name"),
+                     gridDashBoard.Column("Description","Dashboard Name"),
+                     gridDashBoard.Column("Sequence","Sequence"),
+
+                
+                     gridDashBoard.Column(header:"Delete",format:(item) => Html.ActionLink("Delete", "DeleteEventAction","DHFeedEvtTrigg",new {DashboardId=item.DashboardId},new {@DashboardId=item.DashboardId, @class="xyz"}))
+
+
+                      })
+                        </div>*@
+
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.SystemUser>("DashBoardMap")
+                  .Datasource((IEnumerable<object>)Model.lstUserDashBoard)
+                  .AllowFiltering()
+                  .AllowPaging()
+                  .PageSettings(p => { p.PageSize(20); })
+                  .AllowSorting()
+                 
+                  .EnableHeaderHover()
+                  .AllowResizing()
+                  .FilterSettings(filter => {
+                      filter.FilterType(FilterType.Excel);
+                     
+                  })
+                  .AllowScrolling()
+               .EnableAltRow(true)
+               .Columns(col =>
+               {
+                   col.Field("Description").HeaderText("Dashboard Name").Add();
+                   col.Field("Sequence").HeaderText("Sequence").Add();
+                   col.HeaderText("Remove").Commands(command =>
+                   {
+                       command.Type(UnboundType.Edit)
+
+            .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+            {
+                CssClass = "EditBtn",
+                Text = "Edit",
+                ContentType = ContentType.ImageTextImage,
+                PrefixIcon = "e-edit",
+                Height = "22px",
+                Size = ButtonSize.Mini
+            })
+            .Add();
+
+                   })
+            .Template("#Delete")
+            
+            .TextAlign(TextAlign.Left)
+            .Width(90)
+            .Add();
+               })
+                            //.ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+
+                            )
+
+                        </div>
+                    }
+                    else
+                    {
+                        <label class="label-info">
+                            There are no value in Grid
+                        </label>
+                    }
+                </td>
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td>
+                    @Html.ActionLink(" Back", "UserList", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-hand-left" })
+
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        @Html.ActionLink(" Save", "SaveAssignDashBoard", new { UserId = Model.UserId }, new { @class = "btn-xs  btn-info glyphicon glyphicon-save" })
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+<script id="Delete" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Admin/DeleteClientEmp?lstDashBoard={{:DashboardId}}&amp;Uid=@Model.UserId"> </a>
+</script>

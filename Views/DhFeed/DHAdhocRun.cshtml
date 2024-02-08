@@ -1,0 +1,138 @@
+﻿@model   SmartSys.BL.DHAchocRun
+
+@{
+    ViewBag.Title = "DHAdhocRun";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#drpFeedType').change(function (e) {
+            e.preventDefault();
+            var ddlValue = $('#drpFeedType').val();
+          
+            if (ddlValue.toString() == "--Select Feed --") {
+                alert("Please Enter Valid Feed Name ");
+                return false;
+            }
+           
+        });
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#drpFeedType').change(function (event) {
+            event.preventDefault();
+            var ddlValue = $('#drpFeedType').val();
+            
+            if (ddlValue.toString() == "") {
+                alert("Please Select Valid Feed Name ");
+                return false;
+            }
+
+            var path = '@Url.Content("~/DhFeed/ChkFeedType")' + "?FeedId=" + ddlValue
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+        $('.submit').click(function (event) {
+            var ddlValue = $('#drpFeedType').val();
+            if(ddlValue.toString() =="")
+            {
+                alert("Please Select Feed")
+                return false;
+            }
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    DataHub Adhoc Run List
+</div>
+
+<table>
+    <tr>
+        <td align="center">
+            <div>
+                @Html.ActionLink(" Refresh", "DHAdhocRun", new { Flag = 0 }, new { @class = "btn-xs  btn-info glyphicon glyphicon-refresh" })
+            </div>
+        </td>
+    </tr>
+
+</table>
+
+@using (Html.BeginForm("DHAdhocRun", "DhFeed", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td>
+                <label>Feed:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownList("FeedId", (IEnumerable<SelectListItem>)ViewBag.ParamNameList, "--Select Feed --", new { @class = "form-control", id = "drpFeedType" })
+                </div>
+            </td>
+
+            @if (Model.CHkFeedType == "CSVLoader" || Model.CHkFeedType == "XLSLoader")
+            {
+                <td>
+                    <label>File:</label>
+                </td>
+                <td>
+                    <div class="navbar-text input-group-btn">
+
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" />
+                    </div>
+                </td>
+                        <td>
+                            <input type="reset" id="reset" value="Remove" class="btn btn-warning" />
+                           
+                        </td>
+            }
+        </tr>
+        <tr>           
+            <td>
+                <div class="">
+                    <button type="submit" class="submit btn-xs  btn-primary glyphicon glyphicon-save-file"> Submit</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Departmentmodel>("grdDHAdhocRunList")
+                .Datasource((IEnumerable<object>)@Model.LstadhocRun)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("AdhocId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("FeedName").HeaderText("Feed Name").ValidationRules(v => v.AddRule("required", true)).Width(250).Add();
+            col.Field("FileName").HeaderText("FileName").ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("JobId").HeaderText("Job Id").TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("LoaderId").HeaderText("Loader Id").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("LoaderType").HeaderText("Loader Type").Width(180).Add();
+            col.Field("StatusName").HeaderText("Status Name").Width(120).TextAlign(TextAlign.Left).Add();
+            col.Field("CreatedByName").HeaderText("CreatedBy Name").Width(150).TextAlign(TextAlign.Left).Add();
+        })
+        )
+    </div>
+  
+}

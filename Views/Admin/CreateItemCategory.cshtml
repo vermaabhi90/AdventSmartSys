@@ -1,0 +1,163 @@
+﻿@model SmartSys.BL.ItemCategory
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.CategoryId == 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Item Category Type
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Item Category Type
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            var ParentCategoryId = $('#ParentCategoryId').val();
+            var Category = $('#Category').val();
+            if (Category.toString() == "") {
+                alert("Please Enter Category Name  ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.CategoryId == 0)
+            {
+                @Html.HiddenFor(model => model.CategoryId);
+            }
+            <tr>
+                @if (Model.CategoryId > 0)
+                {
+                    <td>
+                        <label for="UserId">ID</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CategoryId, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.CategoryId)
+                        </div>
+
+                    </td>
+                }
+                <td>
+                    <label for="ParentSegmentId">Parent Category:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.DropDownList("ParentCategoryId", (IEnumerable<SelectListItem>)ViewBag.ItemCategory, "Select Item Category", new { style = "width:200px", @class = "form-control", id = "ParentCategoryId" })
+                        @Html.ValidationMessageFor(model => model.ParentCategoryId)
+                    </div>
+
+                </td>
+                <td>
+                    <label for="ParentSegmentId">Category:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Category, new { @class = "form-control", id = "Category" })
+                        @Html.ValidationMessageFor(model => model.Category)
+                    </div>
+
+                </td>
+            </tr>
+            </table>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="Description">Description:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { style = "width:600px", @class = "form-control", id = "Description" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.CategoryId > 0)
+                {
+                <tr>
+                    <td>
+                        <label for="CreatedByName">Created By </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="CreatedDate">Created Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (Model.CategoryId > 0)
+                {
+                <tr>
+
+                    <td>
+                        <label for="ModifiedByName">Modified By </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <label for="ModifiedDate">Modified Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetItemCategoryList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+}
+
+

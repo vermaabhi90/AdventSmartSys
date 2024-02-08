@@ -1,0 +1,39 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.QoutFollowupHistoryModel>
+
+@{
+    ViewBag.Title = "FollowupHistory";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Quotation Followup History
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.QoutFollowupModel>("grdQuotHistoryList")
+                    .Datasource((IEnumerable<object>)@Model)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+                    .PageSettings(p => { p.PageSize(20); })
+            .EnableHeaderHover()
+            .AllowResizing()
+            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+            .AllowScrolling()
+            .EnableAltRow(true)
+             .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .Columns(col =>
+        {
+            col.Field("QuotationId").HeaderText("ID").Visible(false).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("QuotationNumber").HeaderText("PO Number").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("Followupdate").HeaderText("Followup date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("NextFollowUp").HeaderText("Next FollowUp Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("FollowupReason").HeaderText("Reason").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("FollowupRemark").HeaderText("Followup Remark").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("CreatedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created By").Width(80).Add();
+            col.Field("CreatedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+        })
+    )
+</div>
+<td>
+    @Html.ActionLink(" Back", "GetQuotFollowupReminderList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })
+
+</td>
+@Html.EJ().ScriptManager()

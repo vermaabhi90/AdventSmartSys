@@ -1,0 +1,104 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.FreightFwdInvoiceModel>
+
+@{
+    ViewBag.Title = "GetFreightFwdInvoiceList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Freight Forwarder Invoice  List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateFreightFwdInvoice", new { FreightInvId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.FreightFwdInvoiceModel>("grdFFInvoice")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+      .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportFreightFwdInvoiceList")))
+                   .ContextMenuSettings(contextMenu =>
+                   {
+                       contextMenu.EnableContextMenu();
+                       contextMenu.DisableDefaultItems();
+                       contextMenu.CustomContextMenuItems(c =>
+                       {
+                           c.AddItem("Add1", "Add Enquiry");
+                           c.AddItem("Edit1", "Edit Enquiry");
+
+                       });
+
+                   })
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("FreightInvId").HeaderText("Freight Inv Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("InvoiceNumber").HeaderText("InvoiceNumber").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("InvoiceDate").HeaderText("Invoice Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("CreatedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("CreatedBy By").Width(200).Add();
+            col.Field("CreatedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .AllowFiltering(false)
+            .Template("#BtnEdit")
+           
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+
+        })
+    )
+</div>
+<script id="BtnEdit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/Enquiry/CreateFreightFwdInvoice?FreightInvId={{:FreightInvId}}"></a>
+</script>
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Add Enquiry") {
+            var path = '@Url.Content("~/Enquiry/CreateFreightFwdInvoice")' + "?FreightInvId=0"
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Enquiry") {
+                var tempData = args.text;
+                var grid = $("#grdFFInvoice").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var FreightInvId = result[0]["FreightInvId"];
+                var path = '@Url.Content("~/Enquiry/CreateFreightFwdInvoice")' + "?FreightInvId=" + FreightInvId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+            }
+    }
+</script>
+

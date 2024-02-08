@@ -1,0 +1,365 @@
+﻿@model SmartSys.BL.Project.ProjectTaskMoM
+@{
+    ViewBag.Title = "MOM View Detail";
+    
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Project MOM View  Detail
+</div>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("MOMActionPoint", "ProjectCenter", FormMethod.Post, new { Id = "MOM" }))
+{
+
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+
+        <tr>
+            <td>
+                <div class="">
+                    <label for="ItemName">Project:</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.ProjectName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <div class="">
+                    <label for="ItemName">Task:</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TaskName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <div class="">
+                    <label for="ItemName">MOM Date:</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    <input type="text" readonly="readonly" value="@Model.MOMDate.ToShortDateString()" class="form-control" />
+                </div>
+            </td>
+            <td></td>
+        </tr>
+
+
+
+        <tr>
+            @if (Model.MOMId > 0)
+            {
+                <td>
+                    <div class="">
+                        <label for="ItemName">Employee:</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Employee, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.EmpId)
+                    </div>
+                </td>
+            }
+            <td>
+                <div class="">
+                    <label for="ItemName">Title:</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Title, new { required = "required", @readonly = "readonly", id = "Title", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    <label for="ItemName">MOM Type:</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.MOMTypeKey, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+
+        </tr>
+
+
+
+        @if (Model.MOMId > 0)
+        {
+            <tr>
+                <td>
+                    <div class="">
+                        <label for="ItemName">Created By:</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedByName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedByName)
+                    </div>
+                <td>
+                    <div class="">
+                        <label for="ItemName">Created Date:</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="">
+                        <label for="ItemName">Modified By:</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedByName)
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="ItemName">Modified Date:</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate)
+                    </div>
+                </td>
+            </tr>
+
+        }
+    </table>
+    <table style="margin-left:20px">
+        <tr>
+            <td>
+                <input type="button" value="Description" id="Descrip" class="btn btn-success glyphicon glyphicon-comment" />
+            </td>
+            <td width="10px"></td>
+            <td>
+                <input type="button" value="Local Description" id="LocDescrip" class="btn btn-primary glyphicon glyphicon-comment" />
+            </td>
+            @if (ViewBag.findflag == 1)
+            {
+                <td width="10px"></td>
+                <td>
+                    <input type="button" value="Management View" id="Mgmt" class="btn btn-warning glyphicon glyphicon-comment" />
+                </td>
+            }
+            <td width="10px"></td>
+            <td>
+                <input type="button" value="Participants" id="Parti" class="btn btn-danger glyphicon glyphicon-user" />
+            </td>
+            <td width="10px"></td>
+            <td>
+                <input type="button" value="Attchment" id="Attc" class="btn btn-success glyphicon glyphicon-paperclip" />
+            </td>
+            <td width="10px"></td>
+            <td>
+                <input type="button" value="Action Point" id="ActPnt" class="btn btn-primary glyphicon glyphicon-screenshot" />
+            </td>
+        </tr>
+    </table>
+    <table style="margin-left:20px">
+        <tr>
+            <td id="descriId">
+                <div style="background-color:#F8FBEF;min-width:800px;min-height:300px;max-height:800px; border:1px solid black;overflow-y:scroll;align-content:space-around" class="form-control">
+                    @Html.Raw(HttpUtility.HtmlDecode(Model.Description))
+                </div>
+            </td>
+            <td id="LocdescriId">
+                <div style="background-color:#F8FBEF;min-width:800px;min-height:300px;max-height:800px; border:1px solid black;overflow-y:scroll;align-content:space-around" class="form-control">
+                    @Html.Raw(HttpUtility.HtmlDecode(Model.LocalDescription))
+                </div>
+            </td>
+            <td id="MgmtId">
+                <div style="background-color:#F8FBEF;min-width:800px;min-height:300px;max-height:800px; border:1px solid black;overflow-y:scroll;align-content:space-around" class="form-control">
+                    @Html.Raw(HttpUtility.HtmlDecode(Model.ManageMentView))
+                </div>
+            </td>
+            <td id="PartiId">
+                @if (Model.LstMoMParticipant.Count > 0)
+                {
+
+                    @(Html.EJ().Grid<SmartSys.BL.Project.ProjectTaskMoM>("grdpaticpntList")
+                        .Datasource(Model.LstMoMParticipant)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(10); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("Name").HeaderText("Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ParticipantType").HeaderText("Participant Type").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("FYI").HeaderText("FYI").Width(60).Add();
+
+                        })
+                    )
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <label>Sorry! There is No Information about Participants Details !!!</label>
+                    </div>
+                }
+            </td>
+
+            <td id="AttcId">
+                @if (Model.LstMOMAttachment.Count > 0)
+                {
+                    <div id="gridEvent">
+                        @(Html.EJ().Grid<SmartSys.BL.Project.ProjectTaskMoM>("grdAttachmentList")
+                        .Datasource(Model.LstMOMAttachment)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(10); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("FileName").HeaderText("File Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Open").Template("#OpenAttac").HeaderText("Open").Width(60).Add();
+
+                        })
+                        )
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <label>Sorry! There is No Information about Attachment Details !!!</label>
+                    </div>
+                }
+            </td>
+
+
+            <td id="ActPntId">
+                @if (Model.ActionPointList.Count > 0)
+                {
+                    <div id="gridEvent1">
+                        @(Html.EJ().Grid<SmartSys.BL.Project.ProjectTaskMoM>("grdActionpointList")
+                        .Datasource(Model.ActionPointList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(10); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("ActionPointId").HeaderText("ActionPointId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+                            col.Field("ActionDescription").HeaderText("Description").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("AssignedBy").HeaderText("Assigned By").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Resource").HeaderText("Resource").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("DueDate").Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("Due Date").TextAlign(TextAlign.Center).Width(60).Add();
+                        })
+                        )
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <label>Sorry! There is No Information about MOM Action Point Details !!!</label>
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+}
+<script id="OpenAttac" type="text/x-jsrender">
+    <a class="btn-xs btn-success  glyphicon glyphicon-download" href="/ProjectCenter/Download?MOMID=@Model.MOMId&amp;Filename={{:FileName}}"> Download</a>
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#descriId").show();
+        $("#LocdescriId").hide();
+        $("#MgmtId").hide();
+        $("#PartiId").hide();
+        $("#AttcId").hide();
+        $("#ActPntId").hide();
+
+        $('#Descrip').on('click', function (e) {
+            $("#descriId").show();
+            $("#LocdescriId").hide();
+            $("#MgmtId").hide();
+            $("#PartiId").hide();
+            $("#AttcId").hide();
+            $("#ActPntId").hide();
+        });
+        $('#LocDescrip').on('click', function (e) {
+            $("#descriId").hide();
+            $("#LocdescriId").show();
+            $("#MgmtId").hide();
+            $("#PartiId").hide();
+            $("#AttcId").hide();
+            $("#ActPntId").hide();
+        });
+        $('#Mgmt').on('click', function (e) {
+            $("#descriId").hide();
+            $("#LocdescriId").hide();
+            $("#MgmtId").show();
+            $("#PartiId").hide();
+            $("#AttcId").hide();
+            $("#ActPntId").hide();
+        });
+        $('#Parti').on('click', function (e) {
+            $("#descriId").hide();
+            $("#LocdescriId").hide();
+            $("#MgmtId").hide();
+            $("#PartiId").show();
+            $("#AttcId").hide();
+            $("#ActPntId").hide();
+        });
+        $('#Attc').on('click', function (e) {
+            $("#descriId").hide();
+            $("#LocdescriId").hide();
+            $("#MgmtId").hide();
+            $("#PartiId").hide();
+            $("#AttcId").show();
+            $("#ActPntId").hide();
+        });
+        $('#ActPnt').on('click', function (e) {
+            $("#descriId").hide();
+            $("#LocdescriId").hide();
+            $("#MgmtId").hide();
+            $("#PartiId").hide();
+            $("#AttcId").hide();
+            $("#ActPntId").show();
+        });
+    });
+</script>
+
+@Html.EJ().ScriptManager()

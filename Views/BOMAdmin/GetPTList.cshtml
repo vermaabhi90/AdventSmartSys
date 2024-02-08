@@ -1,0 +1,93 @@
+﻿
+@model IEnumerable<SmartSys.BL.BOMAdmin.Paytermsmodel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "Payment Terms";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Payment Terms List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreatePT", new { PTId = 0 }, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-leaf" })
+  </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.BOMAdmin.Paytermsmodel>("grdpt")
+                 .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+            .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+          .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportPaymentLst")))
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add_Record", "Add Record");
+                  c.AddItem("Edit_PT", "Edit Record");
+              });
+
+          })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("PTId").Visible(true).HeaderText("PTId").Width(70).Add();
+            col.Field("PTCode").HeaderText("PTCode").Add();
+            col.Field("Description").HeaderText("Description").Width(200).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit")
+          .Template("#edit")
+          .IsUnbound(true)
+          .AllowFiltering(false)
+          .TextAlign(TextAlign.Center)
+          .Width(90)
+          .Add();
+        })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+
+
+
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/BOMAdmin/CreatePT?PTId={{:PTId}}"></a>
+
+    </script>
+    <script>
+        function contextclick(args) {
+
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/BOMAdmin/CreatePT")' + "?PTId=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Record") {
+                    var tempData = args.text;
+
+                    var grid = $("#grdpt").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var PTId = result[0]["PTId"];
+                    var path = '@Url.Content("~/BOMAdmin/CreatePT")' + "?PTId=" + PTId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+        }
+
+    </script>

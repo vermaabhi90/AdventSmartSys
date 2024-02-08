@@ -1,0 +1,30 @@
+﻿@model SmartSys.BL.StoredProcedureList
+
+<div>
+    <h4>@Model.Title</h4>
+    <hr />
+    <dl class="dl-horizontal"></dl>
+</div>
+<p>
+    @using (Html.BeginForm("GetSP", "Report", FormMethod.Post, new { Id = "Form1" }))
+    {
+       <table>
+           <tr>
+           <td>
+            @Html.Label("Select Stored Procedure : " )
+               </td>
+           <td>
+            @Html.DropDownList("cmbSPName", (IEnumerable<SelectListItem>)ViewBag.SPList, new { @class = "form-control" })
+            @Html.Hidden("ObjName", Model.objName)
+       </td>
+           </tr>
+           <tr>
+               <td>
+           <button type="submit" id="approve-btn" class="btn-xs btn-warning">Select</button>
+           </td>
+               </tr>
+               </table>
+
+      
+    }
+</p>

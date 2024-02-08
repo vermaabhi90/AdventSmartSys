@@ -1,0 +1,65 @@
+﻿@model SmartSys.BL.Documents
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Create  Emoloyee Documents
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.reset').click(function (event) {
+          event.preventDefault();
+          $("#fileInput").replaceWith(" <input type='file' name='Attachment' id='fileInput' value='uploadfile' class='btn btn-success' required />");
+        })
+    })
+</script>
+@using (Html.BeginForm("EmployeeDocuments", "Admin", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+    <html>
+    <body>
+
+        <table style="border-collapse:separate;border-spacing: 0 8px;">
+            <tr>
+                <td>
+                    <label for="Docs">Document:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.EmpId)
+                        <div class="input-group-btn">
+
+                            <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-info " required />
+                        </div>
+                    </div>
+                </td>
+                <td>
+
+                    <input type="button" id="reset" value="Remove" class="btn btn-danger reset" style="width:75px" />
+
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="DeptName">Document Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DocumentName, new { required = "required", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DocumentName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        </body>
+</html>
+ }

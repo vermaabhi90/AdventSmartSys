@@ -1,0 +1,179 @@
+﻿@model SmartSys.BL.DataHub.DHLoaderModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Data Hub Loader
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var JobPollingInterval = $('#JobPollingInterval').val();
+            var EventPollingInterval = $('#EventPollingInterval').val();
+            var TriggerPollingInterval = $('#TriggerPollingInterval').val();
+            var Host = $('#Host').val();
+            var Port = $('#Port').val();
+
+            if (JobPollingInterval.toString() == "") {
+                alert("Please Enter Job PollingInterval Name ");
+                return false;
+            }
+            if (EventPollingInterval.toString() == "") {
+                alert("Please Enter Event PollingInterval ");
+                return false;
+            }
+            if (TriggerPollingInterval.toString() == "") {
+                alert("Please Enter Trigger PollingInterval ");
+                return false;
+            }
+            if (Host.toString() == "") {
+                alert("Please Enter Host Name ");
+                return false;
+            }
+            if (Port.toString() == "") {
+                alert("Please Enter Port Name ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("Edit", "DHLoader", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+
+                    <label for="Loader Id">Loader Id</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.LoaderId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+
+
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="JobPollingInterval">JobPollingInterval</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.JobPollingInterval, new { @class = "form-control", id = "JobPollingInterval" })
+                        @Html.ValidationMessageFor(model => model.JobPollingInterval)
+                    </div>
+                </td>
+                <td>
+                    <label for="EventPollingInterval">EventPollingInterval</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EventPollingInterval, new { @class = "form-control", id = "EventPollingInterval" })
+                        @Html.ValidationMessageFor(model => model.EventPollingInterval)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+
+                <td>
+                    <label for="TriggerPollingInterval">TriggerPollingInterval</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TriggerPollingInterval, new { @class = "form-control", id = "TriggerPollingInterval" })
+                        @Html.ValidationMessageFor(model => model.TriggerPollingInterval)
+                    </div>
+                </td>
+                <td>
+                    <label for="isActive">is Active</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isActive)
+                        @Html.ValidationMessageFor(model => model.isActive)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="Host">Host</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Host, new { @class = "form-control", id = "Host" })
+                        @Html.ValidationMessageFor(model => model.Host)
+                    </div>
+                </td>
+                <td>
+                    <label for="Port">Port</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Port, new { @class = "form-control", id = "Port" })
+                        @Html.ValidationMessageFor(model => model.Port)
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="LoaderType">Loader Type</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("LoaderType", (IEnumerable<SelectListItem>)ViewBag.LoaderList, new { @class = "form-control", style = "width:150px" })
+                    </div>
+
+
+                </td>
+
+                <td>
+                    <label for="BusinessLineId">Business Line Id</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("BusinessLineId", (IEnumerable<SelectListItem>)ViewBag.BussList, new { @class = "form-control", style = "width:310px" })
+                    </div>
+                </td>
+
+            </tr>
+
+
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+
+

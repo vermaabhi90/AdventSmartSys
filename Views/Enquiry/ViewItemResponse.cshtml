@@ -1,0 +1,86 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryRespModel
+
+<style type="text/css">
+    .modal-content {
+        width: 400px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #D8F6CE;
+    }
+
+    .webgrid-header {
+        background-color: #FBEFFB;
+        font-weight: bold;
+        color: white;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #CEF6F5;
+    }
+
+    .webgrid-alt {
+        background-color: #CEF6F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+@{
+    ViewBag.Title = "Enquiry Item Response";
+    var CommentsList = new WebGrid(source: Model.lstEnquiryResponse, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridAdressDetail");
+
+}
+
+@if (Model.lstEnquiryResponse.Count > 0)
+{
+    <div id="gridEvent">
+        @CommentsList.GetHtml(
+                                         tableStyle: "webgrid",
+                                        alternatingRowStyle: "webgrid-alt",
+                                        headerStyle: "webgrid-header",
+                                        selectedRowStyle: "webgrid-select",
+                                        mode: WebGridPagerModes.All,
+                                        firstText: "<<First",
+                                        previousText: "<Previous",
+                                        nextText: ">Next",
+                                        lastText: ">>Last",
+                                        columns: new[]{
+                                             CommentsList.Column("ResponseId","Response Id"),
+                                          CommentsList.Column("ItemName","Item Name"),
+                                          CommentsList.Column("VendorName","Vendor Name"),
+                                          CommentsList.Column("StatusStr","Status"),
+                                            CommentsList.Column("CreatedBy","Created By"),
+                                              CommentsList.Column("CreatedDate","Created Date"),
+                                            CommentsList.Column("Complete Status", format: (items) => @Html.Raw((string)items.TempStatusStr)),
+
+                                     })
+    </div>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        <label>Sorry! There is No Information about Enquiry Item  Response Details !!!</label>
+    </div>
+
+}

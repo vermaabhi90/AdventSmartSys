@@ -1,0 +1,106 @@
+﻿@model SmartSys.BL.DW.VendorBankDetailModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var AccountNo = $('#AccountNo').val();
+            var BankName = $('#BankName').val();
+            var Limit = $('#Limit').val();
+            if (AccountNo.toString() == "") {
+                alert("Please Enter Account Number ");
+                return false;
+            }
+            if (BankName.toString() == "") {
+                alert("Please Enter Bank Name ");
+                return false;
+            }           
+            if (Limit.toString() == "") {
+                alert("Please Enter Bank Limit or Limit is not correct Format");
+                return false;
+            }           
+            $("#BankDetail").unbind('submit').submit();
+        });
+    });
+</script>
+
+@if (Model.NewAccountNo == "New Entry")
+{
+    <div class="page-header glyphicon glyphicon-pencil  text-info ">
+        Create Bank Information
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-pencil  text-info ">
+        Edit Bank Information
+    </div>
+}
+
+@using (Html.BeginForm("CreateVendorBankDetails", "DWVendor", FormMethod.Post, new { Id = "BankDetail" }))
+{
+    <html>
+    <head>
+        <title>WebgridSample</title>
+        <style type="text/css">
+            .modal-content {
+                width: 1000px !important;
+                margin: 30px auto !important;
+                left: 50%;
+         transform: translateX(-50%);
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td align="center">
+                        <label for="AccountNo">Account No</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.AccountNo, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.AccountNo, "", new { id = "AccountNo", @class = "text-danger" })
+                            @Html.HiddenFor(model => model.VendorId)
+                            @Html.HiddenFor(model => model.NewAccountNo)
+                        </div>
+
+                    </td>
+                    <td align="center">
+                        <label for="BankName">Bank Name</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.BankName, new  { @class= "form-control"})
+                            @Html.ValidationMessageFor(model => model.BankName, "", new { id = "BankName", @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="Limit">Limit</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.TextBoxFor(model => model.Limit, new { @type = "number",  @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Limit, "", new { id = "Limit", @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                     <button type="submit" class="save btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+

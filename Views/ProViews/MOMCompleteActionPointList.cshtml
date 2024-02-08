@@ -1,0 +1,80 @@
+﻿@model IEnumerable<SmartSys.BL.ProViews.PendingMOMActions>
+
+@{
+    ViewBag.Title = "GetLibraryList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    MOM Complete Action List
+</div>
+
+<div id="Grid"></div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.ProViews.PendingMOMActions>("MOMPendingAction")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                      {
+                          items.AddTool(ToolBarItems.ExcelExport);
+                      }))
+                       .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelPendingMOMCompleteActionPoint")))
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+
+                      .EnableAltRow(true)
+                       //.ContextMenuSettings(contextMenu =>
+                       //{
+                       //    contextMenu.EnableContextMenu()
+                       //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+                       //        .CustomContextMenuItems(new List<string> { "Open MOM" });
+
+                       //})
+                       .ContextMenuSettings(contextMenu =>
+                       {
+                           contextMenu.EnableContextMenu();
+                           contextMenu.DisableDefaultItems();
+                           contextMenu.CustomContextMenuItems(c =>
+                           {
+                               c.AddItem("OpenMOM", "Open MOM");
+                           });
+
+                       })
+
+
+        .Columns(col =>
+        {
+            col.Field("ActionPointId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ActionDescription").HeaderText("Description").ValidationRules(v => v.AddRule("required", true)).Width(220).Add();
+            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("MOMId").HeaderText("MOMId").TextAlign(TextAlign.Left).Width(100).Visible(true).Add();
+            col.Field("AssignedBy").HeaderText("Assigned By").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Resource").HeaderText("Resource").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ModifiedByName").HeaderText("ModifiedBy").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(120).Add();
+
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+    )
+</div>
+
+<script type="text/javascript">
+    function contextclick(args) {
+        if (args.text == "Open MOM") {
+                var grid = $("#MOMPendingAction").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var MOMId = result[0]["MOMId"];
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + MOMId + "&tabIndex=" + 0
+                event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+</script>

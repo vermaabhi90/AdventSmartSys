@@ -1,0 +1,51 @@
+﻿@model IEnumerable<SmartSys.BL.TimeManagement.TMEquipmentModel>
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Equipment List
+</div>
+<br />
+
+
+@(Html.EJ().TreeGrid("TreeGridContainer")
+         .TreeColumnIndex(1)
+            .AllowColumnResize(true)
+            .ChildMapping("lstEquipment")
+            .TreeColumnIndex(2)
+            .IsResponsive(true)
+            .EnableCollapseAll(true)
+            .AllowSorting(true)
+            .AllowMultiSorting(true)
+            .ShowColumnChooser(true)
+            .AllowFiltering(true)
+
+          .Columns(co =>
+          {
+              co.Field("EquipmentId").Visible(true).HeaderText("Equipment Id").Width(100).EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("ParentEquipmentId").Visible(false).HeaderText("Parent Equipment Id").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("EquipmentName").HeaderText("Equipment Name").EditType(TreeGridEditingType.String).Add();
+              co.Field("Description").HeaderText("Description").Width(100).EditType(TreeGridEditingType.String).Add();
+              co.Field("TAM").HeaderText("TAM").Width(100).EditType(TreeGridEditingType.String).Add();
+              co.Field("Rate").Format("{0:N4}").HeaderText("Customer Cost").Width(100).EditType(TreeGridEditingType.String).Add();
+              co.Field("CustomerPotential").Width(110).Visible(true).HeaderText("Customer Potential").EditType(TreeGridEditingType.String).Add();
+              co.Field("AdventCost").Format("{0:N4}").Width(100).Visible(true).HeaderText("Advent Cost").EditType(TreeGridEditingType.String).Add();
+              co.Field("AdventPotential").Width(110).Visible(true).HeaderText("Advent Potential").EditType(TreeGridEditingType.String).Add();
+              co.Field("CurrencyCodes").HeaderText("Currency Codes").EditType(TreeGridEditingType.String).Add();
+
+          }
+          )
+                           .ClientSideEvents(cv => cv.ContextMenuOpen("contextMenuOpen"))
+                           .SizeSettings(ss => ss.Width("100%").Height("450px"))
+                  .ContextMenuSettings(cms => cms.ShowContextMenu(true)
+                                       .ContextMenuItems(new List<TreeGridContextMenuItems>() {
+              TreeGridContextMenuItems.Add
+          }))
+
+                  .SizeSettings(ss => ss.Width("100%").Height("350px"))
+                  .EnableResize(true)
+                  .EditSettings(e => e.AllowAdding(false))
+                  .Datasource(ViewBag.EquipmentItems)
+
+)
+@Html.EJ().ScriptManager()

@@ -1,0 +1,61 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.PreliminaryQuotationModel>
+
+@{
+    ViewBag.Title = "GetPreliminaryQuotList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Preliminary Quotation List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.PreliminaryQuotationModel>("grdPreliminaryQuotList")
+                .Datasource((IEnumerable<object>)Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+                  .ContextMenuSettings(contextMenu =>
+                  {
+                      contextMenu.EnableContextMenu();
+                      contextMenu.DisableDefaultItems();
+                      contextMenu.CustomContextMenuItems(c =>
+                      {
+                          c.AddItem("Quotation_View", "Quotation Detail");
+                      });
+
+                  })
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("PreQuotId").HeaderText("ID").Visible(true).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("PreQuotNumber").HeaderText("Quot Number").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EnqId").HeaderText("Enq Id").Visible(true).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("QuotDate").HeaderText("Quotation Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("Terms").HeaderText("Terms").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(200).Add();        
+            col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CompCode").HeaderText("Company").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("StatusId").HeaderText("StatusId").Visible(false).TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+        })
+    )
+</div>
+<script>
+    function contextclick(args) {
+        if (args.text == "Quotation Detail") {
+            var grid = $("#grdPreliminaryQuotList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var PreQuotId = result[0]["PreQuotId"];
+            var path = '@Url.Content("~/Enquiry/PreQuotDetail")' + "?PreQuotId=" + PreQuotId
+            event.preventDefault();
+            window.location.replace(path);
+        }        
+    }
+</script>

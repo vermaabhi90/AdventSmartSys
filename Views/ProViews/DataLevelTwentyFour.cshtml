@@ -1,0 +1,63 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwentyFour
+
+@{
+    ViewBag.Title = "DataLevelTwentyFour";
+}
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+    <tr class="spaceUnder">
+        <td>
+            <label>Item Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ItemName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>COO:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.COO, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>PO_No:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.PO_No, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Invoice Amount:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.InvoiceAmount, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>CreatedBy:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Created Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("CreatedDate").Value(Model.CreatedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+        <td>
+            <label>Time Taken(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()
+

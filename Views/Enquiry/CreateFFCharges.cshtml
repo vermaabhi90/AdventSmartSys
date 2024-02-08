@@ -1,0 +1,223 @@
+﻿@model SmartSys.BL.Enquiry.ReceiptModel
+@if (Model.ReceiptId == 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Freight Forwarder Charges
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Freight Forwarder Charges
+    </div>
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if(@Model.ReceiptId >0)
+        {
+            $("#AirwaysReceiptId").val(@Model.ReceiptId);
+            $("#FFW").val(@Model.FreightForwarderId);
+            $("#FFRef").val('@Model.FFRef_No');
+        }
+        $("#FFW").change(function (e) {
+            $("#AirwaysReceiptId").empty();
+            var newOption = $('<option value="0">Please Select Receipt</option>');
+
+            $('#AirwaysReceiptId').append(newOption);
+            var FFId = $("#FFW").val();
+            var path = '@Url.Action("GetAirWaysRecieptList")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { FFId: FFId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, Fw) {
+                        $("#AirwaysReceiptId").append('<option value="' + Fw.Value + '">' +
+                             Fw.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Receipt.' + ex);
+                }
+            });
+            return false;
+        })
+        $("#AirwaysReceiptId").change(function (e) {
+
+            var FFId = $("#AirwaysReceiptId").val();
+            var FFIdTxt =  $("#AirwaysReceiptId option:selected").text();
+
+            $("#ReceiptId").val(FFId);
+            $("#FFRef").val(FFIdTxt);
+
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var FreightInvNo = $('#FreightInvNo').val();
+            var FreightInvDate = $('#FreightInvDate').val();
+            var FrieghtInvReceivedDate = $('#FrieghtInvReceivedDate').val();
+
+
+            if (FreightInvNo.toString() == "") {
+                alert("Please Enter Freight Invoice No ");
+                return false;
+            }
+            if (FreightInvDate.toString() == "") {
+                alert("Please select Freight Inv Date");
+                return false;
+            }
+            if (FrieghtInvReceivedDate.toString() == "") {
+                alert("Please Enter  Frieght Inv Received Date ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+
+@using (Html.BeginForm("CreateFFCharges", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("FFId", (IEnumerable<SelectListItem>)ViewBag.FFDrp, "Select Freight Forwarder", new { @class = "form-control", id = "FFW" })
+
+                </div>
+            </td>
+           
+            @if (Model.ReceiptId == 0)
+            {
+                <td>
+                    <label>Freight Reference</label>
+                </td>
+
+                <td>
+                    <div class="">
+
+                        @Html.DropDownList("FFRef", new SelectList(string.Empty, "Value", "Text"), "Please select Reference", new { style = "width:175px", @class = "form-control dropdown1", id = "AirwaysReceiptId" })
+                    </div>
+                </td>
+                <td>
+                    <a id="link7" class="glyphicon glyphicon-info-sign"></a>
+                    @Html.EJ().Tooltip("link7").Content("This Dropdown Contain Freight Forwarder References.")
+                </td>
+            }
+        </tr>
+        <tr>
+            <td>
+                <label>Receipt Id</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReceiptId, new { id = "ReceiptId", @style = "max-width:100px", @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>FFRefId</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("FFRef", "", new { id = "FFRef", @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+
+            <td>
+                <label>Freight Inv No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.FreightInvNo, new { id = "FreightInvNo", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Inv Date</label>
+            </td>
+            <td>
+                @if (Model.ReceiptId > 0)
+                {
+                    <div class="">
+
+                        @Html.EJ().DatePicker("FreightInvDate").DateFormat("MM/dd/yyyy").Value(Model.FreightInvDate)
+                    </div>
+                }
+                else
+                {
+                    <div class="">
+
+                        @Html.EJ().DatePicker("FreightInvDate").DateFormat("MM/dd/yyyy")
+                    </div>
+                }
+            </td>
+
+            <td>
+                <label>Inv Received Date</label>
+            </td>
+            <td>
+                @if (Model.ReceiptId > 0)
+                {
+                    <div class="">
+                        @Html.EJ().DatePicker("FrieghtInvReceivedDate").DateFormat("MM/dd/yyyy").Value(Model.FrieghtInvReceivedDate)
+                    </div>
+                }
+                else
+                {
+                    <div class="">
+                        @Html.EJ().DatePicker("FrieghtInvReceivedDate").DateFormat("MM/dd/yyyy")
+                    </div>
+                }
+            </td>
+        </tr>
+
+
+
+        <tr>
+            <td>
+                <label>Amount:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Amount, new { id = "Amount", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+               
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'FFChargesList';" );"> Back</button>
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+            </td>
+
+        </tr>
+
+    </table>
+}

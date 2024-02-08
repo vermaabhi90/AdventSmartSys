@@ -1,0 +1,310 @@
+﻿
+@model  SmartSys.BL.Project.TaskDetails
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+
+<script type="text/javascript">
+    function minmax(value, min, max) {
+        if (parseInt(value) < min || isNaN(value))
+            return 0;
+        else if (parseInt(value) > max)
+            return 100;
+        else return value;
+    }
+
+    $(document).ready(function () {
+        $('#StatusDetail').change(function (event) {
+            var ddlValue = $('#StatusDetail').val();
+            var PercentCom = $('#txtPerComp').val();
+            if (ddlValue.toString() == "30") {
+                $('#txtPerComp').val(100);
+            }
+            if (ddlValue == 29) {
+                if (PercentCom == 100) {
+                    $('#txtPerComp').val(99);
+                }
+            }
+        });
+
+    });
+</script>
+
+
+@if (Model.TaskID > 0)
+{
+    if (Model.TskType == "Risk")
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+            Edit Risk Task
+        </div>
+    }
+    else
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+            Edit Case Task
+        </div>
+    }
+
+}
+else
+{
+    if (Model.Type == "Risk")
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Create Risk Task
+        </div>
+    }
+    else
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Create Case Task
+        </div>
+    }
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("RiskManageMent", "ProjectCenter", FormMethod.Post, new { Id = "Risk" }))
+{
+    <html>
+    <body>
+
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label style="color:red" class="glyphicon glyphicon-book  text-info">Project Name:</label>
+
+                </td>
+                <td>
+                    <label class="glyphicon  text-info">&nbsp; @Model.ProjectName</label>
+                </td>
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    @if (Model.Type == "RISK")
+                    {
+                        <label for="ItemName">Risk Title:</label>
+                    }
+                    else
+                    {
+                        <label for="ItemName">Case Title:</label>
+                    }
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.Type)
+                        @Html.HiddenFor(model => model.ProjectId)
+                        @Html.HiddenFor(model => model.CommentId)
+                        @Html.HiddenFor(model => model.TaskID)
+                        @Html.TextBoxFor(model => model.TaskName, new { @class = "form-control", id = "TaskName", @readonly = "" })
+                        @Html.ValidationMessageFor(model => model.TaskName)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="ItemName">Start Date:</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", id = "", @readonly = "" })
+
+                    </div>
+                </td>
+
+                <td>
+                    <label for="ItemName">End Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", id = "", @readonly = "" })
+
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="ItemName">Status:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Status, new { @class = "form-control", id = "EndDate", @readonly = "" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="ItemName">Percent Complete:</label>
+                </td>
+                <td>
+                    <input type="number" name="txtPerComp" id="txtPerComp" min="0" value="@Model.Progress" max="100" maxlength="5" class="form-control" onkeyup="this.value = minmax(this.value, 0, 100)" readonly />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="">Vendor:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ProjVendorName, new { @class = "form-control", id = "EndDate", @readonly = "" })
+                    </div>
+                </td>
+                <td>
+                    <label for="">Customer:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ProjCustomerName, new { @class = "form-control", id = "EndDate", @readonly = "" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label for="ItemName">Resources:</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.TextAreaFor(model => model.Resources, new { @class = "form-control", id = "", Style = "width:450px;", @readonly = "" })
+
+                        @Html.ValidationMessageFor(model => model.ResourceID)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ItemName">Description:</label>
+                </td>
+                <td>
+                    @if (Model.Statuscode == 24)
+                    {
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Description, new { @readonly = true, @style = "Width: 970Px; max-width: 1000px;", @class = "form-control" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Description, new { @style = "Width: 980Px; max-width: 1000px;", @class = "form-control", @readonly = "" })
+                        </div>
+                    }
+                    @Html.ValidationMessageFor(model => model.Description)
+                </td>
+            </tr>
+        </table>
+
+
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+
+                <td style="margin-left:25px">
+                    <button type="button" id="CommentLst" class="btn-xs  glyphicon glyphicon-arrow-down CommentList "> CommentList</button>
+                </td>
+
+                <td>
+                    <button type="button" id="AttacLst" class="btn-xs  glyphicon glyphicon-arrow-down Attachment "> AttachMent</button>
+                </td>
+
+            </tr>
+
+        </table>
+
+        <div id="cmtDetail">
+
+            @if (Model.LstCommentList.Count > 0)
+            {
+                <div id="gridEvent">
+                    @(Html.EJ().Grid<SmartSys.BL.Project.MOMActionPoint>("grdCommentList")
+                        .Datasource(Model.LstCommentList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(10); })
+
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("Comments").HeaderText("Comment").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(160).Add();
+                            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Center).Width(150).Add();
+                            col.Field("CommentedBy").HeaderText("Commented By").Width(180).Add();
+                            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+                        })
+                    )
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <label>Sorry! There is No Information about Comments !!!</label>
+                </div>
+            }
+        </div>
+
+        <div id="AtchDetail" style="display:none">
+            @if (Model.LstProjectTaskDoc.Count > 0)
+            {
+                <div id="gridEvent1">
+                    @(Html.EJ().Grid<SmartSys.BL.Project.MOMActionPoint>("grdAttacList")
+                        .Datasource(Model.LstProjectTaskDoc)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(10); })
+
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("FileName").HeaderText("FileName").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(260).Add();
+                            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(150).Add();
+                            col.Field("ModifiedBy").HeaderText("Modified By").Width(180).Add();
+                            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+                            col.Field("ModifiedBy").Template("#FileOp").HeaderText("Modified By").Width(180).Add();
+                        })
+                    )
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <label>Sorry! There is No Information about Attacment. !!!</label>
+                </div>
+            }
+        </div>
+
+
+
+    </body>
+</html>
+}
+
+<br />
+<script id="FileOp" type="text/x-jsrender">
+    <a class="btn-xs btn-success  glyphicon glyphicon-download" href="/ProjectCenter/PrjectDocDownload?TaskID=@Model.TaskID&amp;ProjectId=@Model.ProjectId&amp;Filename={{:FileName}}"> Download </a>
+</script>
+<script>
+    $(document).ready(function () {
+        $('#AttacLst').click(function (e) {
+            $('#AtchDetail').show();
+            $('#cmtDetail').hide();
+        })
+        $('#CommentLst').click(function (e) {
+            $('#AtchDetail').hide();
+            $('#cmtDetail').show();
+        })
+    })
+</script>
+@Html.EJ().ScriptManager()

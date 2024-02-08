@@ -1,0 +1,470 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Vendor Response List
+</div>
+
+
+<script>
+
+    function checkPass() {
+        var pass1 = document.getElementById("SRate");
+      
+
+        var pass1 =  $('#ConvertedRate').val();
+        var pass2 =$('#Rate').val();
+        var BGC = document.getElementById('Rate');
+        var message = document.getElementById('confirmMessage');
+        var Warning = "#FFA500";
+        var badColor = "#ff6666";
+        if (+pass1 == +pass2)
+        {
+            BGC.style.backgroundColor = Warning;
+          //  pass1.style.backgroundColor = Warning;
+            message.style.color = Warning; 
+
+            message.innerHTML = "Supplier Rate & Prossessed Rate Are Same"
+        }
+        else
+            if(+pass2 < +pass1)
+            {
+              
+                BGC.style.backgroundColor = badColor;
+                message.innerHTML = "Prossessed Rate are Less Than Supplier Rate"
+            }
+            else
+                if(+pass1 < +pass2)
+                {
+                    BGC.style.backgroundColor = "";
+                    message.innerHTML = ""
+                }
+          }
+</script>
+<div>
+    
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("grdVendrespLst")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                                        //.ContextMenuSettings(contextMenu =>
+                                        //{
+                                        //    contextMenu.EnableContextMenu()
+                                        //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+                                        //    .CustomContextMenuItems(new List<string> { "Process Response" });
+                                        //})
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Process_Response", "Process Response");
+
+                                            });
+
+                                        })
+                                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("ResponseId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Visible(false).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("BrandId").HeaderText("BrandId").Visible(false).Width(100).Add();
+            col.Field("Currency").HeaderText("Currency").Width(80).Add();
+            col.Field("QuotCurrency").HeaderText("QuotCurrency").Width(80).Visible(false).Add();
+            col.Field("BrandName").HeaderText("Brand Name").Width(80).Add();
+            col.Field("Rate").HeaderText("Vendor Rate").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CRate").HeaderText("Rate").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("MinimumQty").HeaderText("MinimumQty").Width(70).Add();
+            col.Field("Amount").HeaderText("Amount").Width(60).Add();
+            //  col.Field("BatchNumber").HeaderText("Batch Number").Width(50).Add();
+            col.Field("StrVendorPromiseDate").HeaderText("Vendor Promise Date").Width(70).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                    )
+                </div>
+
+</div>
+<br>
+<table>
+    <tr>
+        <td>                    
+            @Html.ActionLink(" Back", "PrepareQuotation", new { EnqId = ViewBag.EnqId , QuotId = ViewBag.QuotId }, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })           
+        </td>
+
+
+    </tr>
+
+</table>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Process Response") {
+
+            var tempData = args.text;
+            $("#dialogIcon").ejDialog("open");
+            var grid = $("#grdVendrespLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ItemId = result[0]["ItemId"];
+            var BrandName = result[0]["BrandName"];
+            var ItemName = result[0]["ItemName"];
+            var ResponseId = result[0]["ResponseId"];
+            var BrandId = result[0]["BrandId"];
+            var Rate = result[0]["Rate"];
+            var CRate = result[0]["CRate"];
+            var Currency = result[0]["Currency"];
+            var QuotCurrency = result[0]["QuotCurrency"];
+            var MinimumQty = result[0]["MinimumQty"];
+          
+            var BatchNumber = result[0]["BatchNumber"];
+            var StrVendorPromiseDate = result[0]["StrVendorPromiseDate"];
+            $('#ResponseId').val(ResponseId);
+            $('#BrandName').val(BrandName);
+            $('#Currency').val(Currency);
+            $('#ItemName').val(ItemName);
+            $('#ToCurrency').val(QuotCurrency);
+            
+            
+            $('#SRate').val(Rate);
+            if(CRate == "")
+            {               
+                $('#Rate').val(Rate);
+            }
+            else
+            {               
+                $('#Rate').val(CRate);
+            }
+            $('#MinimumQty').val(MinimumQty);
+            $('#BatchNumber').val(BatchNumber);
+            $('#ItemId').val(ItemId);
+            $('#BrandId').val(BrandId);
+            $('#StrVendorPromiseDate').val(StrVendorPromiseDate);
+                  var Toccy = $("#ToCurrency").val();
+                var FromCCy = $("#Currency").val();
+                var Amount = $("#SRate").val();
+                document.getElementById('Curncy').innerHTML = "In  " +Toccy;
+             
+                var path = '@Url.Action("GetExchangeRate")';
+                $.ajax({
+                    type: 'POST',
+                    url: path, // we are calling json method
+
+
+                    dataType: 'json',
+
+                    data: { Toccy: Toccy,FromCCy : FromCCy,Amount:Amount},
+
+                    success: function (Amount) {
+                        if(Amount ==0)
+                        {
+                            alert("Please Select Currency For Quotation and Then Proceed");
+                        }
+                       $("#ConvertedRate").val(Amount);
+                        
+                    },
+
+                    error: function (ex) {
+
+                    }
+                });
+                return false;
+           
+
+           // var path = '@Url.Content("~/Enquiry/EditResponse")' + "?ItemId=" + ItemId + "&ResponseId=" + ResponseId + "&BrandId=" + BrandId + "&Rate=" + Rate + "&MinimumQty=" + MinimumQty
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Cancel').click(function () {
+            $("#dialogIcon").ejDialog("close");
+        })
+    })
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var badColor = "#FFA500";
+        var BGC = document.getElementById('Rate');
+        BGC.style.backgroundColor = badColor;
+        $('#Save').click(function () {
+            var ResponseId = $('#ResponseId').val();
+            var ItemId = $('#ItemId').val();
+            var BrandId = $('#BrandId').val();
+            var Rate = $('#Rate').val();
+            //   var CustomerId = ViewBag.CustomerId;
+            var EnqId = @ViewBag.EnqId;
+            var QuotId = @ViewBag.QuotId;          
+            var StrVendorPromiseDate = $('#StrVendorPromiseDate').val();
+            var MinimumQty = $("#MinimumQty").val();
+            if(MinimumQty =="")
+            {
+                alert("Please Enter Quantity");
+                return false;
+            }
+            var Remark = $('#Remark').val();
+
+            var BatchNumber = $("#BatchNumber").val();
+            var SRate =$('#SRate').val();
+
+            if(Rate < SRate)
+            {
+                var badColor = "#ff6666";
+                var BGC = document.getElementById('Rate');
+                BGC.style.backgroundColor = badColor;
+            }
+            //if(+MinimumQty < +BatchNumber)
+            //{
+            //    alert("Quantity Never Less Than BatchNumber");
+            //    return false;
+            //}
+            if (MinimumQty % BatchNumber != 0) {
+                var multiple = BatchNumber* 2;
+                var Multiple2 = BatchNumber *3 ;
+                //  alert("Quntity Should be Multiple OF Batch Size like "+' : '+BatchSize +' , '+ multiple + ' , ' +Multiple2  +'........');
+                // return false;
+            }
+            if(Remark =="")
+            {
+                alert("Please Enter Remark");
+                return false;
+            }
+            var path = '@Url.Content("~/Enquiry/SaveResponse")' + "?ItemId=" + ItemId + "&ResponseId=" + ResponseId + "&BrandId=" + BrandId + "&Rate=" + Rate + "&MinimumQty=" + MinimumQty + "&EnqId=" + EnqId  + "&Remark=" + Remark +"&QuotId=" + @ViewBag.QuotId;           
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@{Html.EJ().Dialog("dialogIcon").Title("Add Customer").ContentTemplate(@<div>
+            <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Add Customer
+            </div>
+           
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+
+                    <td width="80px">
+                        <label>
+                            Response Id:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="ResponseId" class="form-control" readonly  />
+                            <input type="text" id="ItemId" class="form-control" readonly style="display:none" />
+                            <input type="text" id="BrandId" class="form-control" readonly style="display:none" />
+                        </div>
+                    </td>
+
+                    <td>
+                        <label>
+                            Brand Name:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="BrandName" class="form-control" readonly  />
+                        </div>
+                    </td>
+
+                    <td>
+                        <label>
+                            Item Name:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                           <input type="text" id="ItemName" class="form-control" readonly  style="width:400px" />
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Rate">Quot Currency</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="ToCurrency" class="form-control" readonly style="width:70px" />
+                          
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label>
+                         Supplier Rate:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="SRate" class="form-control" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <label id="Curncy">
+                            Supplier Rate in <span id=""></span>
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="ConvertedRate" class="form-control" readonly />
+                        </div>
+                    </td>
+                    <td>
+                        <label>
+                             Rate:
+                        </label>
+                    </td>
+                    <td>
+                        @Html.TextBox("Rate","", new { id = "Rate", @onkeyup = "checkPass();",@class="form-control" })
+                       <span id="confirmMessage" class="confirmMessage"></span>
+                    </td>
+                
+                 
+                </tr>
+                <tr>
+                    <td>
+                        <label>
+                            Vendor PromiseDate:
+                        </label>
+                    </td>
+                    <td>
+                        <div class=" ">
+                            <input type="text" id="StrVendorPromiseDate" class="form-control" readonly  />
+                      
+                        </div>
+                    </td>
+                    <td>
+                        <label>
+                            Vendor Currency:
+                        </label>
+                    </td>
+                   
+                    <td>
+                        <div class="">
+                            @Html.TextBox("Currency", "", new { Id = "Currency", @class = "form-control", @style = "", @readonly =""})
+
+                        </div>
+                    </td>
+                    <td>
+                        <label>
+                            Quantity:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="MinimumQty" class="form-control" />
+                        </div>
+                    </td>
+                    @*<td>
+                        <label>
+                            Batch Number:
+                        </label>
+                    </td>
+                    <td>
+                        <div class=" ">
+                            <input type="text" id="BatchNumber" class="form-control " readonly />
+
+                        </div>
+                    </td>*@
+                </tr>
+                </table>
+            <table style="margin-left:15px">
+                <tr>
+                    <td>
+                        <label>
+                            Remark:
+                        </label>
+                    </td>
+                    <td width="32px"></td>
+                    <td >
+                        <div class="">
+                            @Html.TextArea("Remark", new { Id = "Remark", @class = "form-control", @style = "min-width:500px" })
+
+                        </div>
+                    </td>
+                   
+                </tr>
+
+            </table>
+            <br />
+            <table style="margin-left:100px">
+                <tr>
+                    <td>
+                        <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " id="Save"> Save</button>
+                    </td>
+                    <td style="width:50px"></td>
+            
+                   
+                </tr>
+            </table>
+     
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+} 
+
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $("#ToCurrency").change(function (e) {
+                var Toccy = $("#ToCurrency").val();
+                var FromCCy = $("#Currency").val();
+                var Amount = $("#SRate").val();
+                document.getElementById('Curncy').innerHTML = "In  " +Toccy;
+             
+                var path = '@Url.Action("GetExchangeRate")';
+                $.ajax({
+                    type: 'POST',
+                    url: path, // we are calling json method
+
+
+                    dataType: 'json',
+
+                    data: { Toccy: Toccy,FromCCy : FromCCy,Amount:Amount},
+
+                    success: function (Amount) {
+                       $("#ConvertedRate").val(Amount);
+                        
+                    },
+
+                    error: function (ex) {
+
+                    }
+                });
+                return false;
+            })
+         
+        });
+    </script>

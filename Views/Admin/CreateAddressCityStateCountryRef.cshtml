@@ -1,0 +1,717 @@
+﻿@model SmartSys.BL.ContyStateCityModel
+
+@{
+    ViewBag.Title = "CreateAddressCityStateCountryRef";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create Country  State City
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+
+            var Country = $('#Country').val();
+            var State = $('#State').val();
+            var City = $('#City').val();
+
+            if (Country.toString() == "") {
+                alert("Please Enter Country");
+                return false;
+            }
+
+            if (State.toString() == "") {
+                alert("Please Enter State");
+                return false;
+            }
+            if (City.toString() == "") {
+                alert("Please Enter City");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#CityCountry").change(function (e) {
+
+            $("#CityState").empty();
+            var newOption = $('<option value="0">Please Select State</option>');
+
+            $('#CityState').append(newOption);
+
+
+            var CityCountry = $("#CityCountry").val();
+
+            var path = '@Url.Action("GetStateListDetails")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { Countryid: CityCountry,Stateid:0 },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, state) {
+                        $("#CityState").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+            $(document).ready(function () {
+
+                $('#Addcountry').click(function () {
+
+
+                    var str = $('#Countrymodel').val();
+                     var Country=  str.trim();
+                    if (Country.toString() == "") {
+                        alert("Please Enter Country");
+                        return false;
+                    }
+
+                    var Addvalue = "Country";
+                    var State = "";
+                    var City = "";
+                    var url = '@Url.Action("AddCountryStateCity", "Admin")';
+                    var data = { Country: Country, Addvalue: Addvalue, State: State, City: City };
+                    $.post(url, data, function (result) {
+
+                    });
+
+                });
+            });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Addstate').click(function () {
+
+
+
+            var Country = $('#StateCountry').val();
+            var str = $('#StateModel').val();
+            var State = str.trim();
+
+            var country = Country.trim();
+            var City = "";
+            if (country.toString() == "") {
+                alert("Please Enter Country");
+                return false;
+            }
+            if (State.toString() == "") {
+                alert("Please Enter State");
+                return false;
+            }
+
+            var Addvalue = "State";
+            var url = '@Url.Action("AddCountryStateCity", "Admin")';
+            var data = { Country: Country, Addvalue: Addvalue, State: State, City: City };
+            $.post(url, data, function (result) {
+
+            });
+
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#AddCity').click(function () {
+
+
+            var Country = "";
+            var Country = $('#CityCountry').val();
+            var State = $('#CityState').val();
+
+            var str = $('#CityModel').val();
+            var City = str.trim();
+            var statev = State.trim();
+            var country = Country.trim();
+            var Addvalue = "City";
+            if (country.toString() == "") {
+                alert("Please Enter Country");
+                return false;
+            }
+
+            if (State.toString() == "0") {
+
+                alert("Please Enter State");
+                return false;
+            }
+            if (City.toString() == "") {
+                alert("Please Enter City");
+                return false;
+            }
+            var url = '@Url.Action("AddCountryStateCity", "Admin")';
+            var data = { Country: Country, Addvalue: Addvalue, State: State, City: City };
+            $.post(url, data, function (result) {
+
+            });
+
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#AreaRegion").change(function (e) {
+
+            $("#AreaZone").empty();
+            var newOption = $('<option value="0">Please Select Zone</option>');
+
+            $('#AreaZone').append(newOption);
+
+
+            var AreaRegion = $("#AreaRegion").val();
+
+            var path = '@Url.Action("GetZoneListDetails")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { Regionid: AreaRegion, Zoneid: 0 },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, zone) {
+                        $("#AreaZone").append('<option value="' + zone.Value + '">' +
+                             zone.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Zones.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Addregion').click(function () {
+
+
+            var str = $('#Regionmodel').val();
+            var Region = str.trim();
+            if (Region.toString() == "") {
+                alert("Please Enter Region");
+                return false;
+            }
+
+            var Addvalue = "Region";
+            var Zone = "";
+            var Area = "";
+            var url = '@Url.Action("AddRegionZoneArea", "Admin")';
+            var data = { Region: Region, Addvalue: Addvalue, Zone: Zone, Area: Area };
+            $.post(url, data, function (result) {
+
+            });
+
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#Addzone').click(function () {
+
+
+            var Region = $('#ZoneRegion').val();
+            var str = $('#ZoneModel').val();
+            var Zone = str.trim();
+
+            var Region = Region.trim();
+            var Area = "";
+            if (Region.toString() == "") {
+                alert("Please Select Region");
+                return false;
+            }
+            if (Zone.toString() == "") {
+                alert("Please Enter Zone");
+                return false;
+            }
+
+            var Addvalue = "Zone";
+            var url = '@Url.Action("AddRegionZoneArea", "Admin")';
+            var data = { Region: Region, Addvalue: Addvalue, Zone: Zone, Area: Area };
+            $.post(url, data, function (result) {
+
+            });
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#AddArea').click(function () {
+
+
+            var Region = "";
+            var Region = $('#AreaRegion').val();
+            var Zone = $('#AreaZone').val();
+
+            var str = $('#AreaModel').val();
+            var Area = str.trim();
+            var areav = Zone.trim();
+            var Region = Region.trim();
+            var Addvalue = "Area";
+            if (Region.toString() == "") {
+                alert("Please Select Region");
+                return false;
+            }
+
+            if (Zone.toString() == "0") {
+
+                alert("Please Select Zone");
+                return false;
+            }
+            if (Area.toString() == "") {
+                alert("Please Enter Area");
+                return false;
+            }
+            var url = '@Url.Action("AddRegionZoneArea", "Admin")';
+            var data = { Region: Region, Addvalue: Addvalue, Zone: Zone, Area: Area };
+            $.post(url, data, function (result) {
+
+            });
+
+        });
+    });
+</script>
+
+<br>
+<br>
+@using (Html.BeginForm("CreateAddressCityStateCountryRef", "Admin", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+            {
+            data.Add().ID("Country").Text("Add Country").ContentTemplate(
+                @<div>
+                    <table>
+                        <tr>
+                            <td style="width:135px">
+                                <label>Country</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.TextBoxFor(model => model.Country, new { @class = "form-control", id = "Countrymodel" })
+                                    @Html.ValidationMessageFor(model => model.Country)
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-dismiss="modal" id="Addcountry" onclick="window.location.reload()">Add Country</button>
+                            </td>
+                        </tr>
+                        <tr></tr>
+                    </table>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.AddCountryModel>("grdcountryList")
+   .Datasource((IEnumerable<object>)@Model.LstCountry)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("CountryId").HeaderText("CountryId").IsPrimaryKey(true).Width(60).TextAlign(TextAlign.Center).Add();
+       col.Field("CountryName").HeaderText("CountryName").Width(60).TextAlign(TextAlign.Center).Add();
+       col.HeaderText("Remove").TemplateID("#RemoveCountry").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+   })
+                        )
+                    </div>
+                </div>);
+            data.Add().ID("State").Text("Add State").ContentTemplate(
+                @<div>
+                    <table>
+
+                        <tr>
+                            <td style="width:135px">
+                                <label>Country</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.DropDownList("Countryid", (IEnumerable<SelectListItem>)ViewBag.cntrys, "Please Select Country", new { id = "StateCountry", style = "width:310px", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Country)
+                                </div>
+                            </td>
+
+                            <td style="width:135px">
+                                <label>State</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", id = "StateModel" } })
+                                    @Html.ValidationMessageFor(model => model.State)
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-dismiss="modal" id="Addstate" onclick="window.location.reload()">Add State</button>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.AddStateModel>("grdstateList")
+   .Datasource((IEnumerable<object>)@Model.LstState)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("StateId").HeaderText("State Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(50).Add();
+       col.Field("CountryName").HeaderText("Country Name").TextAlign(TextAlign.Center).Width(50).Add();
+       col.Field("StateName").HeaderText("State Name").TextAlign(TextAlign.Center).Width(50).Add();
+       col.HeaderText("Remove").TemplateID("#RemoveState").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+   })
+                        )
+                    </div>
+                </div>);
+            data.Add().ID("City").Text("Add City").ContentTemplate(
+                @<div>
+                    <table>
+
+                        <tr>
+                            <td style="width:135px">
+                                <label>Country</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.DropDownList("Countryid", (IEnumerable<SelectListItem>)ViewBag.cntrys, "Please Select Country", new { id = "CityCountry", style = "width:310px", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Country)
+                                </div>
+                            </td>
+
+                            <td style="width:135px">
+                                <label>State</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.DropDownList("State", new SelectList(string.Empty, "Value", "Text"), "Please select State", new { style = "width:175px", @class = "form-control", id = "CityState" })
+
+                                    @Html.ValidationMessageFor(model => model.State)
+                                </div>
+                            </td>
+
+                            <td style="width:135px">
+                                <label>City</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", id = "CityModel" } })
+                                    @Html.ValidationMessageFor(model => model.City)
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-dismiss="modal" id="AddCity" onclick="window.location.reload()">Add City</button>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.AddCityModel>("grdCityList")
+   .Datasource((IEnumerable<object>)@Model.LstCity)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("CityId").HeaderText("City Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(50).Add();
+       col.Field("StateName").HeaderText("State Name").TextAlign(TextAlign.Center).Width(50).Add();
+       col.Field("CityName").HeaderText("CityName").TextAlign(TextAlign.Center).Width(50).Add();
+       col.HeaderText("Remove").TemplateID("#RemoveCity").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+   })
+                        )
+                    </div>
+                </div>);
+            data.Add().ID("Region").Text("Add Region").ContentTemplate(
+                @<div>
+                    <table>
+
+                        <tr>
+                            <td style="width:135px">
+                                <label>Region</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.TextBoxFor(model => model.Region, new { @class = "form-control", id = "Regionmodel" })
+                                    @Html.ValidationMessageFor(model => model.Region)
+                                </div>
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-dismiss="modal" id="Addregion" onclick="window.location.reload()">Add Region</button>
+                            </td>
+                        </tr>
+                        <tr></tr>
+                    </table>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.AddRegionModel>("grdRegionList")
+   .Datasource((IEnumerable<object>)@Model.LstRegion)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("RegionId").HeaderText("Region Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Add();
+       col.Field("RegionName").HeaderText("Region Name").TextAlign(TextAlign.Center).Add();
+       col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Add();
+       col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Add();
+
+   })
+                        )
+                    </div>
+                </div>);
+
+            data.Add().ID("Zone").Text("Add Zone").ContentTemplate(
+                @<div>
+                    <table>
+
+                        <tr>
+                            <td style="width:135px">
+                                <label>Region</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.DropDownList("Regionid", (IEnumerable<SelectListItem>)ViewBag.rntrys, "Please Select Region", new { id = "ZoneRegion", style = "width:310px", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Country)
+                                </div>
+                            </td>
+
+                            <td style="width:135px">
+                                <label>Zone</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.EditorFor(model => model.Zone, new { htmlAttributes = new { @class = "form-control", id = "ZoneModel" } })
+                                    @Html.ValidationMessageFor(model => model.Zone)
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-dismiss="modal" id="Addzone" onclick="window.location.reload()">Add Zone</button>
+                            </td>
+                        </tr>
+                    </table>
+
+
+                    @if (Model.LstZone.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.AddZoneModel>("grdZoneList")
+   .Datasource((IEnumerable<object>)@Model.LstZone)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("ZoneId").HeaderText("Zone Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Add();
+       col.Field("RegionName").HeaderText("Region Name").TextAlign(TextAlign.Center).Add();
+       col.Field("ZoneName").HeaderText("Zone Name").TextAlign(TextAlign.Center).Add();
+       col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Add();
+       col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Add();
+
+   })
+                            )
+                        </div>
+
+                    }
+
+                </div>);
+
+            data.Add().ID("Area").Text("Add Area").ContentTemplate(
+                @<div>
+                    <table>
+
+                        <tr>
+                            <td style="width:135px">
+                                <label>Region</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.DropDownList("Regionid", (IEnumerable<SelectListItem>)ViewBag.rntrys, "Please Select Region", new { id = "AreaRegion", style = "width:310px", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Country)
+                                </div>
+                            </td>
+
+                            <td style="width:135px">
+                                <label>Zone</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.DropDownList("Zone", new SelectList(string.Empty, "Value", "Text"), "Please select Zone", new { style = "width:175px", @class = "form-control", id = "AreaZone", @required = "required" })
+
+                                    @Html.ValidationMessageFor(model => model.State)
+                                </div>
+                            </td>
+
+                            <td style="width:135px">
+                                <label>Area</label>
+                            </td>
+
+                            <td style="width:220px">
+                                <div class="navbar-text">
+                                    @Html.EditorFor(model => model.Area, new { htmlAttributes = new { @class = "form-control", id = "AreaModel" } })
+                                    @Html.ValidationMessageFor(model => model.Area)
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-xs" data-dismiss="modal" id="AddArea" onclick="window.location.reload()">Add Area</button>
+                            </td>
+                        </tr>
+                    </table>
+                    @if (Model.LstArea.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.AddAreaModel>("grdAreaList")
+   .Datasource((IEnumerable<object>)@Model.LstArea)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("AreaId").HeaderText("Area Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Add();
+       col.Field("ZoneName").HeaderText("Zone Name").TextAlign(TextAlign.Center).Add();
+       col.Field("AreaName").HeaderText("Area Name").TextAlign(TextAlign.Center).Add();
+       col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Add();
+       col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Add();
+
+   })
+                            )
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! State Not avalaible !!!</label>
+                        </div>
+
+                    }
+
+                </div>);
+            })
+            .EnablePersistence(true)
+            .Render();
+        }
+    </body>
+</html>
+            }
+
+
+
+
+
+<script id="RemoveCity" type="text/x-jsrender">
+    {{if Checked =='' }}
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Admin/RemoveCountryStateCity?CountryId={{:CityId}}&amp;Filename={{:Checked}}&amp;Addvalue=City">Remove</a>
+    {{else}}
+
+    {{/if}}
+</script>
+<script id="RemoveCountry" type="text/x-jsrender">
+    {{if Checked =='' }}
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Admin/RemoveCountryStateCity?CountryId={{:CountryId}}&amp;Filename={{:Checked}}&amp;Addvalue=Country">Remove</a>
+    {{else}}
+
+    {{/if}}
+</script>
+<script id="RemoveState" type="text/x-jsrender">
+    {{if Checked =='' }}
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Admin/RemoveCountryStateCity?CountryId={{:StateId}}&amp;Filename={{:Checked}}&amp;Addvalue=State">  Remove</a>
+    {{else}}
+
+    {{/if}}
+</script>
+
+<script>
+    $(document).ready(function () {
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+
+            return false;
+        };
+    });
+</script>
+

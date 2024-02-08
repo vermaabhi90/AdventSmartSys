@@ -1,0 +1,186 @@
+﻿@model SmartSys.BL.SystemEmailConfig
+
+@{
+    ViewBag.Title = "CreateSystemEmailConfig";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.MailTemplateId == 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create System Mail Templete
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit System Mail Templete
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {         
+            var TemplateName = $('#TemplateName').val();
+            var DocType = $('#DocType').val();
+            if (TemplateName.toString() == "") {
+                alert("Please Enter Template Name ");
+                return false;
+            }
+            if (DocType.toString() == "") {
+                alert("Please Select Document Type ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); 
+        });
+    });
+</script>
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.MailTemplateId == 0)
+            {
+                @Html.HiddenFor(model => model.MailTemplateId);
+            }
+            <tr>
+                @if (Model.MailTemplateId > 0)
+                {
+                    <td>
+                        <label for="MailTemplateId">Mail Template Id</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.TextBoxFor(model => model.MailTemplateId, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.MailTemplateId)
+                        </div>
+
+                    </td>
+                }
+                <td>
+                    <label for="TemplateName">Template Name:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TemplateName, new { id = "TemplateName", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TemplateName)
+                    </div>
+
+                </td>
+                <td>
+                    <label for="TemplateName">Document Type:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.DropDownList("DocumentType", (IEnumerable<SelectListItem>)ViewBag.DocTypeLst, "-Select Document Type-", new { id = "DocType", style = "width:310px", @class = "form-control" })
+                    </div>
+
+                </td>
+        </table>
+        <br>
+        <table style="width:100%">
+            @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+            List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+            List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+            List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+            List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+            List<String> indenting = new List<string> { "outdent", "indent" };
+            List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+            List<String> doAction = new List<string>() { "undo", "redo" };
+            List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+            List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+            List<String> links = new List<string>() { "createLink", "removeLink" };
+            List<String> images = new List<string>() { "image" };
+            List<String> media = new List<string>() { "video" };
+            List<String> effects = new List<string>() { "superscript", "subscript" };
+            List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+            List<String> formatStyle = new List<string>() { "format" };
+            List<String> view = new List<string>() { "fullScreen" };
+
+            }
+            <tr>
+                <td>
+                    <label for="MailContent">Mail Content</label>
+                </td>
+            </tr>
+            <tr>               
+                <td>
+                    <div>
+                        @Html.EJ().RTEFor(model => model.MailContent, new { id = "hello" }).Width("100%").Height("400px").EnableResize(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                        @Html.ValidationMessageFor(model => model.MailContent)
+                    </div>
+
+                </td>
+
+            </tr>
+        </table>
+        <br>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.MailTemplateId > 0)
+            {
+                <tr>
+                    <td>
+                        <label for="CreatedByName">Created By </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @required = "required", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label for="CreatedDate">Created Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label for="ModifiedByName">Modified By </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <label for="ModifiedDate">Modified Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+        <table>
+            <tr>
+                <td>                  
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetSystemEmailConfigList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+}
+
+

@@ -1,0 +1,196 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel
+
+@{
+    ViewBag.Title = "EnquiryItemVendorResponseDetail";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    DW Enquiry Response List
+</div>
+<br>
+@*@Html.ActionLink(" Create", "CreateEnquiryItemVendorResponse", new { ResponseId = 0 }, new { @class = "btn btn-info glyphicon glyphicon-leaf" })*@
+
+<div class="glyphicon text-info" >
+    <table>
+        <tr>
+            <td>
+                @Html.ActionLink(" Create", "CreateEnquiryItemVendorResponse", new { ResponseId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" }) &nbsp;
+            </td>
+            <td>
+
+
+                <button type="button" name="RunReport" class="btn-xs btn-success glyphicon glyphicon-thumbs-up RunReport"> Run Report</button>
+                @if (Model.StatusId == 9)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-success glyphicon glyphicon-thumbs-up Open"> Open</button>
+                }
+                else if (Model.StatusId == 10)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</button>
+                }
+                else if (Model.StatusId == 2 || Model.StatusId == 3)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-info glyphicon glyphicon-refresh"> Report Running</button>
+                }
+                else
+                {
+                    <label>Please Run The Report</label>
+                }
+                &nbsp;
+                @if (Model.StatusId > 0)
+                {
+                    <label> Run Date: </label>  <label> @Model.RunDate</label>
+                }
+
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("grdDWEnquiryItemVendorResponse")
+                        .Datasource((IEnumerable<object>)@Model.listEnqItemVendRespDetail)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+      {
+          items.AddTool(ToolBarItems.ExcelExport);
+      }))
+     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+     
+         .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportVendorRespDetailList")))
+                  //.ContextMenuSettings(contextMenu =>
+                  //    {
+                  //        contextMenu.EnableContextMenu()
+                  //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+                  //        .CustomContextMenuItems(new List<string> { "Add Response", "Edit Response" });
+                  //    })
+                  .ContextMenuSettings(contextMenu =>
+                  {
+                      contextMenu.EnableContextMenu();
+                      contextMenu.DisableDefaultItems();
+                      contextMenu.CustomContextMenuItems(c =>
+                      {
+                          c.AddItem("Add_Response", "Add Response");
+                          c.AddItem("Edit_Response", "Edit Response");
+                      });
+
+                  })
+
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("ResponseId").HeaderText("Response ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ContactName").HeaderText("Contact Name").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ReciptMethod").HeaderText("Receipt Method").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("ReciptDate").HeaderText("Receipt Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Center).Width(200).Add();
+
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .AllowFiltering(false)
+            .TemplateID("#BtnEdit")
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+
+        })
+    )
+</div>
+<script id="BtnEdit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/Enquiry/CreateEnquiryItemVendorResponse?responseId={{:ResponseId}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Add Response") {
+            var path = '@Url.Content("~/Enquiry/CreateEnquiryItemVendorResponse")' + "?ResponseId=0"
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Response") {
+                var tempData = args.text;
+                var grid = $("#grdDWEnquiryItemVendorResponse").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var ResponseId = result[0]["ResponseId"];
+               var path = '@Url.Content("~/Enquiry/CreateEnquiryItemVendorResponse")' + "?ResponseId=" + ResponseId
+               event.preventDefault();
+               window.location.replace(path);
+            }
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('.RunReport').click(function (e) {
+            var TxtParamValue='@Model.TxtParamValue';
+            var selTypeText = '@Model.TxtParamValue';
+            var ParamId='@Model.ParamId';
+            var hidText="";
+            var ParamValue=null;
+            var Parmname=null;
+            var ReportId = '@Model.ReportId';
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/AdhocReporting/ReportParam",
+                //data: { ReportId: ReportId, Parmname: Parmname,ParamValue:ParamValue},
+                data:{ hidText :hidText,TxtParamValue:TxtParamValue,ParamId:ParamId,ReportId:ReportId},
+                success: function (data) {
+                    var path = '@Url.Content("~/AdhocReporting/ReportParam")'+ "?ReportId=" + '@Model.ReportId'+ "&Parmname=" +Parmname +"&ParamValue=" +ParamValue ;
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.Open').click(function (e)
+        {
+            var path = '@Url.Content("~/AdhocReporting/Download")' + "?FileName=" +  '@Model.OutputLocation'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+    });
+</script>

@@ -1,0 +1,94 @@
+﻿@model IEnumerable<SmartSys.BL.EmpSalaryStructureModel>
+
+@{
+    ViewBag.Title = "SalaryComponentList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Salary Structure detail
+</div>
+ 
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-user  text-info">
+    Employee Name: &nbsp;<label style="color:red"> @ViewBag.EmpName</label>
+</div>
+<p>
+    @Html.ActionLink(" Add", "GetselectedEmpSalaryStructureDetails", new { EmpId = ViewBag.EmpId }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</p>
+<div id="Grid"></div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SalaryComponentmodel>("Salry")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .EnableAltRow(true)
+                          .ContextMenuSettings(contextMenu =>
+                                {
+                                    contextMenu.EnableContextMenu()
+                                   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+                                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.DeleteRecord));
+
+                                })
+            //.EnablePersistence(true)
+        .Columns(col =>
+        {
+          
+            col.Field("Name").HeaderText("Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("EmpId").HeaderText("EmpId").ValidationRules(v => v.AddRule("required", true)).Width(120).Visible(false).Add();
+            col.Field("ComponentId").HeaderText("ComponentId").Visible(false).ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("Type").HeaderText("Type").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("DRCR").HeaderText("Debit/Credit").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Amount").HeaderText("Amount").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Delete")
+            .Template("#edit")
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash " href="/Admin/DeleteEmployeeSalaryStructure?ComponentId={{:ComponentId}}&amp;EmpId={{:EmpId}} "></a>
+</script>
+<br />
+@Html.ActionLink(" Back", "GetActiveEmployeeList", null, new { @class = "btn-xs btn-warning glyphicon glyphicon-hand-left" })
+
+<script type="text/javascript">
+    function contextclick(args) {
+   
+            if (args.text == "Delete Record")
+            {
+                var tempData = args.text;
+                var grid = $("#Salry").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var CompId = result[0]["ComponentId"];
+                var EmpId = result[0]["EmpId"];
+                var path = '@Url.Content("~/Admin/DeleteEmployeeSalaryStructure")' + "?ComponentId=" + CompId + "&EmpId=" + CompId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+    }
+
+
+</script>
+
+
+

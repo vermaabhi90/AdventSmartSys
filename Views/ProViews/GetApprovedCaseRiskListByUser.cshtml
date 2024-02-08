@@ -1,0 +1,263 @@
+﻿@model IEnumerable<SmartSys.BL.ProViews.CaseRiskViewModel>
+
+@{
+    ViewBag.Title = "GetCaseRiskList";
+}
+@{
+
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Risk/Case  Approved List
+</div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProViews")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+        }))
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowScrolling()
+        //.ContextMenuSettings(contextMenu =>
+        //{
+        //    contextMenu.EnableContextMenu()
+        //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+        //        .CustomContextMenuItems(new List<string> { "Edit More Detail", "Update", "Quick Track" });
+
+        //})
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu();
+            contextMenu.DisableDefaultItems();
+            contextMenu.CustomContextMenuItems(c =>
+            {
+                c.AddItem("EditMoreDetail", "Edit More Detail");
+                c.AddItem("Update1", "Update");
+                c.AddItem("Quick_Track", "Quick Track");
+            });
+
+        })
+
+        .EnableAltRow(true)
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+        .Columns(col =>
+        {
+
+            col.Field("ProjectId").HeaderText("Project Id").TextAlign(TextAlign.Center).Width(160).Visible(false).Add();
+            col.Field("TaskId").HeaderText("Task ID").TextAlign(TextAlign.Center).Width(160).Visible(false).Add();
+            col.Field("ProjectName").HeaderText("Project Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("TaskName").HeaderText("Task Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ProjectManager").HeaderText("Project Manager").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("Description").Visible(false).HeaderText("Description").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(260).Add();
+            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(120).Add();
+            col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy}").Width(100).Add();
+            col.Field("TaskTypeText").HeaderText("Task Type").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(110).Add();
+            col.Field("Resources").AllowEditing(false).HeaderText("Resources").Width(200).Add();
+            col.Field("CustomerName").AllowEditing(false).HeaderText("Customer Name").Width(200).Add();
+            col.Field("VendorName").AllowEditing(false).HeaderText("Vendor Name").Width(200).Add();
+            col.Field("ReviewedByName").AllowEditing(false).HeaderText("Reviewed By").Width(150).Add();
+            col.Field("ReviewedDate").AllowEditing(false).HeaderText("Reviewed Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(120).Add();
+            col.Field("ApprovedByName").AllowEditing(false).HeaderText("Approved By").Width(150).Add();
+            col.Field("ApprovedDate").AllowEditing(false).HeaderText("Approved Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("StatusName").AllowEditing(false).HeaderText("Status").Width(100).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+        })
+
+                 .ClientSideEvents(eve =>
+                 {
+
+                     eve.ContextClick("contextclick");
+
+                 })
+    )
+</div>
+
+<script type="text/template" id="template">
+    <b>Project Details</b>
+    <table cellspacing="10" style="width:100%">
+        <tr id="IDs">
+            <td style="text-align: right; width:100px">
+                Project Id
+            </td>
+            <td style="text-align: left">
+                <input id="ProjectId" name="ProjectId" value="{{: ProjectId}}" disabled="disabled" class="e-field e-ejinputtext valid e-disable"
+                       style="text-align: right; width: 116px; height: 28px" />
+            </td>
+
+        </tr>
+        <tr>
+            <td style="width:120px; text-align: right;">
+                Project Name
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ProjectName}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                Task Name
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:TaskName}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                Project Manager
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ProjectManager}}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:120px; text-align: right;">
+                Start Date
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:StartDate}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                End Date
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:EndDate}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                TaskType Text
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:TaskTypeText}}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:120px; text-align: right;">
+                Reviewed By
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ReviewedByName}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                Reviewed Date
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ReviewedDate}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                Approved By
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ApprovedByName}}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:120px; text-align: right;">
+                Approved Date
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ApprovedDate}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                Modified By
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:ModifiedByName}}" />
+            </td>
+            <td style="width:100px; text-align: right;">
+                Status
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" disabled="disabled" name="ProjectName" class="form-control" value="{{:StatusName}}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td style="width:100px; text-align: right;">
+                Description
+            </td>
+            <td style="text-align: left">
+                <textarea disabled="disabled" cols=30 rows=6 class="form-control" value="">{{:Description}}</textarea>
+            </td>
+            <td style="width:100px; text-align: right;">
+                Resources
+            </td>
+            <td style="text-align: left">
+                <textarea disabled="disabled" cols=30 rows=6 class="form-control" value="">{{:Resources}}</textarea>
+            </td>
+        </tr>
+
+    </table>
+</script>
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Update") {
+            var tempData = args.text;
+            var grid = $("#grdProViews").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskId = result[0]["TaskId"];
+            var ProjectName = result[0]["ProjectName"];
+            var Risk = "Risk";
+            var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + projectId + "&taskid=" + TaskId + "&Modal=" + 0 + "&ProjectName=" + ""
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+        if (args.text == "Edit More Detail") {
+            var tempData = args.text;
+            var grid = $("#grdProViews").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskId = result[0]["TaskId"];
+            var ProjectName = result[0]["ProjectName"];
+            var Risk = "Risk";
+            var path = '@Url.Content("~/ProjectCenter/ProjectEditMode")' + "?TaskID=" + TaskId + "&ProjectId=" + projectId + "&Type=ApprovedList"
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+        if (args.text == "Quick Track") {
+            var tempData = args.text;
+            var grid = $("#grdProViews").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskName = result[0]["TaskName"];
+            $("#Title").val(TaskName);
+            document.getElementById("Title").innerHTML = TaskName;
+            var TaskId = result[0]["TaskId"];
+            var path1 = '@Url.Action("casetimeline", "quickview")' + "?TaskID=" + TaskId + "&ProjectId=" + projectId;
+            $("#seconddialog").ejDialog({
+                contentUrl: path1,
+                contentType: "ajax"
+            });
+            $("#seconddialog").ejDialog("open");
+        }
+
+
+    }
+</script>

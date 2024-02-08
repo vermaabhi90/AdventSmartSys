@@ -1,0 +1,1195 @@
+﻿@model SmartSys.BL.RiskCaseListAllDetail
+
+<link href="~/Content/CircularProgress.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+
+
+        $("div.bhoechie-tab-menu>div.list-group>a").click(function (e) {
+            e.preventDefault();
+            $(this).siblings('a.active').removeClass("active");
+            $(this).addClass("active");
+            var index = $(this).index();
+            $("div.bhoechie-tab>div.bhoechie-tab-content").removeClass("active");
+            $("div.bhoechie-tab>div.bhoechie-tab-content").eq(index).addClass("active");
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var timer = 0;
+        var percentageWidth = $('#progressBar11').outerWidth() / 100;
+        var percentageWidth = $('#progressBar12').outerWidth() / 100;
+        var percentageWidth = $('#progressBar13').outerWidth() / 100;
+        var percentageWidth = $('#progressBar14').outerWidth() / 100;
+        var percentageWidth = $('#progressBar15').outerWidth() / 100;
+        var percentageWidth = $('#progressBar16').outerWidth() / 100;
+        var percentageWidth = $('#progressBar17').outerWidth() / 100;
+        var percentageWidth = $('#progressBar18').outerWidth() / 100;
+        var percentageWidth = $('#progressBar19').outerWidth() / 100;
+        var percentageWidth = $('#progressBar20').outerWidth() / 100;
+
+        function timerRun() {
+
+            $('#progressBar11 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar12 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar13 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar14 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar15 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar16 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar17 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar18 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar19 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar20 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+
+
+            $('#progressBar11 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar12 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar13 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar14 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar15 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar16 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar17 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar18 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar19 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar20 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+
+
+
+            if (timer >= 100) {
+                var val11 = '@Model.CasePercentList[0].NewPercent';//new
+                var val12 = '@Model.CasePercentList[0].ClosedPercent';//new
+                var val13 = '@Model.CasePercentList[0].OnholdPercent';//new
+                var val14 = '@Model.CasePercentList[0].ApprovedPercent';//Approved
+                var val15 = '@Model.CasePercentList[0].InprogressPercent';//Inprogress
+                var val16 = '@Model.CasePercentList[0].RejectedPercent';//Rejected
+                var val17 = '@Model.CasePercentList[0].ReviewdByMePercent';//
+                var val18 = '@Model.CasePercentList[0].ApprovedByMeePercent';//ApproveByMe
+                var val19 = '@Model.PendingCasePercent[0].InprogressPercent';//Pending Inprogress
+                var val20 = '@Model.PendingCasePercent[0].OnholdPercent';//Pending Onhold
+
+                var i = "%";
+
+                var NewC = val11.concat(i);
+                var ClosedC = val12.concat(i);
+                var OnholdC = val13.concat(i);
+                var ApprovedC = val14.concat(i);
+                var InprogressC = val15.concat(i);
+                var RejectedC = val16.concat(i);
+                var ReviewedBymeC = val17.concat(i);
+                var ApproveByMEC = val18.concat(i);
+                var PendingInprogressC = val19.concat(i);
+                var PendingonholdC = val20.concat(i);
+
+                $('#progressBar11 .progress-bar').css("width", NewC);
+                $('#progressBar12 .progress-bar').css("width", ClosedC);
+                $('#progressBar13 .progress-bar').css("width", OnholdC);
+                $('#progressBar14 .progress-bar').css("width", ApprovedC);
+                $('#progressBar15 .progress-bar').css("width", InprogressC);
+                $('#progressBar16 .progress-bar').css("width", RejectedC);
+                $('#progressBar17 .progress-bar').css("width", ReviewedBymeC);
+                $('#progressBar18 .progress-bar').css("width", ApproveByMEC);
+                $('#progressBar19 .progress-bar').css("width", PendingInprogressC);
+                $('#progressBar20 .progress-bar').css("width", PendingonholdC);
+
+
+
+                // $('#loadBtn').html("Done");
+                return;
+            }
+            timer++;
+            setTimeout(function () { timerRun() }, 2);
+        }
+      
+        $('#myDivCase').click(function () {
+
+            timerRun();
+            e.preventDefault();
+            $(this).html("loading");
+
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var timer = 0;
+
+
+        var percentageWidth = $('#progressBar').outerWidth() / 100;
+        var percentageWidth = $('#progressBar2').outerWidth() / 100;
+        var percentageWidth = $('#progressBar3').outerWidth() / 100;
+        var percentageWidth = $('#progressBar4').outerWidth() / 100;
+        var percentageWidth = $('#progressBar5').outerWidth() / 100;
+        var percentageWidth = $('#progressBar6').outerWidth() / 100;
+        var percentageWidth = $('#progressBar7').outerWidth() / 100;
+        var percentageWidth = $('#progressBar8').outerWidth() / 100;
+        var percentageWidth = $('#progressBar9').outerWidth() / 100;
+        var percentageWidth = $('#progressBar10').outerWidth() / 100;
+
+
+       
+
+        function timerRun() {
+            $('#progressBar .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar2 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar3 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar4 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar5 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar6 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar7 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar8 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar9 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+            $('#progressBar10 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+
+
+
+            $('#progressBar .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar2 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar3 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar4 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar5 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar6 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar7 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar8 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar9 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+            $('#progressBar10 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+
+
+
+      
+
+            if (timer >= 100) {
+                var val = '@Model.RiskPercentList[0].NewPercent';//new
+                var val2 = '@Model.RiskPercentList[0].ClosedPercent';//new
+
+                var val3 = '@Model.RiskPercentList[0].OnholdPercent';//new
+                var val4 = '@Model.RiskPercentList[0].ApprovedPercent';//Approved
+                var val5 = '@Model.RiskPercentList[0].InprogressPercent';//Inprogress
+                var val6 = '@Model.RiskPercentList[0].RejectedPercent';//Rejected
+                var val7 = '@Model.RiskPercentList[0].ReviewdByMePercent';//
+                var val8 = '@Model.RiskPercentList[0].ApprovedByMeePercent';//ApproveByMe
+                var val9 = '@Model.PendingRiskPercent[0].InprogressPercent';//Pending Inprogress
+                var val10 = '@Model.PendingRiskPercent[0].OnholdPercent';//Pending Onhold
+
+
+        
+                var i = "%";
+                var New = val.concat(i);
+                var Closed = val2.concat(i);
+                var Onhold = val3.concat(i);
+                var Approved = val4.concat(i);
+                var Inprogress = val5.concat(i);
+                var Rejected = val6.concat(i);
+                var ReviewedByme = val7.concat(i);
+                var ApproveByME = val8.concat(i);
+                var PendingInprogress = val9.concat(i);
+                var Pendingonhold = val10.concat(i);
+
+
+
+                $('#progressBar .progress-bar').css("width", New);
+                $('#progressBar2 .progress-bar').css("width", Closed);
+                $('#progressBar3 .progress-bar').css("width", Onhold);
+                $('#progressBar4 .progress-bar').css("width", Approved);
+                $('#progressBar5 .progress-bar').css("width", Inprogress);
+                $('#progressBar6 .progress-bar').css("width", Rejected);
+                $('#progressBar7 .progress-bar').css("width", ReviewedByme);
+                $('#progressBar8 .progress-bar').css("width", ApproveByME);
+                $('#progressBar9 .progress-bar').css("width", PendingInprogress);
+                $('#progressBar10 .progress-bar').css("width", Pendingonhold);
+
+             
+
+                // $('#loadBtn').html("Done");
+                return;
+            }
+            timer++;
+            setTimeout(function () { timerRun() }, 2);
+        }
+        timerRun();
+         
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var timer = 0;
+
+        var percentageWidth = $('#progressBar2').outerWidth() / 100;
+        function timerRun() {
+
+            $('#progressBar2 .progress-bar').css("width", timer + "%").attr("aria-valuenow", timer);
+
+
+            $('#progressBar2 .progress-number').css("-webkit-transform", "translateX(" + percentageWidth * timer + "px)").attr("aria-valuenow", timer);
+
+            if (timer >= 100) {
+
+                var val2 = '@Model.RiskPercentList[0].ClosedPercent'; //Closed
+                var i = "%";
+
+                var Closed = val2.concat(i);
+
+                $('#progressBar2 .progress-bar').css("width", Closed);
+                // $('#loadBtn').html("Done");
+                return;
+            }
+            timer++;
+            setTimeout(function () { timerRun() }, 10);
+        }
+        var val2 = '@Model.RiskPercentList[0].ClosedPercent';
+        if (val2 > 0) {
+            timerRun();
+        }
+
+        $(document).ready(function () {
+            e.preventDefault();
+            // $(this).html("loading");
+
+        });
+    });
+</script>
+<style>
+    /*  bhoechie tab */
+    div.bhoechie-tab-container {
+        z-index: 10;
+        background-color: transparent;
+        padding: 0 !important;
+        border-radius: 4px;
+        -moz-border-radius: 4px;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+        margin-left: 50px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        background-clip: padding-box;
+        opacity: 0.97;
+        filter: alpha(opacity=97);
+    }
+
+    div.bhoechie-tab-menu {
+        padding-right: 0;
+        padding-left: 0;
+        padding-bottom: 0;
+    }
+
+        div.bhoechie-tab-menu div.list-group {
+            margin-bottom: 0;
+        }
+
+            div.bhoechie-tab-menu div.list-group > a {
+                margin-bottom: 0;
+            }
+
+                div.bhoechie-tab-menu div.list-group > a .glyphicon,
+                div.bhoechie-tab-menu div.list-group > a .fa {
+                    color: #5A55A3;
+                }
+
+                div.bhoechie-tab-menu div.list-group > a:first-child {
+                    border-top-right-radius: 0;
+                    -moz-border-top-right-radius: 0;
+                }
+
+                div.bhoechie-tab-menu div.list-group > a:last-child {
+                    border-bottom-right-radius: 0;
+                    -moz-border-bottom-right-radius: 0;
+                }
+
+                div.bhoechie-tab-menu div.list-group > a.active,
+                div.bhoechie-tab-menu div.list-group > a.active .glyphicon,
+                div.bhoechie-tab-menu div.list-group > a.active .fa {
+                    background-color: #5A55A3;
+                    background-image: #5A55A3;
+                    color: #ffffff;
+                }
+
+                    div.bhoechie-tab-menu div.list-group > a.active:after {
+                        content: '';
+                        position: absolute;
+                        left: 100%;
+                        top: 50%;
+                        margin-top: -13px;
+                        border-left: 0;
+                        border-bottom: 13px solid transparent;
+                        border-top: 13px solid transparent;
+                        border-left: 10px solid #5A55A3;
+                    }
+
+    div.bhoechie-tab-content {
+        background-color: #ffffff;
+        /* border: 1px solid #eeeeee; */
+        padding-left: 20px;
+        padding-top: 10px;
+    }
+
+    div.bhoechie-tab div.bhoechie-tab-content:not(.active) {
+        display: none;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.progress progress').each(function () {
+            $(".progress label[for='" + $(this).attr('id') + "']")
+              .text(this.value + "%")
+              .animate({
+                  'margin-left': $(this).width() * $(this).attr("value") / 100 -
+                    $(".progress label[for='" + $(this).attr('id') + "']").width() / 2 + "px"
+              }, 2000, 'easeOutQuad');
+        });
+    });
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class=" col-sm-2 col-xs-12 bhoechie-tab-container" style="width:1300px">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bhoechie-tab-menu" style="height:400px ;">
+                <div class="list-group">
+                    <a href="#" class="list-group-item active text-center" style="width:100px">
+                        <h4 class="glyphicon glyphicon-align-justify"></h4><br />Risks
+                    </a>
+
+                    <a href="#" class="list-group-item text-center" id="myDivCase" style="width:100px">
+                      <h4 class="glyphicon glyphicon-home"></h4><br />Cases
+                    </a>
+               
+                    @*<a href="#" class="list-group-item text-center" id="Circleprogress" >
+                            <h4 class="glyphicon glyphicon-user"></h4><br />MY Task List
+                        </a>
+                        <a href="#" class="list-group-item text-center">
+                            <h4 class="glyphicon glyphicon-home"></h4><br /> Saj Yearly Sales Data
+                        </a>
+                        <a href="#" class="list-group-item text-center">
+                            <h4 class="glyphicon glyphicon-home"></h4><br />Dpk Sales Data
+                        </a>*@
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-9 col-xs-9 bhoechie-tab">
+                <!-- flight section -->
+                <div class="bhoechie-tab-content active">
+                    <div>
+                       
+                        <div class="tab-content" style="margin-left:20px">
+                            <div role="tabpanel" class="tab-pane active" id="home">
+                                <table>
+                                   <div>
+                                       <label style="font-size:30px;text-shadow: 2px 2px 5px red;"> My Risks </label>
+                                   </div>
+                                    
+                                    <tr>
+                                        <td style="font-size:11px ;color:red;" >
+                                            Total Risk (<b>count</b>= @Model.RiskPercentList[0].TotalCreatedPercentCount)
+                                        </td>
+                                        <td>
+                                         <canvas id="my_canvas" width="200" height="200" style="max-height:80px;margin-left:6px"></canvas>
+                                            
+                                       </td>
+
+                                    </tr>
+                                </table>
+                                <div class="show-container" style="margin-top:40px ; max-height:200px ">
+                                    <table>
+                                        <tr>
+                                            <td>
+
+                                                <label style="font-size:10px;color:black; margin-left:0px">New @Model.RiskPercentList[0].NewPercent % & Count=@Model.RiskPercentList[0].NewPerCount</label>
+                                                <div class="progress" id="progressBar" style="max-height: 10px ;">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;background-color:#88cd2a" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td width="30px" />
+                                            <td>
+                                                <label style="font-size:10px;color:red">Closed &nbsp; @Model.RiskPercentList[0].ClosedPercent % & Count=@Model.RiskPercentList[0].ClosedCount</label>
+                                                <div class="progress block" id="progressBar2" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td width="30px" />
+
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label style="font-size:10px;color:red">Onhold &nbsp; @Model.RiskPercentList[0].OnholdPercent % & Count=@Model.RiskPercentList[0].OnholdCount</label>
+                                                <div class="progress" id="progressBar3" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <label style="font-size:10px;color:red">Approved &nbsp; @Model.RiskPercentList[0].ApprovedPercent %& Count=@Model.RiskPercentList[0].ApprovedCount</label>
+                                                <div class="progress" id="progressBar4" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td width="20px" />
+                                            <td>
+                                                <label style="font-size:10px;color:red">Inprogress &nbsp; @Model.RiskPercentList[0].InprogressPercent % & Count=@Model.RiskPercentList[0].InprogressCount</label>
+                                                <div class="progress" id="progressBar5" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <label style="font-size:10px;color:red">Rejected &nbsp; @Model.RiskPercentList[0].RejectedPercent % & Count=@Model.RiskPercentList[0].RejectedCount</label>
+                                                <div class="progress" id="progressBar6" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                    </table>
+                                    <hr />
+
+                                    <table>
+                                        <tr>
+                                            <td>
+
+                                                <label style="font-size:10px;color:red">Reviewed &nbsp; @Model.RiskPercentList[0].ReviewdByMePercent % & Count=@Model.RiskPercentList[0].ReviewdByMeCount</label>
+                                                <div class="progress" id="progressBar7" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td width="20px" />
+                                            <td>
+                                                <label style="font-size:10px;color:red">Approved &nbsp; @Model.RiskPercentList[0].ApprovedByMeePercent % & Count=@Model.RiskPercentList[0].ApprovedByMeeCount</label>
+                                                <div class="progress" id="progressBar8" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> 
+                                                <label style="font-size:10px;color:red">Pending Inprogress&nbsp; @Model.PendingRiskPercent[0].InprogressPercent % & Count =@Model.PendingRiskPercent[0].PendingInprogressCount</label>
+                                                <div class="progress block" id="progressBar9" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td width="20px" />
+                                            <td>
+                                                <label style="font-size:10px;color:red"> Pending Onhold &nbsp; @Model.PendingRiskPercent[0].OnholdPercent % & Count =@Model.PendingRiskPercent[0].PendingOnholdCount</label>
+                                                <div class="progress block" id="progressBar10" style="max-height: 10px">
+                                                    <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                                    <div class="rounded">
+                                                        <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="profile" style="max-height:100px">
+
+
+
+
+                            </div>
+
+                        </div>
+                  
+                    </div>
+
+                </div>
+                <!-- train section -->
+                <!-- Cases -->
+                <div class="bhoechie-tab-content">
+               
+                    <table>
+                        <tr>
+                            <td>
+                                <label style="font-size:30px;text-shadow: 2px 2px 5px red;"> My Cases</label>
+                            </td>
+                       </tr>
+                        <tr>
+                            <td style="font-size:11px;color:red">
+                                Total Cases (<b>count</b>= @Model.CasePercentList[0].TotalCreatedPercentCount)
+                            </td>
+                            <td>
+                                <canvas id="my_canvas1" width="200" height="200" style="max-height:80px;margin-left:6px"></canvas>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="show-container" style="margin-top:40px ; max-height:200px ">
+
+                        <table>
+                            <tr>
+                                <td>
+
+                                    <label style="font-size:10px;color:black">New &nbsp; @Model.CasePercentList[0].NewPercent % &Count= @Model.CasePercentList[0].NewPerCount </label>
+                                    <div class="progress" id="progressBar11" style="max-height: 10px ;">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#00ffff" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="30px" />
+                                <td>
+                                    <label style="font-size:10px;color:red">Closed &nbsp; @Model.CasePercentList[0].ClosedPercent % &Count= @Model.CasePercentList[0].ClosedCount</label>
+                                    <div class="progress block" id="progressBar12" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0; background-color:#ff6a00" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="30px" />
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label style="font-size:10px;color:red">Onhold &nbsp; @Model.CasePercentList[0].OnholdPercent % &Count= @Model.CasePercentList[0].OnholdCount</label>
+                                    <div class="progress" id="progressBar13" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#ffd800" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <label style="font-size:10px;color:red">Approved &nbsp; @Model.CasePercentList[0].ApprovedPercent % &Count= @Model.CasePercentList[0].ApprovedCount</label>
+                                    <div class="progress" id="progressBar14" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#00ff21" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="20px" />
+                                <td>
+                                    <label style="font-size:10px;color:red">Inprogress &nbsp; @Model.CasePercentList[0].InprogressPercent % & Count=@Model.CasePercentList[0].InprogressCount</label>
+                                    <div class="progress" id="progressBar15" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#0094ff" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <label style="font-size:10px;color:red">Rejected &nbsp; @Model.CasePercentList[0].RejectedPercent % &Count= @Model.CasePercentList[0].RejectedCount</label>
+                                    <div class="progress" id="progressBar16" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </table>
+                        <hr />
+
+                        <table>
+                            <tr>
+                                <td>
+
+                                    <label style="font-size:10px;color:red">Reviewed By Me &nbsp; @Model.CasePercentList[0].ReviewdByMePercent % &Count= @Model.CasePercentList[0].ReviewdByMeCount</label>
+                                    <div class="progress" id="progressBar17" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0; background-color:#98FB98" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="20px" />
+                                <td>
+                                    <label style="font-size:10px;color:red">Approved By Me &nbsp; @Model.CasePercentList[0].ApprovedByMeePercent % &Count= @Model.CasePercentList[0].ApprovedByMeeCount</label>
+                                    <div class="progress" id="progressBar18" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#B8860B" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label style="font-size:10px;color:red">Pending Inprogress&nbsp; @Model.PendingCasePercent[0].InprogressPercent % & Count =@Model.PendingCasePercent[0].PendingInprogressCount</label>
+                                    <div class="progress block" id="progressBar19" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#8FBC8F" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="20px" />
+                                <td>
+                                    <label style="font-size:10px;color:red"> Pending Onhold &nbsp; @Model.PendingCasePercent[0].OnholdPercent % & Count =@Model.PendingCasePercent[0].PendingOnholdCount</label>
+                                    <div class="progress block" id="progressBar20" style="max-height: 10px">
+                                        <div class="progress-number" aria-valuenow="0" style="left: 0;"></div>
+                                        <div class="rounded">
+                                            <div class="progress-bar" style="width: 0;background-color:#FFD700" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+                  
+                </div>
+                <div class="bhoechie-tab-content">
+                    <div>
+               
+
+
+
+                    </div>
+
+                </div>
+                <div class="bhoechie-tab-content">
+
+
+                </div>
+                <div class="bhoechie-tab-content">
+                    <center>
+                        <h1 class="glyphicon glyphicon-credit-card" style="font-size:12em;color:#55518a"></h1>
+                        <h2 style="margin-top: 0;color:#55518a">Cooming Soon</h2>
+                        <h3 style="margin-top: 0;color:#55518a">Credit Card</h3>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('#myDiv').click(function () {
+
+            jQuery('.skillbar').each(function () {
+                jQuery(this).find('.skillbar-bar').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+        $('#myDivCasePendingCase').click(function () {
+            $('#PendingC').show()
+            $('#settings1').hide()
+            $('#profile1').hide()
+            $('#messages1').hide()
+            jQuery('.PendingskillbarCase').each(function () {
+                jQuery(this).find('.skillbar-barPendingCaseAP').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+        $('#PendingRisk').click(function () {
+            $('#PendingR').show()
+            jQuery('.pendingskillbarRisk').each(function () {
+                jQuery(this).find('.skillbar-barpendingRisk').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+        $('#myDivCase').click(function () {
+
+            jQuery('.skillbarCase').each(function () {
+                jQuery(this).find('.skillbar-barCase').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+        $('#myDivReview').click(function () {
+            $('#PendingR').hide()
+            jQuery('.skillbarRV').each(function () {
+
+                jQuery(this).find('.skillbar-barRV').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+        $('#myDivApprove').click(function () {
+            $('#PendingR').hide()
+            jQuery('.skillbarAP').each(function () {
+
+                jQuery(this).find('.skillbar-barAP').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+        $('#profl').click(function () {
+            $('#profile1').show()
+            $('#messages1').hide()
+            $('#PendingC').hide()
+        });
+
+        $('#myDivCaseAP').click(function () {
+            $('#settings1').show()
+            $('#profile1').hide()
+            $('#messages1').hide()
+            $('#PendingC').hide()
+            jQuery('.skillbarCaseAP').each(function () {
+                jQuery(this).find('.skillbar-barCaseAP').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+
+        $('#myDivCaseRV').click(function () {
+            $('#messages1').show()
+            $('#profile1').hide()
+            $('#settings1').hide()
+            jQuery('.skillbarCaseRV').each(function () {
+                jQuery(this).find('.skillbar-barCaseRV').animate({
+                    width: jQuery(this).attr('data-percent')
+                }, 3000);
+            });
+        });
+    });
+</script>
+<style>
+    label {
+        display: inline-block;
+        width: 140px;
+        text-align: right;
+    }
+
+    ​ .skillbar {
+        font-family: 'Open Sans', 'sans-serif';
+        position: relative;
+        display: block;
+        margin-bottom: 15px;
+        width: 60%;
+        background: #eee;
+        height: 35px;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        -webkit-transition: 0.4s linear;
+        -moz-transition: 0.4s linear;
+        -ms-transition: 0.4s linear;
+        -o-transition: 0.4s linear;
+        transition: 0.4s linear;
+        -webkit-transition-property: width, background-color;
+        -moz-transition-property: width, background-color;
+        -ms-transition-property: width, background-color;
+        -o-transition-property: width, background-color;
+        transition-property: width, background-color;
+    }
+
+    canvas {
+        margin: 30px 200px;
+    }
+
+    .skillbarCase, .skillbarCaseAP, .skillbarCaseRV, .pendingskillbarRisk, .PendingskillbarCase {
+        font-family: 'Open Sans', 'sans-serif';
+        position: relative;
+        display: block;
+        margin-bottom: 15px;
+        width: 100%;
+        background: #eee;
+        height: 35px;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        -webkit-transition: 0.4s linear;
+        -moz-transition: 0.4s linear;
+        -ms-transition: 0.4s linear;
+        -o-transition: 0.4s linear;
+        transition: 0.4s linear;
+        -webkit-transition-property: width, background-color;
+        -moz-transition-property: width, background-color;
+        -ms-transition-property: width, background-color;
+        -o-transition-property: width, background-color;
+        transition-property: width, background-color;
+    }
+
+    .skillbarRV, .skillbarAP {
+        font-family: 'Open Sans', 'sans-serif';
+        position: relative;
+        display: block;
+        margin-bottom: 15px;
+        width: 100%;
+        background: #eee;
+        height: 35px;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        -webkit-transition: 0.4s linear;
+        -moz-transition: 0.4s linear;
+        -ms-transition: 0.4s linear;
+        -o-transition: 0.4s linear;
+        transition: 0.4s linear;
+        -webkit-transition-property: width, background-color;
+        -moz-transition-property: width, background-color;
+        -ms-transition-property: width, background-color;
+        -o-transition-property: width, background-color;
+        transition-property: width, background-color;
+    }
+
+
+    .skillbar-title {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-weight: bold;
+        font-size: 13px;
+        color: #fff;
+        background: #6adcfa;
+        -webkit-border-top-left-radius: 3px;
+        -webkit-border-bottom-left-radius: 4px;
+        -moz-border-radius-topleft: 3px;
+        -moz-border-radius-bottomleft: 3px;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+    }
+
+        .skillbar-title span {
+            display: block;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 0 20px;
+            height: 35px;
+            line-height: 35px;
+            -webkit-border-top-left-radius: 3px;
+            -webkit-border-bottom-left-radius: 3px;
+            -moz-border-radius-topleft: 3px;
+            -moz-border-radius-bottomleft: 3px;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+        }
+
+    .skillbar-bar {
+        height: 35px;
+        width: 0px;
+        background: #6adcfa;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+
+    .skillbar-barCase, .skillbar-barCaseAP, .skillbar-barCaseRV, .skillbar-barpendingRisk, .skillbar-barPendingCaseAP {
+        height: 35px;
+        width: 0px;
+        background: #6adcfa;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+
+    .skillbar-barAP {
+        height: 35px;
+        width: 0px;
+        background: #6adcfa;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+
+    .skillbar-barRV, .skillbar-barAP {
+        height: 35px;
+        width: 0px;
+        background: #6adcfa;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+
+    .skillbar-barRV, .skillbar-barAP {
+        height: 35px;
+        width: 0px;
+        background: #6adcfa;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+    }
+
+    .skill-bar-percent {
+        position: absolute;
+        right: 10px;
+        top: 0;
+        font-size: 11px;
+        height: 35px;
+        line-height: 35px;
+        color: #444;
+        color: rgba(0, 0, 0, 0.4);
+    }
+
+
+    body {
+        font-family: Helvetica, sans-serif;
+    }
+
+    .r-progress-bar > circle {
+        stroke-dashoffset: 0;
+        transition: stroke-dashoffset 0.25s ease;
+        stroke: #2B2B2B;
+        stroke-width: 5px;
+    }
+
+    .r-progress-bar > .bar {
+        stroke: #25C761;
+    }
+
+    /* YOLO */
+    .some-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+        .some-wrapper > .inner-wrapper {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            transform: translateY(30%);
+        }
+
+    body {
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .show-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 350px;
+    }
+
+    .rounded {
+        height: 100%;
+        border-radius: 999px;
+        overflow: hidden;
+        transform: translateZ(0);
+    }
+
+    .progress-container {
+        position: relative;
+    }
+
+    .progress {
+        position: relative;
+        width: 100%;
+        height: 20px;
+        background-color: #e7edf4;
+        border-radius: 99px;
+    }
+
+        .progress .progress-bar {
+            position: relative;
+            height: 100%;
+            background-color: #00c0fb;
+            transition: width .9s linear;
+        }
+
+        .progress .progress-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            transition: transform .2s linear;
+        }
+
+            .progress .progress-number:before {
+                content: "";
+                position: absolute;
+                top: -10px;
+                left: 0;
+                transform: translateX(-50%);
+                border-top: 5px solid #525961;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+            }
+
+            .progress .progress-number:after {
+                content: attr(aria-valuenow);
+                position: absolute;
+                left: 0;
+                top: -10px;
+                transform: translate(-50%, -100%);
+                padding: 4px 10px;
+                color: #fff;
+                font-size: 13px;
+                font-weight: 300;
+                background-color: #525961;
+                border-radius: 3px;
+            }
+
+    .button-container {
+        display: block;
+        text-align: center;
+        padding: 60px 0;
+    }
+
+    .button {
+        color: #1F2225;
+        font-weight: 400;
+        text-decoration: none;
+        border: 2px solid #525961;
+        padding: 10px 25px;
+        transition: all .15s ease-in-out;
+    }
+
+        .button:hover {
+            background-color: #525961;
+            color: #fff;
+        }
+</style>
+
+<script>
+
+    var ctx = document.getElementById('my_canvas').getContext('2d');
+
+    var al = 0;
+
+    var start = 0;
+
+    var cw = ctx.canvas.width;
+
+    var ch = ctx.canvas.height;
+
+    var diff;
+
+    function progressSim() {
+
+        diff = al / 100 * Math.PI * 2;
+
+        ctx.clearRect(0, 0, cw, ch);
+
+        ctx.lineWidth = 20;
+
+        ctx.fillStyle = '#7F00FF';
+
+        ctx.strokeStyle = '#7F00FF';
+
+        ctx.textAlign = 'center';
+
+        ctx.font = "20px Arial";
+
+        ctx.fillText(al + '%', cw * 0.5, ch * 0.5 + 2, cw);
+
+        ctx.beginPath();
+
+        ctx.arc(80, 80, 70, start, diff + start, false);
+
+        ctx.stroke();
+
+        al = al + 1;
+        var val = '@Model.RiskPercentList[0].TotalCreatedPercent';
+    
+        if (al >= val) {
+
+            clearTimeout(sim);
+        }
+    }
+
+    var sim = setInterval(progressSim, 5);
+
+</script>
+
+<script>
+
+ 
+    var ctx1 = document.getElementById('my_canvas1').getContext('2d');
+
+    var al = 0;
+
+    var start = 0;
+
+    var cw1 = ctx1.canvas.width;
+
+    var ch1 = ctx1.canvas.height;
+
+    var diff1;
+
+    function progressSim2() {
+
+        diff1 = al / 100 * Math.PI * 2;
+
+        ctx1.clearRect(0, 0, cw1, ch1);
+
+        ctx1.lineWidth = 20;
+
+        ctx1.fillStyle = '#7F00FF';
+
+        ctx1.strokeStyle = '#7F00FF';
+
+        ctx1.textAlign = 'center';
+
+        ctx1.font = "20px Arial";
+
+        ctx1.fillText(al + '%', cw * 0.5, ch * 0.5 + 2, cw);
+
+        ctx1.beginPath();
+
+        ctx1.arc(80, 80, 70, start, diff1 + start, false);
+
+        ctx1.stroke();
+
+        al = al + 1;
+        var val1 = '@Model.CasePercentList[0].TotalCreatedPercent';
+
+        if (al >= val1) {
+
+            clearTimeout(sim1);
+        }
+    }
+
+    var sim1 = setInterval(progressSim2, 20);
+
+</script>

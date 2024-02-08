@@ -1,0 +1,231 @@
+﻿@model IEnumerable<SmartSys.BL.RDS.DailyReportBookModel>
+@{
+    ViewBag.Title = "DailyReportBook";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Daily Report Book
+</div>
+    <div style="margin-bottom:8px;margin-top:5px">
+        @Html.ActionLink(" Refresh", "DailyReportBook", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-refresh" })
+    </div>
+<style type="text/css">
+    .e-grid .e-excelfilter .e-btncontainer input {
+        padding: .2em .4em .3em;
+    }
+
+    ::-ms-clear {
+        display: none;
+    }
+
+    .EditBtn {
+    }
+</style>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdRunBook")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+          //.ShowColumnChooser()
+          //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+          .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+          {
+              items.AddTool(ToolBarItems.ExcelExport);
+
+          }))
+        .Columns(col =>
+        {
+            col.Field("DlyGenSubId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ReportId").HeaderText("Report Id").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("ReportName").HeaderText("Report Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ClientName").HeaderText("Client Name").TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("StatusCode").HeaderText("Status").Width(150).Add();
+            col.HeaderText("ViewDetails").Template("#ViewBtn").Width(90).Add();
+            col.HeaderText("Output").Template("#OutputTemplate").Width(90).Add();
+            col.Field("GenId").HeaderText("Gen Id").Width(90).Add();
+            col.Field("RGSJobId").HeaderText("RGS Job Id").Width(110).Add();
+            col.Field("Re-Dist").Template("#ReDistOutputTemplate").HeaderText("Re-Dist").Width(90).Add();
+            col.Field("RunDateTime").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(140).Add();
+            col.HeaderText("Parameters").Template("#ParameterBtn").Width(90).Add();
+        })
+                .ClientSideEvents(eve => { eve.QueryCellInfo("formatingCell");
+
+                })
+    )
+</div>
+
+<script type="text/javascript">
+    function onClick1(args) {
+        var grid = $("#grdRunBook").ejGrid("instance");
+        var DlyGenSubId = grid.getSelectedRecords()[0].DlyGenSubId;
+  
+
+       
+        var path = '@Url.Content("~/SingleRptSubscription/ViewDailyRptParam")' + "?DlyGenSubId=" + DlyGenSubId
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+       
+
+
+    };
+
+</script>
+
+<script type="text/x-jsrender" id="OutputTemplate">
+    {{if StatusId =='GENER'}}
+     
+    <a onclick="myfuncError(290)" class="btn-xs btn-danger glyphicon glyphicon-alert"> Error</a>
+    {{else}}
+        <a class="btn-xs btn-success glyphicon glyphicon-thumbs-up" href="/SingleRptSubscription/Download?FileName={{:OutputFileName}}"> Open</a> 
+    {{/if}}
+    
+</script>
+<script type="text/x-jsrender" id="ViewBtn">
+    <a onclick="myfuncView({{:DlyGenSubId}})" class="btn-xs btn-success"> View</a>
+
+</script>
+
+<script type="text/x-jsrender" id="ReDistOutputTemplate">
+    {{if StatusId =='GENER'}}
+    
+    {{else}}
+    <a class="btn-xs btn-primary" href="/SingleRptSubscription/SetReDistStatus?DlyGenSubId={{:DlyGenSubId}}"> Re-Dist</a>
+    {{/if}}
+    
+</script>
+<script>
+
+    function myfuncError(args)
+    {
+        document.getElementById("Title").innerHTML = 'Error';
+        var path = '@Url.Content("~/SingleRptSubscription/ShowError")' + "?DlyGenSubId=" + args
+        $("#ErrorDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ErrorDetails").ejDialog("open");
+    }
+</script>
+<script>
+
+    function myfuncView(args)
+    {
+        document.getElementById("Title12").innerHTML = 'View Details';
+        var path = '@Url.Content("~/SingleRptSubscription/ViewSubscriptionDetail")' + "?RptSubID=" + 0 + "&DlyGenSubId=" + args
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+<script type="text/x-jsrender" id="ParameterBtn">
+    <a onclick="myfuncParameter({{:DlyGenSubId}})" class="btn-xs btn-info  glyphicon glyphicon-link"> View</a>
+
+</script>
+<script>
+
+    function myfuncParameter(args)
+    {
+        document.getElementById("Title12").innerHTML = 'View Details';
+        var path = '@Url.Content("~/SingleRptSubscription/ViewDailyRptParam")' + "?DlyGenSubId=" + args
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ErrorDetails")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(300)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ErrorDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ErrorDetails").ejDialog("open");
+        }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1100)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>
+
+
+
+    <script type="text/javascript">
+        function onClick(args) {
+            var grid = $("#grdRunBook").ejGrid("instance");
+            var index = this.element.closest("tr").index();
+            var record = grid.getCurrentViewData()[index];
+            var ConId = record["DlyGenSubId"];
+            var path = '@Url.Content("~/SingleRptSubscription/ViewDailyRptParam")' + "?DlyGenSubId=" + ConId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+
+        function onClickView(args) {
+            var grid = $("#grdRunBook").ejGrid("instance");
+            var index = this.element.closest("tr").index();
+            var record = grid.getCurrentViewData()[index];
+            var ConId = record["DlyGenSubId"];
+            var path = '@Url.Content("~/SingleRptSubscription/ViewDailyRptParam")' + "?DlyGenSubId=" + ConId
+
+        }
+    </script>
+
+    <script type="text/javascript">
+        function formatingCell(args) {
+            var a = 3;
+            var value = args.text.replace(",", "");
+            var $element = $(args.cell);
+            switch (args.column.headerText) {
+                case "Status":
+                    if (value == "Success" || value == "Distribution successful")
+                        $element.css("color", "green");
+                    else if (value == "RDS FTP Download Error")
+                        $element.css("color", "orange");
+                    else if (value == "Distribution Time Error")
+                        $element.css("color", "red");
+                    break;
+            }
+        }
+    </script>
+
+
+

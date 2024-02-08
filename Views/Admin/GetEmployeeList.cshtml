@@ -1,0 +1,279 @@
+﻿@model IEnumerable<SmartSys.BL.EmployeeModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "GetEmployeeList";
+}
+
+@{
+
+    Html.EJ()
+        .Dialog("EmployeeCustomerDetails")
+        .Title("<a id='Title'></a>")
+        .Width(1200)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#EmployeeCustomerDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#EmployeeCustomerDetails").ejDialog("open");
+        }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("EmployeeVendor")
+        .Title("<a id='Title'></a>")
+        .Width(1200)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#EmployeeVendor").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#EmployeeVendor").ejDialog("open");
+        }
+</script>
+<style type="text/css">
+    .e-grid .e-excelfilter .e-btncontainer input {
+        padding: .2em .4em .3em;
+    }
+
+    ::-ms-clear {
+        display: none;
+    }
+
+    .EditBtn {
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Employee List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateEmployee", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdEmpGrid")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+         {
+             items.AddTool(ToolBarItems.Search);
+             items.AddTool(ToolBarItems.ExcelExport);
+         }))
+            .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelEmployee")))
+
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+              //.ContextMenuSettings(contextMenu =>
+              //{
+              //    contextMenu.EnableContextMenu()
+
+              //        .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit Employee", "Employee Mapping", "Employee Customer", "Employee Vendor" } })
+              //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord));
+
+              //})
+
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit_Employee", "Edit Employee");
+                      c.AddItem("Employee_Mapping", "Employee Mapping");
+                      c.AddItem("Employee_Customer", "Employee Customer");
+                      c.AddItem("Employee_Vendor", "Employee Vendor");
+                  });
+
+              })
+
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+        //.ToolbarSettings(toolbar =>
+        //    {
+        //        toolbar.ShowToolbar().ToolbarItems(items =>
+        //        {
+        //            items.AddTool(ToolBarItems.Add);
+        //            items.AddTool(ToolBarItems.Edit);
+        //            items.AddTool(ToolBarItems.Update);
+        //            items.AddTool(ToolBarItems.Cancel);
+        //        });
+        //    })
+        .Columns(col =>
+        {
+            col.Field("EmpId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmpName").HeaderText("Employee Name").ValidationRules(v => v.AddRule("required", true)).Width(160).Add();
+            col.Field("Gender").HeaderText("Gender").Width(140).Add();
+            col.Field("emailId").HeaderText("email Id").TextAlign(TextAlign.Left).Width(160).Add();
+            //col.Field("ConnectionType").EditType(EditingType.Dropdown).ForeignKeyField("ConnectionType").ForeignKeyValue("ConnectionType").DataSource((IEnumerable<object>)ViewBag.DataSourceConType).HeaderText("Connection Type").ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("Designation").HeaderText("Designation").Width(140).Add();
+            col.Field("Qualification").HeaderText("Qualification").Width(110).Add();
+            col.Field("UserName").HeaderText("User Name").Width(160).Add();
+            col.Field("ManagerName").HeaderText("Manager Name").Width(150).Add();
+            //col.Field("DeptName").AllowEditing(false).HeaderText("Department").Width(160).Add();
+            col.Field("Deleted").AllowEditing(false).HeaderText("In-Active").TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(120).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           Click = "onClick",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .Template("#edit")
+
+            .TextAlign(TextAlign.Center)
+            .AllowFiltering(false)
+            .Width(90)
+            .Add();
+            col.HeaderText("Map").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Map",
+                           Click = "onClick1",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-hyperlink",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#BtnTemplate")
+            .TextAlign(TextAlign.Center)
+              .AllowFiltering(false)
+            .Width(90)
+            .Add();
+            //  col.HeaderText("Customer").Template("#Customer") .IsUnbound(true).AllowFiltering(false).TextAlign(TextAlign.Center).Width(90).Add();
+            //  col.HeaderText("Vendor").Template("#Vendor").IsUnbound(true).AllowFiltering(false).TextAlign(TextAlign.Center).Width(90).Add();
+        })
+                 .ClientSideEvents(eve =>
+                 {
+
+                     eve.ContextClick("contextclick");
+                     //eve.("contextMenuOpen");/Admin/EmployeeCustomerDetails")' + "?EmpId=" + EmpId
+                 })
+
+        )
+    </div>
+    <script id="BtnTemplate" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-transfer" href="/Admin/GetEmpMappingList?EmpId={{:EmpId}} &SysEmpName={{:EmpName}}"> </a>
+    </script>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditEmployee?EmpId={{:EmpId}}"></a>
+    </script>
+    <script id="Customer" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-user" href="/Admin/EmployeeCustomerDetails?EmpId={{:EmpId}}"></a>
+    </script>
+    <script id="Vendor" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-user" href="/Admin/EmployeeVendorDetails?EmpId={{:EmpId}}"></a>
+    </script>
+    <script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdEmpGrid").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["EmpId"];
+        var path = '@Url.Content("~/Admin/EditEmployee")' + "?EmpId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Admin/CreateEmployee")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Employee") {
+                var tempData = args.text;
+
+                var grid = $("#grdEmpGrid").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var EmpId = result[0]["EmpId"];
+                var path = '@Url.Content("~/Admin/EditEmployee")' + "?EmpId=" + EmpId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else
+                if (args.text == "Employee Mapping") {
+                    var tempData = args.text;
+
+                    var grid = $("#grdEmpGrid").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var EmpId = result[0]["EmpId"];
+                    var EmpName = result[0]["EmpName"];
+                    var path = '@Url.Content("~/Admin/GetEmpMappingList")' + "?EmpId=" + EmpId + "&SysEmpName=" + EmpName
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+                else
+                    if (args.text == "Employee Customer") {
+                        var tempData = args.text;
+
+                        var grid = $("#grdEmpGrid").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var EmpId = result[0]["EmpId"];
+                        var EmpName = result[0]["EmpName"];
+                        var path = '@Url.Content("~/Admin/EmployeeCustomerDetails")' + "?EmpId=" + EmpId
+                        $("#EmployeeCustomerDetails").ejDialog({
+                            contentUrl: path,
+                            contentType: "ajax"
+                        });
+                        $("#EmployeeCustomerDetails").ejDialog("open");
+                        //event.preventDefault();
+                        //window.location.replace(path);
+
+                    }
+                    else
+                        if (args.text == "Employee Vendor") {
+                            var tempData = args.text;
+
+                            var grid = $("#grdEmpGrid").ejGrid("instance");
+                            var result = this.getSelectedRecords();
+                            var EmpId = result[0]["EmpId"];
+                            var EmpName = result[0]["EmpName"];
+                            var path = '@Url.Content("~/Admin/EmployeeVendorDetails")' + "?EmpId=" + EmpId
+                            $("#EmployeeVendor").ejDialog({
+                                contentUrl: path,
+                                contentType: "ajax"
+                            });
+                            $("#EmployeeVendor").ejDialog("open");
+                            //event.preventDefault();
+                            //window.location.replace(path);
+
+                        }
+    }
+    </script>

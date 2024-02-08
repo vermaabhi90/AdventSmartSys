@@ -1,0 +1,351 @@
+﻿@model SmartSys.BL.DHFeedActionModel
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+
+
+@{
+    var grid = new WebGrid(source: Model.ListOfFeedActionParameters, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridActionParamContent");
+
+}
+<div class="modal-body">
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //Hide the all below elements on document load and make them visible on DropDown selection..
+
+            $('#ColNameL').hide();
+            $('#DataTypeL').hide();
+            $('#ColPosiL').hide();
+            $('#ColName').hide();
+            $('#DataType').hide();
+            $('#ColPosi').hide();
+            $('#ParamValueL').hide();
+            $('#ParamValueText').hide();
+            $('#ParamValueNum').hide();
+            $('#LineSeprator').hide()
+
+
+            $('.xyz').click(function (event) {
+
+                if (true) {
+                    var ParamName = $('#DrpDwnParam').val();
+                    var ColName = $('#ColName').val();
+                    var DataType = $('#DataType').val();
+                    var txtBox = $('#ParamValueText').val();
+                    var txtNum = $('#ParamValueNum').val();
+                    var Pos = $('#ColPosi').val();
+
+                    if (ParamName.toString() == "") {
+                        alert("Please Select Param Name")
+                        $('#ColName').val(null);
+                        $('#DataType').val(null);
+                        $('#ColPosi').val(null);
+                        $('#ChkBox').val(null);
+                        $('#ParamValueNum').val(null);
+                        $('#ParamValueText').val(null);
+                        return false;
+                    }
+
+                }
+
+                var str = "";
+                var ParamName = $('#DrpDwnParam').val();
+                if (ParamName == "NoColInFile" || ParamName == "NoFooterLine" || ParamName == "NoHeaderLine")
+                {
+                     str = $('#ParamValueNum').val();
+                    $('#ParamValueNum').val(null);
+
+                }
+                else if (ParamName == "ColumnDef")
+                {
+                    var ColName = $('#ColName').val();
+                    var DataType = $('#DataType').val();
+                    var Pos = $('#ColPosi').val();
+                    str = ColName + ',' + DataType + ',' + Pos;
+                    $('#ColName').val(null);
+                    $('#DataType').val(null);
+                    $('#ColPosi').val(null);
+
+                }
+                else if (ParamName == "LineSeparator")
+                {
+                    str = $('#LineSeprator').val();
+                    $('#LineSeprator').val(null);
+                }
+
+                else
+                {
+                     str = $('#ParamValueText').val();
+                    $('#ParamValueText').val(null);
+
+                }
+                var path = '@Url.Content("~/DhFeed/AddAtionParam")' + "?ParamName=" + ParamName + "&Value=" + str + "&method=" + "SourceInfo"
+                event.href = path;
+                $(this).attr('href', path);
+                event.preventDefault();
+                window.location.replace(path);
+                return true;
+            });
+            $("#DrpDwnParam").change(function (event) {
+
+                var ParamName = $('#DrpDwnParam').val();
+
+                if (ParamName == "NoColInFile" || ParamName == "NoFooterLine" || ParamName == "NoHeaderLine")
+                {
+
+                    $('#ColNameL').hide();
+                    $('#DataTypeL').hide();
+                    $('#ColPosiL').hide();
+                    $('#ColName').hide();
+                    $('#DataType').hide();
+                    $('#ColPosi').hide();
+                    $('#ParamValueL').show();
+                    $('#ParamValueText').hide();
+                    $('#ParamValueNum').show();
+                    $('#LineSeprator').hide()
+
+                }
+               else if(ParamName == "ColumnDef")
+                {
+                    $('#ColNameL').show();
+                    $('#DataTypeL').show();
+                    $('#ColPosiL').show();
+                    $('#ColName').show();
+                    $('#DataType').show();
+                    $('#ColPosi').show();
+                    $('#ParamValueL').hide();
+                    $('#ParamValueText').hide();
+                    $('#ParamValueNum').hide();
+                    $('#LineSeprator').hide()
+               }
+               else if (ParamName == "FileType" || ParamName == "Separator" || ParamName == "FTPServer"
+                        || ParamName == "FTPUser" || ParamName == "FTPPwd" || ParamName == "DestSP")
+               {
+
+                   $('#ColNameL').hide();
+                   $('#DataTypeL').hide();
+                   $('#ColPosiL').hide();
+                   $('#ColName').hide();
+                   $('#DataType').hide();
+                   $('#ColPosi').hide();
+                   $('#ParamValueNum').hide();
+                   $('#ParamValueL').show();
+                   $('#ParamValueText').show();
+                   $('#LineSeprator').hide()
+
+               }
+               else if(ParamName == "LineSeparator" )
+               {
+                   $('#ColNameL').hide();
+                   $('#DataTypeL').hide();
+                   $('#ColPosiL').hide();
+                   $('#ColName').hide();
+                   $('#DataType').hide();
+                   $('#ColPosi').hide();
+                   $('#ParamValueL').show();
+                   $('#ParamValueText').hide();
+                   $('#ParamValueNum').hide();
+                   $('#LineSeprator').show()
+               }
+
+            });
+
+          
+        });
+    </script>
+
+    <style type="text/css">
+        .modal-content {
+            width: 600px !important;
+            margin: 30px auto !important;
+        }
+
+        .webgrid {
+            margin: 4px;
+            border-collapse: collapse;
+            width: 800px;
+            background-color: #B4CFC3;
+        }
+
+        .webgrid-header {
+            background-color: #C1D4E6;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .webgrid th, .webgrid td {
+            border: 1px solid #C0C0C0;
+            padding: 5px;
+            align-content: center;
+        }
+
+        .webgrid-alt {
+            background-color: #E4E9F5;
+            color: #000;
+        }
+
+        .gridhead a:hover {
+            text-decoration: underline;
+        }
+
+        .webgrid-description {
+            width: auto;
+        }
+
+        .webgrid-select {
+            background-color: #71857C;
+        }
+    </style>
+
+ 
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Action Parameter Details
+    </div>
+
+    <table>
+        <tr>
+            <td><label for="ex3">Param Name:</label></td>
+            <td>
+                <div ng-app="" class="col-4  ">
+                    @Html.DropDownList("ParamName", (IEnumerable<SelectListItem>)ViewBag.ParamNameList, "Please Select Param Name", new { @class = "form-control", id = "DrpDwnParam", style = "width:310px" })
+                </div>
+            </td>
+
+        </tr>
+    </table>
+
+    <br>
+    <table>
+        <tr>
+            <td><label id="ColNameL" for="ex3">Col Name:</label></td>
+            <td>
+                <input class="form-control" id="ColName" type="text">
+            </td>
+
+            <td><label id="DataTypeL" for="ex3">Data Type:</label></td>
+            <td>
+
+
+                <div class="">
+
+                    @Html.DropDownListFor(x => x.Description, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "System.String", Value="System.String"},
+                             new SelectListItem() {Text = "System.Int32", Value="System.Int32"},
+                             new SelectListItem() {Text = "System.Boolean", Value="System.Boolean"},
+                               new SelectListItem() {Text = "System.DateTime", Value="System.DateTime"},
+                                 new SelectListItem() {Text = "System.Decimal", Value="System.Decimal"}
+                       }, "Select Data Type", new { @class = "form-control", id = "DataType" })
+                </div>
+            </td>
+
+            <td><label id="ColPosiL" for="ex3">Col Position:</label></td>
+            <td>
+
+                <input class="form-control" id="ColPosi" type="number">
+            </td>
+
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td><label id="ParamValueL" for="ex3">Param Value:</label></td>
+            <td>
+                <input class="form-control" id="ParamValueText" type="text">
+            </td>
+            <td>
+                <input class="form-control" id="ParamValueNum" type="number">
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownListFor(x => x.Description, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "New line", Value= "10"},
+                             new SelectListItem() {Text = "Carriage return", Value="13"}
+                       }, " ------ Select Line Seperator ------", new { id = "LineSeprator" })
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                <div class="col-4  ">
+                    @Html.ActionLink(" Add", " ", null, new { @class = "xyz btn btn-info glyphicon glyphicon-plus" })
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                @if (Model.ListOfFeedActionParameters.Count > 0 || Model.ListOfFeedActionParameters != null)
+                {
+
+                    @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdActionparamList")
+                        .Datasource(Model.ListOfFeedActionParameters)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("SequenceNO").HeaderText("Sequence NO").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ActionType").HeaderText("Action Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ParamName").HeaderText("Parameter Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Value").HeaderText("Parameter Value").Width(60).Add();
+                            col.HeaderText("Delete").Template("#DeleteActionFeedParam").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                    )
+
+                   
+                }
+                else
+                {
+                    <br />
+                    <div style="border:dotted 1px black" class="label label-info">
+                        No Parameters Record Found
+                    </div>
+                }
+            </td>
+
+        </tr>
+    </table>
+    <br />
+    <table>
+        <tr>
+            <td>
+                <div class="col-4  ">
+                    @Html.ActionLink("Save", "CreateFeed", new { iFeedID = 0 }, new { @class = "btn btn-success" })
+                </div>
+            </td>
+            <td></td>
+            <td>
+                <div class="col-4  ">
+                    @Html.ActionLink("Cancel", "CreateFeed", new { iFeedID = 0 }, new { @class = "btn btn-warning" })
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script id="DeleteActionFeedParam" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DhFeed/DeleteParam?Value={{:Value}}&amp;strParamName={{:ParamName}}&amp;url=SourceInfo">  Delete</a>
+</script>

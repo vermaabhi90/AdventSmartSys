@@ -1,0 +1,49 @@
+﻿@model IEnumerable<SmartSys.BL.Adhoc.AdhocParameterModel>
+
+@{
+    ViewBag.Title = "Parameter List";
+}
+
+<html>
+
+<body>
+    <div class="modal-body">
+
+
+        <div>
+           
+            <div>
+                @(Html.EJ().Grid<SmartSys.BL.Adhoc.AdhocParameterModel>("grdActionparamList")
+                        .Datasource((IEnumerable<object>)Model)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("ParamName").HeaderText("Param Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ParamValue").HeaderText("Param Value").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                )
+                @{
+
+                }
+               
+            </div>
+
+        </div>
+
+       
+    </div>
+</body>
+</html>
+
+@Html.EJ().ScriptManager()

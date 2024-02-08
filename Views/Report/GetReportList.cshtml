@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "Report List";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Report List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "GetReport", new { ReportId = "New" }, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-leaf" })
+   </div>
+    <style type="text/css">
+        .e-grid .e-excelfilter .e-btncontainer input {
+            padding: .2em .4em .3em;
+        }
+
+        ::-ms-clear {
+            display: none;
+        }
+
+        .EditBtn {
+        }
+    </style>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdReport")
+        .Datasource((IEnumerable<object>)@Model)
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+            items.AddTool(ToolBarItems.WordExport);
+            items.AddTool(ToolBarItems.PdfExport);
+        }))
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+         //.ContextMenuSettings(contextMenu =>
+         //                            {
+         //                                contextMenu.EnableContextMenu()
+         //                               .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+         //                               .CustomContextMenuItems(new List<string> { "Edit Report" });
+
+         //                            })
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Report", "Edit Record");
+             });
+
+         })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+        //.ToolbarSettings(toolbar =>
+        //    {
+        //        toolbar.ShowToolbar().ToolbarItems(items =>
+        //        {
+        //            items.AddTool(ToolBarItems.Add);
+        //            items.AddTool(ToolBarItems.Edit);
+        //            items.AddTool(ToolBarItems.Update);
+        //            items.AddTool(ToolBarItems.Cancel);
+        //        });
+        //    })
+        .Columns(col =>
+        {
+            col.Field("ReportId").HeaderText("Report Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(110).Add();
+            col.Field("ReportName").HeaderText("Report Name").Width(260).Add();
+            col.Field("BusinessLineName").HeaderText("Business Line Name").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("ReportType").HeaderText("Report Type").TextAlign(TextAlign.Left).Width(110).Add();
+            col.Field("Version").HeaderText("Version").Width(100).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(130).Add();
+            col.HeaderText("Edit").Template("#EditReportTemplate").AllowFiltering(false).Width(80).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+    <script type="text/x-jsrender" id="EditReportTemplate">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href='/Report/GetReport?ReportId={{:ReportId}}'></a>
+    </script>
+    @*<script type="text/javascript">
+            function onClick(args) {
+                var grid = $("#grdReport").ejGrid("instance");
+                var index = this.element.closest("tr").index();
+                var record = grid.getCurrentViewData()[index];
+                var ConId = record["ReportId"];
+                var path = '@Url.Content("~/SysDBCon/Edit")' + "?ReportId=" + ConId
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        </script>*@
+    <script>
+        function contextclick(args) {
+            if (args.text == "Add Record") {
+               
+                var path = '@Url.Content("~/Report/GetReport")' + "?ReportId=" + "New" 
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdReport").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var ReportId = result[0]["ReportId"];
+                
+                var path = '@Url.Content("~/Report/GetReport")' + "?ReportId=" + ReportId + "&tabIndex=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        }
+    </script>

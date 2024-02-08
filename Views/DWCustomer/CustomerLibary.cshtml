@@ -1,0 +1,90 @@
+﻿@model SmartSys.BL.DW.CustomerLibaryModel
+<script type="text/javascript">
+    $(function () {
+        $("#reset").on("click", function () {
+            $("#fileInput").val(null);
+        });
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.submit').click(function (e) {          
+            var DocumentTitle = $('#DocumentTitle').val();
+            var File = $('#fileInput').val();
+            if (DocumentTitle.toString() == "") {
+                alert("Please Enter Document Title ");
+                return false;
+            }
+            if (File.toString() == "") {
+                alert("Please Select the File ");
+                return false;
+            }
+            $("#Library").unbind('submit').submit();
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Customer Libary
+</div>
+@using (Html.BeginForm("CustomerLibary", "DWCustomer", FormMethod.Post, new { Id = "Library", enctype = "multipart/form-data" }))
+{
+    <html>
+   
+    <body>
+        <div class="">
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>@Html.HiddenFor(model => model.CustomerId)</td>
+                </tr>
+                <tr>
+                    <td><label for="Document Title">Document Title</label></td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.HiddenFor(M => M.isKYC)
+                            @Html.TextBoxFor(model => model.DocumentTitle, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.DocumentTitle, "", new { id = "DocumentTitle", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td><label for="Description">Description</label></td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Description,new  { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { id = "Description", @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="">
+                            <label>File:</label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group-btn">
+
+                            <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" />
+                        </div>
+                        
+                    </td>
+                    <td>
+                        <input type="button" id="reset" value="Remove" class="btn btn-warning" />
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                            <button type="submit" class="submit btn-xs btn-primary glyphicon glyphicon-save-file"> Upload</button>                     
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

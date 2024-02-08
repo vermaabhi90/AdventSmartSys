@@ -1,0 +1,555 @@
+﻿@model SmartSys.BL.TimeManagement.TMEquipmentModel
+
+@{
+    ViewBag.Title = "CreateEquipment";
+  
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@if (Model.EquipmentId > 0)
+{
+
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit New Equipment
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create New Equipment
+    </div>
+}
+
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#Itemid").select2({
+            placeholder: "Please Select a Item",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+   
+</script>
+
+<style type="text/css">
+    .modal-content {
+        width: 100% !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 100%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content:center;
+        color: #483D8B;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;      
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+   }
+    .Quantity {
+          text-align: right;          
+    }
+     .Quantity-header {
+          text-align: right;          
+    }
+     .webgrid tr th:nth-child(4)
+     {
+         text-align: right;     
+     }
+      .webgrid tr th:nth-child(6)
+     {
+         text-align: right;     
+     }
+       .webgrid tr th:nth-child(5)
+     {
+         text-align: right;     
+     }
+
+</style>
+
+@{
+
+    var gridEquipmentdetail = new WebGrid(source: Model.lstItems, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+    var gridSegment = new WebGrid(source: Model.lstSegment, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDe");
+}
+
+<script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#myDiv').click(function () {
+
+
+                var EquipmentId = $('#EquipmentId').val();
+              
+                var Quantity = $('#Quantity').val();
+                var PurchaseRate = $('#PurchaseRate').val();
+                if (PurchaseRate.toString() == "") {
+                    alert("Please Enter  PurChase Rate");
+                    return false;
+                }
+                var SaleRate = $('#SaleRate').val();
+                if (SaleRate.toString() == "") {
+                    alert("Please Enter Sale Rate");
+                    return false;
+                }
+            
+                var Itemid = $('#Itemid').val();
+              
+                var url = '@Url.Action("saveEquipmentparam", "Budget")';
+               
+                var data = { Quantity: Quantity, Itemid: Itemid, EquipmentId: EquipmentId, PurchaseRate: PurchaseRate, SaleRate: SaleRate };
+                
+                $.post(url, data, function (result) {
+
+                });
+
+            });
+            $('#AddSegment1').click(function () {
+                var EquipmentId = $('#EquipmentId').val();                
+                var SegmentId = $('#SegmentId').val();
+                if (SegmentId.toString() == "") {
+                    alert("Please Select Segment ");
+                    return false;
+                }
+
+                var path = '@Url.Content("~/Budget/SaveSegmentDetail")' + "?SegmentId=" + SegmentId + "&EquipmentId=" + EquipmentId
+                event.preventDefault();
+                window.location.replace(path);                              
+            });
+        });
+    </script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var EquipmentName = $('#EquipmentName').val();
+            var TAM = $('#TAM').val();
+           
+            if (EquipmentName.toString() == "") {
+                alert("Please Enter Equipment Name ");
+                return false;
+            }
+            if (TAM.toString() == "") {
+                $('#TAM').val(0);
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+<style type="text/css" class="cssStyles">
+    .txt {
+        display: block;
+        margin-bottom: 12px;
+    }
+</style>
+@using (Html.BeginForm("CreateEquipment", "Budget", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>  
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                @*@if(Model.EquipmentId > 0)
+            {
+            <td>
+                <label for="Description">EquipMent ID:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.EquipmentId, new { @readonly = "readonly" })
+                </div>
+            </td>
+            }*@
+                <td>
+                    <label for="EquipmentName">Equipment Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.EquipmentId, new { id = "EquipmentId" })
+                        @Html.TextBoxFor(model => model.EquipmentName, new { @class = "form-control", id = "EquipmentName" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Parent Equipment">Parent Equipment</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ParentEquipmentId", (IEnumerable<SelectListItem>)ViewBag.ParentEquipment, "--- Please Select Equipment ---", new {  @class = "form-control ropdown1" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Rate">Equipment Cost</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Rate, new { @Type = "number", id = "Rate", step = "any", @class = "form-control" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Rate">Currency</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CurrencyCodes", (IEnumerable<SelectListItem>)ViewBag.Currency, new {  id = "Currency", @class = "form-control " })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="TAM">TAM</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TAM, new { @Type = "number", id = "TAM", step = "any", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="AdventCost">Advent Cost</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.AdventRate, new { @Type = "number", id = "AdventRate", step = "any", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="TAMSource">TAM Source</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TAMSource, new { @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="TAMDate">TAM Date</label>
+                </td>
+                @if (Model.TAMDate.ToShortDateString() == "1/1/0001")
+                {
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePickerFor(model => model.TAMDate).Value(DateTime.Now)
+                        </div>
+                    </td>
+                        
+                }
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePickerFor(model => model.TAMDate)
+                        </div>
+                    </td>
+                      
+                }
+
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { @style = "Width: 800Px; max-width: 800px;", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>            
+            </table>
+        <br>
+        <table>
+            @if (Model.EquipmentId > 0)
+            {
+                <tr>
+                    <td>
+                        <label for="Item">Modified By: </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Item">Modified Date: </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+        <br />
+        <div style="width:100%">
+
+            @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("AddItem").Text("AddItem").ContentTemplate(
+                @<div>
+                     <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                         @if (Model.EquipmentId > 0)
+                         {
+                             <tr>
+                                 <td>
+                                     <label for="Item">Item Name: </label>
+                                 </td>
+                                 <td>
+                                     <div class="">
+                                         @Html.DropDownList("ItemId", (IEnumerable<SelectListItem>)ViewBag.itemlist, "--- Please Select Item ---", new { style = "width:300px", id = "Itemid", @class = "form-control ropdown1" })
+                                     </div>
+                                 </td>
+                                 <td>
+                                     <label for="Description">Quantity: </label>
+                                 </td>
+                                 <td>
+                                     <div class="">
+                                         @Html.TextBoxFor(model => model.Quantity, new { @class = "form-control", id = "Quantity", @type = "number", step = "any" })
+                                     </div>
+                                 </td>
+                                 <td>
+                                     <button type="button" class="btn-xs btn-success valid " id="myDiv" onclick="window.location.reload()">Add</button>
+                                 </td>
+
+                             </tr>
+                             <tr>
+                                 <td>
+                                     <label for="">Sales Rate</label>
+                                 </td>
+                                 <td>
+                                     <div class="">
+                                         @Html.TextBoxFor(model => model.SaleRate, new { @class = "form-control", id = "SaleRate", @type = "number", step = "0.01" })
+                                     </div>
+                                 </td>
+                                 <td>
+                                     <label for="">Purchase Rate</label>
+                                 </td>
+                                 <td>
+                                     <div class="">
+                                         @Html.TextBoxFor(model => model.PurchaseRate, new { @class = "form-control", id = "PurchaseRate", @type = "number", step = "0.01" })
+                                     </div>
+                                 </td>
+                             </tr>
+
+                         }
+                     </table>
+
+                    <div>
+
+                        @if (Model.lstItems.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.TimeManagement.TMEquipmentModel>("grdEquipmentLst")
+                            .Datasource(Model.lstItems)
+                            .AllowFiltering()
+                            .AllowPaging()
+                            .AllowSorting()
+                            .EnableHeaderHover()
+                            .AllowResizing()
+                            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                            .AllowScrolling()
+
+                                    .PageSettings(p => { p.PageSize(20); })
+                            .EnableAltRow(true)
+                            .AllowSorting(true)
+                            .Columns(col =>
+                            {
+                                col.Field("ItemId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+                                col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.Field("ItemName").HeaderText("Item Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(150).Visible(true).Add();
+                                col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.Field("SaleRate").HeaderText("Sale Rate").TextAlign(TextAlign.Center).Width(60).Add();
+                                col.Field("PurchaseRate").HeaderText("Purchase Rate").TextAlign(TextAlign.Center).Width(60).Add();
+                                col.Field("ModifiedById").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+                                col.HeaderText("Remove").Template("#RemoveEquipment").TextAlign(TextAlign.Left).Width(120).Add();
+                            })
+                                )
+                            </div>
+                            
+                        }
+                        else if (Model.EquipmentId > 0)
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>NOTE: There is No Item Under This Equipment !!!</label>
+                            </div>
+
+                        }
+
+                    </div>
+
+                </div>);
+               data.Add().ID("AddSegment").Text("Add Segment").ContentTemplate(
+                @<div>
+                    <table>
+                        @if (Model.EquipmentId > 0)
+                        {
+                            <tr>
+                                <td>
+                                    <label for="Segment">Segment: </label>
+                                </td>
+                                <td>
+
+
+                                    <div class="">
+                                        @Html.DropDownList("SegmentId", (IEnumerable<SelectListItem>)ViewBag.DrpSegment, "--- Please Select Segment ---", new { style = "width:300px", id = "SegmentId", @class = "form-control ropdown1" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn-xs btn-success valid " id="AddSegment1">Add</button>
+                                </td>
+
+                            </tr>
+
+                        }
+                    </table>
+                    <div>
+
+                        @if (Model.lstSegment.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.TimeManagement.TMEquipmentModel>("grdSegmentLst")
+                            .Datasource(Model.lstSegment)
+                            .AllowFiltering()
+                            .AllowPaging()
+                            .AllowSorting()
+                            .EnableHeaderHover()
+                            .AllowResizing()
+                            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                            .AllowScrolling()
+
+                                    .PageSettings(p => { p.PageSize(20); })
+                            .EnableAltRow(true)
+                            .AllowSorting(true)
+                            .Columns(col =>
+                            {
+                                col.Field("SegmentId").HeaderText("Segment Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                                col.Field("SegmentName").HeaderText("Segment Name").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.HeaderText("Remove").Template("#Removesegment").TextAlign(TextAlign.Left).Width(60).Add();
+
+                            })
+
+
+
+
+
+
+                                )
+                            </div>
+
+
+                        }
+                        else if (Model.EquipmentId > 0 && Model.lstSegment.Count == 0)
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>NOTE: There is No Segment Under This Equipment !!!</label>
+                            </div>
+
+                        }
+
+                    </div>
+
+                </div>);
+
+           })
+      .EnablePersistence(true)
+    .Render();}
+        </div>
+
+
+
+            <br />
+            <table>
+                <tr>
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'EquipmentList';" );"> Back</button>
+                    </td>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+</body>
+</html>
+}
+
+<script>
+    $(document).ready(function () {
+        
+        $("#Itemid").change(function () {
+            $("#PurchaseRate").empty()
+            $("#SaleRate").empty()
+         var path1 = "/Budget/GetSalesPurchaseRateByItem"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { Itemid: $("#Itemid").val() },
+                success: function (lst) {
+                    var PurchaseRate = lst[0]
+                    $("#PurchaseRate").val(PurchaseRate)
+                    var SaleRate = lst[1]
+                    $("#SaleRate").val(SaleRate)
+                  },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });
+
+            return false;
+        })
+    });
+</script>
+
+<script id="Removesegment" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Budget/DeleteEquipmentSegment?EquipmentId=@Model.EquipmentId&amp;SegmentId={{:SegmentId}}">  Remove</a>
+</script>
+<script id="RemoveEquipment" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Budget/DeleteEquipmentItem?EquipmentId=@Model.EquipmentId&amp;ItemId={{:ItemId}}">  Remove</a>
+</script>

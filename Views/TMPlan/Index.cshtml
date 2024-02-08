@@ -1,0 +1,371 @@
+﻿@model SmartSys.BL.TMPlan.TMPlanModel
+
+@{
+    ViewBag.Title = "TM Plan Employee List";
+}
+
+
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $("#DrpDwnLst").select2({
+            placeholder: "Please Select Employee",
+            allowClear: true,
+            tags: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<style>
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: auto;
+        max-width: 600px;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 450px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');            
+        }
+    });
+
+
+</script>
+<div  class="glyphicon text-info">
+  
+        <table>
+            <tr>  
+                <td>
+                        <div class="page-header glyphicon glyphicon-list">
+                            TMPlan List  @Html.DropDownList("EmpId", (IEnumerable<SelectListItem>)ViewBag.EmpSubordinatesList, "Please Select Employee", new { @class = "DrpDwnLst", id = "DrpDwnLst", style = "width:200px" })
+                            &nbsp;&nbsp;
+                         </div>
+                </td>             
+                <td>
+                    <button type="button" name="RunReport" class="btn-xs btn-success glyphicon glyphicon-thumbs-up RunReport"> Run Report</button>
+                    @if (Model.StatusId == 9)
+                    {
+                        <button type="button" name="Open" class="btn-xs btn-success glyphicon glyphicon-thumbs-up Open"> Open</button>
+                    }
+                    else if (Model.StatusId == 10)
+                    {
+                        <button type="button" name="Open" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</button>
+                    }
+                    else if (Model.StatusId == 2 || Model.StatusId == 3)
+                    {
+                        <button type="button" name="Open" class="btn-xs btn-info glyphicon glyphicon-refresh"> Report Running</button>
+                    }
+                    else
+                    {
+                        <label>Please Run The Report</label>
+                    }
+                    &nbsp;
+                    @if (Model.StatusId > 0)
+                    {
+                        <label> Run Date: </label>  <label> @Model.RunDate</label>
+                        <label> Emp Name: </label>  <label> @Model.RunEmpName</label>
+                    }
+
+
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+<br />
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.RGSGenModel>("grdTMPlanList")
+                .Datasource((IEnumerable<object>)@Model.LstEmployee)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+
+
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("EmpId").HeaderText("Employee Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmpName").HeaderText("Employee Name").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+
+            col.HeaderText("Plan").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "PlanBtn",
+                           Text = "Plan",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .AllowFiltering(false)
+            .Template("#BtnEdit")
+
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+        })
+                 .ChildGrid(child =>
+                 {
+
+                     child.Datasource((IEnumerable<object>)ViewBag.PlanCalList)
+                     .AllowResizing(true)
+                      .AllowSorting()
+                      .AllowFiltering()
+                       .EnableHeaderHover()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })                   
+                      .ContextMenuSettings(contextMenu =>
+                      {
+                          contextMenu.EnableContextMenu();
+                          contextMenu.DisableDefaultItems();
+                          contextMenu.CustomContextMenuItems(c =>
+                          {
+                              c.AddItem("Approve_Plan", "Approve Plan");
+                              c.AddItem("Delete_Plan", "Delete Plan");
+                          });
+                      })
+                     .AllowScrolling()
+                    .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                    {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                    }))
+                    .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportPlanLst")))
+                     .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                     .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                     .QueryString("EmpId")
+                     .AllowPaging()
+                       .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template2"))
+                     .Columns(col =>
+                     {
+                         col.Field("EmpId").Visible(true).AllowEditing(false).HeaderText("Emp ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).AllowFiltering(true).Add();
+                         col.Field("PlanId").Visible(true).AllowEditing(false).HeaderText("Plan ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).AllowFiltering(true).Add();
+                         col.Field("ProjectName").Visible(true).AllowEditing(false).HeaderText("Project Name").TextAlign(TextAlign.Center).Width(160).Add();
+                         col.Field("statusId").Visible(false).AllowEditing(false).HeaderText("statusId").TextAlign(TextAlign.Center).Width(160).Add();
+                         col.Field("TaskName").HeaderText("Task Name").Width(160).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+                         col.Field("StartDate").HeaderText("Start Time").Format("{0: HH:mm}").Width(80).Add();
+                         col.Field("EndDate").HeaderText("End Time").Format("{0: HH:mm}").Width(80).Add();
+                         col.Field("Repete").HeaderText("Repeted").Width(60).Add();
+                         col.Field("AllDay").HeaderText("AllDay").Width(50).Add();
+                         col.Field("FrequencyTypeDetail").HeaderText("Frequency").Width(80).Add();
+                         col.Field("StartDate").HeaderText("Start Date").Format("{0:dd/MMM/yyyy}").Width(80).Add();
+                         col.Field("OnDate").HeaderText("End Date").Format("{0:dd/MMM/yyyy}").Width(80).Add();
+                         col.Field("status").Visible(true).AllowEditing(false).HeaderText("Status").TextAlign(TextAlign.Center).Width(160).Add();
+                         col.Field("Remark").HeaderText("Remark").Width(150).Add();
+                         col.Field("ModifiedBy").HeaderText("Modified By").Width(150).Add();
+                         col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(100).Add();
+                         //col.HeaderText("Approve").Template("#AppvePlan").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+                         //col.HeaderText("Delete").Template("#EditRiskTask").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+
+                     });
+
+                 })
+    )
+</div>
+<script id="BtnEdit" type="text/x-jsrender">
+    <a class="btn-xs btn-success  glyphicon glyphicon-book black" href="/TMPlan/CreatePlan?EmpID={{:EmpId}}&amp;PlanID=0"></a>
+</script>
+@*<script type="text/x-jsrender" id="EditRiskTask">
+    {{if statusId == '24' || statusId == '25'}} 
+    {{else}}
+    <a class="btn-xs btn-danger  glyphicon glyphicon-pencil black" href='/TMPlan/DeletePlan?PlanId={{:PlanId}}'></a>
+    {{/if}}
+    
+
+</script>
+<script type="text/x-jsrender" id="AppvePlan">
+    {{if statusId == '24' || statusId == '25'}}
+    {{else}}
+    <a class="model-link btn-xs btn-danger  glyphicon glyphicon-pencil black" href='/TMPlan/ApprovePlan?EmpID={{:EmpId}}&amp;PlanId={{:PlanId}}'></a>
+    {{/if}}   
+</script>*@
+@{
+    Html.EJ()
+        .Dialog("CreateQuotView")
+        .Title("<a id='Title2'>Approve Plan</a>")
+        .Width(900)
+        .Height(650)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateQuotView").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateQuotView").ejDialog("open");
+        }
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Approve Plan") {
+            var grid = $("#grdTMPlanList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var EmpId = result[0]["EmpId"];
+            var PlanId = result[0]["PlanId"];
+            var status = result[0]["status"];
+            if (status == 'NEW')
+            {
+                var path = '@Url.Content("~/TMPlan/ApprovePlan")' + "?EmpID=" + EmpId + "&PlanId=" + PlanId
+                $("#CreateQuotView").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateQuotView").ejDialog("open");
+            }
+            else
+            {
+                alert("Plan alredy Approved OR Reject")
+                return false;
+            }
+        }
+        else if (args.text == "Delete Plan") {
+            var grid = $("#grdTMPlanList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var PlanId = result[0]["PlanId"];
+            var status = result[0]["status"];
+            if (status == 'NEW' || status == 'Reject') {
+                var agree = confirm("Are you sure you want to delete?");
+                if (agree) {
+                    var path = '@Url.Content("~/TMPlan/DeletePlan")' + "?PlanId=" + PlanId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+                else {
+                    return false;
+                }
+                @*var agree = confirm({
+
+                    message: "You Want to Delete Plan!",
+                    buttons: {
+                        agree: {
+                            label: 'Yes',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var path = '@Url.Content("~/TMPlan/DeletePlan")' + "?PlanId=" + PlanId
+                            event.preventDefault();
+                            window.location.replace(path);
+                        }
+                    }
+                });*@
+            }
+            else {
+                toastr.error("This Plan is Approved You Can not Delete!");
+            }
+        }
+        return false;
+    }
+</script>
+<script>
+    $(document).ready(function () {        
+        $('.RunReport').click(function (e) {
+            if ($('#DrpDwnLst').val() == "")
+            {
+                alert("Please Select Employee");
+                return false;
+            }
+            var TxtParamValue = $('#DrpDwnLst').val();
+            var selTypeText = '@Model.TxtParamValue';
+            var ParamId='@Model.ParamId';
+            var hidText="";
+            var ParamValue = $('#DrpDwnLst').val();           
+            var Parmname=null;
+            var ReportId = '@Model.ReportId';
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/AdhocReporting/ReportParam",                
+                data:{ hidText :hidText,TxtParamValue:TxtParamValue,ParamId:ParamId,ReportId:ReportId},
+                success: function (data) {
+                    var path = '@Url.Content("~/AdhocReporting/ReportParam")'+ "?ReportId=" + '@Model.ReportId'+ "&Parmname=" +Parmname +"&ParamValue=" +ParamValue ;
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            window.location.reload();
+            return false;
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.Open').click(function (e)
+        {
+            var path = '@Url.Content("~/AdhocReporting/Download")' + "?FileName=" +  '@Model.OutputLocation'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+    });
+</script>

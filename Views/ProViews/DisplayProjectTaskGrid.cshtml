@@ -1,0 +1,59 @@
+﻿@model SmartSys.BL.ProViews.EmpCalenderModel
+
+<div>
+   
+    @(Html.EJ().TreeGrid("TreeGridContainer")
+            .TreeColumnIndex(1)
+            .AllowColumnResize(true)
+            .ChildMapping("GetChildList")
+            .IsResponsive(true)
+            .ToolbarSettings(tool =>
+            {
+                tool.ShowToolbar(true);
+                tool.ToolbarItems(new List<TreeGridToolBarItems>()
+                 {
+                      TreeGridToolBarItems.ExcelExport,
+                 });
+            })        
+            .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelTreeGrid", new { StartDate = Model.StartDate, EndDate = Model.EndDate ,EmpId=Model.EmpId })))
+            .EnableCollapseAll(true)
+            .AllowSorting(true)
+            .AllowMultiSorting(true)
+            .ShowColumnChooser(true)
+            .AllowFiltering(true)
+
+          .Columns(co =>
+          {
+            co.Field("Id").HeaderText("Id").EditType(TreeGridEditingType.Numeric).Visible(false).Add();
+            co.Field("ProjectName").HeaderText("Project Name").EditType(TreeGridEditingType.String).TextAlign(TextAlign.Left).Width(180).Add();
+            co.Field("Timespend").HeaderText("Timespend").EditType(TreeGridEditingType.Numeric).TextAlign(TextAlign.Right).Width(120).Add();
+            co.Field("ActualDate").HeaderText("StartDate").EditType(TreeGridEditingType.Datepicker).Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(120).Add();
+            co.Field("Status").HeaderText("Status").EditType(TreeGridEditingType.String).TextAlign(TextAlign.Left).Width(150).Add();
+            co.Field("Remark").HeaderText("Remark").EditType(TreeGridEditingType.String).TextAlign(TextAlign.Left).Width(180).Add();
+            co.Field("CustomerName").HeaderText("Customer Name").EditType(TreeGridEditingType.String).TextAlign(TextAlign.Left).Width(180).Add();
+            co.Field("VendorName").HeaderText("Vendor Name").EditType(TreeGridEditingType.String).TextAlign(TextAlign.Left).Width(180).Add();
+        }
+          )
+              .ClientSideEvents(cv => cv.ContextMenuOpen("contextMenuOpen"))
+              .ContextMenuSettings(cms => cms.ShowContextMenu(true)
+              .ContextMenuItems(new List<TreeGridContextMenuItems>() {
+              TreeGridContextMenuItems.Add
+    }))
+
+
+             .SizeSettings(ss => ss.Width("100%").Height("570px"))
+             .EnableResize(true)
+             .EditSettings(e => e.AllowAdding(false))
+             .Datasource(ViewBag.ShowEmpTaskLst)
+
+    )
+
+
+</div>
+
+
+
+
+
+
+@Html.EJ().ScriptManager()

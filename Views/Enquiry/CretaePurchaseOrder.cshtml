@@ -1,0 +1,734 @@
+﻿@model SmartSys.BL.Enquiry.CustomerPOModel
+
+@{
+    ViewBag.Title = "CretaePurchaseOrder";
+}
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/rating.css" rel="stylesheet" />
+<script src="~/Scripts/rating.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.min.js"></script>
+<script type="text/javascript">
+    
+    $(function () {       
+        $("#Customerdrp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<script>
+    $(document).ready(function (e) {
+        var str = '@(TempData["Message"])'.toString();
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');
+        }
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+        $(function ()
+        {
+            $('.rating').rating();
+        });
+</script>
+@if (Model.PurchaseOrderId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Sales Order
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Sales Order
+    </div>
+}
+
+@using (Html.BeginForm("CretaePurchaseOrder", "Enquiry", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            @if (Model.PurchaseOrderId > 0)
+            {
+                <td>
+                    <label>Sales Order ID</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PurchaseOrderId, new {id="PurchaseOrderId_", @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+        </tr>
+        <tr>
+
+            <td>
+                <div class="">
+                    <label>Customer</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.Status, new { id = "StatusId" })
+                    @Html.HiddenFor(model => model.DocumentFile, new { id = "StatusId" })
+                    @Html.HiddenFor(model => model.DocumentFileOld, new { id = "StatusId" })
+                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerLst, "--- Please Select Customer ---", new { @class = "CustDrp form-control", style = "width:310px", id = "Customerdrp" })
+                </div>
+            </td>
+            <td>
+                <label>Company</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = " CompanyDrp form-control", style = "width:200px", id = "Compdrp" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <div class="">
+                    <label>PO Number</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { @class = "form-control", id = "PurchaseOrderNumber" })
+                </div>
+            </td>
+            <td>
+                <label>PO Date</label>
+            </td>
+            @if (Model.Status == 26 || Model.Status == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePicker("PODate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePicker("PODate").Value(Model.PODate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+                    </div>
+                </td>
+            }
+
+            <td>
+                <label>Document File:</label>
+            </td>
+            <td>
+            <td id="upFile4">
+                <div class="input-group-btn">
+
+                    <input type="file" name="file" id="file" multiple value="uploadfile" class="btn btn-success" />
+                </div>
+
+            </td>
+            @if (Model.DocumentFile.Length > 5)
+            {
+                <td id="upFile4">
+                    <div class=" input-group-btn">
+                        @Html.ActionLink(" Open", "Download", new { PurchaseOrderId = Model.PurchaseOrderId, Filename = Model.DocumentFile }, new { @class = "btn btn-info glyphicon glyphicon-open" })
+                    </div>
+                </td>
+            }
+
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td width="110px">
+                <div class="">
+                    <label>Remark</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 800Px; max-width: 540px;", @class = "form-controal", id = "Remarkabc" })
+                </div>
+            </td>  
+            <td>
+                <label>SO Order No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.SalesOrderNo, new {id= "SalesOrderNo_", @class = "form-control", @readonly = "Readonly" })                   
+                </div>
+            </td>
+            @if (Model.Status == 58)
+            {
+            <td>
+                <button type="button" id="EditSO" class="btn btn-primary glyphicon glyphicon-pencil"></button>
+            </td>
+            }
+        </tr>
+    </table>
+    if (Model.PurchaseOrderId > 0)
+    {
+        <table>
+            <tr>                
+                <td>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdPODetailLst")
+                .Datasource((IEnumerable<object>)@Model.PODetaillist)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                 .ContextMenuSettings(contextMenu =>
+                 {
+                     contextMenu.EnableContextMenu()
+                         .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                         .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord))
+                         .CustomContextMenuItems(c =>
+                         {
+                             c.AddItem("Delete_Record", "Delete Record");
+                         });
+
+                 })
+
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .ToolbarSettings(toolbar =>
+                {
+                    toolbar.ShowToolbar().ToolbarItems(items =>
+                    {
+                        items.AddTool(ToolBarItems.Add);
+                        items.AddTool(ToolBarItems.Edit);
+                        //items.AddTool(ToolBarItems.ExcelExport);
+                    });
+                })
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("QuotationId").HeaderText("QuotationId").Visible(true).TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("QuotationName").HeaderText("Quotation").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Rate").HeaderText("Rate").Width(70).Add();
+            col.Field("Remark").HeaderText("Remark").Width(100).Add();
+            col.Field("ExpectedDateStr").Visible(true).AllowEditing(true).HeaderText("Expected Date").Width(50).Add();
+            //col.Field("ApprovedBy").HeaderText("Approved By").Width(40).Add();
+            //col.Field("ApprovedDatestr").HeaderText("Approved Date").Width(40).Add();            
+            //col.Field("ModifiedBy").HeaderText("Modified By").Width(40).Add();
+            //col.Field("ModifiedDatestr").HeaderText("Modified Date").Width(40).Add();
+            col.Field("PurchaseDetailOrderId").Visible(false).HeaderText("PurchaseDetailOrderId").Width(40).Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.ContextClick("contextclick");
+            })
+                        )
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+    }
+    <br><br>
+    <table>
+       
+            @if (Model.PurchaseOrderId > 0)
+            {
+                <tr>
+                    <td>
+                        <label> Created By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>Created Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Modified By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+
+                    <td>
+                        <label>Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+       
+    </table>
+    <table>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'CustPOList';" );"> Back</button>
+            </td> 
+            @if (Model.Status == 0 || Model.Status == 26 || Model.Status == 25)
+            {
+                <td id="btnSave">
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+            }
+            @if (Model.Status == 26 || Model.Status == 25)
+            {
+                <td id="btnApprov">
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="Send4Approval" class="btn-xs btn-info glyphicon glyphicon-check"> Send for Approval</button>
+                    </div>
+                </td>
+            } 
+            <td>
+                <div class="btn" aria-label="...">
+                    <input type="text" name="Rating" id="Rating" value=@Model.Rating class="rating rating10" />
+                </div>
+            </td>           
+        </tr>
+    </table>        
+}
+@{Html.EJ().Dialog("dialogIcon").Title("Edit / Create Purchase Order Detail").ContentTemplate(@<div>
+
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Edit / Create Purchase Order Detail
+            </div>
+            <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+
+                <tr>
+                    <td>
+                        <label>Purchase Detail Id:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" readonly="readonly" id="PurDetlId" name="PurDetlId" class="form-control" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Item:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.HiddenFor(n => n.Type, new { id = "Type" })
+                            @Html.HiddenFor(n => n.OldItemId, new { id = "OldItemId" })
+                            @Html.DropDownList("ItemId", (IEnumerable<SelectListItem>)ViewBag.ItemList, "--- Please Select Item ---", new { id = "ItemDrp", @class = "form-control", style = "width:310px" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>Quotation:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.HiddenFor(n => n.QuotationId, new { id = "QuotationId" })
+                            @Html.DropDownList("QuotationId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Quotation ---", new { id = "QuotLst", @class = " drp form-control", style = "width:310px" })                                               
+                          </div>
+                        
+                    </td>
+                    <td>
+                        <div class="">
+                            <button type="button" id="getrec" name="getrec" class="btn btn-success glyphicon glyphicon-record"></button>
+                            </div>
+</td>
+                    <td>
+                        <a id="link1"><i class="glyphicon glyphicon-info-sign"></i> </a>
+                        @Html.EJ().Tooltip("link1").Content(" If you want to Use Quotation Rate and Quantity use this Button")
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Quantity:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="number"  id="Quantity" name="Quantity" class="form-control" />
+                        </div>
+                    </td>
+                    <td>
+                        <label>ExpectedDate:</label>
+                    </td>
+                    <td>
+                        <div class="">
+
+                            <input type="text" id="ExpectedDateee" class="epdt" />
+
+                        </div>
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td>
+                        <label>Rate:</label>
+                    </td>
+                    <td>
+                        <div class="">
+
+                            <input type="number" id="Rate" name="Rate" class="form-control" />
+
+                        </div>
+                    </td>
+                </tr>
+               
+
+            </table>
+            <table>
+                <tr>
+                   
+                    <td>
+                        <label>Remark:</label>
+                    </td>
+                    <td> 
+                        <div class="">
+                            <textarea id="Remark" name="Remark" required="required" style="width:425px;max-width:500px" class="abc form-control e-ejinputtext"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+    <br>
+            <table align="left">
+                <tr>
+                    <td width="100px" style="padding-left:40px">
+                        <div class="btn" aria-label="...">
+                            <button type="button" id="SavePO" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                        </div>
+
+                    </td>
+                   
+                </tr>
+            </table>
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+
+<script>
+    $('#SavePO').click(function () {
+      
+        var Itemid = $("#ItemDrp").val();
+        var ItemName = $("#ItemDrp :selected").text();
+        var QuotationId= $("#QuotLst").val();
+        var QuotationName = $("#QuotLst :selected").text();
+        var Quantity = $("#Quantity").val();
+        var Remark = $(".abc").val();
+        var ExpectedDate = $(".epdt").val();
+        var Rate=$("#Rate").val();
+        var PurDetlId=$("#PurDetlId").val();
+        if(Itemid.toString() == "")
+        {
+            alert("Please Select Item");
+            return false;
+        }
+        if(QuotationId.toString() == "")
+        {
+            alert("Please Select Quotation");
+            return false;
+        }
+        if (Quantity.toString() == "") {
+            alert("Please Enter Quantity");
+            return false;
+        }
+        if (ExpectedDate.toString() == "") {
+            alert("Please Select ExpectedDate");
+            return false;
+        }
+        if (Remark.toString() == "") {
+            alert("Please Enter Remark");
+            return false;
+        }
+        var OldItemId=$("#OldItemId").val();
+        var Type=$("#Type").val();     
+        if(Type == 1)
+        {
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/ChkPOItemDup",  //Update is Server side method
+                data: { Itemid: Itemid, PurchaseOrderId:@Model.PurchaseOrderId},
+                success: function (result) {
+                    if(result == "Success")
+                    {
+                        $.ajax({
+                            dataType: 'json',
+                            type: "POST",
+                            url: "/Enquiry/AddPODetailNewData",  //Update is Server side method
+                            data: { Itemid: Itemid, Quantity: Quantity, Remark: Remark, ExpectedDate: ExpectedDate, ItemName: ItemName, QuotationId:QuotationId,QuotationName:QuotationName,PurchaseOrderId:@Model.PurchaseOrderId,Rate:Rate,PurchaseDetailOrderId:PurDetlId},
+                            success: function (result) {
+                                var obj = $("#grdPODetailLst").ejGrid("instance")
+                                obj.dataSource(result);
+                                $('#d').hide();
+                                toastr.success("Item Saved Successfully!");
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                                toastr.error(errorThrown);
+                            }
+                        });
+                    }
+                    else{
+                        alert("This Item already available in Purchase Order Detail... ")
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+        else
+        {
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/AddPODetailData",  //Update is Server side method
+                data: { Itemid: Itemid, Quantity: Quantity, Remark: Remark, ExpectedDate: ExpectedDate, ItemName: ItemName, QuotationId:QuotationId,QuotationName:QuotationName,PurchaseOrderId:@Model.PurchaseOrderId,Rate:Rate,OldItemId:OldItemId,PurchaseDetailOrderId:PurDetlId},
+                success: function (result) {
+                    var obj = $("#grdPODetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    $("#dialogIcon").ejDialog("close");
+                    toastr.success("Item Saved Successfully!");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }       
+        //$("#ItemDrp").val('1').trigger('change');
+        $("#QuotLst").val(null);
+        $("#Quantity").val(null);
+        $(".epdt").val(null);
+        $("#Rate").val(null);
+        $(".abc").val(null);
+        $("#dialogIcon").ejDialog("close");      
+    });
+
+    function toolClick(args) {
+        var StatusId=$("#StatusId").val();              
+            if(args.requestType == "add")
+            { 
+                if(StatusId == 26 || StatusId == 25)
+                {
+                    $("#QuotationId").val(0); 
+                    $("#Type").val(1);
+                    $("#PurDetlId").val(0);
+                    $("#dialogIcon").ejDialog("open");
+                    return false;  
+                }
+                else
+                {
+                    toastr.error("Purchase Order Process For Approval.You can't Add.....");
+                    return false;
+                }
+            }
+            if (args.requestType == "beginedit")
+            {
+                if(StatusId == 26 || StatusId == 25)
+                {
+                    $("#QuotationId").val(args.row.children().eq(3).text());
+                    $("#ItemDrp").val(args.row.children().eq(0).text()).trigger("change")           
+                    // $("#QuotLst").val(args.row.children().eq(2).text()).trigger("change")            
+                    $(".abc").val(args.row.children().eq(7).text());
+                    $("#Quantity").val(args.row.children().eq(5).text());
+                    var now=args.row.children().eq(8).text();
+                    var mydate = new Date("MM/dd/yyyy");
+                    mydate=now
+                    $("#ExpectedDateee").val(mydate);             
+                    $("#Rate").val(args.row.children().eq(6).text());  
+                    $("#Type").val(2);
+                    $("#OldItemId").val(args.row.children().eq(0).text());
+                    $("#PurDetlId").val(args.row.children().eq(11).text());
+                    $("#dialogIcon").ejDialog("open");
+                    return false;  
+                }
+                else
+                {
+                    toastr.error("Purchase Order Process For Approval.You can't Modified.....");
+                    return false;
+                }
+            }             
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ExpectedDateee").ejDatePicker({  dateFormat: "MM/dd/yyyy" });
+        function onDialogClose(args) {
+           // $("#ItemDrp").val('1').trigger('change');
+            $("#QuotLst").val(null);
+            $("#Quantity").val(null);
+            $(".epdt").val(null);
+            $("#Rate").val(null);
+            $(".abc").val(null);
+            $("#dialogIcon").ejDialog("close");
+            return false;
+        };   
+        $('#Send4Approval').click(function () {  
+            
+            var  PurchaseOrderId= $("#PurchaseOrderId_").val();
+           
+            var path = "/Enquiry/SendPOForApproval"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { PurchaseOrderId: PurchaseOrderId },
+                success: function (result) { 
+                    if(result =="Success")
+                    {
+                       
+                        $("#btnApprov").hide();
+                        $("#btnSave").hide();
+                    }                   
+                },
+                error: function (ex) {
+                    alert('There are Occer Some Error.Please Try Again....');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#ItemDrp').change(function () {        
+            $("#QuotLst").empty()
+            var  QuotationId= $("#QuotationId").val();          
+            $('#QuotLst').append('<option value="">Please Select Quotation</option>');
+            var path = "/Enquiry/GetQuotationListByItem"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ItemId: $("#ItemDrp").val() },
+                success: function (Brands) {                  
+                    $.each(Brands, function (i, Brand) {
+                        $('#QuotLst').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if( Brand.Value == QuotationId)
+                        {
+                            $('#QuotLst').val(Brand.Value);
+                        }
+                    }); 
+                   
+                },
+                error: function (ex) {
+                    alert('Please Select it');
+                }
+            });
+            return false;
+        });
+        $('#getrec').click(function () {        
+            var quot= $("#QuotLst :selected").text();          
+            if(quot.length > 2)
+            {
+                arr = quot.split('-');
+                Rate = arr[arr.length-1];
+                Quantity = arr[arr.length-2]; 
+                $("#Quantity").val(Quantity);           
+                $("#Rate").val(Rate);
+            }
+            return false;
+        });
+    });
+    function contextclick(args)
+    {  
+        if (args.text == "Delete Record")
+        {                   
+            var tempData = args.text;
+            var grid = $("#grdPODetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var PurchaseDetailOrderId = result[0]["PurchaseDetailOrderId"];
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/DeletePurchaseDetail",  //Update is Server side method
+                data: {PurchaseDetailOrderId:PurchaseDetailOrderId},
+                success: function (result) {
+                    var obj = $("#grdPODetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    $("#dialogIcon").ejDialog("close");
+                    toastr.success("Item Delete Successfully!");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+    }
+</script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#EditSO').click(function () {
+                var path = '@Url.Content("~/Enquiry/EditSOOrder")' + "?PurchaseOrderid=" + $("#PurchaseOrderId_").val() + "&OldSONo=" + $("#SalesOrderNo_").val() + "&OldPONumber=" + $("#PurchaseOrderNumber").val() + "&PODate=" + $("#PODate").val() + "&Remark=" + $("#Remarkabc").val()
+                $("#EditSODetail").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#EditSODetail").ejDialog("open");
+            });
+        });
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("EditSODetail")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#EditSODetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#EditSODetail").ejDialog("open");
+        }
+</script>

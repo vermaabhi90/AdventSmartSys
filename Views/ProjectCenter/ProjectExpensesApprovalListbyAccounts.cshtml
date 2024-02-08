@@ -1,0 +1,107 @@
+﻿@model SmartSys.BL.Project.ProjectExpensesModel
+
+@{
+    ViewBag.Title = "Project Expenses Approval List by Account";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project Expenses Approval List by Accounts
+</div>
+<br><br>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProjectExpAccounts")
+                .Datasource((IEnumerable<object>)@Model.LstPrjectExp)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Approve1", "Approve");
+              });
+          })
+        .EnableAltRow(true)
+
+        .Columns(col =>
+        {
+            col.Field("ExpenseId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("Employee").HeaderText("Employee Name").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("TaskName").Width(150).AllowEditing(false).HeaderText("Task Name").Add();
+            col.Field("Amount").Width(95).AllowEditing(false).HeaderText("Amount").Add();
+            col.Field("Remark").AllowEditing(false).HeaderText("Remark").Width(150).Add();
+            col.Field("StatusCode").AllowEditing(false).HeaderText("Status").Width(100).Add();
+            col.Field("ExpenseDate").AllowEditing(true).HeaderText("Expense Date").Format("{0:MM/dd/yyyy}").Width(120).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Approve").Template("#BtnEdit").TextAlign(TextAlign.Left).Width(60).Add();
+        }).ClientSideEvents(eve =>
+        {
+            eve.ContextClick("contextclick");
+
+        })
+    )
+</div>
+
+<script type="text/x-jsrender" id="BtnEdit">
+    <a onclick="myfuncEdit({{:ExpenseId}})" class="btn-xs btn-info glyphicon glyphicon-pencil"> </a>
+
+</script>
+
+<script>
+    function contextclick(args) {
+        if (args.text == "Approve") {
+            var tempData = args.text;
+            var grid = $("#grdProjectExpAccounts").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ExpenseId = result[0]["ExpenseId"];
+            var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + ExpenseId
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+        }
+
+    }
+</script>
+<script>
+
+    function myfuncEdit(args)
+    {
+        document.getElementById("Title12").innerHTML = 'Approve Project Expenses By Accounts';
+        var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" +  args
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1100)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>

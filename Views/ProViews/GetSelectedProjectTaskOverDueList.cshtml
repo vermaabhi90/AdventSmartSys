@@ -1,0 +1,129 @@
+﻿@model IEnumerable<SmartSys.BL.Project.ProjectModel>
+
+@{
+    ViewBag.Title = "GetSelectedProjectTaskOverDueList";
+    var gridProjectDetail = new WebGrid(source: Model, canSort: true, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "gridProjectDetail");
+}
+
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Project View
+</div>
+@*<script src="~/Scripts/bootbox.min.js"></script>
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+
+
+<style type="text/css">
+   .modal-content {
+        width: 750px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: auto;
+        max-width: 600px;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 450px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+
+<div style="position:relative">
+    <div id="gridCust" style="overflow-y:scroll ;max-height:450px;width:700px">
+        @gridProjectDetail.GetHtml(
+                                        tableStyle: "webgrid",
+                                        alternatingRowStyle: "webgrid-alt",
+                                        headerStyle: "webgrid-header",
+                                        selectedRowStyle: "webgrid-select",
+                                        mode: WebGridPagerModes.All,
+                                        firstText: "<<First",
+                                        previousText: "<Previous",
+                                        nextText: ">Next",
+                                        lastText: ">>Last",
+                                        columns: new[]{
+                                        gridProjectDetail.Column("ProjectId","Project Id"),             
+                                        gridProjectDetail.Column("ProjectName","Project Name"),
+                                        gridProjectDetail.Column("ProjectManager","Project Manager"),
+                                        gridProjectDetail.Column(header:"Open",format:(itemBnk) => Html.ActionLink(" OPEN", "ProjectView","ProViews",new {ProjectId=itemBnk.ProjectId},new{ @class="btn-xs btn-success  glyphicon glyphicon-download"}))
+                                          
+                                        })
+    </div>
+
+</div>
+<table>
+    <tr>
+        <td>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </td>
+    </tr>
+</table>
+

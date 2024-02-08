@@ -1,0 +1,336 @@
+﻿@model SmartSys.BL.DW.BudgetModel
+
+@{
+    ViewBag.Title = "BudgetList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Budget List
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+    <style type="text/css">
+        .e-grid .e-excelfilter .e-btncontainer input {
+            padding: .2em .4em .3em;
+        }
+
+        ::-ms-clear {
+            display: none;
+        }
+
+        .EditBtn {
+        }
+    </style>
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#upFile1').hide();
+        $('#upFile2').hide();
+        $('#upFile3').hide();
+        $('#upFile4').hide();
+        $('#upFile5').hide();
+        $('#upFile6').hide();
+        $('#l1').hide();
+        $('#f1').hide();
+        $('#SaveValid').hide();
+        $('#btnUpload').click(function () {
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var $file = document.getElementById('file'),
+               $formData = new FormData();
+
+                var EmpId = $("#Employee option:selected").text();
+                var FinYearId = $("#FinYearId option:selected").text();
+                if (EmpId.toString() == "--- Please Select Employee ---")
+                {
+                    alert("Please Select Employee");
+                    return false;
+                }
+                var FileChk = $("#file").val();
+                if (FileChk.toString() == "")
+                {
+                    alert("Please Select File");
+                    return false;
+                }
+                if ($file.files.length > 0) {
+                    for (var i = 0; i < $file.files.length; i++) {
+                        $formData.append('file-' + i, $file.files[i]);
+                    }
+                }
+
+                $('#SaveValid').hide();
+                $.ajax({
+                    url: '/Budget/SetEmp',
+                    type: 'POST',
+                    data: { EmpName: EmpId, FinYearId: FinYearId },
+                    dataType: 'json',
+                    success: function (result) {
+                        $("#divLoading").show();
+                        $.ajax({
+                            url: '/Budget/UploadExcelFile',
+                            type: 'POST',
+                            data: $formData,
+                            dataType: 'json',
+                            contentType: false,
+                            processData: false,
+                            success: function (result) {
+                                $("#divLoading").hide();
+                                var obj = $("#grdBudgetac").ejGrid("instance")
+                                obj.dataSource(result);
+                                $('#upFile1').hide();
+                                $('#upFile2').hide();
+                                $('#upFile3').hide();
+                                $('#upFile4').hide();
+                                $('#upFile5').hide();
+                                $('#upFile6').hide();
+                                $('#l1').hide();
+                                $('#f1').hide();
+                                $('#upTDS').show();
+                                if (result.toString() != "")
+                                {
+                                    $('#SaveValid').show();
+                                }
+                            },
+                            error: function (err) {
+                                $("#divLoading").hide();
+                                alert(err.statusText);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+
+            }
+            else {
+                alert("FormData is not supported.");
+            }
+        });
+
+        $('#Abc').click(function () {
+            $('#Employee').val("");
+            $('#file').val("");
+            $('#upFile1').show();
+            $('#upFile2').show();
+            $('#upFile3').show();
+            $('#upFile4').show();
+            $('#upFile5').show();
+            $('#upFile6').show();
+            $('#l1').show();
+            $('#f1').show();
+            $('#upTDS').hide();
+        });
+        $('#Save').click(function () {
+            var path = '@Url.Content("~/Budget/SaveUploadListValidData")'
+
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+    </script>
+    <div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+        <p style="position: absolute; top: 30%; left: 45%; color: White;">
+            Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+        </p>
+    </div>
+
+   <table style="margin-bottom:-20px">
+    <tr>
+        <td>        
+                @Html.ActionLink(" Create", "CreateBudget", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })          
+        </td>      
+        <td id="upTDS">         
+                <input type="button" id="Abc" value="Upload Files" class="submit btn-xs btn-primary glyphicon glyphicon-save-file" />          
+        </td>
+    </tr>
+</table>
+<br>
+
+    <table>
+        <tr>
+            <td id="upFile1">
+                <label>Employee:</label>
+            </td>
+            <td id="upFile2">
+                <div class="navbar-text">
+                    @Html.DropDownList("EmpId", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "--- Please Select Employee ---", new { @class = "form-control", style = "width:310px", id = "Employee" })
+                </div>
+            </td>
+            <td id="upFile3">
+                <label>File:</label>
+            </td>
+            <td id="upFile4">
+                <div class="navbar-text input-group-btn">
+
+                    <input type="file" name="file" id="file" multiple value="uploadfile" class="btn btn-success" />
+                </div>
+            </td>
+            <td id="upFile6">
+                <div class="navbar-text">
+                    @Html.DropDownListFor(model => model.Finyear, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "2015-16", Value="2015-16"},
+                             new SelectListItem() {Text = "2016-17", Value="2016-17"},
+                             new SelectListItem() {Text = "2017-18", Value="2017-18"},
+                             new SelectListItem() {Text = "2018-19", Value="2018-19"},
+                             new SelectListItem() {Text = "2019-20", Value="2019-20"}
+
+
+                       }, new { @class = "form-control", id = "FinYearId" })
+                    @Html.ValidationMessageFor(model => model.Finyear)
+                </div>
+            </td>
+            <td id="upFile5">
+                <div class="navbar-text">
+                    <input type="button" id="btnUpload" value="Submit" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                </div>
+            </td>
+            <td id="linl1">
+                <a id="l1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                @Html.EJ().Tooltip("l1").Content(" Here You Are able to Upload File.If you want to Sample Please Click on Download sample")
+
+            </td>
+            <td id="f1">
+                <div class="">
+                    @Html.ActionLink(" Download Sample", "DownloadBudgetSample", "Budget", new { @class = "btn btn-info glyphicon glyphicon-hand-download" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div style="position:relative;padding-top:10px">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdBudgetac")
+                       .Datasource(ds =>
+                  ds.URL("/Budget/GetBudgetData").Offline(true))
+                        .AllowFiltering()
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                         {
+                             items.AddTool(ToolBarItems.Search);
+                             items.AddTool(ToolBarItems.ExcelExport);
+                         }))
+                         .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportBudgetList")))
+                      //  .EditSettings(e => e.AllowAdding().AllowEditing().DialogEditorTemplateID("#template"))
+                      .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+                         .ContextMenuSettings(contextMenu =>
+                         {
+                             contextMenu.EnableContextMenu();
+                             contextMenu.DisableDefaultItems();
+                             contextMenu.CustomContextMenuItems(c =>
+                             {
+                                 c.AddItem("Add_Record", "Add Record");
+                                 c.AddItem("Edit_Record", "Edit Record");
+
+                             });
+
+                         })
+        .Columns(col =>
+        {
+            col.Field("Sequence").HeaderText("ID").IsPrimaryKey(true).Visible(false).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("BudgetId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmployeeName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("ItemName").HeaderText("Item Name").Width(250).Add();
+            col.Field("City").HeaderText("City").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("Region").HeaderText("Region").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("Application").HeaderText("Application").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("Description").HeaderText("Description").Visible(false).Width(250).Add();
+            col.Field("Description").HeaderText("Check").Visible(false).Width(250).Add();
+            col.Field("EndEquipment").HeaderText("End Equipment").Width(140).Add();
+            col.Field("Finyear").AllowEditing(false).HeaderText("Finyear").Width(100).Add();
+        })
+                         .ClientSideEvents(eve =>
+                         {
+                             eve.ContextClick("contextclick");
+                             eve.QueryCellInfo("querycellinfo");
+                         })
+
+        )
+    </div>
+    <table>
+        <tr>
+            <td id="SaveValid">
+                <div class="navbar-text">
+                    <input type="button" id="Save" value="Save Valid Data" class="submit btn btn-success glyphicon glyphicon-saved" />
+                </div>
+            </td>
+        </tr>
+    </table>
+    <script type="text/template" id="template">
+        <b>Budget  Error Description </b>
+        <table cellspacing="10" style="width:900px">
+            <tr>
+                <td>
+                    Description
+                </td>
+                <td>
+                    <textarea id="Remark" name="Remark" readonly="readonly" style="Width: 500Px; height:100px; max-width: 800px;" class="abc form-control e-ejinputtext" value="{{:Description}}">{{:Description}}</textarea>
+                </td>
+            </tr>
+
+        </table>
+    </script>
+
+    <script>
+    function querycellinfo(args) {
+        if (args.column.field == "Description" && args.data.Check == "NotOk") {
+            $($(args.cell).parent()).css("backgroundColor", "Thistle");/*custom css applied to the row */
+        }
+        else {
+        }
+    }
+    </script>
+
+    <script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdBudget").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["BudgetId"];
+        var path = '@Url.Content("~/Budget/EditBudget")' + "?BudgetId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    </script>
+
+    <script>
+    function contextclick(args) {
+        $("#divLoading").show();
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Budget/CreateBudget")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdBudget").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var BudgetId = result[0]["BudgetId"];
+
+                if (BudgetId == 0)
+                {
+                    $("#divLoading").hide();
+                    return false;
+                }
+                var path = '@Url.Content("~/Budget/EditBudget")' + "?BudgetId=" + BudgetId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+        return false;
+    }
+    </script>

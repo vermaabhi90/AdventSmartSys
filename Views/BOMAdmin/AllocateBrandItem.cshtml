@@ -1,0 +1,123 @@
+﻿@model SmartSys.BL.BOMAdmin.BrandItemModel
+
+@{
+    ViewBag.Title = "AllocateVendorBrand";
+}
+
+<div style="margin-top:15px;margin-left:50px" class="glyphicon glyphicon-transfer  text-info">
+    Allocate Brand To Item
+</div>
+<br>
+<br>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $("#Form1").submit(function (e) {
+            $("#lstAssignedState option").prop("selected", true);;
+        })
+
+        //followin code is for txfering items from one list to another
+        $("#btnAdd").click(function (e) {
+
+            $("#LstUnAllocateItem > option:selected").appendTo("#LstAllocateItem");
+        })
+        $("#btnAddAll").click(function (e) {
+
+            $("#LstUnAllocateItem > option").appendTo("#LstAllocateItem");
+        })
+        $("#btnRemove").click(function (e) {
+            $("#LstAllocateItem > option:selected").appendTo("#LstUnAllocateItem");
+
+        })
+        $("#btnRemoveAll").click(function (e) {
+            $("#LstAllocateItem > option").appendTo("#LstUnAllocateItem");
+        })
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        $(".Save").click(function (e) {
+            $("#LstAllocateItem option").prop("selected", true);
+        });
+    });
+</script>
+
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <html>
+    <body>
+
+        <table>
+
+            <tr>
+                <td>
+                    <label for="BrandId">Brand Id</label>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.BrandId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label for="BrandName">Brand Name</label>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.BrandName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table style="margin-left:30px">
+            <tr>
+                <td align="center">
+                    @Html.Label("Item")<br />
+                    @Html.ListBox("UnAllocateItem", (IEnumerable<SelectListItem>)ViewBag.UnAllocateItem, new { id = "LstUnAllocateItem", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+                </td>
+                <td width="30px"></td>
+                <td align="center">
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnAdd" class="btn btn-info glyphicon glyphicon-forward"></button>
+                    </div><br />
+
+                    <div class="btn" aria-label="...">
+                        <small> <button type="button" id="btnAddAll" class="btn btn-info glyphicon glyphicon-fast-forward"></button></small>
+                    </div><br />
+
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnRemove" class="btn btn-info glyphicon glyphicon-backward"></button>
+                    </div><br />
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnRemoveAll" class="btn btn-info glyphicon glyphicon-fast-backward"></button>
+                    </div><br />
+                </td>
+                <td width="30px"></td>
+                <td align="center">
+                    @Html.Label("Allocated Item")<br />
+
+                    @Html.ListBox("AllocateItem", (IEnumerable<SelectListItem>)ViewBag.AllocateItem, new { id = "LstAllocateItem", style = "width:500px;max-width:500px;height:400px", @class = "lstAssignedStateToRegion form-control", size = 4 })
+                </td>
+            </tr>
+        </table>
+        <table style="margin-left:20px">
+
+            <tr>
+                <td>
+                    @Html.ActionLink(" Back", "BrandList", null, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" value="Save" class="Save btn btn-info glyphicon glyphicon-save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+

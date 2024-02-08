@@ -1,0 +1,81 @@
+﻿@model SmartSys.BL.Sysadmin.BusinessLineModel
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create New BussinessLine
+</div>
+<script>
+
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var BusinessLineName = $('#BusinessLineName').val();
+         
+            if (BusinessLineName.toString() == "") {
+                alert("Please Enter Business Line Name ");
+                return false;
+            }
+           
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("Create", "BusinessLine", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label for="BusinessLineName">Business Line Name </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.BusinessLineName, new { @class = "form-control", id = "BusinessLineName", required = "required" })
+                        @Html.ValidationMessageFor(model => model.BusinessLineName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @*@Html.ActionLink(" Back", "GetList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })*@
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+
+
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+
+
+
+
+

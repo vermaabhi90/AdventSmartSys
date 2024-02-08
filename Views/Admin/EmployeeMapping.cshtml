@@ -1,0 +1,215 @@
+﻿@model SmartSys.BL.EmoloyeeMapping
+
+
+@{
+    var grid = new WebGrid(source: Model.GridList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "Mappedgrid");
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#CompCode').change(function (event) {
+            var ddlValue = $('#CompCode').val();
+            var path = '@Url.Content("~/Admin/GetCompanyEmp")' + "?CompCode=" + ddlValue
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+                    $('.xyz').on('click', function (e) {
+                    e.preventDefault();
+                    var CompName = $(this).closest('.xyz').attr('CompName');
+                    var Sysid = $(this).closest('.xyz').attr('EmpID');
+                    var agree=confirm("Are you sure to delete ?") 
+                        if (agree) {
+                            var path = '@Url.Content("~/Admin/DeleteEmpMapping")' + "?CompName=" + CompName + "&EmpID=" + Sysid
+                            event.preventDefault();
+                            window.location.replace(path);
+
+                        }
+                        else {
+                            return false;
+                        }
+
+                   
+
+                });
+
+        $('#AddEmp').click(function (event) {
+            var Emp_No = $('#ComEmpID').val();
+            var CompCode = $('#CompCode').val();
+            var EmpId = $('#SysEmpName').val();
+            var path = '@Url.Content("~/Admin/SaveMapping")' + "?Emp_No=" + Emp_No + "&CompCode=" + CompCode + "&EmpId=" + EmpId
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+<style type="text/css">
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 800px;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Employee Mapping
+</div>
+
+@using (Html.BeginForm("Edit", "RDSEngine", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+
+            <tr>
+                <td>
+                    <div class="glyphicon glyphicon-user">
+                        Employee
+                    </div>
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.EmpName, new { @class = "form-control" , @readonly = "readonly" })
+                    @Html.Hidden("EmpId", null, new { @id = "SysEmpName" })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="glyphicon glyphicon-globe">
+                        Company
+                    </div>
+                </td>
+
+                <td>
+                    @Html.DropDownList("selectedComp", (IEnumerable<SelectListItem>)ViewBag.EmpMapList, "-Select Company Name-", new { @class = "form-control" ,id = "CompCode", style = "width:310px" })
+
+                </td>
+
+                @if (Model.lstClientMapEmpList != null && Model.lstClientMapEmpList.Count > 0)
+                {
+                    <td>
+                        <div class="glyphicon glyphicon-user">
+                            Employee
+                        </div>
+                    </td>
+                    <td>
+                        @Html.DropDownList("ComEmpID", (IEnumerable<SelectListItem>)ViewBag.ComEmpList, new { @class = "form-control" , id = "ComEmpID", style = "width:310px" })
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <span>No Connection Avaliable, Please try later.</span>
+                    </td>
+                }
+
+            </tr>
+
+        </table>
+        <br>
+      
+        <table>
+            <tr>
+                <td>
+                    @if (Model.GridList != null && Model.GridList.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.DW.VendorProductModel>("grdProductList")
+         .Datasource(Model.GridList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+
+             });
+
+         })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("CompName").HeaderText("Company").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("CompEmpID").HeaderText("Emp_NO").Width(160).Add();
+            col.Field("EmpName").HeaderText("Employee Name").Width(180).Add();
+            col.HeaderText("Delete").Template("#DeleteEmpMap").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickProduct");
+            })
+
+
+                            )
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Infornation about Employee !!!</label>
+                        </div>
+
+                    }
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td></td>
+                <td>             
+                        @Html.ActionLink(" Back", "GetEmployeeList", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-hand-left" })
+                        @Html.ActionLink(" Save Mapping", "", null, new { @id = "AddEmp", @class = "btn-xs btn-info glyphicon glyphicon-save" })                   
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+<script id="DeleteEmpMap" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/Admin/DeleteEmpMapping?CompName={{:CompName}}&amp;EmpID={{:EmpID}}">  Delete</a>
+</script>

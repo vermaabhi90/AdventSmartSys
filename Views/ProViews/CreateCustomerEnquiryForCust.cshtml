@@ -1,0 +1,305 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryModel
+<link href="~/Content/InfoFieldPopup.css" rel="stylesheet" />
+
+<script>
+    $(document).ready(function () {
+        var StatusId=$("#StatusId").val();
+        if(StatusId != 0)
+        {
+            if(StatusId != 26)
+            {
+                $('#Customerdrp').prop("disabled", true);
+                $('#Remarkabc').prop("disabled", true);
+                $('#Company').prop("disabled", true);
+            }
+        }
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var ItemDrp = $('#ItemDrp').val();
+            var Customer = $('#Customerdrp').val();
+            var Quantity = $('#Quantity').val();
+            var ExpectedDate = $('#ExpectedDate').val();
+            var Remark = $('#Remarkabc').val();
+            var ContactDrpDwn = $('#ContactDrpDwn').val();
+            if (Customer.toString() == "") {
+                alert("Please Select Customer ");
+                return false;
+            }
+            //if (ItemDrp.toString() == "") {
+            //    alert("Please Select Item");
+            //    return false;
+            //}
+            //if (Quantity.toString() == "" || Quantity.toString() == "0") {
+            //    alert("Please Enter Quantity");
+            //    return false;
+            //}
+            if (ExpectedDate.toString() == "") {
+                alert("Please Select Expected Date ");
+                return false;
+            }
+            if (ContactDrpDwn.toString() == "" || ContactDrpDwn.toString() == "0") {
+                alert("Please Select Customer Contact");
+                return false;
+            }
+            if (Remark.toString() == "") {
+                alert("Please Enter Remark ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+<style type="text/css">
+    .modal-content {
+        width: 800px !important;
+        margin: 30px auto !important;
+    }
+</style>
+
+
+
+@if (Model.EnqId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Customer Enquiry Details
+    </div>
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateCustomerEnquiryForCust", "ProViews", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        @if (Model.EnqId > 0)
+        {
+
+            <tr>
+
+                <td>
+                    <label>Enquiry ID</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EnqId, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            </tr>
+        }
+        <tr>
+
+            <td>
+                <label>Customer</label>
+
+            </td>
+            <td>
+
+                <div class="">
+                    @Html.HiddenFor(model => model.Status, new { id = "StatusId" })
+
+                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerLst, "--- Please Select Customer ---", new { @class = " drp form-control", style = "width:270px", id = "Customerdrp", @readonly = "Readonly" })
+
+
+                </div>
+            </td>
+
+
+
+            <td>
+                <label>priority</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(x => x.Priority, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Low", Value="Low"},
+                             new SelectListItem() {Text = "Medium", Value="Medium"},
+                             new SelectListItem() {Text = "High", Value="High"},
+                       }, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+
+
+                <table>
+                    <tr>
+                        <td>
+                            <label>Customer Enq No</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.EnqNumber, new { @class = "form-control", @readonly = "Readonly" })
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Enquiry Date</label>
+            </td>
+            @if (Model.Status == 0 || Model.Status == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePicker("ExpectedDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                    </div>
+                </td>
+            }
+            else
+            {
+
+                if (Model.Status == 26 || Model.Status == 0)
+                {
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePicker("ExpectedDate").Value(Model.EnqDate).DateFormat("MM/dd/yyyy")
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePicker("ExpectedDate").Value(Model.EnqDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+                        </div>
+                    </td>
+                }
+            }
+            <td>
+                <label>Company</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = "form-control", style = "width:310px", id = "Company", @readonly = "Readonly" })
+                </div>
+            </td>
+
+            <td>
+                <div class="frame">
+
+                    <div class="control ">
+                        <span class="txt">Enquiry Process</span>
+                        @Html.HiddenFor(model => model.PercentComplete, new { @id = "PercentComplete" })
+                        @Html.EJ().ProgressBar("defaultBar").Value(@Model.PercentComplete).Width("400px").Height("16px").ClientSideEvents(evt => evt.Create("oncreate"))
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                <label>Customer Contact</label>
+
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("CustomerContactId", (IEnumerable<SelectListItem>)ViewBag.CustContactList, "--please Select Contact--", new { id = "ContactDrpDwn", @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                <div class="">
+                    <label>Remark</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 600Px; max-width: 800px;", @class = "form-controal", id = "Remarkabc", @readonly = "Readonly" })
+                </div>
+
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td width="80px"></td>
+            <td>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdEnqLst")
+                .Datasource((IEnumerable<object>)@Model.lstEnquiryDetail)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+.PageSettings(p => { p.PageSize(20); })
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                 .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .ToolbarSettings(toolbar =>
+                {
+                    toolbar.ShowToolbar().ToolbarItems(items =>
+                    {
+                        // items.AddTool(ToolBarItems.Add);
+                        // items.AddTool(ToolBarItems.Edit);
+                        //items.AddTool(ToolBarItems.ExcelExport);
+                    });
+                })
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("Remark").HeaderText("Remark").Width(160).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Check").HeaderText("Check").Visible(false).Width(70).Add();
+            col.Field("Brand").HeaderText("Brand").Visible(false).Width(70).Add();
+            col.Field("ExpectedDateStr").Visible(true).AllowEditing(true).HeaderText("Expected Date").Width(70).Add();
+            col.Field("Status").HeaderText("Status").Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Width(70).Add();
+            col.Field("StatusId").HeaderText("Status Id").Visible(false).Width(150).Add();
+            col.Field("ErrorDetail").HeaderText("Check").Visible(false).Width(250).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                    )
+                </div>
+
+            </td>
+        </tr>
+    </table>
+        <table>
+            <tr>
+
+                <td>
+                    <label>Modified By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Modified Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+}
+
+<script>
+
+    $("#ExpectedDateee").ejDatePicker({  dateFormat: "MM/dd/yyyy" });
+</script>
+
+@Html.EJ().ScriptManager()

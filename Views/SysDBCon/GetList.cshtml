@@ -1,0 +1,144 @@
+﻿
+@model IEnumerable<SmartSys.BL.SysDBCon.SysDBConModel>
+
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "GetEventList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Client Application List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "Create", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+  </div>
+    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+
+    <style type="text/css">
+        .e-grid .e-excelfilter .e-btncontainer input {
+            padding: .2em .4em .3em;
+        }
+
+        ::-ms-clear {
+            display: none;
+        }
+
+        .EditBtn {
+        }
+    </style>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDBConnection")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+                .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    //contextMenu.EnableContextMenu()
+         //    //contextMenu.ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord));
+         //    //contextMenu.CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit", Text = "Edit" } });
+
+         //    contextMenu.EnableContextMenu()
+         //    .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit" } })
+         //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+         //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+         //    //.CustomContextMenuItems(new List<string> { "Edit " });
+
+         //})
+
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+             });
+
+         })
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+        //.ToolbarSettings(toolbar =>
+        //    {
+        //        toolbar.ShowToolbar().ToolbarItems(items =>
+        //        {
+        //            items.AddTool(ToolBarItems.Add);
+        //            items.AddTool(ToolBarItems.Edit);
+        //            items.AddTool(ToolBarItems.Update);
+        //            items.AddTool(ToolBarItems.Cancel);
+        //        });
+        //    })
+        .Columns(col =>
+        {
+            col.Field("ConnectionId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ConName").HeaderText("Connection Name").ValidationRules(v => v.AddRule("required", true)).Width(160).Add();
+            col.Field("ServerName").HeaderText("Server Name").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("ConnectionType").EditType(EditingType.Dropdown).ForeignKeyField("ConnectionType").ForeignKeyValue("ConnectionType").DataSource((IEnumerable<object>)ViewBag.DataSourceConType).HeaderText("Connection Type").ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("Port").HeaderText("Port").Width(70).Add();
+            col.Field("DBName").HeaderText("Database Name").Width(160).Add();
+            col.Field("UserName").HeaderText("User Name").Width(160).Add();
+            col.Field("DefaultTimeOut").HeaderText("Default Time Out").Width(150).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           Click = "onClick",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .Template("#edit")
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Left)
+            .Width(90)
+            .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/SysDBCon/Edit?ConnectionId={{:ConnectionId}}"></a>
+</script>
+
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/SysDBCon/Create")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdDBConnection").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var ConnectionId = result[0]["ConnectionId"];
+                var path = '@Url.Content("~/SysDBCon/Edit")' + "?ConnectionId=" + ConnectionId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+
+    </script>

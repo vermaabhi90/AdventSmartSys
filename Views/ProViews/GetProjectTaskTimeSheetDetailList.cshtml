@@ -1,0 +1,40 @@
+﻿@model IEnumerable<SmartSys.BL.ProViews.TimeSheetViewModel>
+
+@{
+    ViewBag.Title = "GetProjectTaskTimeSheetDetailList";
+}
+
+
+<div class="page-header glyphicon glyphicon-pencil  text-info ">
+   Time Sheet Detail View
+</div>
+
+
+@(Html.EJ().Grid<SmartSys.BL.ProViews.TimeSheetViewModel>("grdList")
+                        .Datasource((IEnumerable<object>)@Model)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("EmployeeName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("TaskName").HeaderText("Task Name").Width(60).Add();
+                            col.Field("FromTime").HeaderText("From Time").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ToTime").HeaderText("To Time").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("DayText").HeaderText("Day").Width(60).Add();
+                            col.Field("DateText").HeaderText("Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("TotalTime").HeaderText("Total Time").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                           
+                        })
+)
+
+
+
+
+@Html.EJ().ScriptManager()
+

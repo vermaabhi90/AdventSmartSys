@@ -1,0 +1,142 @@
+﻿@model SmartSys.BL.Enquiry.FollowupTypeModel
+
+@{
+    ViewBag.Title = "CreateFollowupReason";
+}
+@if (Model.FollowupTypeId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Followup Reason Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Followup Reason
+    </div>
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            var Reason = $('#Reason').val();
+
+            if (Reason.toString() == "") {
+                alert("Please Enter Reason");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreateFollowupReason", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label for="ReasonId">ReasonId </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.FollowupTypeId, new { @readonly = "readonly", id = "ReasonId", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.FollowupTypeId)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Reason">Reason</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.FollowupReason, new { style = "width:400px", id = "Reason", @maxlength = "100", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.FollowupReason)
+                    </div>
+                </td>
+
+
+            </tr>
+            @if (Model.FollowupTypeId > 0)
+            {
+                <tr>
+
+                    <td>
+                        <label for="CreatedBy">Created By</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", id = "CreatedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CreatedBy)
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <label for="CreatedDate">Created Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", id = "CreatedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CreatedDate)
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label for="ModifiedBy">Modified By</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", id = "ModifiedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="ModifiedDate">Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", id = "ModifiedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+
+                </tr>
+            }
+
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetFollowupReasonList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+    </body>
+</html>
+}
+
+
+
+
+
+
+

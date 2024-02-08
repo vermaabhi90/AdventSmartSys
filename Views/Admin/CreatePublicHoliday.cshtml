@@ -1,0 +1,172 @@
+﻿@model SmartSys.BL.PublicHolidayModel
+
+@{
+    ViewBag.Title = "CreatePublicHoliday";
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.HolidayId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Edit Holiday Detail
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        New Holiday Create
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var HolidayDate = $('#HolidayDate').val();
+            var regionlst = $('#regionlst').val();
+            var Title = $('#Titid').val();
+
+            if (HolidayDate.toString() == "") {
+                alert("Please Enter Holiday Date");
+                return false;
+            }
+            if (regionlst.toString() == "") {
+                alert("Please Select region");
+                return false;
+            }
+            if (Title.toString() == "") {
+                alert("Please Enter Title");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreatePublicHoliday", "Admin", FormMethod.Post, new { Id = "RecForm" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label>Holiday ID</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.HolidayId, new { @class = "form-control", @readonly = "Readonly", id = "ReciptId" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label>FinYear</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(x => x.FinYear, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "1 April 2015 - 31 March 2016", Value="2015-2016"},
+                             new SelectListItem() {Text = "1 April 2016 - 31 March 2017", Value="2016-2017"},
+                             new SelectListItem() {Text ="1 April 2017 - 31 March 2018", Value="2017-2018"}
+                       }, new { @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>HolidayDate</label>
+            </td>
+            @if (Model.HolidayId > 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(M => M.HolidayDate).Value(Model.HolidayDate)
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(M => M.HolidayDate).Value(DateTime.Now)
+                    </div>
+                </td>
+            }
+
+        </tr>
+        <tr>
+            <td>
+                <label>Region </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("RegionId", (IEnumerable<SelectListItem>)ViewBag.regiondrppp, "Please Select the Region", new { id = "regionlst", style = "width:200px", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Title</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "form-control", id = "Titid" })
+
+                </div>
+            </td>
+        </tr>
+
+        @if (Model.HolidayId > 0)
+        {
+            <tr>
+                <td>
+                    <label>Created By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Created Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "Readonly", @class = "form-control", style = "width:200px" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label>Modified By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Modified Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "Readonly", @class = "form-control", style = "width:200px" })
+                    </div>
+                </td>
+
+            </tr>
+        }
+
+    </table>
+    <table>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetPublicHolidayList';" );"> Back</button>
+                    <button type="submit" class="save btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+               
+            </td>
+        </tr>
+    </table>
+}
+@Html.EJ().ScriptManager()

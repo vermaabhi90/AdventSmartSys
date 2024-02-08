@@ -1,0 +1,39 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwentySeven
+
+@{
+    ViewBag.Title = "DataLevelTwentySeven";
+}
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+    <tr class="spaceUnder">
+        <td>
+            <label>Reviewed By:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ReviewedBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Send Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("ReviewedDate").Value(Model.ReviewedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Time Taken(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()
+

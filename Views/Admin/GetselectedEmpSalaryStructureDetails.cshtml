@@ -1,0 +1,328 @@
+﻿@model SmartSys.BL.EmployeeModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Employee Details
+</div>
+
+@using (Html.BeginForm("GetselectedEmpSalaryStructureDetails", "Admin", FormMethod.Post, new { Id = "EmployeeForm" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label for="EmpId"> Id </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.EmpId, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+            </td>
+            <td>
+                <label for="FirstName">First Name </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.EmpName, new { @class = "form-control", id = "EmpName", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.FirstName)
+                </div>
+            </td>
+            <td>
+                <label for="Gender">Gender </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Gender, new { @class = "form-control", id = "Gender", @readonly = "readonly" })
+                </div>
+            </td>
+        </tr>
+        <tr></tr>
+
+        <tr>
+
+            <td>
+                <label for="ManagerName">Manager Name</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ManagerName, new { @class = "form-control", id = "ManagerName", @readonly = "readonly" })
+                </div>
+            </td>
+
+            <td>
+                <label for="Designation">Designation </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Designation, new { @class = "form-control", @maxlength = "30", id = "Designation", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Designation)
+                </div>
+            </td>
+            <td>
+                <label for="DeptId">Department Name</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.DeptName, new { @class = "form-control", @maxlength = "30", id = "DeptName", @readonly = "readonly" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ModifiedByName">Modified By </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="ModifiedDate">Modified Date</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+            </td>
+
+
+        </tr>
+        <tr>
+            <td>
+                <label for="Qualification">Fix Pay</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AnnualFixPay, new { @class = "form-control", @maxlength = "30", id = "AnnualFixPay", @readonly = "" })
+                    @Html.ValidationMessageFor(model => model.Qualification)
+                </div>
+            </td>
+            <td>
+                <label for="Qualification">Variable Pay</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AnnualVariablePay, new { @class = "form-control", @maxlength = "30", id = "Qualification", @readonly = "" })
+                    @Html.ValidationMessageFor(model => model.Qualification)
+                </div>
+            </td>
+
+
+
+
+        </tr>
+
+    </table>
+    <button type="button" class="btn-xs btn-info glyphicon glyphicon-leaf" id="Add"> Add</button>
+@*@Html.ActionLink(" Add", "AddEmployeeSalaryStructureDetail", new { EmpId = Model.EmpId , AnnualFixPay = Model.AnnualFixPay, TotalAmount = @ViewBag.TotalAmount}, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf modal-link" })*@
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SalaryComponentmodel>("Salry")
+                .Datasource((IEnumerable<object>)@ViewBag.salStructureDetail)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+
+                      .AllowResizing()
+                      .AllowGrouping()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                      .PageSettings(p => { p.PageSize(20); })
+                          .GroupSettings(group => { group.GroupedColumns(col => { col.Add("DRCR"); }).EnableDropAreaAnimation(false); })
+                      .EnableAltRow(true)
+                                        //.ContextMenuSettings(contextMenu =>
+                                        //{
+                                        //    contextMenu.EnableContextMenu()
+                                        //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+                                        //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                                        //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.DeleteRecord));
+
+                                        //})
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Add_Record", "Add Record");
+                                              
+                                                c.AddItem("Delete_Record", "Delete Record");
+                                            });
+
+                                        })
+                                       .SummaryRow(row =>
+                                       {
+                                           row.ShowTotalSummary(false)
+                                              .SummaryColumns(col =>
+                                              {
+                                                  col.SummaryType(SummaryType.Sum)
+                                                     .DisplayColumn("Amount")
+                                                     .DataMember("Amount")
+                                                     .Prefix("Total = ")
+                                                      .Add();
+
+                                              }).Add();
+                                       })
+          
+        .Columns(col =>
+        {
+
+            col.Field("Name").HeaderText("Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("EmpId").HeaderText("EmpId").ValidationRules(v => v.AddRule("required", true)).Width(120).Visible(false).Add();
+            col.Field("ComponentId").HeaderText("ComponentId").Visible(false).ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("Type").HeaderText("Type").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("DRCR").HeaderText("Debit/Credit").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("VariableRate").HeaderText("Variable Rate").TextAlign(TextAlign.Right).Width(80).Add();
+            col.Field("Amount").HeaderText("Amount").TextAlign(TextAlign.Right).Width(80).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ActionBegin("toolClick");
+                     eve.ContextClick("contextclick");
+                     eve.QueryCellInfo("querycellinfo");
+                 })
+    )
+</div>
+
+
+<tr>
+    <td>
+        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetEmpListForSalStructure';" );"> Back</button>
+    </td>
+    <td>
+        <div class="btn" aria-label="...">
+            <button type="submit" class="btn-xs btn-info glyphicon glyphicon-hand-right save" id="save"> Save</button>
+        </div>
+    </td>
+</tr>
+}
+<script>
+    function querycellinfo(args) {
+        if('@Model.AnnualFixPay'.toString() == '@ViewBag.TotalAmount'.toString())
+        {
+            $($(args.cell).parent()).css("backgroundColor", "#B2F289")
+        }
+        else if ('@Model.AnnualFixPay' < '@ViewBag.TotalAmount'){
+            $($(args.cell).parent()).css("backgroundColor", "#ffff00")
+        }
+        else {
+            $($(args.cell).parent()).css("backgroundColor", "#ffb3b3")
+        }
+
+          }
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#save').click(function (e) {
+        
+            var TotalAmount = @ViewBag.TotalAmount;
+            var FixPay =$("#AnnualFixPay").val();
+            if('@Model.AnnualFixPay'.toString() == '@ViewBag.TotalAmount'.toString())
+            {
+              return true;
+            }
+            else
+            {
+                alert("Total Amount Not Less Than  or Greater  than  Fix Pay = '"+FixPay+"'")
+                return false;
+            }
+           
+            if (+TotalAmount < +FixPay ){
+                alert("Total Amount  Not Less Than  AnnualFixPay (AnnualFixPay = '"+AnnualFixPay+"' and  TotalAmount = '"+TotalAmount+"') ");
+                return false;
+            }
+  
+        })
+    })
+    </script>
+<script>
+
+    function toolClick(args) {
+
+        if (args.requestType == "add")  {
+
+            var path = '@Url.Content("~/Admin/AddEmployeeSalaryStructureDetail")' + "?EmpId=" + @Model.EmpId + "&AnnualFixPay=" + @Model.AnnualFixPay +"&TotalAmount=" + @ViewBag.TotalAmount
+            $("#AddEmployeeSalaryStructureDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#AddEmployeeSalaryStructureDetail").ejDialog("open");
+        }
+    }
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+           
+            var path = '@Url.Content("~/Admin/AddEmployeeSalaryStructureDetail")' + "?EmpId=" + @Model.EmpId + "&AnnualFixPay=" + @Model.AnnualFixPay +"&TotalAmount=" + @ViewBag.TotalAmount
+            $("#AddEmployeeSalaryStructureDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#AddEmployeeSalaryStructureDetail").ejDialog("open");
+        }
+        if (args.text == "Delete Record") {
+            var tempData = args.text;
+            var grid = $("#Salry").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var CompId = result[0]["ComponentId"];
+            var EmpId = result[0]["EmpId"];
+            var path = '@Url.Content("~/Admin/DeleteEmployeeSalaryStructure")' + "?ComponentId=" + CompId + "&EmpId=" + @Model.EmpId
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#Add').click(function (e) {
+        
+            var path = '@Url.Content("~/Admin/AddEmployeeSalaryStructureDetail")' + "?EmpId=" + @Model.EmpId + "&AnnualFixPay=" + @Model.AnnualFixPay +"&TotalAmount=" + @ViewBag.TotalAmount
+            $("#AddEmployeeSalaryStructureDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#AddEmployeeSalaryStructureDetail").ejDialog("open");
+        })
+    })
+  
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("AddEmployeeSalaryStructureDetail")
+        .Title("Employee Salary Structure")
+        .Width(600)
+        .Height(350)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#AddEmployeeSalaryStructureDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#AddEmployeeSalaryStructureDetail").ejDialog("open");
+        }
+</script>

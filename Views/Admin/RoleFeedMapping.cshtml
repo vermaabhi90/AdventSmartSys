@@ -1,0 +1,100 @@
+﻿@model SmartSys.BL.RoleFeedMapingModel
+
+@{
+    ViewBag.Title = "RoleFeedMapping";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $("#frmRoleFeedMap").submit(function (e) {
+            $("#lstAssignedFeed option").prop("selected", true);;
+        })
+
+  //followin code is for txfering items from one list to another
+        $("#btnAdd").click(function (e) {
+
+            $("#lstFeed > option:selected").appendTo("#lstAssignedFeed");
+        })
+        $("#btnAddAll").click(function (e) {
+
+            $("#lstRpt > option").appendTo("#lstAssignedFeed");
+        })
+        $("#btnRemove").click(function (e) {
+            $("#lstAssignedFeed > option:selected").appendTo("#lstFeed");
+
+        })
+        $("#btnRemoveAll").click(function (e) {
+            $("#lstAssignedFeed > option").appendTo("#lstFeed");
+        })
+    })
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+
+    Role Feed Mapping
+</div>
+@using (Html.BeginForm("SaveRoleFeedMapping", "Admin", FormMethod.Post, new { id = "frmRoleFeedMap" }))
+{
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+            <label>
+                Role Name
+            </label>
+                </td>
+            <td>
+                @Html.TextBoxFor(model => model.RoleInfo.RoleName, new { @class = "form-control", @readonly = "readonly" })
+                @Html.HiddenFor(model => model.RoleInfo.RoleID)
+            </td>
+        </tr>
+        </table>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td align="center">
+                    <label>
+                        Feed List
+                    </label><br />
+                    @Html.ListBoxFor(model => model.lstFeed, (IEnumerable<SelectListItem>)ViewBag.Feedlst, new { id = "lstFeed", style = "width: 350px;height:400px", size = 4 })
+                </td>
+                <td align="center">
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnAdd" class="btn-xs  btn-info glyphicon glyphicon-forward"></button>
+                    </div><br />
+
+                    <div class="btn" aria-label="...">
+                        <small> <button type="button" id="btnAddAll" class="btn-xs btn-info glyphicon glyphicon-fast-forward"></button></small>
+                    </div><br />
+
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnRemove" class="btn-xs btn-info glyphicon glyphicon-backward"></button>
+                    </div><br />
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnRemoveAll" class="btn-xs btn-info glyphicon glyphicon-fast-backward"></button>
+                    </div><br />
+                </td>
+                <td align="center">
+                    <label>
+                       Assigned Feed List
+                    </label><br />
+                    @Html.ListBoxFor(model => model.lstAssignedFeed, (IEnumerable<SelectListItem>)ViewBag.AssignedFeedList, new { id = "lstAssignedFeed", style = "width: 350px;height:400px", size = 4 })
+                </td>
+            </tr>
+        </table>
+
+    <table style="margin-left:270px">
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'SytemRoleList';" );"> Back</button>
+                <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save"> Save</button>
+            </td>
+        </tr>
+    </table>
+
+
+}
+

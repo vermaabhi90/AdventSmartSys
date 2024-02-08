@@ -1,0 +1,207 @@
+﻿@model SmartSys.BL.DW.PenndingCustomerApproverMap
+
+@{
+    ViewBag.Title = "DW Customer Pending Approver  ";
+
+}
+
+<script>
+
+    $(document).ready(function (e) {
+        $('.Review').on('click', function (e) {
+            var apprvallist = @Model.SelectApproverLst.Count;
+            if(apprvallist <=  0)
+            {
+                alert("Please select atleast one Customer");
+                return false;
+            }
+        });
+    });
+
+</script>
+<style type="text/css">
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 100%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Customer Mapping Approval
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Refresh", "RefreshCustApprovalList", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-refresh" })
+</div>
+
+<div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemList")
+        .Datasource((IEnumerable<object>)@Model.lstApprover)
+        .AllowFiltering()
+        .AllowPaging()
+                .PageSettings(p => { p.PageSize(20); })
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportCustomerPenndingApproverMapLst")))
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+                //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("CustomerId").HeaderText("Customer Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(15).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").Width(70).Add();
+            col.Field("Customer_No").HeaderText("Customer_No").Width(30).Add();
+            col.Field("SourceCustomerName").HeaderText("Source Customer Name").Width(70).Add();
+            col.Field("CompCode").HeaderText("Comp Code").Width(30).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(30).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(30).Add();
+           
+            col.HeaderText("Mapping").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Map",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#Mapping")
+           
+           .TextAlign(TextAlign.Left)
+           .Width(20)
+           .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .HeaderTextAlign(TextAlign.Center)
+           .Add();
+        })
+        )
+    </div>
+<br><br>
+    <table>
+        <tr>
+            <td>
+                @if (Model.SelectApproverLst != null)
+                {
+
+                    if (Model.SelectApproverLst.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.DW.PenndingCustomerApproverMap>("grdCustList")
+                .Datasource((IEnumerable<object>)@Model.SelectApproverLst)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+       .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("CustomerId").HeaderText("Customer ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").ValidationRules(v => v.AddRule("required", true)).Width(60).Add();
+            col.Field("Customer_No").HeaderText("External Customer Id").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("SourceCustomerName").HeaderText(" External Customer Name").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("CompName").HeaderText("Company Name").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(180).Add();
+            col.HeaderText("Remove").Template("#RemoveItem").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                            )
+                        </div>
+                       
+                    }
+                }
+                else
+                {
+
+                }
+            </td>
+        </tr>
+
+    </table>
+    <table>
+        <tr>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs buttonCss btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("ApvRejCustomer", "DWCustomer", new { statusCode = 24 })'>
+                        Approve
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs buttonCss btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("ApvRejCustomer", "DWCustomer", new { statusCode = 25 })'>
+                        Reject
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs buttonCss btn-warning glyphicon glyphicon-remove-circle " href='@Url.Action("ApvRejCustomer", "DWCustomer", new { statusCode = 20 })'>
+                        Cancel
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/x-jsrender" id="Mapping">
+    <a class="btn-xs btn-info  glyphicon glyphicon-check black" href="/DWCustomer/AddtoVenList?Customer_No={{:Customer_No}}&amp;SourceCustomerName={{:SourceCustomerName}}&amp;CompName={{:CompCode}}&amp;CustomerId={{:CustomerId}}&amp;CustomerName={{:CustomerName}}&amp;ModifiedBy={{:ModifiedBy}}"></a>
+</script>
+<script id="RemoveItem" type="text/x-jsrender">
+
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DWCustomer/DeleteSelPendingApprover?CompCode={{:CompName}}&amp;Customer_No={{:Customer_No}}">  Remove</a>
+
+</script>

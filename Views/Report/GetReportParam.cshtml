@@ -1,0 +1,152 @@
+﻿@model SmartSys.BL.ReportParameter
+
+@{
+    ViewBag.Title = "Update Report Parameter Details";
+}
+
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Update Report Parameter Details
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div class="">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.ReportId, "Report Id")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ReportId, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.ObjName, "Report Object Name")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ObjName, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.ParamName, "Parameter Name")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ParamName, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.DataType, "Data Type")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.DataType, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.BaseDefaultValue, "Template Default")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.BaseDefaultValue, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.isMandatory, "Mandatory")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.EditorFor(model => model.isMandatory)
+                            @Html.ValidationMessageFor(model => model.isMandatory)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.isLinked, "Linked")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.EditorFor(model => model.isLinked, new { @class = "form-control", style = "width:80px", disabled = "disabled", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.DefaultValue, "Default Value")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.DefaultValue, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.DefaultValue)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.ParamAlias, "Parameter Alias")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ParamAlias,new { @class="form-control"})
+                            @Html.ValidationMessageFor(model => model.ParamAlias)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="">
+                            @Html.LabelFor(model => model.LableName, "Lable Name")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.LableName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.LableName)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <br />
+            <div>
+               
+                <button type="submit" id="approve-btn" class="btn-xs btn-info">Save</button>
+            </div>
+        </fieldset>
+    }
+</div>
+

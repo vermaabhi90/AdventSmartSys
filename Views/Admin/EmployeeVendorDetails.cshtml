@@ -1,0 +1,108 @@
+﻿@model SmartSys.BL.EmployeeVendorDetail
+
+@{
+    ViewBag.Title = "EmployeeCustomerDetail";
+}
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $("#frmRoleRptMap").submit(function (e) {
+            $("#lstAssignedVendor option").prop("selected", true);;
+        })
+
+
+
+
+        //followin code is for txfering items from one list to another
+        $("#btnAdd").click(function (e) {
+
+            $("#lstVendor > option:selected").appendTo("#lstAssignedVendor");
+        })
+        $("#btnAddAll").click(function (e) {
+
+            $("#lstVendor > option").appendTo("#lstAssignedVendor");
+        })
+        $("#btnRemove").click(function (e) {
+            $("#lstAssignedVendor > option:selected").appendTo("#lstVendor");
+
+        })
+        $("#btnRemoveAll").click(function (e) {
+            $("#lstAssignedVendor > option").appendTo("#lstVendor");
+        })
+    })
+</script>
+<div class="page-header glyphicon glyphicon-pencil  text-info " style="margin-left:30Px">
+    <span style="color:red">Employee Vendor Details</span>
+
+</div>
+
+
+
+@using (Html.BeginForm("EmployeeVendorDetails", "Admin", FormMethod.Post, new { id = "frmRoleRptMap" }))
+{
+
+    <table style="margin-left:30px">
+        <tr>
+            <td style="margin-left:30px">
+                <label for="ShortName"style="color:blue">Employee Name :</label>
+            </td>
+            <td width="5px"></td>
+            <td>
+                @Html.TextBox("Employee", (string)ViewBag.EmpName, new { @readonly = "readonly", @style = "width:400px", @class = "form-control" })
+                @Html.Hidden("EmpId", (int)ViewBag.EmpId, new { @readonly = "readonly" })
+
+            </td>
+        </tr>
+        </table>
+    <br />
+    <table style="margin-left:30px">
+        <tr>
+            <td align="center" >
+                @Html.Label("Vendor List")<br />
+                @Html.ListBoxFor(model => model.lstVendor, (IEnumerable<SelectListItem>)ViewBag.VendorList, new { id = "lstVendor", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+            </td>
+            <td width="30px"></td>
+            <td align="center">
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnAdd" class="btn btn-info glyphicon glyphicon-forward"></button>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <small> <button type="button" id="btnAddAll" class="btn btn-info glyphicon glyphicon-fast-forward"></button></small>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemove" class="btn btn-info glyphicon glyphicon-backward"></button>
+                </div><br />
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemoveAll" class="btn btn-info glyphicon glyphicon-fast-backward"></button>
+                </div><br />
+            </td>
+            <td width="30px"></td>
+            <td align="center">
+                @Html.Label("Assigned Vendor List")<br />
+                @Html.ListBoxFor(model => model.lstAssignedVendor, (IEnumerable<SelectListItem>)ViewBag.AssignedVendor, new { id = "lstAssignedVendor", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-left:30px">
+        <tr>
+            <td>
+                @Html.ActionLink(" Back", "GetEmployeeList", null, new { @class = "btn btn-warning glyphicon glyphicon-hand-left" })
+
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn btn-info glyphicon glyphicon-save"> Save</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+}
+
+
+

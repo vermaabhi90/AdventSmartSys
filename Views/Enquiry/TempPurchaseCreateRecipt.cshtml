@@ -1,0 +1,2159 @@
+﻿@model SmartSys.BL.Enquiry.ReceiptModel
+
+@{
+    ViewBag.Title = "PurchaseCreateRecipt";
+    var gridOtherCharges = new WebGrid(source: Model.OtherCharges, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridOtherCharges");
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/rating.css" rel="stylesheet" />
+<script src="~/Scripts/rating.js"></script>
+<script type="text/javascript">
+        $(function ()
+        {
+            $('.rating').rating();
+        });
+</script>
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "---Please Select---",
+            allowClear: true,
+            tags: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+
+@if (Model.ReceiptId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Temp Purchase Receipt
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Purchase Receipt
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        var recepId = $("#ReciptId").val();
+        if (recepId > 0)
+        {
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetCartonDetai",  //Update is Server side method
+                data: { Recipt: $("#ReciptId").val()},
+                success: function (result) {
+                    var obj = $("#grdCartDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    //$('#taxTbl tbody > tr').remove();
+                    //$.each(result, function (i,data) {
+                    //    $('#CartonTbl').append('<tr><td>'+ data.CartonId +'</td><td>' + data.Weight  +'</td><td>' + data.Height +'</td><td>' + data.Width +'</td><td>' + data.Length +'</td><td>' + data.Remark +'</td><td>' + '</td></tr>');
+                    //});
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("#SaveCartonDetail").click(function () {
+            var Weight=$("#CartonWeight").val();
+            var Length=$("#CartonLength").val();
+            var Width=$("#CartonWidth").val();
+            var Height=$("#CartonHeight").val();
+            var Remark=$("#CartonRemark").val();
+            if(Height.toString() == "")
+            {
+                alert("Please Enter Height");
+                return false;
+            }
+            if(Height <= 0)
+            {
+                alert("Height always Greater than Zero");
+                return false;
+            }
+            if(Length.toString() == "")
+            {
+                alert("Please Enter Length");
+                return false;
+            }
+            if(Length <= 0)
+            {
+                alert("Length always Greater than Zero");
+                return false;
+            }
+            if(Width.toString() == "")
+            {
+                alert("Please Enter Width");
+                return false;
+            }
+            if(Width <= 0)
+            {
+                alert("Width always Greater than Zero");
+                return false;
+            }
+            if(Weight.toString() == "")
+            {
+                alert("Please Enter Weight");
+                return false;
+            }
+            if(Weight <= 0)
+            {
+                alert("Weight always Greater than Zero");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveCartonDetail",  //Update is Server side method
+                data: { Recipt: $("#ReciptId").val(), Height: Height, width: Width, lenght: Length, Weight: Weight, Remark: Remark},
+                success: function (result) {
+                    $('#CartonTbl tbody > tr').remove();
+                    $.each(result, function (i,data) {
+                        $('#CartonTbl').append('<tr><td>'+ data.CartonId +'</td><td>' + data.Weight  +'</td><td>' + data.Height +'</td><td>' + data.Width +'</td><td>' + data.Length +'</td><td>' + data.Remark +'</td><td>' + '</td></tr>');
+                    });
+                    toastr.success("Carton Saved Successfully!");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+            $("#CartonWeight").val(null);
+            $("#CartonLength").val(null);
+            $("#CartonWidth").val(null);
+            $("#CartonHeight").val(null);
+            $("#CartonRemark").val(null);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var Curr= $("#Curr").val();
+        $("#CurrencyId").val(Curr);
+        $('#reset').click(function (e) {
+            $("#fileInput").val(null);
+        });
+        //var ty= $("#PermitType").val();
+        //if(ty == "ImportPermit")
+        //{
+        //    $("#PermitNum").attr('readonly', false);
+        //}
+        //else{
+        //    $("#PermitNum").attr('readonly', true);
+        //}
+
+        //$("#PermitType").change(function () {
+        //    var PermitTy=$("#PermitType").val();
+        //    if(PermitTy == "ImportPermit")
+        //    {
+        //        $("#PermitNum").attr('readonly', false);
+        //    }
+        //    else
+        //    {
+        //        $("#PermitNum").val(null);
+        //        $("#PermitNum").attr('readonly', true);
+        //    }
+        //});
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var recepId = $("#ReciptId").val();
+        if (recepId > 0)
+        {
+            //$("#ItemDrp").empty();
+            //var path1 = "/Enquiry/GetItemListByReceipt"
+            //$.ajax({
+            //    type: 'POST',
+            //    url: path1,
+            //    dataType: 'json',
+            //    data: { CompCode: $("#ComDoc").val(), VendorId: $("#VendId").val() },
+            //    success: function (Brands) {
+            //        $.each(Brands, function (i, Brand) {
+
+            //            $('#ItemDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+            //            if (i == 0) {
+            //                $("#ItemDrp").val(Brand.Value).trigger("change");
+            //            }
+            //        });
+            //        $('#ItemDrp').select2('rebuild');
+            //        $('#ItemDrp').select2('refresh');
+            //    },
+            //    error: function (ex) {
+            //        alert('Please Select item Name');
+            //    }
+            //});
+            //return false;
+        }
+        $("#CompCodeDrp").change(function () {
+            $("#VendorIdDrp").empty();
+            $("#PO_NODrp").empty();
+               var path = "/Enquiry/GetVendorListByCompCode"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+                        $('#VendorIdDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#VendorIdDrp").val(Brand.Value).trigger("change");
+                        }
+                    });
+                    $('#VendorIdDrp').select2('rebuild');
+                    $('#VendorIdDrp').select2('refresh');
+                },
+                error: function (ex) {
+                    alert('Err');
+                }
+            });
+            return false;
+           })
+
+           $("#VendorIdDrp").change(function () {
+               $("#MRIDrp").empty()
+               var path1 = "/Enquiry/GetIntimationListByVendor"
+               $.ajax({
+                   type: 'POST',
+                   url: path1,
+                   dataType: 'json',
+                   data: { CompCode: $("#CompCodeDrp").val(), VendorId: $("#VendorIdDrp").val() },
+                   success: function (Brands) {
+
+                       $.each(Brands, function (i, Brand) {
+
+                           $('#MRIDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                           if (i == 0) {
+                               $("#MRIDrp").val(Brand.Value).trigger("change");
+                           }
+                       });
+                       $('#MRIDrp').select2('rebuild');
+                       $('#MRIDrp').select2('refresh');
+                   },
+                   error: function (ex) {
+                       alert('Please Select item Name');
+                   }
+               });
+               return false;
+           })
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("#ItemDrp").change(function () {
+            $("#PO_NODrp").empty()
+            var path1 = "/Enquiry/TempGetPOforReceiptByItem"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: '@Model.CompCode', ItemId: $("#ItemDrp").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+
+                        $('#PO_NODrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#PO_NODrp").val(Brand.Value).trigger("change");
+                        }
+                    });
+
+                    $('#PO_NODrp').select2('rebuild');
+                    $('#PO_NODrp').select2('refresh');
+
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#PO_NODrp").change(function () {
+            var str =   $(".xyx :selected").text();
+            arr = str.split('-');
+            strFine = arr[arr.length-1];
+            strRate = arr[arr.length-2];
+            $("#Quantity").val(parseFloat(strFine));
+            $("#InvoiceAmount").val(((parseFloat(strRate)) * strFine).toFixed(2))
+          //  $("#InvoiceAmount").attr('readonly', true);
+          //  $("#Quantity").attr('readonly', true);
+            return false;
+        })
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('.savetot').click(function (e) {
+            var CompCodeDrp = $('#CompCodeDrp').val();
+            var VendorIdDrp = $('#VendorIdDrp').val();
+            var PermitTyp = $('#PermitType').val();
+            var PermitNum = $('#PermitNum').val();
+            var Currency = $('#CurrencyId').val();
+            var FF = $('#FreightForwarderId').val();
+            var AirwayBillNo = $('#AirwayBillNo').val();
+            if(FF.toString() != "")
+            {
+                if(AirwayBillNo.toString() == "")
+                {
+                    alert("Please Enter Airway Bill Number");
+                    return false;
+                }
+            }else{
+                $('#AirwayBillNo').val("");
+            }
+            $('#Curr').val(Currency);
+            if (CompCodeDrp.toString() == "") {
+                alert("Please Select Company");
+                return false;
+            }
+
+            if (VendorIdDrp.toString() == "") {
+                alert("Please Select Verdor");
+                return false;
+            }
+            if(PermitTyp =="ImportPermit") {
+
+                if(PermitNum == "")
+                {
+                    alert("Please Enter Permit Number");
+                    return false;
+                }
+            }
+            $("#RecForm").unbind('submit').submit();
+        });
+    });
+</script>
+
+@using (Html.BeginForm("PurchaseCreateRecipt", "Enquiry", FormMethod.Post, new { Id = "RecForm", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        @if (Model.ReceiptId > 0)
+                {
+            <tr>
+
+                <td>
+                    <label>Receipt ID</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ReceiptId, new { @class = "form-control", @readonly = "Readonly", id = "ReciptId" })
+                    </div>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                <label>Recipt Date</label>
+            </td>
+
+            @if (Model.ReceiptId == 0)
+                {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.EJ().DatePickerFor(M => M.ReceiptDate).Value(DateTime.Now.Date)
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </td>
+            }
+            else
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.EJ().DatePickerFor(M => M.ReceiptDate).Value(Model.ReceiptDate)
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </td>
+            }
+            <td>
+                <label>Company</label>
+            </td>
+            @if (Model.ReceiptId == 0)
+                {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.HiddenFor(model => model.ReceiptId, new { id = "ReceiptId" })
+                                    @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = " drp form-control", style = "width:250px", id = "CompCodeDrp" })
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.HiddenFor(model => model.CompCode, new { id = "ComDoc" })
+                                    @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "Readonly" })
+
+                                </div>
+                            </td>
+                            <td>
+                                <a id="link1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                                @Html.EJ().Tooltip("link1").Content("Please select the name of the Company")
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+            }
+            <td>
+                <label>Vendor</label>
+            </td>
+            @if (Model.ReceiptId == 0)
+                {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.DropDownList("VendorId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Vendor ---", new { @class = "drp form-control", style = "width:250px", id = "VendorIdDrp" })
+                                </div>
+                            </td>
+                            <td>
+                                <a id="link2" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                                @Html.EJ().Tooltip("link2").Content("Please select the name of the Vendor")
+                            </td>
+                        </tr>
+                    </table>
+
+
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.HiddenFor(model => model.VendorId, new { id = "VendId" })
+                                    @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", @readonly = "Readonly" })
+                                </div>
+                            </td>
+                            <td>
+                                <a id="link3" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                                @Html.EJ().Tooltip("link3").Content("Please select the name of the Vendor")
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+
+            }
+
+        <tr>
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="">
+                                @Html.DropDownList("FreightForwarderId", (IEnumerable<SelectListItem>)ViewBag.FFLst, "--- Please Select FF ---", new { @class = "form-control", style = "width:200px", id = "FreightForwarderId" })
+                            </div>
+                        </td>
+                        <td>
+                            <a id="link4" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                            @Html.EJ().Tooltip("link4").Content(" Please select the freight forwarder. The delivery service. if the service is unavaillable in the list then create by going to Admininstration -> Data Warehouse -> Vendor -> freight Forwarder. If you don't have the accessibility, please contact Manager or Administrator.")
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+            <td>
+                <label>Air Way bill No</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.StatusId, new { id = "StatusId" })
+                    @Html.TextBoxFor(model => model.FFRef_No, new { id = "AirwayBillNo", @class = "form-control", style = "width:200px" })
+                </div>
+            </td>
+
+            <td>
+                <label>Currency</label>
+            </td>
+            @*@if (Model.ReceiptId == 0)
+                {*@
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="">
+                                @Html.HiddenFor(model => model.Currency, new { id = "Curr" })
+                                @Html.DropDownList("Currency", (IEnumerable<SelectListItem>)ViewBag.Currency, "--- Please Select Currency ---", new { @class = "form-control", style = "width:210px", id = "CurrencyId" })
+                            </div>
+                        </td>
+                        <td>
+                            <a id="link5" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                            @Html.EJ().Tooltip("link5").Content("Select Currency. If reqd. currency is not availlable than add the currency by going to Administration -> Admin -> Currency. If you can't access it, contact the Admininstrator or Manager.")
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+            @*}
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Currency, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                }*@
+        </tr>
+        <tr>
+
+
+            <td>
+                <label>Vendor Invoice No</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.SupplierInvN0, new { @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <label>Vendor Invoice Date</label>
+            </td>
+
+            @if (Model.ReceiptId == 0)
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.EJ().DatePickerFor(M => M.SupplierInvDate).Value(DateTime.Now.Date)
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.EJ().DatePickerFor(M => M.SupplierInvDate).Value(Model.SupplierInvDate)
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+                </td>
+            }
+
+            <td>
+                <label>Shipment Type</label>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="">
+                                @Html.DropDownListFor(model => model.PermitType, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Please Select Permit Type", Value="NULL"},
+                             new SelectListItem() {Text = "Import Permit", Value="ImportPermit"},
+                             new SelectListItem() {Text = "Local", Value="Local"},
+                             new SelectListItem() {Text = "Drop Shipment", Value="DropShipment"}
+
+                       }, new { @class = "form-control", style = "width:210px", id = "PermitType" })
+                            </div>
+                        </td>
+                        <td>
+                            <a id="link6" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                            @Html.EJ().Tooltip("link6").Content("Please select the permit type. if you select Import Permit than permit number is neccessary or else the permit number cannot be inserted.")
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+
+            @*<td>
+                    <label>Permit Number</label>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.TextBoxFor(model => model.PermitNumber, new { @class = "form-control", id = "PermitNum" })
+                                </div>
+                            </td>
+                            <td>
+                                <a style=""><span class="glyphicon glyphicon-info-sign"></span><i> permit number is neccessary if permit type is Import Permit. For Local and Drop Shipment, permit number is not required and should not be filled.  <br /></i></a>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>*@
+        </tr>
+        <tr>
+            <td>
+                <label>MRI DOC NO</label>
+            </td>
+            @if (Model.ReceiptId > 0)
+            {
+                <td>
+                    @Html.HiddenFor(model => model.MRIId, new { id = "MRIID" })
+                    @Html.TextBoxFor(model => model.MRIDOCNo, new { @class = "form-control", @readonly = "Readonly" })
+                </td>
+            }
+            else
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.DropDownList("MRIID", new SelectList(string.Empty, "Value", "Text"), "--- Please Select MRI ---", new { @class = "drp form-control", style = "width:250px", id = "MRIDrp" })
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            }
+
+            <td>
+                <label for="ItemName">Receipt File:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    <div class="input-group-btn">
+                        @Html.HiddenFor(model => model.ReceiptFile)
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn-xs btn-info" />
+                    </div>
+                </div>
+            </td>
+            @if (Model.ReceiptFile != null && Model.ReceiptFile.ToString() != "")
+            {
+                <td>
+                    <div class="input-group-btn">
+                        @Html.ActionLink(" Open", "InvoiceDownLoad", new { Filename = Model.ReceiptFile }, new { @class = "btn btn-info glyphicon glyphicon-open" })
+                    </div>
+                </td>
+            }
+            <td>
+
+                <input type="button" id="reset" value="Remove" class="btn-xs btn-danger reset" style="width:75px" />
+
+            </td>
+        </tr>
+    </table>
+    if (Model.ReceiptId > 0)
+    {
+        <div style="width:100%">
+            @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+                {
+                data.Add().ID("Carton").Text("Carton").ContentTemplate(
+                    @<div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="table-responsive" style="height:300px;width:90%">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    Carton:
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    @Html.DropDownList("drpCartons", (IEnumerable<SelectListItem>)ViewBag.Carton, "--- Please Select Carton ---", new { @class = " drp form-control", style = "width:310px", id = "drpCartons" })
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    Weight:
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    <input type="number" id="CartonWeight" name="CartonWeight" class="form-control">
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <label>
+                                                    Remark:
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    <textarea id="CartonRemark" name="CartonRemark" style="width:300px;max-width:500px" class="abc form-control e-ejinputtext"></textarea>
+                                                </div>
+                                            </td>
+                                            @if (Model.StatusId == 26 || Model.StatusId == 55)
+                                            {
+                                                <td>
+                                                    <div class="btn" aria-label="...">
+                                                        <button type="button" id="SaveReceiptCartonDetail" class="btn-sm btn-primary glyphicon glyphicon-save"> Add</button>
+                                                    </div>
+                                                </td>
+                                            }
+                                        </tr>
+
+                                    </table>
+
+                                    <table>
+                                        <tr>
+
+                                            <td></td>
+                                        </tr>
+                                    </table>
+
+                                    <table id="CartonTbl" class="table table-hover">
+                                        <thead>
+                                            <tr style="background-color:#D6EAF8">
+                                                <div style="position:relative">
+                                                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdCartDetailLst")
+            .Datasource((IEnumerable<object>)ViewBag.LstCart)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+              .EditSettings(e => e.AllowAdding().AllowEditing())
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu()
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+              })
+            .PageSettings(p => { p.PageSize(20); })
+            .EnableAltRow(true)
+            .AllowSorting(true)
+            .FilterSettings(filter =>
+            {
+                filter.FilterType(FilterType.Excel);
+            })
+
+            .Columns(col =>
+            {
+                col.Field("CartonId").HeaderText("Carton Id").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Weight").HeaderText("Weight").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Length").HeaderText("Length").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Width").HeaderText("Width").TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Height").HeaderText("Height").TextAlign(TextAlign.Left).Width(90).Add();
+                col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(160).Add();
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclickCarton");
+            })
+                                                    )
+                                                </div>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody id="myTable1"></tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-12 text-center">
+                                    <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div> );
+                data.Add().ID("ItemDetail").Text("Item").ContentTemplate(
+                    @<div>
+
+                        @(Html.EJ().Grid<SmartSys.BL.Enquiry.ReceiptDetailModel>("grdRecpDetailLst")
+                .Datasource((IEnumerable<object>)@Model.LstReceiptModel)
+                .AllowFiltering()
+                .AllowPaging()
+                .PageSettings(page => { page.PageSize(20); })
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                 .AllowGrouping()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .EditSettings(e => e.AllowAdding().AllowEditing())
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu()
+                        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+                    contextMenu.CustomContextMenuItems(c =>
+                    {
+                        c.AddItem("Delete1", "Delete");
+                    });
+                })
+                .GroupSettings(group => { group.GroupedColumns(col => { col.Add("MPN"); }).EnableDropAreaAnimation(false); })
+                 .SummaryRow(row =>
+                 {
+                     row.ShowTotalSummary(false)
+                     .SummaryColumns(col =>
+                     {
+                         col.SummaryType(SummaryType.Sum)
+                         .DisplayColumn("Quantity")
+                         .DataMember("Quantity")
+                         .Prefix("Total Quantity= ")
+                         .Add();
+                     }).Add();
+                 })
+                 .SummaryRow(row =>
+                 {
+                     row.ShowTotalSummary(false)
+                     .SummaryColumns(col =>
+                     {
+                         col.SummaryType(SummaryType.Sum)
+                         .DisplayColumn("InvoiceAmount")
+                         .DataMember("InvoiceAmount")
+                         .Prefix("Total  Amount= ")
+                         .Add();
+                     }).Add();
+                 })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .ToolbarSettings(toolbar =>
+                {
+                    toolbar.ShowToolbar().ToolbarItems(items =>
+                    {
+                        items.AddTool(ToolBarItems.Add);
+                        items.AddTool(ToolBarItems.Edit);
+
+                    });
+                })
+            .Columns(col =>
+            {
+                col.Field("CartonId").Visible(true).AllowEditing(true).HeaderText("Carton Id").Width(70).Add();
+                col.Field("Dimension").HeaderText("Dimension").Width(70).Add();
+                col.Field("ReceiptId").HeaderText("Receipt Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("ItemId").HeaderText("Item").Visible(false).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(160).Add();
+                col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+                col.Field("COO").HeaderText("COO").Visible(false).Width(70).Add();
+                col.Field("Country").HeaderText("Country").Width(70).Add();
+                col.Field("PO_No").HeaderText("PO_No").Width(160).Add();
+                col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(80).Add();
+
+                col.Field("InvoiceAmount").HeaderText("Invoice Amount").Width(70).Add();
+                col.Field("ReceiptDetailId").Visible(true).Visible(false).AllowEditing(true).HeaderText("Receipt Detail Id").Width(70).Add();
+
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclick");
+                eve.ActionBegin("toolClick");
+            })
+                        )
+                    </div> );
+                data.Add().ID("LocalCharge").Text("OtherCharges").ContentTemplate(
+                    @<div>
+                        <table>
+                            <tr>
+
+                                <td width="20px"></td>
+                                <td>
+                                    <label for="">Currency:</label>
+                                </td>
+                                <td width="20px"></td>
+                                <td>
+                                    <div class="">
+                                        @Html.DropDownList("Currency", (IEnumerable<SelectListItem>)ViewBag.Currency, "--- Please Select Currency ---", new { @class = "form-control", style = "width:180px", id = "DrpCurr" })
+                                    </div>
+                                </td>
+                                <td width="20px"></td>
+                                <td>
+                                    <label for="">Amount:</label>
+                                </td>
+                                <td width="22px"></td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Amount, new { @maxlength = "20", @class = "form-control", id = "OtherAmt" })
+                                </td>
+                                <td width="22px"></td>
+
+                                <td width="20px"></td>
+                                <td>
+                                    <label for="">Charges Description:</label>
+                                </td>
+                                <td width="23px"></td>
+                                <td>
+                                    @Html.TextAreaFor(model => model.ChargesDescription, new { style = "min-width:300px ; min-height:8px", @class = "form-control", id = "ChargesDesp" })
+                                </td>
+                                <td width="80px"></td>
+                                @if (Model.StatusId == 26 || Model.StatusId == 55)
+                                {
+                                    <td>
+                                        <button type="button" id="btnAddCust" class="btn-primary btn-xs"> Add</button>
+                                    </td>
+                                }
+                            </tr>
+                        </table>
+                        <br />
+                        <div id="table-wrapper">
+                            <div id="table-scroll" style="overflow-y:scroll;max-height:300px">
+                                <table class="table table-hover">
+                                    <thead>
+
+                                        <tr style="background-color:#D6EAF8">
+                                            <div style="position:relative">
+                                                @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdOtherchargesLst")
+            .Datasource((IEnumerable<object>)ViewBag.LstOtherChages)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .PageSettings(p => { p.PageSize(20); })
+            .EnableAltRow(true)
+            .AllowSorting(true)
+            .FilterSettings(filter =>
+            {
+                filter.FilterType(FilterType.Excel);
+            })
+
+            .Columns(col =>
+            {
+                col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Amount").HeaderText("Amount").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("ChargesDescription").HeaderText("Charges Description").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclic");
+            })
+                                                )
+                                            </div>
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody id="Items"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div> );
+
+                })
+              .EnablePersistence(true)
+              .Render();}
+
+        </div>
+                }
+                <table>
+                    <tr>
+                        <td>
+                            @Html.ActionLink(" Back", "TempPurchaseReciptList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })
+
+                        </td>
+                        @if (Model.StatusId == 26 || Model.StatusId == 0 || Model.StatusId == 25 || Model.StatusId == 55)
+                        {
+                            <td>
+                                <div class="btn" aria-label="...">
+                                    <button type="submit" class="savetot btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+                                </div>
+                            </td>
+                        }
+
+                        @if (Model.PermitType == "ImportPermit" && Model.StatusId == 55 || Model.StatusId == 25)
+                        {
+                            <td>
+                                <div class="btn" aria-label="...">
+                                    @Html.ActionLink(" Send For Review", "ReviewRejectPurchaseReceipt", new { StatusId = 56, ReceiptId = Model.ReceiptId, Type = "Receipt" }, new { @class = "btn-xs btn-success glyphicon glyphicon-ok" })
+                                </div>
+                            </td>
+                        }
+                        else if (Model.PermitType != "ImportPermit" && Model.StatusId == 26 || Model.StatusId == 25)
+                        {
+                            <td>
+                                <div class="btn" aria-label="...">
+                                    @Html.ActionLink(" Send For Review", "ReviewRejectPurchaseReceipt", new { StatusId = 56, ReceiptId = Model.ReceiptId, Type = "Receipt" }, new { @class = "btn-xs btn-success glyphicon glyphicon-ok" })
+                                </div>
+                            </td>
+                        }
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <input type="text" name="Rating" id="Rating" value=@Model.Rating class="rating rating10" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                }
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("Edit / Create Item Enquiry").ContentTemplate(@<div>
+
+
+        @using (Html.BeginForm("", "", FormMethod.Post, new { Id = "" }))
+        {
+            <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+                Edit / Create Item Enquiry
+            </div>
+            <table align="center" style="border-collapse:separate;border-spacing: 0 6px;">
+                <tr>
+                    <td width="100px">
+                        <label>Receipt Detail Id:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="number" id="ReceiptDetailId" name="ReceiptDetailId" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100px">
+                        <label>Carton:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.Hidden("OldCartonId", null, new { id = "OldCartonId" })
+                            @Html.DropDownList("CartonId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Carton ---", new { @class = "form-control", style = "width:250px", id = "CartonId" })
+                        </div>
+                    </td>
+                    <td width="100px">
+                        <label>COO:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.DropDownList("COO", (IEnumerable<SelectListItem>)ViewBag.CountryLst, "--- Please Select  ---", new { @class = "form-control", style = "width:250px", id = "COODrp" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td width="100px">
+                        <label>Item:</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.Hidden("OldItemId", null, new { id = "OldItemId" })
+                            @Html.DropDownList("ItemId", (IEnumerable<SelectListItem>)ViewBag.LstItems, "--- Please Select Item ---", new { id = "ItemDrp", @class = "form-control", style = "width:250px" })
+                        </div>
+                    </td>
+
+
+                    <td width="100px">
+                        <label>PO Number</label>
+
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.DropDownList("PO_No", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Invoice Number ---", new { @class = "xyx form-control", style = "width:250px", id = "PO_NODrp" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100px">
+                        <label>Quantity:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.Hidden("OldQuantityId", null, new { id = "OldQuantityId" })
+                            <input type="number" id="Quantity" onkeyup="checkInvoiceAmount();" name="Quantity" class="form-control" />
+                            @*onkeyup="checkInvoiceAmount();*@
+                        </div>
+                    </td>
+                    <td width="100px">
+                        <label>Invoice Amount:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="number" id="InvoiceAmount" name="InvoiceAmount" class="form-control" />
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+            <br />
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive" style="height:200px;width:90%">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label>
+                                        Tax:
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.DropDownList("TaxId", (IEnumerable<SelectListItem>)ViewBag.TaxListDrp, "--- Please Select Tax ---", new { @class = " form-control", style = "width:310px", id = "TaxIdDrp" })
+                                        @Html.Hidden("TaxonTaxChk", new { id = "TaxonTaxChk" })
+                                        @Html.HiddenFor(model => model.SaveType, new { id = "SaveTypetds" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <label>
+                                        Rate:
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        <input type="number" id="TaxRate" name="TaxRate" onkeyup="checkPassrate(); return false;" class="form-control" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <label>
+                                        Amount:
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        <input type="number" id="TaxAmount" name="TaxAmount" onkeyup="checkPassAmount(); return false;" class="form-control" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <label>
+                                        Paid By Vendor:
+                                    </label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        <input type="checkbox" id="PaidbyVendor" name="PaidbyVendor" />
+                                        @*<input type="checkbox" id="PaidbyVendor" name="PaidbyVendor"  class="form-control" />*@
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn" aria-label="...">
+                                        <button type="button" id="AddTax" class="btn-sm btn-warning glyphicon glyphicon-pl"> Add</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <table id="taxTbl" class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+
+                                    <th style="text-shadow: 0 1px black;">Tax Id</th>
+                                    <th style="text-shadow: 0 1px black;">Name</th>
+                                    <th style="text-shadow: 0 1px black;">Rate</th>
+                                    <th style="text-shadow: 0 1px black;">Amount</th>
+                                    <th style="text-shadow: 0 1px black;">Paid By Vendor</th>
+                                    <th style="text-shadow: 0 1px black;">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myTable1"></tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+                    </div>
+                </div>
+            </div>
+            <table align="left">
+                <tr>
+                    @if (Model.StatusId == 26 || Model.StatusId == 25 || Model.StatusId == 55)
+                    {
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <button type="button" id="SaveItemEnq" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                            </div>
+
+                        </td>
+                    }
+
+                </tr>
+            </table>
+        }
+    </div>)
+         .Width(1100)
+         .Height(600)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+    }
+</div>
+<script>
+    $(document).ready(function () {
+        $('#AddTax').click(function () {
+            var TaxId=$("#TaxIdDrp").val();
+            var TaxName = $("#TaxIdDrp :selected").text();
+            var TaxRate=$("#TaxRate").val();
+            var TaxAmount=$("#TaxAmount").val();
+            var ReceiptDetailId=$("#ReceiptDetailId").val();
+            var ItemId=$("#ItemDrp").val();
+            var PdVend=$("#PaidbyVendor").val();
+            if ($('#PaidbyVendor').is(":checked"))
+            {
+                PdVend=true;
+            }
+            else
+            {
+                PdVend=false;
+            }
+            if(ItemId == null)
+            {
+                alert("Please Select Item");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveItemTax",  //Update is Server side method
+                data: { TaxId: TaxId, TaxName: TaxName, TaxRate: TaxRate, TaxAmount: TaxAmount, ReceiptDetailId: ReceiptDetailId,PaidByVendor:PdVend},
+                success: function (result) {
+                    $.ajax({
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Enquiry/GetTaxDropDwn",  //Update is Server side method
+                        data: { ReceiptDetailId: ReceiptDetailId },
+                        success: function (result) {
+                            $("#TaxIdDrp").empty();
+                            $('#TaxIdDrp').append('<option value="">Please Select Tax</option>');
+                            $.each(result, function (i, data) {
+                                $('#TaxIdDrp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                            });
+                        },
+                        error: {
+
+                        }
+                    });
+                    $('#taxTbl').append('<tr><td>'+ TaxId +'</td><td>' + TaxName  +'</td><td>' + TaxRate +'</td><td>' + TaxAmount +'</td><td>' + PdVend +'</td><td>' + '</td></tr>');
+                    $("#TaxRate").val(null);
+                    $("#TaxIdDrp").val(null);
+                    $("#TaxAmount").val(null);
+                    $("#PaidbyVendor").val(null);
+                    return false;
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    toastr.error(errorThrown);
+                }
+            });
+
+        });
+        $('#TaxIdDrp').click(function () {
+            var TaxId=$("#TaxIdDrp").val();
+            var InvoiceAmount=$("#InvoiceAmount").val();
+            if(InvoiceAmount == 0 || InvoiceAmount == null)
+            {
+                alert("Please Enter Invoice Amount");
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetTaxRate",  //Update is Server side method
+                data: { TaxId: TaxId},
+                success: function (result) {
+                    var taxdetail = result;
+                    if(taxdetail.TaxType =="Tax On Base Amount" || taxdetail.TaxType =="Tax On Gross Amount")
+                    {
+                        $("#TaxonTaxChk").val(1);
+                        var Amt=(InvoiceAmount * taxdetail.TaxRate) / 100;
+                        $("#TaxRate").val(taxdetail.TaxRate);
+                        $("#TaxAmount").val(Amt);
+                        $("#TaxRate").attr('readonly', true);
+                        $("#TaxAmount").attr('readonly', false);
+                    }
+                    else{
+                        $("#TaxRate").val(null);
+                        $("#TaxAmount").val(null);
+                        $("#TaxRate").attr('readonly', false);
+                        $("#TaxAmount").attr('readonly', false);
+                    }
+                    if(taxdetail.TaxType =="Discount")
+                    {
+                        $("#TaxonTaxChk").val(4);
+                    }
+                    if(taxdetail.TaxType =="Tax On Tax")
+                    {
+                        if(taxdetail.TaxAmount > 0)
+                        {
+                            var Amt=(taxdetail.TaxAmount * taxdetail.TaxRate) / 100;
+                            $("#TaxRate").val(taxdetail.TaxRate);
+                            $("#TaxAmount").val(Amt);
+                            $("#TaxRate").attr('readonly', true);
+                            $("#TaxAmount").attr('readonly', true);
+                        }
+                        else{
+                            alert("This is Tax on Tax Required Dependent Tax..");
+                            $("#TaxIdDrp").val(null);
+                            return false;
+                        }
+
+                    }
+                },
+                error: {
+
+                }
+            });
+            return false;
+
+        });
+    });
+
+</script>
+<script>
+    $('#SaveItemEnq').click(function () {
+
+
+        var recpId=$("#ReciptId").val();
+        var Itemid = $("#ItemDrp").val();
+        var ReceiptDetailId=$("#ReceiptDetailId").val();
+        var PO_NO = $("#PO_NODrp").val();
+        var Quantity = $("#Quantity").val();
+        var COO = $("#COODrp").val();
+        var CartonId=parseInt($("#CartonId").val());
+        var InvoiceAmount = $("#InvoiceAmount").val();
+        var Savetype= $("#SaveTypetds").val();
+        var ItemName = $("#ItemDrp :selected").text();
+        var Country = $("#COODrp :selected").text();
+        var Carton = $("#CartonId :selected").text();
+        var str =   $(".xyx :selected").text();
+        arr = str.split('-');
+        strFine = arr[arr.length-1];
+        strRate = arr[arr.length-2];
+        var OldCartonId = 0;
+        var OldItemId = 0;
+        var OldQuantityId = 0;
+
+        $("#InvoiceAmount").val((parseFloat(strRate)) * Quantity)
+        //if(Quantity > parseFloat(strFine))
+        //{
+        //    alert("Quantity must be Less than "+ strFine);
+        //    $("#Quantity").val(parseFloat(strFine));
+        //    return false;
+        //}
+        if(Quantity <= 0)
+        {
+            alert("Quantity must be Greater than 0");
+            return false;
+        }
+        if (COO == null || COO.toString() == "") {
+            alert("Please Select COO");
+            return false;
+        }
+
+        if (PO_NO == null) {
+            alert("Please Select Invoice Number");
+            return false;
+        }
+        if (PO_NO.toString() == "") {
+            alert("Please Select Invoice Number");
+            return false;
+        }
+        if (Itemid == null) {
+            alert("Please Select Item");
+            return false;
+        }
+        if (Itemid.toString() == "")
+        {
+            alert("Please Select Item");
+            return false;
+        }
+
+        if (Quantity == "") {
+            alert("Please Enter Quantity");
+            return false;
+        }
+        var Allow = true;
+        if(Savetype == 2)
+        {
+            OldCartonId = parseInt($("#OldCartonId").val());
+            OldItemId = parseInt($("#OldItemId").val());
+            OldQuantityId = parseFloat($("#OldQuantityId").val());
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveItemDetails",  //Update is Server side method
+                data: { Itemid: Itemid, PO_NO: PO_NO, Quantity: Quantity, COO: COO, CartonId: CartonId, InvoiceAmount: InvoiceAmount, ReceiptId: @Model.ReceiptId,ReceiptDetailId:ReceiptDetailId},
+                success: function (result) {
+                    var obj = $("#grdRecpDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    $("#dialogIcon").ejDialog("close");
+                    toastr.success("Item Add Successfully!");
+                    location.reload(true);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+
+        }
+        else
+        {
+            OldCartonId = 0;
+            OldItemId = 0;
+            OldQuantityId = 0;
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/ChkItemDup",  //Update is Server side method
+                data: { Itemid: Itemid, ReceiptId: @Model.ReceiptId,Quantity:Quantity,CartonId:CartonId},
+                success: function (result) {
+                    if(result == "Error")
+                    {
+                        $("#SaveTypetds").val(3)
+                        alert("This Item Already Added!...");
+                        return false;
+                    }
+                    else
+                    {
+                        $.ajax({
+                            dataType: 'json',
+                            type: "POST",
+                            url: "/Enquiry/SaveNewItemDetails",  //Update is Server side method
+                            data: { Itemid: Itemid, PO_NO: PO_NO, Quantity: Quantity, COO: COO, CartonId: CartonId, InvoiceAmount: InvoiceAmount, ItemName: ItemName , Country:Country, ReceiptId: @Model.ReceiptId, OldItemid: OldItemId, OldCartonId: OldCartonId, OldQuantity: OldQuantityId,Carton:Carton,ReceiptDetailId:ReceiptDetailId},
+                            success: function (result) {
+                                var obj = $("#grdRecpDetailLst").ejGrid("instance")
+                                obj.dataSource(result);
+                                $("#dialogIcon").ejDialog("close");
+                                toastr.success("Item Add Successfully!");
+                                location.reload(true);
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                                toastr.error(errorThrown);
+                            }
+                        });
+                        $("#Quantity").val(null);
+                        $("#SupplierInvN0").empty()
+                        $(".epdt").val(null);
+                        $("#InvoiceAmount").empty()
+                        $("#dialogIcon").ejDialog("close");
+                    }
+                },
+                error:{
+                }
+            });
+        }
+        $("#Quantity").val(null);
+        $("#InvoiceAmount").val(null);
+        $("#dialogIcon").ejDialog("close");
+    });
+
+    function toolClick(args) {
+
+
+        if(args.requestType == "add")
+        {
+            var StatusId=$("#StatusId").val();
+            if(StatusId == 26 || StatusId == 25 || StatusId == 55)
+            {
+                $("#ReceiptDetailId").val(0);
+                $('#taxTbl tbody > tr').remove();
+                //Fill Carton DropDown List
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/DrpCarton",  //Update is Server side method
+                    data: { Recipt: $("#ReciptId").val() },
+                    success: function (result) {
+                        $("#CartonId").empty();
+                        $('#CartonId').append('<option value="0">By Hand</option>');
+                        $.each(result, function (i, data) {
+                            $('#CartonId').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                        });
+                    },
+                    error: {
+
+                    }
+                });
+                //End Fill Carton DropDown List
+
+                $("#dialogIcon").ejDialog("open");
+                $("#SaveTypetds").val(1);
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/GetTaxDropDwn",  //Update is Server side method
+                    data: { ReceiptDetailId:0},
+                    success: function (result) {
+                        $("#TaxIdDrp").empty();
+                        $('#TaxIdDrp').append('<option value="">Please Select Tax</option>');
+                        $.each(result, function (i, data) {
+                            $('#TaxIdDrp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                        });
+                    },
+                    error: {
+
+                    }
+                });
+                $('#taxTbl tbody > tr').remove();
+                $("#TaxIdDrp").val(null);
+                return false;
+            }
+            else
+            {
+                toastr.error("You can Not Add Record");
+            }
+            return false;
+        }
+        if (args.requestType == "beginedit") {
+            var StatusId=$("#StatusId").val();
+            if(StatusId ==26 || StatusId == 25 || StatusId == 55)
+            {
+                //Fill Carton DropDown List
+              //  $('#ItemDrp').append('<option value="' + args.row.children().eq(3).text() + '">' + args.row.children().eq(4).text() + '</option>');
+                $("#OldCartonId").val(args.row.children().eq(0).text())
+                $("#OldItemId").val(args.row.children().eq(3).text())
+                $("#OldQuantityId").val(args.row.children().eq(9).text())
+                $("#ItemDrp").val(args.row.children().eq(3).text())
+
+                //  $("#PO_NODrp").empty().trigger("change")
+                // alert(args.row.children().eq(7).text());
+                 $("#PO_NODrp").val(args.row.children().eq(7).text())
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/DrpCarton",  //Update is Server side method
+                    data: { Recipt: $("#ReciptId").val() },
+                    success: function (result) {
+                        $("#CartonId").empty();
+                        $('#CartonId').append('<option value="0">By Hand</option>');
+                        $.each(result, function (i, data) {
+                            $('#CartonId').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                        });
+                        if(args.row.children().eq(0).text() != "0")
+                        {
+                            $("#CartonId").val(args.row.children().eq(0).text());
+                        }
+                        $("#Quantity").val(args.row.children().eq(9).text())
+                        $("#InvoiceAmount").val(args.row.children().eq(10).text())
+                    },
+                    error: {
+
+                    }
+                });
+
+                //End Fill Carton DropDown List
+                //var path1 = "/Enquiry/GetPOforReceiptByItem"
+                //$.ajax({
+                //    type: 'POST',
+                //    url: path1,
+                //    dataType: 'json',
+                //    data: { CompCode: $("#ComDoc").val(), ItemId:args.row.children().eq(3).text() },
+                //    success: function (Brands) {
+                //        //$("#PO_NODrp").empty().trigger("change")
+                //        //$.each(Brands, function (i, Brand)
+                //        //{
+
+                //        //    $('#PO_NODrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                //        //});
+
+                //    },
+                //    error: function (ex) {
+                //        alert('Please Select item Name');
+                //    },
+                //    complete:function(jqXHR, textStatus){
+                //        $("#PO_NODrp").val(args.row.children().eq(8).text()).trigger("change")
+                //    }
+                //});
+
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/GetTaxDropDwn",  //Update is Server side method
+                    data: { ReceiptDetailId: args.row.children().eq(11).text() },
+                    success: function (result) {
+                        $("#TaxIdDrp").empty();
+                        $('#TaxIdDrp').append('<option value="">Please Select Tax</option>');
+                        $.each(result, function (i, data) {
+                            $('#TaxIdDrp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                        });
+                    },
+                    error: {
+
+                    }
+                });
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/GetItemTaxDetail",  //Update is Server side method
+                    data: { ReceiptDetailId: args.row.children().eq(11).text() },
+                    success: function (result) {
+                        $('#taxTbl tbody > tr').remove();
+                        $.each(result, function (i,data) {
+                            $('#taxTbl').append('<tr><td>'+ data.TaxId +'</td><td>' + data.TaxName  +'</td><td>'
+                             + data.TaxRate +'</td><td>' + data.TaxAmount +'</td><td>' + data.PaidByVendor
+                             +'</td><td>' + ' <a onclick="myfuncMOM('+ data.TaxId  +' )" class="btn-sm btn-danger glyphicon glyphicon-trash"> Delete</a>' + '</td></tr>');
+                        });
+                    },
+                    error: {
+
+                    }
+                });
+                $("#COODrp").val(args.row.children().eq(6).text()).trigger("change")
+                $('#TaxIdDrp').val(null);
+                $("#Quantity").val(args.row.children().eq(9).text());
+                $("#ReceiptDetailId").val(args.row.children().eq(11).text());
+                $("#InvoiceAmount").val(args.row.children().eq(10).text());
+                $('#PO_NODrp').append('<option value="' + args.row.children().eq(8).text() + '">' + args.row.children().eq(8).text() + '</option>');
+                $("#PO_NODrp").val(args.row.children().eq(8).text()).trigger("change")
+                if(args.row.children().eq(0).text() != "0")
+                {
+                    $("#CartonId").val(args.row.children().eq(0).text());
+                }
+                $("#SaveTypetds").val(2);
+                $("#dialogIcon").ejDialog("open");
+                return false;
+            }
+            else
+            {
+                toastr.error("You can Not Edit Record");
+                return false;
+            }
+        }
+    }
+
+    function contextclick(args)
+    {
+        if (args.text == "Delete")
+        {
+            var tempData = args.text;
+            var grid = $("#grdRecpDetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ReceiptDetailId = result[0]["ReceiptDetailId"];
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/DeleteReceiptDetail",  //Update is Server side method
+                data: {ReceiptDetailId:ReceiptDetailId},
+                success: function (result) {
+                    var obj = $("#grdRecpDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    $("#dialogIcon").ejDialog("close");
+                    toastr.success("Item Delete Successfully!");
+                    location.reload(true);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+    }
+</script>
+<script>
+
+</script>
+<script>
+    function myfuncMOM(args)
+    {
+        var ReceiptDetailId = $('#ReceiptDetailId').val();
+        var ReceiptId = $('#ReciptId').val();
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/DeleteTaxDetail",  //Update is Server side method
+            data: {ReceiptDetailId:ReceiptDetailId,TaxId:args},
+            success: function (result) {
+                if(result == 'Success')
+                {
+                    $.ajax({
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Enquiry/GetItemTaxUpdateDetail",  //Update is Server side method
+                        data: { ReceiptDetailId: ReceiptDetailId,ReceiptId:ReceiptId },
+                        success: function (result) {
+                            $('#taxTbl tbody > tr').remove();
+                            $.each(result, function (i,data) {
+                                $('#taxTbl').append('<tr><td>'+ data.TaxId +'</td><td>' + data.TaxName  +'</td><td>'
+                                 + data.TaxRate +'</td><td>' + data.TaxAmount +'</td><td>' + data.PaidByVendor
+                                 +'</td><td>' + ' <a onclick="myfuncMOM('+ data.TaxId  +' )" class="btn-sm btn-danger glyphicon glyphicon-trash"> Delete</a>' + '</td></tr>');
+                            });
+                            $.ajax({
+                                dataType: 'json',
+                                type: "POST",
+                                url: "/Enquiry/GetTaxDropDwn",  //Update is Server side method
+                                data: { ReceiptDetailId: ReceiptDetailId },
+                                success: function (result) {
+                                    $("#TaxIdDrp").empty();
+                                    $('#TaxIdDrp').append('<option value="">Please Select Tax</option>');
+                                    $.each(result, function (i, data) {
+                                        $('#TaxIdDrp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                                    });
+                                },
+                                error: {
+
+                                }
+                            });
+                        },
+                        error: {
+
+                        }
+                    });
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(errorThrown);
+                toastr.error(errorThrown);
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    $("#SupplierInvDate").ejDatePicker({ dateFormat: "MM/dd/yyyy" });
+    $(document).ready(function () {
+        var path = '@Url.Action("GetOtherChargesList")';
+        $.ajax({
+            type: 'POST',
+            url: path, // we are calling json method
+            dataType: 'json',
+            data: {ReceiptId: @Model.ReceiptId},
+            success: function (result) {
+                var obj = $("#grdOtherchargesLst").ejGrid("instance")
+                obj.dataSource(result);
+
+                //data = serverdata;
+                //var row = "";
+                //$.each(data, function (index, item) {
+                //    row += "<tr><td>" + item.Currency + "</td><td>" + item.Amount + "</td><td>" + item.ChargesDescription + "</td></tr>";
+
+                //});
+                //$("#Items").html(row);
+
+            },
+
+            error: function (ex) {
+                alert('Failed to retrieve .' + ex);
+            }
+        });
+        $('#DivClose').click(function () {
+            //$("#ItemDrp").val('1').trigger('change');
+            //$("#Quantity").val(null);
+            $("#Quantity").val(null);
+            $("#SupplierInvN0").val(null);
+            $(".epdt").val(null);
+            $("#InvoiceAmount").val(null);
+            $("#dialogIcon").ejDialog("close");
+            return false;
+        });
+        $("#btnAddCust").click(function (e) {
+            var Currency = $("#DrpCurr").val();
+            var Amount = $("#OtherAmt").val();
+            var Desp = $("#ChargesDesp").val();
+            if (Currency == '') {
+
+                alert('Please Select Currency then click on Add.');
+                return false;
+            }
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveOtherChargesPurReceipt",  //Update is Server side method
+                data: { ReceiptId: @Model.ReceiptId, ChargesDescription: Desp,Currency:Currency,Amount:Amount },
+                complete: function () {
+                },
+                success: function (errorCode) {
+                    $("#DrpCurr").val("");
+                    $("#OtherAmt").val(null);
+                    $("#ChargesDesp").val(null);
+
+                    var path = '@Url.Action("GetOtherChargesList")';
+                    $.ajax({
+                        type: 'POST',
+                        url: path, // we are calling json method
+                        dataType: 'json',
+                        data: {ReceiptId: @Model.ReceiptId},
+                        success: function (result) {
+                            var obj = $("#grdOtherchargesLst").ejGrid("instance")
+                            obj.dataSource(result);
+                            //data = serverdata;
+                            //var row = "";
+                            //$.each(data, function (index, item) {
+                            //    row += "<tr><td>" + item.Currency + "</td><td>" + item.Amount + "</td><td>" + item.ChargesDescription + "</td></tr>";
+
+                            //});
+                            //$("#Items").html(row);
+
+                        },
+
+                        error: function (ex) {
+                            alert('Failed to retrieve .' + ex);
+                        }
+                    });
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        });
+
+    });
+</script>
+<script>
+    function checkPassrate() {
+        var UnitPrice = $('#TaxonTaxChk').val();
+        var rate= $("#TaxRate").val();
+        var InvoiceAmount=$("#InvoiceAmount").val();
+        if(UnitPrice == 4)
+        {
+            if(rate > 0)
+            {
+                $("#TaxAmount").attr('readonly', true);
+                $("#TaxAmount").val(null);
+                var Amt=(InvoiceAmount * rate) / 100;
+                $("#TaxAmount").val(Amt);
+            }
+            else{
+                $("#TaxAmount").attr('readonly', false);
+                $("#TaxAmount").val(null);
+            }
+        }
+    }
+    function checkPassAmount() {
+        var UnitPrice1 = $('#TaxonTaxChk').val();
+        var Amount= $("#TaxAmount").val();
+        var InvoiceAmount=$("#InvoiceAmount").val();
+        if(UnitPrice1 == 4)
+        {
+            if(Amount > 0)
+            {
+                $("#TaxRate").attr('readonly', true);
+                $("#TaxRate").val(null);
+                var rate=(Amount * 100) / InvoiceAmount;
+                $("#TaxRate").val(rate);
+            }
+            else{
+                $("#TaxRate").attr('readonly', false);
+                $("#TaxRate").val(null);
+            }
+        }
+    }
+    function checkInvoiceAmount() {
+        var str =   $(".xyx :selected").text();
+        var Quantity = $("#Quantity").val();
+        arr = str.split('-');
+        strFine = arr[arr.length-1];
+        strRate = arr[arr.length-2];
+        if(false)
+        {
+            alert("Quantity must be Less than  or Equal to "+ strFine);
+            $("#Quantity").val(parseFloat(strFine));
+            $("#InvoiceAmount").val(((parseFloat(strRate)) * parseFloat(strFine)).toFixed(2))
+            return false;
+        }
+        else
+        {
+            $("#InvoiceAmount").val(((parseFloat(strRate)) * Quantity).toFixed(2))
+        }
+
+    }
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("#SaveReceiptCartonDetail").click(function () {
+            var Weight=$("#CartonWeight").val();
+            var CartonId=$("#drpCartons").val();
+            var Remark=$("#CartonRemark").val();
+
+            if(Weight.toString() == "")
+            {
+                alert("Please Enter Weight");
+                return false;
+            }
+            if(Weight <= 0)
+            {
+                alert("Weight always Greater than Zero");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveCartonDetail",  //Update is Server side method
+                data: { ReceiptId: @Model.ReceiptId, CartonId: CartonId, Weight: Weight, Remark: Remark},
+                success: function (result) {
+                    var obj = $("#grdCartDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    //$('#CartonTbl tbody > tr').remove();
+                    //$.each(result, function (i,data) {
+                    //    $('#CartonTbl').append('<tr><td>'+ data.CartonId +'</td><td>' + data.Weight  +'</td><td>' +data.Length  +'</td><td>' + data.Width +'</td><td>' +  data.Height +'</td><td>' + data.Remark +'</td><td>' + '</td></tr>');
+                    //});
+                    toastr.success("Carton Saved Successfully!");
+                    $("#drpCartons").val(0).trigger("change")
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+            $("#CartonWeight").val(null);
+            $("#CartonLength").val(null);
+            $("#CartonWidth").val(null);
+            $("#CartonHeight").val(null);
+            $("#CartonRemark").val(null);
+        });
+    });
+</script>
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon1").Title("Edit Carton").ContentTemplate(@<div>
+
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Edit Carton
+        </div>
+        <table cellspacing="10" style="width:900px">
+            <tr id="IDs">
+                <td style="text-align: right; width:100px">
+                    Id:
+                </td>
+                <td style="text-align: left">
+                    <input id="C_CartId" name="C_CartId" readonly="readonly" class="e-field e-ejinputtext valid "
+                           style="text-align: left; width: 116px; height: 28px" />
+                </td>
+
+            </tr>
+            <tr>
+                <td style="width:120px; text-align: right;">
+                    Weight:
+                </td>
+                <td style="text-align: left">
+                    <input type="text" id="C_Weight" name="C_Weight" class="form-control" />
+                </td>
+                <td style="width:100px; text-align: right;">
+                    Length:
+                </td>
+                <td style="text-align: left">
+                    <input type="text" id="C_Length" name="C_Length" class="form-control" />
+                </td>
+                <td style="width:100px; text-align: right;">
+                    Width:
+                </td>
+                <td style="text-align: left">
+                    <input type="text" id="C_Width" name="C_Width" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px; text-align: right;">
+                    Height:
+                </td>
+                <td style="text-align: left">
+                    <input type="text" id="C_Height" name="C_Height" class="form-control" />
+                </td>
+                <td style="width:100px; text-align: right;">
+                    Remark:
+                </td>
+                <td style="text-align: left">
+                    <input type="text" id="C_Remark" name="C_Remark" class="form-control" />
+                </td>
+            </tr>
+
+        </table>
+        <table align="left">
+            <tr>
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="SaveEditCarton" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+    </div>)
+   .Width(950)
+   .Height(300)
+    .Position(pos => pos.XValue("300px").YValue("100px"))
+    .ShowOnInit(false)
+    .EnableResize(true)
+    .IsResponsive(true)
+    .ClientSideEvents(evt => evt.Close("onDialogClose"))
+    .Render();
+    }
+</div>
+<script>
+    function contextclickCarton(args) {
+        if (args.text == "Edit Record") {
+            var grid = $("#grdCartDetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+
+            var CartonId = result[0]["CartonId"];
+            var Weight = result[0]["Length"];
+            var Length = result[0]["Length"];
+            var Width = result[0]["Width"];
+            var Height = result[0]["Height"];
+            var Remark = result[0]["Remark"];
+            $("#C_CartId").val(result[0]["CartonId"]);
+            $("#C_Weight").val(result[0]["Weight"]);
+            $("#C_Length").val(result[0]["Length"]);
+            $("#C_Width").val(result[0]["Width"]);
+            $("#C_Height").val(result[0]["Height"]);
+            $("#C_Remark").val(result[0]["Remark"]);
+            $("#dialogIcon1").ejDialog("open");
+            return false;
+            @*$.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/EditPurchCarton",  //Update is Server side method
+                data: { Model: rec },
+                complete: function () {
+                },
+                success: function (msg) {
+                    alert("Successfully Saved....");
+                    var path = '@Url.Content("~/Enquiry/CartonList")'
+                    event.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });*@
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $("#SaveEditCarton").click(function () {
+            var C_CartId=$("#C_CartId").val();
+            var C_Weight=$("#C_Weight").val();
+            var C_Length=$("#C_Length").val();
+            var C_Width=$("#C_Width").val();
+            var C_Height=$("#C_Height").val();
+            var C_Remark=$("#C_Remark").val();
+
+            if(C_Weight.toString() == "")
+            {
+                alert("Please Enter Weight");
+                return false;
+            }
+            if(C_Weight <= 0)
+            {
+                alert("Weight always Greater than Zero");
+                return false;
+            }
+            if(C_Length.toString() == "")
+            {
+                alert("Please Enter Length");
+                return false;
+            }
+            if(C_Length <= 0)
+            {
+                alert("Length always Greater than Zero");
+                return false;
+            }
+            if(C_Width.toString() == "")
+            {
+                alert("Please Enter Width");
+                return false;
+            }
+            if(C_Width <= 0)
+            {
+                alert("Width always Greater than Zero");
+                return false;
+            }
+            if(C_Height.toString() == "")
+            {
+                alert("Please Enter Height");
+                return false;
+            }
+            if(C_Height <= 0)
+            {
+                alert("Height always Greater than Zero");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/EditPurchCarton",  //Update is Server side method
+                data: { CartId: C_CartId, Weight: C_Weight, Length: C_Length,Width:C_Width,Height:C_Height, Remark: C_Remark},
+                success: function (result) {
+                    if(result == "Success")
+                    {
+                        $.ajax({
+                            dataType: 'json',
+                            type: "POST",
+                            url: "/Enquiry/GetCartonDetai",  //Update is Server side method
+                            data: { Recipt: $("#ReciptId").val()},
+                            success: function (result) {
+                                var obj = $("#grdCartDetailLst").ejGrid("instance")
+                                obj.dataSource(result);
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                                toastr.error(errorThrown);
+                            }
+                        });
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+            $("#C_CartId").val(null);
+            $("#C_Weight").val(null);
+            $("#C_Length").val(null);
+            $("#C_Width").val(null);
+            $("#C_Height").val(null);
+            $("#C_Remark").val(null);
+            $("#dialogIcon1").ejDialog("close");
+        });
+    });
+</script>

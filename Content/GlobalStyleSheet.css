@@ -1,0 +1,23 @@
+﻿
+/* Textbox Css*/
+.tb8 {
+width: 230px;
+border: 1px solid #b1bfbd;
+border-left: 4px solid #b1bfbd;
+height:25px;
+font-family:Segoe UI                 
+
+}
+.tb9 {
+width: 230px;
+border: 1px solid #b1bfbd;
+border-left: 4px solid #b1bfbd;
+height:32px;
+font-family:Segoe UI                 
+
+}
+
+    td {
+        padding-right: 10px;
+    }
+

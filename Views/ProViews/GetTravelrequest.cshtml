@@ -1,0 +1,203 @@
+﻿@model SmartSys.BL.Tmleave.ProjectTravelRequestModel
+
+@{
+    ViewBag.Title = "TravelRequestInfoForCustomer";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Customer Travel Request  Detail
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("CreateTravelRequest", "TMLeave", FormMethod.Post, new { id = "Form1", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            @Html.HiddenFor(model => model.PurposeofVisitDocs)
+
+            <td width="120px">
+
+                <label for="RequestId">RequestId:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.RequestId, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.RequestId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+
+                <label for="EmpId">Employee Name:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control", id = "ApproverId", @readonly = "readonly" })
+                </div>
+            </td>
+            <td id="CustomerDrp">
+
+                <label for="CustomerId">Customer Name:</label>
+            </td>
+            <td id="CustomerDrpl">
+                <div class="">
+                    @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", id = "ApproverId", @readonly = "readonly" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td id="VendorDrp">
+                <label for="VendorId">Vendor Name:</label>
+            </td>
+            <td id="VendorDrpL">
+                <div class="">
+                    @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", id = "ApproverId", @readonly = "readonly" })
+                </div>
+            </td>
+            <td>
+                <label for="Status">Status:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Status, new { @class = "form-control", id = "Status", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label for="Description">Description:</label>
+            </td>
+            <td>
+
+                <div class="">
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @readonly = "readonly", id = "Description", @style = "min-width:620px" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="Approver Remark">Approver Remark:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.ApproverRemark, new { @class = "form-control", id = "ApproverRemark", @readonly = "readonly", @style = "min-width:620px" })
+                    @Html.ValidationMessageFor(model => model.ApproverRemark, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ReviewdRemark">Reviewd Remark:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.ReviewdRemark, new { @class = "form-control", id = "ReviewdRemark", @readonly = "readonly", @style = "min-width:620px" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+
+            <td width="120px">
+                <label for="ApproverBy">Approver By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ApproverBy, new { @class = "form-control", id = "ApproverId", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ApproverBy, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="ApprovedDate">Approved Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ApprovedDate, new { @class = "form-control", id = "ApprovedDate", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ApprovedDate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td>
+                <label for="ReviewedBy">Reviewed By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReviewedBy, new { @class = "form-control", id = "ReviewedBy", @readonly = "readonly" })
+                </div>
+            </td>
+            <td>
+                <label for="ReviewedDate">Reviewed Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReviewedDate, new { @class = "form-control", id = "ReviewedDate", @readonly = "readonly" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+
+            <td>
+                <label for="CreatedBy">Created By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", id = "CreatedBy", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="CreatedDate">Created Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+
+
+        <tr>
+
+
+            <td>
+                <label for="ModifiedBy">Modified By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+
+                <label for="ModifiedDate">Modified Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+        </tr>
+
+    </table>
+
+
+}
+@Html.EJ().ScriptManager()

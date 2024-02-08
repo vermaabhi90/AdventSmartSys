@@ -1,0 +1,114 @@
+﻿@model SmartSys.BL.RGS.InstanceManagerModel
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create Instance Manager
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var Host = $('#Host').val();
+            var Port = $('#Port').val();
+            var PollingInterval = $('#PollingInterval').val();
+          
+            if (Host.toString() == "") {
+                alert("Please Enter Host");
+                return false;
+            }
+            if (Port.toString() == "") {
+                alert("Please Enter Port ");
+                return false;
+            }
+            if (PollingInterval.toString() == "") {
+                alert("Please Enter PollingInterval ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("Create", "RGSInsMgr", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="Host">Host </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Host, new { @class = "form-control", id = "Host" })
+                        @Html.ValidationMessageFor(model => model.Host)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Port">Port</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Port, new { @class = "form-control", id = "Port" })
+                        @Html.ValidationMessageFor(model => model.Port)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="PollingInterval">Polling Interval</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PollingInterval, new { @class = "form-control", id = "PollingInterval" })
+                        @Html.ValidationMessageFor(model => model.PollingInterval)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="isPrimary">isPrimary</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isPrimary, new { id = "" })
+                        @Html.ValidationMessageFor(model => model.isPrimary)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+
+
+}
+
+
+
+

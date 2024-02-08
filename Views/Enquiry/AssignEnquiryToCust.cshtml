@@ -1,0 +1,354 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryModel
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+        $('.ItemDrp').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            maxHeight: 400,
+            inheritClass: true,
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var array = @Html.Raw(Json.Encode(@ViewBag.EmpList));
+        $.each(array, function (i, Brand) {
+            $('#EmpId').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>').multiselect('rebuild');
+        });
+        $("#SaveEmp").click(function () {
+
+            var Empid = $("#EmpId").val();
+            if (Empid == '' || Empid==null) {
+                alert("PLease Select Employee");
+                return false;
+            }
+           
+            var path = '@Url.Content("~/Enquiry/SaveAssignedEmployee")' + "?EmpId=" + Empid + "&EnqId=" + @Model.EnqId
+            event.preventDefault();
+            window.location.replace(path);
+        });
+        $("#SaveEmpQuat").click(function () {
+
+            var Empid = $("#EmpId").val();
+            if (Empid == '') {
+                alert("PLease Select Employee");
+                return false;
+            }
+            var path = '@Url.Content("~/Enquiry/SaveAssignedEmployeetoQuat")' + "?EmpId=" + Empid + "&EnqId=" + @Model.EnqId
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+
+<style>
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: auto;
+        max-width: 600px;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 500px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        var StatusId = $("#StatusId").val();
+        if (StatusId != 0) {
+            if (StatusId != 26) {
+                $('#Customerdrp').prop("disabled", true);
+                $('#Remarkabc').prop("disabled", true);
+                $('#Company').prop("disabled", true);
+            }
+        }
+    });
+</script>
+
+<style type="text/css">
+    .modal-content {
+        width: 1010px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Assign Employee
+</div>
+
+
+<style type="text/css">
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+@using (Html.BeginForm("CretaeCustomerEnquiry", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <div style="margin-left:10px">
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                @if (Model.EnqId > 0)
+                {
+                    <td>
+                        <label>Enquiry ID</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.EnqId, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                }
+                <td>
+                    <label>Customer</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.Status, new { id = "StatusId" })
+                        @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerLst, "--- Please Select Customer ---", new { @class = " drp form-control", style = "width:310px", id = "Customerdrp", @readonly = "readonly" })
+
+                    </div>
+                </td>
+
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <label>priority</label>
+                            </td>
+                            <td>
+                                <div class="">
+                                    @Html.DropDownListFor(x => x.Priority, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Low", Value="Low"},
+                             new SelectListItem() {Text = "Medium", Value="Medium"},
+                             new SelectListItem() {Text = "High", Value="High"},
+                       }, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Enquiry Date</label>
+                </td>
+                @if (Model.Status == 0 || Model.Status == 0)
+                {
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.EnqDate, new { @readonly = "" })
+
+                        </div>
+                    </td>
+                }
+                else
+                {
+
+                    if (Model.Status == 26 || Model.Status == 0)
+                    {
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.EnqDate, new { @readonly = "" })
+
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.EnqDate, new { @readonly = "" })
+                            </div>
+                        </td>
+                    }
+                }
+                <td>
+                    <label>CompCode</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = "form-control", style = "width:310px", id = "Company", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <div class="">
+                        <label>Remark</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 600Px; max-width: 800px;", @class = "form-controal", id = "Remarkabc", @readonly = "readonly" })
+                    </div>
+
+                </td>
+
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <label>Employee</label>
+                </td>
+                <td>
+                    <div class="">
+                        <select id="EmpId" multiple="multiple" name="ItemDrp" class="ItemDrp"></select>
+                        @*<input type="text" readonly="readonly" id="ItemId" name="ItemId" class="ItemAbc form-control" />*@
+                    </div>
+                    @*<div class="">
+                        @Html.DropDownList("EmpId", (IEnumerable<SelectListItem>)ViewBag.EmpList, "--- Please Select Employee ---", new { @class = "form-control", style = "width:310px", id = "EmpId" })
+                    </div>*@
+                </td>
+                @if (Model.Types == "Process")
+                {
+                    <td>
+                        <button type="button" id="SaveEmp" class="btn-xs btn-success glyphicon glyphicon-eye-close"> Assign</button>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <button type="button" id="SaveEmpQuat" class="btn-xs btn-success glyphicon glyphicon-eye-close"> Assign</button>
+                    </td>
+                }
+            </tr>
+        </table>
+
+        <div style="position:relative">
+            @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryModel>("grdDWEnquiryList")
+                .Datasource(Model.lstEnquiryDetail)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+
+        .EnableAltRow(true)
+
+
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MPN").HeaderText("MPN").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(120).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Check").HeaderText("Check").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Brand").HeaderText("Brand").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ExpectedDateStr").HeaderText("ExpectedDateStr").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ModifiedBy").TextAlign(TextAlign.Left).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").TextAlign(TextAlign.Left).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+        })
+            )
+        </div>
+
+        <table>
+            <tr>
+                @if (Model.EnqId > 0)
+                {
+                    <td>
+                        <label>Modified By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                }
+            </tr>
+        </table>
+    </div>
+}
+
+@Html.EJ().ScriptManager()

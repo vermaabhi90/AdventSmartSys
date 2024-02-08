@@ -1,0 +1,75 @@
+﻿@model SmartSys.BL.DataHub.DHTriggerModel
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create DH Trigger
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var TriggerName = $('#TriggerName').val();
+            var Description = $('#Description').val();
+            if (TriggerName.toString() == "") {
+                alert("Please Enter Trigger Name ");
+                return false;
+            }
+            if (Description.toString() == "") {
+                alert("Please Enter Description ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("Create", "DHTrigger", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="TriggerName">TriggerName </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TriggerName, new { id = "TriggerName", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TriggerName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { id = "Description", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetDHTriggerList';" );"> Back</button>
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+

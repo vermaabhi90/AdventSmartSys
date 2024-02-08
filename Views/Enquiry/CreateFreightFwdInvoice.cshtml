@@ -1,0 +1,406 @@
+﻿@model SmartSys.BL.Enquiry.FreightFwdInvoiceModel
+
+@{
+    ViewBag.Title = "CreateFreightFwdInvoice";
+}
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "-Please Select Freight Forwarder-",
+            allowClear: true,
+            tags: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+@if (Model.FreightInvId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Freight Forworder Invoice
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Freight Forworder Invoice
+    </div>
+}
+<script>
+    $(document).ready(function () {
+   
+        $('.savetot').click(function (e) {
+            var FreightInvId = $('#FreightInvId').val();
+            var InvoiceNumber = $('#InvoiceNumber').val();
+            var VendorId = $('#VendorList').val();
+            
+            if (InvoiceNumber.toString() == "") {
+                alert("Please Enter Invoice Number");
+                return false;
+            }
+
+            if (VendorId.toString() == "") {
+                alert("Please Select Verdor");
+                return false;
+            }           
+            $("#RecForm").unbind('submit').submit();
+        });
+    });
+</script>
+@using (Html.BeginForm("CreateFreightFwdInvoice", "Enquiry", FormMethod.Post, new { Id = "RecForm" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+
+        <tr>
+            @if (Model.FreightInvId > 0)
+            {
+                <td>
+                    <label>Freight Inv Id ID</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.FreightInvId, new { @class = "form-control", @readonly = "Readonly", id = "FreightInvId" })
+                    </div>
+                </td>
+            }
+
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        @if (Model.FreightInvId == 0)
+                        {
+                            <td>
+                                <div class="">
+                                    @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.FFLst, "--- Please Select Freight Forwarder ---", new { @class = "drp form-control", style = "width:250px", id = "VendorList" })
+                                </div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <div class="">
+                                    @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", style = "width:300px", @readonly = "readonly" })
+                                    @Html.HiddenFor(model => model.VendorId, new { id = "VendorList" })
+                                </div>
+                            </td>
+                        }
+
+                        @if (Model.FreightInvId == 0)
+                {
+                            <td>
+                                @Html.HiddenFor(model => model.FreightInvId, new { id = "FreightInvId" })
+                            </td>
+                        }
+
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>
+                <label>Invoice Number</label>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.InvoiceNumber, new { @class = "form-control", style = "width:200px", id = "InvoiceNumber" })
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <label>Recipt Date</label>
+            </td>
+
+            @if (Model.FreightInvId == 0)
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.EJ().DatePickerFor(M => M.InvoiceDate).Value(DateTime.Now.Date)
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </td>
+            }
+            else
+            {
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="">
+                                    @Html.EJ().DatePickerFor(M => M.InvoiceDate).Value(Model.InvoiceDate)
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </td>
+            }
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td width="110px">
+                <label>Remark</label>
+            </td> 
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Remark, new { @class = "form-control", @style = "Width: 510Px; max-width: 800px;", })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table>
+        @if (Model.FreightInvId > 0)
+        {
+            <tr>
+                <td width="110px">
+                    <label for="Created By">Created By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", id = "CreatedBy", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy)
+                    </div>
+                </td>
+                <td>
+                    <label for="Created Date">Created Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", id = "CreatedDate", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+            </tr>
+                <tr>
+                    <td width="110px">
+                        <label for="ModifiedBy">Modified By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", id = "ModifiedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Modified Date">Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", id = "ModifiedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+                </tr>
+        }
+    </table>
+    if (Model.FreightInvId > 0)
+    {
+<div style="width:100%">
+    @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+        {
+        data.Add().ID("Invoice Detail").Text("Item").ContentTemplate(
+        @<div id="gridEvent2">
+
+            @(Html.EJ().Grid<SmartSys.BL.Enquiry.ReceiptDetailModel>("grdFFInvDetailLst")
+                        .Datasource((IEnumerable<object>)@Model.LstDetal)
+                        .AllowFiltering()
+                        .AllowPaging()
+                        .AllowGrouping()
+                        .PageSettings(page => { page.PageSize(20); })
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                         //.ContextMenuSettings(contextMenu =>
+                         //{
+                         //    contextMenu.EnableContextMenu()
+                         //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                         //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord))
+                         //        .CustomContextMenuItems(new List<string> { "Delete" });
+
+                         //})
+                         .ContextMenuSettings(contextMenu =>
+                         {
+                             contextMenu.EnableContextMenu();
+                             contextMenu.DisableDefaultItems();
+                             contextMenu.CustomContextMenuItems(c =>
+                             {
+                                 c.AddItem("Add_Record", "Add Record");
+                                 c.AddItem("Edit1", "Edit Record");
+                                 c.AddItem("Delete1", "Delete");
+
+                             });
+
+                         })
+
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .ToolbarSettings(toolbar =>
+                        {
+                            toolbar.ShowToolbar().ToolbarItems(items =>
+                            {
+                                items.AddTool(ToolBarItems.Add);
+                                items.AddTool(ToolBarItems.Edit);
+
+                            });
+                        })
+                .Columns(col =>
+                {
+                    col.Field("FreightInvDetailId").Visible(false).HeaderText("FreightInvDetailId").TextAlign(TextAlign.Left).Width(160).Add();
+                    col.Field("FreightInvId").Visible(false).AllowEditing(true).HeaderText("Freight Inv Id").Width(70).Add();
+                    col.Field("FFRef_No").HeaderText("Air Way Bill Number").Width(70).Add();
+                    col.Field("RefDate").HeaderText("Ref Date").Format("{0:MM/dd/yyyy}").Visible(false).TextAlign(TextAlign.Center).Width(60).Add();
+                    col.Field("Amount").HeaderText("Amount").Visible(true).Width(70).Add();
+                    col.Field("RefDateStr").HeaderText("Ref Date").Visible(true).TextAlign(TextAlign.Center).Width(60).Add();
+                })
+                    .ClientSideEvents(eve =>
+                    {
+                        eve.ContextClick("contextclick");
+                        eve.ActionBegin("toolClick");
+                        eve.QueryCellInfo("querycellinfo");
+                    })
+
+            )
+        </div> );
+
+              })
+                          .Render();}
+    </div>
+        }
+<table>
+    <tr>
+        <td>
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetFreightFwdInvoiceList';" );"> Back</button>      
+                <button type="submit" class="savetot btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+     
+        </td>
+    </tr>
+</table>
+        }
+
+
+<script>
+
+    function toolClick(args) {
+        if (args.requestType == "add") {
+            var path = '@Url.Content("~/Enquiry/CreateEditFFInvoiceDetails")' + "?FreightInvDetailId=" + 0 + "&FreightInvId=" + @Model.FreightInvId + "&FFId=" + @Model.VendorId
+            $("#CreateCompBankDetail").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+            return false;
+        }
+        if (args.requestType == "beginedit") {
+            var path = '@Url.Content("~/Enquiry/CreateEditFFInvoiceDetails")' + "?FreightInvDetailId=" + args.row.children().eq(0).text() + "&FreightInvId=" + @Model.FreightInvId + "&FFId=" + @Model.VendorId
+            $("#CreateCompBankDetail").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+            return false;
+        }
+    }
+</script>
+
+
+@{
+
+    Html.EJ()
+        .Dialog("CreateCompBankDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1100)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+</script>
+
+<script>
+    function contextclick(args) {       
+        if (args.text == "Delete") {
+            var tempData = args.text;
+            var grid = $("#grdDetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var FreightInvDetailId = result[0]["FreightInvDetailId"];
+            var FreightInvId = result[0]["FreightInvId"];
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/DeleteFFDetail",  //Update is Server side method
+                data: { FreightInvDetailId: FreightInvDetailId, FreightInvId: FreightInvId },
+                success: function (result) {
+                    var obj = $("#grdFFInvDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    $('#divLoading').hide();
+                    toastr.success("Freight Forwarder Detail  Delete Successfully!");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Enquiry/CreateEditFFInvoiceDetails")' + "?FreightInvDetailId=" + 0 + "&FreightInvId=" + @Model.FreightInvId 
+            $("#CreateCompBankDetail").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdBankDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var CompBankAcId = result[0]["CompBankAcId"];
+                var path = '@Url.Content("~/Bank/CreateCompanyBankDetail")' + "?CompBankAcId=" + CompBankAcId
+            $("#CreateCompBankDetail").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+            }          
+    }
+</script>

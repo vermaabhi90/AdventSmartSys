@@ -1,0 +1,143 @@
+﻿@model SmartSys.BL.Enquiry.NavPOSOMapModel
+
+@{
+    ViewBag.Title = "CreateNavPOSOMapping";
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create/Edit  Nav PO SO Mapping
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var NAVPONO = $('#NAVPONO').val();
+            var NAVSONO = $('#NAVSONO').val();
+            var CompCode = $('#CompCode').val();
+
+            if (NAVPONO.toString() == "") {
+                alert("Please Enter NAV PO NO ");
+                return false;
+            }
+            if (NAVSONO.toString() == "") {
+                alert("Please Enter NAV SO NO ");
+                return false;
+            }
+            if (CompCode.toString() == "") {
+                alert("Please Enter Company ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("CreateNavPOSOMapping", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="CompCode">Company</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldCompCode, new { @class = "form-control", id = "OldCompCode" })
+                        @Html.DropDownListFor(model => model.CompCode, (IEnumerable<SelectListItem>)ViewBag.CompList, new { @class = "form-control", style = "width:310px" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="NAVPONO">NAV PO NO</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldNAVPONO, new { @class = "form-control", id = "oldNAVPONO" })
+                        @Html.TextBoxFor(model => model.NAVPONO, new { @class = "form-control", id = "NAVPONO" })
+                        @Html.ValidationMessageFor(model => model.NAVPONO)
+                    </div>
+                </td>
+                <td>
+                    <label for="NAVSONO">NAV SO NO</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldNAVSONO, new { @class = "form-control", id = "OldNAVSONO" })
+                        @Html.TextBoxFor(model => model.NAVSONO, new { @class = "form-control", id = "NAVSONO" })
+                        @Html.ValidationMessageFor(model => model.NAVSONO)
+                    </div>
+                </td>
+                
+            </tr>
+           
+            @if (Model.NAVPONO != null)
+            {
+            <tr>
+                <td>
+                    <label for="CreatedBy">Created By</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy)
+                    </div>
+                </td>
+                <td>
+                    <label for="CreatedDate">Created Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ModifiedBy">Modified By</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy)
+                    </div>
+                </td>
+                <td>
+                    <label for="ModifiedDate">Modified Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate)
+                    </div>
+                </td>
+            </tr>
+            }
+            <tr>
+
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetNavPOSOMappingList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}

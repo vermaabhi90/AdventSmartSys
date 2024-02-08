@@ -1,0 +1,129 @@
+﻿@model IEnumerable<SmartSys.BL.Tmleave.TMLeaveModel>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Timesheet Leave List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink("  Create", "CreateTMLeaveType", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-leaf" })
+    </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Tmleave.TMLeaveModel>("grdAdhocRunList1")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+         .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportLeaveTypeList")))
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add_Record", "Add Record");
+                  c.AddItem("Edit_Leave", "Edit Leave");
+              });
+
+          })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("LeaveTypeId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("LeaveType").HeaderText("Leave Type").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("IsPaid").HeaderText("IsPaid").TextAlign(TextAlign.Center).Width(100).Template("#IsPaid").Add();
+            col.Field("CanLaps").HeaderText("Can Laps").TextAlign(TextAlign.Center).Width(100).Template("#Canlaps").Add();
+            col.Field("Enable").HeaderText("Enable").TextAlign(TextAlign.Center).Width(100).Template("#Enable").Add();
+            col.Field("YearlyQuota").HeaderText("Yearly Quota").TextAlign(TextAlign.Center).Width(130).Add();
+            col.Field("MaxLeaveCarryover").HeaderText("MaxLeave Carryover").Width(180).TextAlign(TextAlign.Center).Add();
+            col.Field("CreatedByName").HeaderText("Created By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#edit")
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+
+        })
+                   .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+
+
+    <script type="text/x-jsrender" id="IsPaid">
+        {{if IsPaid == '1'}}
+
+        <label class="glyphicon glyphicon-ok text-success "></label>
+        {{else}}
+        <label class="glyphicon glyphicon-remove text-danger "></label>
+        {{/if}}
+
+
+
+    </script>
+    <script type="text/x-jsrender" id="Canlaps">
+        {{if CanLaps == '1'}}
+        <label class="glyphicon glyphicon-ok text-success "></label>
+        {{else}}
+        <label class="glyphicon glyphicon-remove text-danger "></label>
+        {{/if}}
+    </script>
+
+    <script type="text/x-jsrender" id="Enable">
+        {{if Enable == '1'}}
+        <label class="glyphicon glyphicon-ok text-success "></label>
+        {{else}}
+        <label class="glyphicon glyphicon-remove text-danger "></label>
+        {{/if}}
+    </script>
+
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/TMLeave/EditTMLeaveType?LeaveTypeId={{:LeaveTypeId}}"></a>
+    </script>
+    <script>
+        function contextclick(args) {
+
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/TMLeave/CreateTMLeaveType")'
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Leave") {                  
+                        var tempData = args.text;
+                        var grid = $("#grdAdhocRunList1").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var LeaveTypeId = result[0]["LeaveTypeId"];
+                        var path = '@Url.Content("~/TMLeave/EditTMLeaveType")' + "?LeaveTypeId=" + LeaveTypeId 
+                        event.preventDefault();
+                        window.location.replace(path);
+                }
+        }
+    </script>

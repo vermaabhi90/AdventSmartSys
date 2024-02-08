@@ -1,0 +1,306 @@
+﻿@model SmartSys.BL.DHFeedEvtTriggModel
+
+@{
+    ViewBag.Title = "DH Feed Dependency ";
+    
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.xyz').on('click', function (e) {
+          
+            var id = $(this).closest('.xyz').attr('id');
+            var agree = confirm("Are you sure you want to delete?");
+            if (agree) {
+                var path = '@Url.Content("~/DHFeedEvtTrigg/DeleteEventAction")' + "?EventId=" + id
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else {
+                return false;
+            }
+            
+
+        });
+        $('.abc').on('click', function (e) {
+         
+            var id = $(this).closest('.abc').attr('id');
+            var agree = confirm("Are you sure you want to delete?");
+            if (agree) {
+                var path = '@Url.Content("~/DHFeedEvtTrigg/DeleteTriggerAction")' + "?TriggerId=" + id
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else {
+                return false;
+            }
+          
+        });
+    });
+</script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Trigger/Event Dependency
+</div>
+
+@using (Html.BeginForm("Edit", "DHFeedEvtTrigg", FormMethod.Post, new { Id = "Form1" }))
+{
+   <html>
+    <body>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="FeedId">Feed Id</label>
+                </td>
+                <td>
+                    <div class="editor-field ">
+                        @Html.TextBoxFor(model => model.FeedId, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="FeedName">Feed Name</label>
+                </td>
+                <td>
+                    <div class="editor-field ">
+                        @Html.TextBoxFor(model => model.FeedName, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+                <td>
+                    <div class="editor-field ">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+               </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="FeedTypeCode">Feed Type Code</label>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(model => model.FeedTypeCode, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.FeedTypeCode)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="EventId">Modified By</label>
+
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+
+                    <label for="EventId">Modified Date</label>
+
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(model => model.ModifyDate, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>
+                        Event Dependency :
+                    </label>
+                </td>
+                <td>
+                    <div class="editor-field ">
+                        @*@Html.ActionLink(" Add Event", "AddEvent", new { ibjecid = "1" }, new { id= "addevent", @class = "btn-sm btn-info glyphicon glyphicon-plus" })*@
+                        <button type="button" class="btn-xs btn-info glyphicon glyphicon-plus addevent"> Add Event</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>       
+        <table>
+            <tr>
+                <td>
+                    @if (Model.lstDHFeedEventDep.Count > 0)
+                    {
+                        @(Html.EJ().Grid<SmartSys.BL.DHFeedEvtTriggModel>("grdAddEvntList")
+                        .Datasource(Model.lstDHFeedEventDep)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("EventId").HeaderText("Event Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("EventName").HeaderText("Event Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ModifiedByName").HeaderText("Created by").Width(60).Add();
+                            col.Field("CreatedDate").HeaderText("Created Date ").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.HeaderText("Delete").Template("#DeleteEvent").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                        )
+      
+                    }
+                </td>
+            </tr>
+        </table>
+
+
+        <table>
+            <tr>
+                <td>
+                    <label>
+                        Trigger Dependency :
+                    </label>
+                </td>
+
+                <td>
+                    <div class="editor-field navbar-text">
+                        @*@Html.ActionLink(" Add Trigger", "AddTrigger", new { ibjecid = "1" }, new { id = "lnkAddTriggerAction", @class = "modal-link btn-sm btn-info glyphicon glyphicon-plus" })*@
+                        <button type="button" class="btn-xs btn-info glyphicon glyphicon-plus addtrigger"> Add Trigger</button>
+                    </div>
+               </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+
+                <td>
+                
+@if (Model.lstDHFeedTriggerDep.Count > 0)
+{
+                    @(Html.EJ().Grid<SmartSys.BL.DHFeedEvtTriggModel>("grdEventTriggerList")
+                        .Datasource(Model.lstDHFeedTriggerDep)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("TriggerId").HeaderText("Trigger Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("TriggerName").HeaderText("Trigger Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ModifiedByName").HeaderText("Created by").Width(60).Add();
+                            col.Field("CreatedDate").HeaderText("Created Date ").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.HeaderText("Delete").TemplateID("#DeleteTrigger").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                    )
+                    }
+                </td>
+            </tr>
+        </table>
+
+
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'DHFeedList';" );"> Back</button>
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save"> Save</button>
+                </td>
+
+            </tr>
+        </table>
+
+
+
+    </body>
+</html>
+}
+
+
+<div>
+    @{
+
+        Html.EJ()
+            .Dialog("AddeventDetails")
+            .Title("<a id='Title'></a>")
+            .Width(800)
+            .Height(500)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+    <script>
+    $(document).ready(function () {
+
+        $('.addevent').click(function (e) {
+               @*@Html.ActionLink(" Create", "CreateVendorContactDetails", new { VendorId = Model.VendorId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+          
+            var path = '@Url.Content("~/DHFeedEvtTrigg/AddEvent")' + "?ibjecid=" + 1
+            $("#AddeventDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#AddeventDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+    <script>
+        function openDialog() {
+            $("#AddeventDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#AddeventDetails").ejDialog("open");
+
+        }
+
+    </script>
+  
+    <script>
+    $(document).ready(function () {
+
+        $('.addtrigger').click(function (e) {
+               @*@Html.ActionLink(" Create", "CreateVendorContactDetails", new { VendorId = Model.VendorId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+
+            var path = '@Url.Content("~/DHFeedEvtTrigg/AddTrigger")' + "?ibjecid=" + 1
+            $("#AddeventDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#AddeventDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+</div>
+<script id="DeleteEvent" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DHFeedEvtTrigg/DeleteEventAction?EventId={{:EventId}}">  Delete</a>
+</script>
+<script id="DeleteTrigger" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" id="xyz" href="/DHFeedEvtTrigg/DeleteTriggerAction?TriggerId={{:TriggerId}}">  Delete</a>
+</script>

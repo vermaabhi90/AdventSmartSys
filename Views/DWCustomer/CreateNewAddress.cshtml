@@ -1,0 +1,309 @@
+﻿@model SmartSys.BL.DW.AddressModel
+
+@{
+    ViewBag.Title = "CreateAddress";
+}
+<script>
+    $(document).ready(function () {
+        $('#add').click(function (e) {
+
+            var AddressId = $('#AddressId').val();
+            var CustomerId = $('#CustomerId').val();
+            var Line1 = $('#Line1').val();
+            var Line2 = $('#Line2').val();
+            var cntry = $('#Country').val();
+            var Pin = $('#Pin').val();
+            var LandMark = $('#LandMark').val();
+            var Country = $("#Country").val();
+            var State = $("#State").val();
+            var City = $("#City").val();
+            var Description = $('#Description').val();
+            var isPrimary = $('#isPrimary').prop('checked')
+            if (Line1.toString() == "") {
+            alert("Please Enter Line1");
+            return false;
+            }
+            if (cntry.toString() == "") {
+            alert("Please Select Country ");
+            return false;
+            }
+            if (State.toString() == "0") {
+            alert("Please Select State ");
+            return false;
+            }
+            if (City.toString() == "0") {
+            alert("Please Select City ");
+            return false;
+            }
+            if (Pin.toString() == "") {
+            alert("Please Enter Pin ");
+            return false;
+            }          
+
+            });
+            });
+</script>
+<style>
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        position: absolute;
+        cursor: default;
+        z-index: 4000 !important;
+    }
+</style>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Country").change(function (e) {
+
+
+            $("#State").empty();
+            var newOption = $('<option value="0">Please Select State</option>');
+
+            $('#State').append(newOption);
+            var selectedId = $("#Country").val();
+
+            var path = "/DWCustomer/GetStateList"
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { Country: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, state) {
+                        $("#State").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#State").change(function () {
+            $("#City").empty();
+            var newOption = $('<option value="0">Please Select City</option>');
+
+            $('#City').append(newOption);
+            var path = "/DWCustomer/GetCityList"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { State: $("#State").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#City").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+@if (Model.AddressId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Edit Address Deatils
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Create Address Deatils
+    </div>
+}
+
+    @using (Html.BeginForm("CreateNewAddress", "DWCustomer", FormMethod.Post, new { Id = "frmAddress", enctype = "multipart/form-data" }))
+    {
+        <html>
+        <head>
+           
+            <style type="text/css">
+                .modal-content {
+                    width: 1100px !important;
+                    margin: 30px auto !important;
+                    left: 50%;
+         transform: translateX(-50%);
+                }
+            </style>
+
+        </head>
+        <body>
+            <div >
+                <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                    <tr>
+                        <td>
+
+                            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                                @* 1 Row *@
+                                <tr>
+                                    <td>@Html.HiddenFor(model => model.CustomerId, new { @class = "form-control", id = "CustomerId" })</td>
+                                </tr>
+                                <tr>
+                                    @Html.HiddenFor(model => model.AddressId, new { @class = "form-control", id = "AddressId" })
+                                    <td style="width:135px">
+                                        <label>Line 1</label>
+
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.Line1, new { @class = "form-control", id = "Line1" })
+                                        @Html.ValidationMessageFor(model => model.Line1)
+                                    </td>
+                                    <td>
+                                        <label>Line 2</label>
+                                    </td>
+
+                                    <td>
+                                        @Html.TextBoxFor(model => model.Line2, new { @class = "form-control", id = "Line2" })
+                                        @Html.ValidationMessageFor(model => model.Line2)
+                                    </td>
+
+                                    <td>
+                                        <label>LandMark</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.LandMark, new { @class = "form-control", id = "LandMark" })
+                                        @Html.ValidationMessageFor(model => model.LandMark)
+
+                                    </td>
+                                </tr>
+                                @* 2 Row *@
+                                <tr>
+
+                                    <td>
+                                        <label>Country</label>
+                                    </td>
+
+                                    <td>
+
+                                        @Html.DropDownList("CountryId", (IEnumerable<SelectListItem>)ViewBag.CountryList, "Please select Country", new { @class = "form-control", id = "Country" })
+                                    </td>
+
+                                    <td>
+                                        <label> State</label>
+                                    </td>
+
+                                    <td>
+
+                                        @Html.DropDownList("StateId", new SelectList(string.Empty, "Value", "Text"), "Please select State", new { @class = "form-control dropdown1", id = "State" })
+
+                                    </td>
+                                    <td>
+                                        <label>City</label>
+                                    </td>
+
+                                    <td>
+                                        @Html.DropDownList("CityId", new SelectList(string.Empty, "Value", "Text"), "Please select City", new { @class = "form-control dropdown1", id = "City" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label> Pin</label>
+                                    </td>
+
+                                    <td>
+                                        @Html.TextBoxFor(model => model.Pin, new { @class = "form-control", id = "Pin" })
+                                        @Html.ValidationMessageFor(model => model.Pin)
+                                    </td>
+
+                                    <td>
+                                        <label>isPrimary</label>
+                                    </td>
+                                    <td>
+                                        @Html.EditorFor(model => model.isPrimary, new { @class = "form-control", id = "isPrimary" })
+                                    </td>
+                                    <td>
+                                        <label>Description</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control", id = "Description" })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="navbar-text input-group-btn">
+
+                                <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" />
+                                <input type="button" id="reset" value="Remove" class="btn btn-warning" />
+                            </div>
+
+                        </td>
+
+
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>                
+                                     <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save" id="add"> Save</button>
+                                    </td>
+                                  
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+</body>
+    </html>
+    }
+
+

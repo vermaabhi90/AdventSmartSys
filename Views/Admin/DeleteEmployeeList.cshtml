@@ -1,0 +1,121 @@
+﻿@model IEnumerable<SmartSys.BL.EmployeeModel>
+
+@using Syncfusion.JavaScript.Models
+
+<style type="text/css">
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+   Enable and Disabled Employee List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.EmployeeModel>("grdEmpDelList")
+                        .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+          .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportEnableEmpLst")))
+        .Columns(col =>
+        {
+            col.Field("EmpId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("EmpName").HeaderText("Name").ValidationRules(v => v.AddRule("required", true)).Width(60).Add();
+            col.Field("DateOfJoin").HeaderText("Date Of Join").Format("{0:MM/dd/yyyy}").Width(50).Add();
+            col.Field("Designation").HeaderText("Designation").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("LastDateOfWork").HeaderText("Last Date Of Work").Format("{0:MM/dd/yyyy}").Width(50).Add();
+            col.Field("Deleted").HeaderText("Deleted").TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("Remark").HeaderText("Remark").Width(40).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(40).Add();
+
+            col.HeaderText("Now Active").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",                          
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#BtnTemplate")
+
+            .TextAlign(TextAlign.Left)
+            .Width(90)
+            .Add();
+        })
+    )
+</div>
+<script type="text/x-jsrender" id="BtnTemplate">
+    {{if Deleted ==true tmpl='#Enable'}}
+    {{/if}}
+    {{if Deleted ==false tmpl='#Disable'}}
+    {{/if}}
+</script>
+<script id="Enable" type="text/x-jsrender">
+    <a onclick="myfuncEnable({{:EmpId}})" class="btn-xs btn-danger glyphicon glyphicon-thumbs-down"> Enable</a>
+</script>
+<script id="Disable" type="text/x-jsrender">
+    <a onclick="myfuncDisable({{:EmpId}})" class="btn-xs btn-success glyphicon glyphicon-thumbs-up"> Disable</a>
+</script>
+
+<script>
+
+    function myfuncDisable(args)
+    {
+        var path = '@Url.Content("~/Admin/DeleteEmployee")' + "?EmpId=" + args
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+<script>
+
+    function myfuncEnable(args)
+    {
+        var path = '@Url.Content("~/Admin/DeleteEmployee")' + "?EmpId=" + args
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(900)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>

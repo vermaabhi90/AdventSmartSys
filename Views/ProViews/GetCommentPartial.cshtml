@@ -1,0 +1,86 @@
+﻿
+@model SmartSys.BL.ProViews.SalesBacklogViewModel
+        
+<style type="text/css">
+    .modal-content {
+        width: 400px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #D8F6CE;
+    }
+
+    .webgrid-header {
+        background-color: #FBEFFB;
+        font-weight: bold;
+        color:white;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #CEF6F5;
+    }
+
+    .webgrid-alt {
+        background-color: #CEF6F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+
+ 
+</style>
+@{
+    ViewBag.Title = "DW Custmer Details";
+    var CommentsList = new WebGrid(source: Model.CommentsList, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridAdressDetail");
+
+}
+
+@if (Model.CommentsList.Count > 0)
+{
+    <div id="gridEvent">
+        @CommentsList.GetHtml(
+                                         tableStyle: "webgrid",
+                                        alternatingRowStyle: "webgrid-alt",
+                                        headerStyle: "webgrid-header",
+                                        selectedRowStyle: "webgrid-select",
+                                        mode: WebGridPagerModes.All,
+                                        firstText: "<<First",
+                                        previousText: "<Previous",
+                                        nextText: ">Next",
+                                        lastText: ">>Last",
+                                        columns: new[]{
+                                          CommentsList.Column("DocumentNo","Document No"),
+                                          CommentsList.Column("LineNo","Line No"),
+                                          CommentsList.Column("Comments","Comments"),
+                                          CommentsList.Column("Company","Company"),
+                                          CommentsList.Column("CommentDate","CommentDate"),
+                                     })
+    </div>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        <label>Sorry! There is No Information about Backlog comments Details !!!</label>
+    </div>
+
+}

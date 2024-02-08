@@ -1,0 +1,133 @@
+﻿@model  SmartSys.BL.ProViews.EnquiryTrackingViewDetail
+
+@using System.Web.Mvc.Html
+@{
+    ViewBag.Title = "Enquiry Tracking";
+}
+<div class="page-header glyphicon glyphicon-leaf  text-info ">
+    <i style="color:red">Enquiry Tracking Details</i> 
+</div>
+<table style="margin-left:50px">
+    <tr>
+
+        <td style="margin-left:10px">
+
+            <a class="btn-xs btn-info" style="background-color:#00008B; color:white">Minute Difference</a>
+            <a style=""><span class="glyphicon glyphicon-info-sign"></span><i> Time: @Model.TestLst[(Model.id - 1)].MinuteDiff <span style="color:Red">Minutes</span><br /></i></a>
+        </td>
+        <td width="20px" />
+        <td style="margin-left:10px">
+            <a class="btn-xs btn-info" style="background-color:#41A317; color:White">Outstanding Response Time</a>
+            <a style=""><span class="glyphicon glyphicon-info-sign"></span><i> Time: @Model.TestLst[(Model.id - 1)].OTRT <span style="color:Red">Minutes</span> <br /> </i></a>
+        </td>
+        <td width="20px" />
+        <td style="margin-left:10px">
+            <a class="btn-xs btn-info" style="background-color:#ffff00; color:Green">Minimum Time</a>
+            <a style=""><span class="glyphicon glyphicon-info-sign"></span><i> Time: @Model.TestLst[(Model.id - 1)].MinimumTime <span style="color:Red">Minutes</span><br /> </i></a>
+        </td>
+        <td width="20px" />
+        <td style="margin-left:10px">
+            <a class="btn-xs btn-info" style="background-color:#ff9933; color:White">Maximum Time</a>
+            <a style=""><span class="glyphicon glyphicon-info-sign"></span><i> Time: @Model.TestLst[(Model.id - 1)].MaximumTime <span style="color:Red">Minutes</span><br /> </i></a>
+        </td>
+    </tr>
+</table>
+<div id="linearframe" align="center">
+
+    @(Html.EJ().LinearGauge("ScaleGauge").LabelColor("#8c8c8c").Width(1000)
+                    .ClientSideEvents(cli => cli.Load("loadGaugeTheme").DrawLabels("DrawLabel"))
+                    .Orientation(Orientation.Horizontal)
+                    .Tooltip(tip => tip.ShowCustomLabelTooltip(true).ShowLabelTooltip(true).TemplateID("Tooltip"))
+                    .Scales(s =>
+                    {
+                        s.Width(50)
+
+                         .BackgroundColor("transparent")
+                         .Maximum(Model.TestLst[(Model.id - 1)].TimeAxis).MajorIntervalValue((Model.TestLst[(Model.id - 1)].TimeAxis) / 20)                         
+                         .ShowBarPointers(true)
+                         .Border(bor => bor.Color("transparent").Width(0))
+                         .ShowRanges(true)
+                         .ShowMarkerPointers(false)
+                         .Length(500)
+                         .Position(pos => { pos.X(10).Y(10); })
+                         .MarkerPointers(mp => { mp.Value(1.2).Length(10).Width(10).MarkerBackgroundColor("#4D4D4D").Border(bor => bor.Color("4D4D4D")).Add(); })
+                         .CustomLabels(cslbl => { cslbl.Value("Fuel Cost $ / L").Color("#fc0606").Font(fnt => fnt.Size("12px").FontStyle("bold").FontFamily("Arial")).Position(pos => pos.X(48).Y(100)).Add(); })
+                         .BarPointers(barptr => { barptr.BarPointerValue(Model.TestLst[(Model.id - 1)].MinuteDiff).Width(3).BarPointerBackgroundColor("Blue").Add(); })
+                         .Ticks(tic => { tic.Type(TickType.MajorInterval).Width(1).Color("Red").Add(); })
+                            .Ranges(rng =>
+                            {
+
+                                rng.EndValue(Model.TestLst[(Model.id - 1)].OTRT).StartValue(0).DistanceFromScale(20).RangeBackgroundColor("#41A317").Border(bor => bor.Color("#41A317")).StartWidth(40).EndWidth(40).Add();
+                                rng.EndValue(Model.TestLst[(Model.id - 1)].MinimumTime).StartValue(Model.TestLst[(Model.id - 1)].OTRT).DistanceFromScale(20).RangeBackgroundColor("#ffff00").Border(bor => bor.Color("#ffff00")).StartWidth(40).EndWidth(40).Add();
+                                rng.EndValue(Model.TestLst[(Model.id - 1)].MaximumTime).StartValue(Model.TestLst[(Model.id - 1)].MinimumTime).DistanceFromScale(20).RangeBackgroundColor("#ff9933").Border(bor => bor.Color("#ff9933")).StartWidth(40).EndWidth(40).Add();
+                                rng.EndValue(Model.TestLst[(Model.id - 1)].TimeAxis).StartValue(Model.TestLst[(Model.id - 1)].MaximumTime).DistanceFromScale(20).RangeBackgroundColor("#ff3300").Border(bor => bor.Color("#ff3300")).StartWidth(40).EndWidth(40).Add();
+
+                            })
+                        .Direction(Directions.Clockwise)
+                         .Add();
+                    }))
+   
+
+</div>
+@Html.EJ().ScriptManager()
+
+<style>
+    a {
+        position: relative;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+        a > i {
+            text-align: left;
+            line-height: 100%;
+            color: black;
+            background: #ffffff;
+            background-clip: padding-box;
+            font-size: 12px;
+            font-style: normal;
+            border: 2px solid #111;
+            border: 2px solid rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
+            position: absolute;
+            width: 250px;
+            left: 50%;
+            margin-left: -115px;
+            padding: 15px 0;
+            bottom: 100%;
+            margin-bottom: 15px;
+            visibility: hidden;
+            opacity: 0;
+            -webkit-transition: opacity 0.5s linear;
+            -moz-transition: opacity 0.5s linear;
+            -ms-transition: opacity 0.5s linear;
+            -o-transition: opacity 0.5s linear;
+            transition: opacity 0.5s linear;
+        }
+
+            a > i:before, a > i:after {
+                content: "";
+                position: absolute;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                top: 100%;
+                left: 50%;
+                margin-left: -10px;
+            }
+
+            a > i:before {
+                border-top: 10px solid #111;
+                border-top: 10px solid rgba(0, 0, 0, 0.5);
+                margin-top: 5px;
+                a :a e border t p x solid #DD;
+                marg top: -2p;
+                z;
+            }
+
+        a:hover > i {
+            visibility: visible;
+            opacity: 5;
+        }
+</style>
+
+

@@ -1,0 +1,265 @@
+﻿@model SmartSys.BL.TimeManagement.TMEquipmentModel
+
+@{
+    ViewBag.Title = "GetProjectEquipmentDetail";
+}
+
+
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Equipment Detail
+    </div>
+
+
+<style type="text/css" class="cssStyles">
+    .txt {
+        display: block;
+        margin-bottom: 12px;
+    }
+</style>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("CreateEquipment", "Budget", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                @*@if(Model.EquipmentId > 0)
+                {
+                <td>
+                    <label for="Description">EquipMent ID:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EquipmentId, new { @readonly = "readonly" })
+                    </div>
+                </td>
+                }*@
+                <td>
+                    <div class="">
+                        <label for="EquipmentName">Equipment Name</label>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.EquipmentId, new { id = "EquipmentId" })
+                        @Html.TextBoxFor(model => model.EquipmentName, new { @readonly = "readonly", @class = "form-control", id = "EquipmentName" })
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="Parent Equipment">Parent Equipment</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ParentEquipmentName, new { @readonly = "readonly", id = "Rate", step = "any", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="Rate">Rate</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Rate, new { @readonly = "readonly", id = "Rate", step = "any", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="">
+                        <label for="TAM">TAM</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TAM, new { @readonly = "readonly", id = "TAM", step = "any", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="TAMSource">TAM Source</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TAMSource, new { @readonly = "readonly", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="TAMDate">TAM Date</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TAMDate, new { @readonly = "readonly", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td width="115px">
+                    <div class="">
+                        <label for="Description">Description</label>
+                        </div>
+</td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new {@readonly = "readonly", @style = "Width: 800Px; max-width: 800px;", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            @if (Model.EquipmentId > 0)
+            {
+                <tr>
+                    <td>
+                        <div class="">
+                            <label for="Item">Modified By: </label>
+                            </div>
+</td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <div class="">
+                            <label for="Item">Modified Date: </label>
+                            </div>
+</td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+        <br>
+        <table style="margin-left:20px">
+            <tr>
+                <td>
+                    <input type="button" value="Item" id="ItemDet" class="btn btn-success glyphicon glyphicon-comment" />
+                </td>
+                <td width="10px"></td>
+                <td>
+                    <input type="button" value="Segment" id="SegmentDet" class="btn btn-warning glyphicon glyphicon-comment" />
+                </td>               
+            </tr>
+        </table>
+
+
+        <table style="margin-left:20px">
+            <tr>                
+
+                <td id="Item">
+                    @if (Model.lstItems.Count > 0)
+                    {
+                        @(Html.EJ().Grid<SmartSys.BL.TimeManagement.TMEquipmentModel>("grdtmshtList")
+                        .Datasource(Model.lstItems)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Center).Width(60).Add();
+
+                          
+                        }).ClientSideEvents(eve =>
+                        {
+
+                            eve.RowSelected("onRowSelected2");
+                        })
+                        )
+                       
+                    }
+                    else if (Model.EquipmentId > 0)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>NOTE: There is No Item Under This Equipment !!!</label>
+                        </div>
+
+                    }
+                </td>
+
+
+                <td id="Segment">
+                    @if (Model.lstSegment.Count > 0)
+                    {
+                        @(Html.EJ().Grid<SmartSys.BL.TimeManagement.TMEquipmentModel>("grdtmsht1List")
+                        .Datasource(Model.lstSegment)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("SegmentId").HeaderText("Segment Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("SegmentName").HeaderText("Segment Name").TextAlign(TextAlign.Center).Width(60).Add();
+
+
+                        }).ClientSideEvents(eve =>
+                        {
+
+                            eve.RowSelected("onRowSelected2");
+                        })
+                        )
+
+
+                        
+                    }
+                    else if (Model.EquipmentId > 0 && Model.lstSegment.Count == 0)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>NOTE: There is No Segment Under This Equipment !!!</label>
+                        </div>
+
+                    }
+
+
+                </td>
+            </tr>
+        </table>       
+           
+    </body>
+</html>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Item").show();
+        $("#Segment").hide();
+
+        $('#ItemDet').on('click', function (e) {
+            $("#Item").show();
+            $("#Segment").hide();
+        });
+        $('#SegmentDet').on('click', function (e) {
+            $("#Item").hide();
+            $("#Segment").show();
+        });
+    });
+
+    </script>
+@Html.EJ().ScriptManager()

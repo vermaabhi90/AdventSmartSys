@@ -1,0 +1,120 @@
+﻿@model SmartSys.BL.DW.CustomerCertificationModel
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<script type="text/javascript">
+    $("#CertificateDate").ejDatePicker({ dateFormat: "MM/dd/yyyy" });
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var CustomerCertification = $('#CustomerCertification').val();
+            var CertificateDate = $('#CertificateDate').val();
+
+            if (CustomerCertification.toString() == "") {
+                alert("Please Enter Certification Detail ");
+                return false;
+            }
+            if (CertificateDate.toString() == "") {
+                alert("Please Enter Certificate Date ");
+                return false;
+            }
+            $("#TurnoverDetail").unbind('submit').submit(); 
+        });
+    });
+</script>
+<table>
+    <tr>
+        <td>
+            @if (Model.NewCustomerCertification == "New Entry")
+            {
+                <div class="page-header glyphicon glyphicon-leaf  text-info ">
+                    Create Certificaton Information
+                </div>
+            }
+            else
+            {
+                <div class="page-header glyphicon glyphicon-pencil  text-info ">
+                    Edit Certificaton Information
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+
+
+@using (Html.BeginForm("CreateCertificationDetails", "DWCustomer", FormMethod.Post, new { Id = "TurnoverDetail" }))
+{
+    <html>
+    <body>
+
+        <div>
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>@Html.HiddenFor(model => model.CustomerId)</td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="Certification">Certification</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.CustomerCertification, new { @class = "form-control" })
+                            @Html.HiddenFor(model => model.NewCustomerCertification)
+                            @Html.ValidationMessageFor(model => model.CustomerCertification, "", new { id = "CustomerCertification", @class = "text-danger" })
+                        </div>
+
+                    </td>
+                    <td>
+
+                        <label for="CertificateDate">Certificate Date</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePicker("CertificateDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                        </div>
+                    </td>
+                </tr>
+
+                @if (Model.CustomerCertification != null)
+                {
+                    <tr>
+                        <td align="center">
+                            <label for="CreatedBy">Created By</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { id = "CreatedBy", @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td align="center">
+                            <label for="CreatedDate">Created Date</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { id = "CreatedDate", @class = "text-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>
+                            <button type="submit" class="save btn btn-success glyphicon glyphicon-save"> Save</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+

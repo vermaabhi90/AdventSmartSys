@@ -1,0 +1,94 @@
+﻿@model IEnumerable<SmartSys.BL.CompanyModel>
+
+@{
+    ViewBag.Title = "GetCompanyList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    System Company List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateSysCompany", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.CompanyModel>("grdCompanyList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+           .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportSysCompanyLst")))
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit_Company", "Edit Company");
+                  });
+
+              })
+
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("CompId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Name").HeaderText("Name").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("ShortName").HeaderText("Short Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("City").HeaderText("City").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("State").HeaderText("State").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Country").HeaderText("Country ").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Pin").HeaderText("Pin").TextAlign(TextAlign.Left).Width(80).Add();
+
+            col.HeaderText("Edit")
+                .Template("#edit")
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(40)
+            .Add();
+        })
+                         .ClientSideEvents(eve =>
+                         {
+
+                             eve.ContextClick("contextclick");
+                             //eve.("contextMenuOpen");
+                         })
+        )
+    </div>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditCompany?CompId={{:CompId}}"></a>
+    </script>
+
+    <script>
+        function contextclick(args) {
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/Admin/CreateSysCompany")'
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Company") {
+                    var tempData = args.text;
+                    var grid = $("#grdCompanyList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var CompId = result[0]["CompId"];
+                    var path = '@Url.Content("~/Admin/EditCompany")' + "?CompId=" + CompId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+        }
+
+    </script>

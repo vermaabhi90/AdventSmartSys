@@ -1,0 +1,406 @@
+﻿@model SmartSys.BL.SysAssetsModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.AssetId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Asset Details
+    </div><br><br>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create New  Asset
+    </div><br><br>
+}
+
+@*<link href="~/Content/InfoFieldPopup.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.min.js"></script>
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>*@
+
+
+@*<script src="~/Scripts/bootstrap-datepicker.min.js"></script>*@
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        $('#AssetInDate').datepicker();
+        $('#DisposalDate').datepicker.dates;
+    });
+</script>*@
+<script type="text/javascript">
+
+            $(document).ready(function () {
+
+                $('#Validation').click(function (e) {
+
+                    //e.preventDefault();
+                    var AssetType = $('#DrpDwnLst').val();
+                    var AssetName = $('#AssetName').val();
+                    var TotalQuantity = $('#TotalQuantity').val();
+                    var cost = $('#cost').val();
+                    var Deprate = $('#Deprate').val();
+                    var quantity = $('#quantity').val();
+                   
+
+
+
+                    if (AssetType.toString() == "") {
+                        alert("Please Select Asset Type ");
+                        return false;
+                    }
+                    if (AssetName.toString() == "") {
+                        alert("Please Enter Asset Name ");
+                        return false;
+                    }
+                    if (TotalQuantity.toString() == "" || TotalQuantity.toString() == 0) {
+                        alert("Please Enter Quantity. It cannot be Zero ");
+                        return false;
+                    }
+                    
+                    if(quantity > TotalQuantity)
+                    {
+                        alert("The Quantity is lower than the Quantity left. Please Check the Quantity value from the list.")
+                        return false;
+                    }
+
+                    var regex = /^\d+(.\d+)?$/;
+                    if (regex.test(quantity) == false) {
+                        alert("Enter correct quantity value correctly")
+                        return false;
+                    }
+                   
+                    if (regex.test(cost) == false) {
+                        alert("Please Enter cost value correctly ");
+                        return false;
+                    }
+                    if (regex.test(Deprate) == false) {
+                        alert("Enter correct Deprate value");
+                        return false;
+                    }
+                });
+            });
+</script>
+
+@using (Html.BeginForm("CreateSysAssets", "Admin", FormMethod.Post, new { Id = "AssetForm", enctype = "multipart/form-data" }))
+{
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 6px;">
+        <tr>
+            @if (Model.AssetId > 0)
+            {
+                <td width="80px">
+                    <label>
+                        Asset ID:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.AssetId, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.AssetId, "", new { @class = "text-danger" })
+                    </div>
+
+                </td>
+            }
+            @if (Model.AssetId == 0)
+            {
+                @Html.HiddenFor(model => model.AssetId, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+
+            }
+
+            <td>
+                <label>
+                    Asset Type:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("AssetTypeId", (IEnumerable<SelectListItem>)ViewBag.SysAssetTypeListtttt, "--select the Asset Types--", new { id = "DrpDwnLst", style = "width:210px", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Asset Name:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AssetName, new { @class = "form-control", htmlAttributes = new { style = "width:230px", id = "AssetName" } })
+                    @Html.ValidationMessageFor(model => model.AssetName, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>
+                    Description:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Description, new { @style = "Width: 300Px; max-width: 300px;", @class = "form-control", id = "Description" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Manufacturer Details:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.ManufacturerDetails, new { @style = "Width: 200Px; max-width: 2200px;", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Asset In Date:
+                </label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.EJ().DatePickerFor(model => model.AssetInDate)
+                    @*@Html.EJ().DatePicker("AssetInDate").Value(Model.AssetInDate)*@
+                    @Html.ValidationMessageFor(model => model.AssetInDate)
+                </div>
+          
+                <a id="link3" style=""><p class="glyphicon glyphicon-info-sign" style="padding-top:20px"></p></a>
+               @Html.EJ().Tooltip("link3").Content("DatePicker with 'MM/DD/YYYY' Format")
+
+            </td>
+        </tr>
+        <tr>
+
+            <td>
+                <label>
+                    Quantity:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TotalQty, new { @class = "form-control", id = "TotalQuantity" })
+                    @Html.ValidationMessageFor(model => model.TotalQty, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+
+
+            @Html.HiddenFor(model => model.Quantity, new { @readonly = "readonly", @class = "form-control", id = "quantity" })
+
+
+
+            <td>
+                <label>
+                    Cost:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Cost, new { id = "cost", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Dep Rate:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.DepRate, new { id = "Deprate", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+
+
+            <td>
+                <label>
+                    Country:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("LocationId", new List<SelectListItem>
+                           {
+                                    new SelectListItem() {Text="India",Value="1"},
+                                    new SelectListItem() {Text="Singapore",Value="2"},
+
+                           }
+                         , "--Select--", new { id = "LocationId", style = "width:210px", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    City:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("OfficeLocationId", new List<SelectListItem>
+                           {
+                                    new SelectListItem() {Text="Pune",Value="1"},
+                                    new SelectListItem() {Text="Singapore",Value="2"},
+
+                           }
+                         , "--Select--", new { id = "OfficeLocationId", style = "width:210px", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Asset Reference:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AssetAcRef, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+
+
+
+            <td>
+                <label>
+                    Disposable Date:
+                </label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.EJ().DatePickerFor(model => model.DisposalDate)
+                    @Html.ValidationMessageFor(model => model.DisposalDate)
+                </div>
+                <a id="link2" style=""><p class="glyphicon glyphicon-info-sign" style="padding-top:20px"></p></a>
+                @Html.EJ().Tooltip("link2").Content("DatePicker with 'MM/DD/YYYY' Format") 
+               </td>
+            <td>
+                <label>
+                    Disposable Value:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.DisposalValue, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Photo:
+                </label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    <input type="file" class="file " name="uploadFile" />
+
+                </div>
+            </td>
+        </tr>
+
+        @*<tr>*@
+
+        @*@if (Model.AssetId > 0)
+                    {
+                        <td>
+                            <label>
+                                Created By:
+                            </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+
+                        <td>
+                            <label>
+                                Created Date:
+                            </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                if(Model.Photo!= null)
+                  {
+            <td>
+                <div class="navbar-text">
+                    @{
+                        var base64 = Convert.ToBase64String(Model.Photo);
+                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                    }
+                    <img width="80" height="80" src="@imgSrc" />
+                </div>
+            </td>
+                    }
+                    }
+                </tr>*@
+
+        @*</tr>*@
+        @if (Model.AssetId > 0)
+        {
+            <tr>
+
+                <td>
+                    <label>
+                        Modified By:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @readonly = "readonly", @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Modified Date:
+                    </label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                @if (Model.Photo != null)
+                {
+                    <td>
+                        <div class="navbar-text">
+                            @{
+                                var base64 = Convert.ToBase64String(Model.Photo);
+                                var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                            }
+                            <img width="100" height="100" src="@imgSrc" />
+                        </div>
+                    </td>
+                                }
+            </tr>
+                                }
+    </table>
+    <table>
+        <tr>
+            <td>             
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'SysAssetsList';" );"> Back</button>
+                    <button type="submit" class="SaveAll btn-xs  btn-info glyphicon glyphicon-save" id="Validation"> Save</button>                
+            </td>
+        </tr>
+
+    </table>
+}
+
+
+

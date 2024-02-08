@@ -1,0 +1,119 @@
+﻿@model IEnumerable<SmartSys.BL.SyaAssetTypeModel>
+@{
+    ViewBag.Title = "SysAssetsList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Asset Type List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+
+    @Html.ActionLink(" Create", "CreateAssetType", new { AstTypeId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SyaAssetTypeModel>("grdSysAssetsTypeGrid")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()       
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportAssetTypeLst")))
+       .ContextMenuSettings(contextMenu =>
+       {
+           contextMenu.EnableContextMenu();
+           contextMenu.DisableDefaultItems();
+           contextMenu.CustomContextMenuItems(c =>
+           {
+
+               c.AddItem("Add_Record", "Add Record");
+               c.AddItem("Edit_Record", "Edit Record");
+           });
+
+       })
+       .AllowSorting()
+       .EnableHeaderHover()
+               .PageSettings(p => { p.PageSize(20); })
+       .AllowResizing()
+       .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+       .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+       .EnableAltRow(true)
+       .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+       .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("AssetTypeId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("AssetType").HeaderText("Asset Type").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(160).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                {
+                    CssClass = "EditBtn",
+                    Text = "Edit",
+                    Click = "onClick",
+                    ContentType = ContentType.ImageTextImage,
+                    PrefixIcon = "e-edit",
+                    Height = "22px",
+                    Size = ButtonSize.Mini
+                }).Add();
+
+            })
+                    .TemplateID("#edit")
+                    .IsUnbound(true)
+                    .TextAlign(TextAlign.Center)
+                    .AllowFiltering(false)
+                    .Width(50)
+                    .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+
+                     eve.ContextClick("contextclick");
+
+                 })
+
+        )
+    </div>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/CreateAssetType?AstTypeId={{:AssetTypeId}}"></a>
+    </script>
+
+
+
+
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var tempData = args.text;
+            var grid = $("#grdSysAssetsTypeGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var AstType = result[0]["AssetType"];
+            var Risk = "Risk";
+            var path = '@Url.Content("~/Admin/CreateAssetType")' + "?AstTypeId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+
+        else
+        if (args.text == "Edit Record") {
+            var tempData = args.text;
+            var grid = $("#grdSysAssetsTypeGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var AssetTypeId = result[0]["AssetTypeId"];
+            var path = '@Url.Content("~/Admin/CreateAssetType")' + "?AstTypeId=" + AssetTypeId
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+    }
+
+
+    </script>

@@ -1,0 +1,159 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.TrackingStatusConfigModel>
+
+@{
+    ViewBag.Title = "TrackingStatusConfigList";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Enquiry Tracking Config
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.TrackingStatusConfigModel>("grdConfig")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportTrackingStatusConfigLst")))
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+                    .ShowColumnChooser()
+                    .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+                    .ToolbarSettings(toolbar =>
+                        {
+                            toolbar.ShowToolbar().ToolbarItems(items =>
+                            {                               
+                                items.AddTool(ToolBarItems.Edit);                               
+                                items.AddTool(ToolBarItems.Cancel);
+                            });
+                        })
+        .Columns(col =>
+        {
+            col.Field("ID").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+
+            col.Field("StatusDesc").HeaderText("Status Desc").TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("Meaning").HeaderText("Meaning").TextAlign(TextAlign.Left).Width(270).Add();
+            col.Field("OutstandingResponseTime").HeaderText("Outstanding Response Time").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("MaximumTime").HeaderText("Maximum Time").TextAlign(TextAlign.Center).Width(80).Add();
+            col.Field("MinimumTime").HeaderText("Minimum Time").TextAlign(TextAlign.Center).Width(80).Add();           
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(80).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+           
+        })
+                .ClientSideEvents(eve =>
+                    {
+                        eve.ContextClick("contextclick");
+                        eve.ActionComplete("complete");                      
+                    })
+    )
+</div>
+<script type="text/template" id="template">
+    <b>Project Details</b>
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr id="IDs">
+            <td>
+                Id:
+            </td>
+            <td>
+                <input id="Id" name="ID" value="{{:ID}}" readonly="readonly" class="e-field e-ejinputtext valid "
+                       style="text-align: right; width: 105px; height: 28px" />
+            </td>
+
+        </tr>
+    
+        <tr>
+            <td>
+                <label>Status Description:</label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="text" id="StatusDesc" readonly="readonly" value="{{:StatusDesc}}" name="StatusDesc" class="form-control" />
+                </div>
+            </td>
+            <td>
+                <label>Meaning:</label>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="">
+                                <textarea id="Meaning" readonly="readonly"  style="width:480px;max-width:800px" name="Meaning" class="form-control e-ejinputtext" value="{{: Meaning}}">{{: Meaning}}</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                <label>Outstanding Response Time:</label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="number" id="OutstandingResponseTime" value="{{:OutstandingResponseTime}}" name="OutstandingResponseTime" class="form-control" />
+                </div>
+            </td>
+            <td>
+                <label>Maximum Time:</label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="number" id="MaximumTime" name="MaximumTime" value="{{:MaximumTime}}" class="form-control" />
+                </div>
+            </td>
+            <td>
+                <label>Minimum Time:</label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="number" id="MinimumTime" name="MinimumTime" value="{{:MinimumTime}}" class="form-control" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+<script>
+    function complete(args) {       
+        if (args.requestType == "save") {
+            var rec = args.data;           
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveStatusConfig",  //Update is Server side method
+                data: { Model: rec },
+                complete: function () {                 
+                },
+                success: function (msg) {
+                    if (msg == "Success")
+                    {                     
+                        alert("Record Successfully Updated...");
+                        var path = '@Url.Content("~/Enquiry/TrackingStatusConfigList")'
+                        event.preventDefault();
+                        window.location.replace(path);                       
+                    }
+                    else {
+                        alert("Record Not Successfully Updated...");
+                    }
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        }
+    }
+</script>

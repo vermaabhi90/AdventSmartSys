@@ -1,0 +1,122 @@
+﻿@model SmartSys.BL.DW.FreightForwarderModel
+
+@{
+    ViewBag.Title = "CreateFreightForwarder";
+}
+
+@if (Model.FFId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Freight Forwarder Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Freight Forwarder Detail
+    </div>
+}
+@if (Model.FFId == 0)
+{
+    <script>
+    $(document).ready
+    (
+
+    function (event) {
+
+        $('#Validation').click(function () {
+            var VendorName = $('#VendorName').val();
+
+
+
+            if (VendorName.toString() == "") {
+                alert("Please Select VendorName ")
+                return false;
+
+            }
+
+
+
+            var path = '@Url.Content("~/DWVendor/CreateFreightForwarder")'
+            event.preventDefault();
+            window.location.replace(path);
+
+            //  $('#form').unbind('submit').submit();
+        });
+
+    });
+
+    </script>
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".FFdrp").select2({
+            placeholder: "Please Select a Vendor Name",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+   
+</script>
+@using (Html.BeginForm())
+{
+
+
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            @Html.HiddenFor(model => model.FFId)
+            @if (Model.FFId > 0)
+            {
+                <td>
+                    <label for="Name">FFId:</label>
+                </td>
+                <td >
+                    <div class="">
+
+                        @Html.TextBoxFor(model => model.FFId, new { @class = "form-control", @readonly = "readonly", id = "FFId" })
+                        @Html.ValidationMessageFor(model => model.FFId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            }
+        </tr>
+
+        <tr>
+            <td>
+                <label for="VendorName">VendorName:</label>
+
+            </td>
+            <td >
+                <div class="">
+
+
+                    @Html.DropDownListFor(model => model.VendorName, (IEnumerable<SelectListItem>)ViewBag.vendornamelist, "Please select Vendor Name", new {style="width:250px", @class = "FFdrp form-control", id = "VendorName" })
+                    @Html.ValidationMessageFor(model => model.VendorName, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+    </table>
+    <table>
+
+        <tr>
+            <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetFreightForwarderList';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save  save" id="Validation"> Save</button>
+            </td>
+        </tr>
+
+    </table>
+}
+

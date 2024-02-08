@@ -1,0 +1,264 @@
+﻿@model SmartSys.BL.CompanyLibraryModel
+
+@{
+    ViewBag.Title = "CreateLibrary";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.DocId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Library Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Library Detail
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.reset').click(function (event) {
+          event.preventDefault();
+          $("#fileInput").replaceWith(" <input type='file' name='Attachment' id='fileInput' value='uploadfile' class='btn btn-success' required />");
+        })
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var DocName = $('#DocName').val();
+            var CompCode = $('#CompCode').val();
+
+            if (DocName.toString() == "") {
+                alert("Please Enter Document Name ");
+                return false;
+            }
+            if (DocName.toString().length > 50)
+            {
+                alert("Please Enter Document Name Length Less Than 50 Characters");
+                return false;
+            }
+            if (CompCode.toString() == "") {
+                alert("Please Select Company Code From DropDown ");
+                return false;
+            }
+
+
+            $("#Library").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreateLibrary", "Admin", FormMethod.Post, new { id = "Library", enctype = "multipart/form-data" }))
+{
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr style="height:20px">
+            @Html.HiddenFor(model => model.DocId)
+            @Html.HiddenFor(model => model.FileName)
+            @if (Model.DocId > 0)
+            {
+                <td>
+                    <label for="DocId">DocId:</label>
+                </td>
+                <td>
+
+                    <div class="">
+
+                        @Html.TextBoxFor(model => model.DocId, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.DocId, "", new { @class = "text-danger" })
+                    </div>
+
+                </td>
+            }
+
+
+            <td>
+                <label for="DocName">Document Name:</label>
+            </td>
+            <td>
+
+
+                <div class="">
+                    @Html.TextBoxFor(model => model.DocName, new { @class = "form-control", id = "DocName" })
+                    @Html.ValidationMessageFor(model => model.DocName, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="CompCode">Company:</label>
+            </td>
+            <td>
+
+
+                <div class="">
+
+                    @Html.DropDownListFor(model => model.CompCode, (IEnumerable<SelectListItem>)ViewBag.DropdownCompCode, "Please select Company", new { style = "width:220px;height:35px", @class = "form-control", id = "CompCode" })
+                    @Html.ValidationMessageFor(model => model.CompCode, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+
+        </tr>
+        <tr style="height:40px">
+            @if (Model.DocId > 0)
+            {
+                <td>
+                    <label for="Created By">Created By:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly", style = "width:210px" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Created Date">Created Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", id = "Name", @readonly = "readonly", })
+                        @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                    </div>
+
+                </td>
+            }
+        </tr>
+        @*<tr style="height:40px">*@
+        @if (Model.DocId > 0)
+        {
+            <tr style="height:40px">
+                <td>
+                    <label for="Modified By">Modified By:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly", style = "width:210px" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Modified Date">Modified Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", id = "Name", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                    </div>
+
+                </td>
+                @*}*@
+            </tr>
+        }
+
+    </table>
+    <span></span>
+    <div style="width:100%">
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("Description").Text("Description").ContentTemplate(
+                @<div>
+                    <table style="width:100%">
+                        @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                        List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                        List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                        List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                        List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                        List<String> indenting = new List<string> { "outdent", "indent" };
+                        List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                        List<String> doAction = new List<string>() { "undo", "redo" };
+                        List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                        List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                        List<String> links = new List<string>() { "createLink", "removeLink" };
+                        List<String> images = new List<string>() { "image" };
+                        List<String> media = new List<string>() { "video" };
+                        List<String> effects = new List<string>() { "superscript", "subscript" };
+                        List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                        List<String> formatStyle = new List<string>() { "format" };
+                        List<String> view = new List<string>() { "fullScreen" };
+
+                        }
+                        <tr>
+
+                            <td>
+                                <div>
+
+                                    @Html.EJ().RTEFor(model => model.Description, new { id = "hello" }).Width("100%").Height("50%").EnableResize(true).AllowEditing(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                    @Html.ValidationMessageFor(model => model.Description)
+
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </div>);
+
+
+           })
+        .SelectedItemIndex(Model.TabIndex)
+        .Render();}
+    </div>
+    <table>
+
+        <tr>
+            <td>
+                <label for="ItemName">File:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    <div class=" input-group-btn">
+
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" />
+
+                    </div>
+                </div>
+            </td>
+            <td>
+                <input type="button" id="reset" value="Remove" class="btn btn-warning reset" />
+            </td>
+
+        </tr>
+    </table>    <br>
+    <table>
+        <tr>
+            <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetLibraryList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save  save" id="Validation"> Save</button>
+
+            </td>
+            <td>
+            <td style="color:red">
+                <label for="ItemName">Distribute Mail:</label>
+            </td>
+           <td style="width:10px"/>
+            <td>
+                @Html.EditorFor(model => model.distributeMail, new { @style = "height:60em;width:60em", @class = "form-control" })
+            </td>
+        </tr>
+
+    </table>
+}
+
+<script id="Review" type="text/x-jsrender">
+    {{if Attachment =='0' || Attachment ==''  }}
+
+    {{else}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-eye-open" href="/Admin/DownloadFile?IssueId={{:DocId}}&amp;Filename={{:Attachment}}"> > OPEN </a>
+    {{/if}}
+</script>
+
+
+
+

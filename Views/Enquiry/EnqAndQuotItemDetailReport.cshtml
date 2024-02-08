@@ -1,0 +1,226 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryModel
+@{
+    ViewBag.Title = "EnqAndQuotItemDetailReport";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Enquiry & Quotation Item Detail Report
+</div>
+<br />
+<div class="glyphicon text-info" style="">
+    <table>
+        <tr>            
+            <td>
+
+                <div class="">
+                    <label for="ReportName">Report Name</label> @Html.TextBox("Rptname", "All Enquiry, Quotation And Item Detail Report", new { @style = "Width: 330Px; max-width: 500px;", @readonly = "Readonly" })
+                </div>
+                </td>
+           
+           
+            <td>
+                <button type="button" name="RunReport" class="btn-xs btn-success glyphicon glyphicon-thumbs-up RunReport"> Run Report</button>              
+               @if (Model.StatusId == 2 || Model.StatusId == 3)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-info glyphicon glyphicon-refresh"> Report Running</button>
+                }                      
+                <button type="button" name="Refresh" class="btn-xs btn-info glyphicon glyphicon-refresh Refresh"> Refresh</button>   
+            </td>            
+        </tr>
+    </table>
+</div>
+<br />
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryModel>("grdAdhocRunList")
+        .Datasource((IEnumerable<object>)ViewBag.ReportList)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("AdhocRunId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ReportId").HeaderText("Report Id").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("ReportName").HeaderText("Report Name").TextAlign(TextAlign.Left).Width(250).Add();
+            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("GenId").HeaderText("Generator").Width(110).TextAlign(TextAlign.Center).Add();
+            col.Field("RGSJobId").HeaderText("RGS Job Id").TextAlign(TextAlign.Center).Width(130).Add();
+            col.HeaderText("Report Output").Template("#BtnTemplate").TextAlign(TextAlign.Center).Width(160).AllowFiltering(false).Add();
+
+            col.Field("UserName").HeaderText("User Name").Width(250).Add();
+
+            //col.Field("RunDate").HeaderText("Run Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("RunDate").HeaderText("Run Date").Format("{0:MM/dd/yyyy HH:mm:ss}").Width(150).Add();
+            col.HeaderText("View Detail").Commands(command =>
+            {
+                command.Type("View")
+                             .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                             {
+
+                                 ContentType = ContentType.ImageOnly,
+                                 Text = "View",
+
+                                 Click = "onClick1",
+                                 Size = ButtonSize.Mini,
+                                 PrefixIcon = "e-icon e-restore"
+                             }).Add();
+            })
+ .TextAlign(TextAlign.Center)
+ .Width(100)
+ .Add();
+
+
+        })
+    )
+</div>
+<script type="text/x-jsrender" id="BtnTemplate">
+    {{if StatusShortCode == 'GENSU'}}
+
+    <a class="btn-xs btn-success glyphicon glyphicon-thumbs-up" href="/AdhocReporting/Download?FileName={{:OutputLocation}}"> Open</a>
+    {{/if}}
+    {{if StatusShortCode == 'GENER'}}
+    <a onclick="myfuncError({{:AdhocRunId}} )" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</a>
+    {{/if}}
+
+</script>
+<script type="text/javascript">
+    function onClick1(args) {
+        var grid = $("#grdAdhocRunList").ejGrid("instance");
+        var AdhocRunId = grid.getSelectedRecords()[0].AdhocRunId;
+        var ReportName = grid.getSelectedRecords()[0].ReportName;
+        document.getElementById("Title12").innerHTML = ReportName;
+            var path = '@Url.Content("~/AdhocReporting/ViewAdhocParam")' + "?AdhocRunId=" + AdhocRunId
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    };
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('.RunReport').click(function (e) {
+
+            var TxtParamValue = '@Model.TxtParamValue';
+            var selTypeText = '@Model.TxtParamValue';
+            var ParamId = '@Model.ParamId';
+            var hidText = "";
+            var ParamValue = null;
+            var Parmname = null;
+            var ReportId = '@Model.ReportId';
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/AdhocReporting/ReportParam",
+                //data: { ReportId: ReportId, Parmname: Parmname,ParamValue:ParamValue},
+                data: { hidText: hidText, TxtParamValue: TxtParamValue, ParamId: ParamId, ReportId: ReportId },
+                success: function (data) {
+                    var path = '@Url.Content("~/AdhocReporting/ReportParam")' + "?ReportId=" + '@Model.ReportId' + "&Parmname=" + Parmname + "&ParamValue=" + ParamValue;
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            window.location.reload();
+            return false;
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.Open').click(function (e) {
+            var path = '@Url.Content("~/AdhocReporting/Download")' + "?FileName=" + '@Model.OutputLocation'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+    });
+</script>
+<script>
+    $(document).ready(function()
+    {
+        $('.Refresh').click(function (e) {
+            window.location.reload();
+        });
+    })
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#Selectedvalue').click(function (event) {
+           
+            var path = '@Url.Content("~/AdhocReporting/ReportParam")' + "?ReportId=" + "MGMT015"
+                     event.preventDefault();
+            window.location.replace(path);
+        });
+
+        $('#DrpDwnLst').change(function (event) {
+            var ddlValue = $('#DrpDwnLst').val();
+
+        });
+
+    });
+</script>
+<script>
+
+    function myfuncError(args)
+    {
+        document.getElementById("Title").innerHTML = 'Error';
+        var path = '@Url.Content("~/AdhocReporting/ShowError")' + "?AdhocRunId=" + args
+        $("#ErrorDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ErrorDetails").ejDialog("open");
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1100)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("ErrorDetails")
+        .Title("<a id='Title'></a>")
+        .Width(900)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ErrorDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ErrorDetails").ejDialog("open");
+        }
+</script>

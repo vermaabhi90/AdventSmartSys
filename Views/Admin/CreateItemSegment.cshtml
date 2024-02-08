@@ -1,0 +1,235 @@
+﻿@model SmartSys.BL.ItemSegment
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.SegmentId == 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Item Segment Type
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Item Segment Type
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#AddEqpmnt').click(function () {
+           
+            var SegmentId = $('#SegmentId').val();
+            var EquipmentId = $('#EquipmentSegment').val();
+            
+            if (EquipmentId.toString() == "") {
+                alert("Please Select Equipment  ");
+                return false;
+            }
+
+            var path = '@Url.Content("~/Admin/SaveEquipmentForSegment")' + "?SegmentId=" + SegmentId + "&EquipmentId=" + EquipmentId
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+        <script>
+            $(document).ready(function () {
+                $('.save').click(function (e) {
+                   var ParentSegmentId = $('#ParentSegmentId').val();
+                    var SegmentName = $('#SegmentName').val();
+                 
+
+                    if (SegmentName.toString() == "") {
+                        alert("Please Enter Segment Name  ");
+                        return false;
+                    }
+
+                    $("#Form1").unbind('submit').submit(); S
+                });
+            });
+
+</script>
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.SegmentId == 0)
+            {
+                @Html.HiddenFor(model => model.SegmentId);
+            }
+            <tr>
+                @if (Model.SegmentId > 0)
+                {
+                    <td>
+                        <label for="UserId">ID</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.TextBoxFor(model => model.SegmentId, new { @class = "form-control", @readonly = "readonly", id = "SegmentId" })
+                            @Html.ValidationMessageFor(model => model.SegmentId)
+                        </div>
+
+                    </td>
+                }
+                <td>
+                    <label for="ParentSegmentId">Parent Segment</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.DropDownList("ParentSegmentId", (IEnumerable<SelectListItem>)ViewBag.ItemSegment, "Select Item Segment", new { @class = "form-control", id = "ParentSegmentId" })
+                        @Html.ValidationMessageFor(model => model.SegmentId)
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ParentSegmentId">Segment Name:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.TextBoxFor(model => model.SegmentName, new { @class = "form-control", id = "SegmentName" })
+                        @Html.ValidationMessageFor(model => model.SegmentName)
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Description">Description:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "Description" })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </td>
+            </tr>
+            @if (Model.SegmentId > 0)
+            {
+                <tr>
+                    <td>
+                        <label for="CreatedByName">Created By </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="CreatedDate">Created Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+            @if (Model.SegmentId > 0)
+            {
+                <tr>
+
+                    <td>
+                        <label for="ModifiedByName">Modified By </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <label for="ModifiedDate">Modified Date</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            }
+
+
+
+        </table>
+
+          @if (Model.SegmentId > 0)
+          {
+            <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+                        <label for="ParentSegmentId">Equipment:</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.DropDownList("EquipmentId", (IEnumerable<SelectListItem>)ViewBag.EquipmentSegment, "Select Equipment", new { @class = "form-control", id = "EquipmentSegment" })
+                            @Html.ValidationMessageFor(model => model.SegmentId)
+                        </div>
+
+                    </td>
+                    <td>
+
+                        <div class="">
+                            <input type="button" value="Add" class="btn btn-warning" id="AddEqpmnt">    </div>
+                    </td>
+                </tr>
+
+
+            </table>
+    <div>
+        <br>
+
+        <div style="position:relative;background-color:#F7F8E0" >
+            @(Html.EJ().Grid<SmartSys.BL.Project.TaskDetails>("grdEventList")
+                        .Datasource((IEnumerable<object>)ViewBag.EquipmentGrd)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("EquipmentName").Visible(true).AllowEditing(false).HeaderText("Equipment Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(130).Add();
+            col.Field("SegmentName").HeaderText("Segment Name").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+        })
+
+            )
+        </div>
+    </div>
+         }
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetItemSegmentList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>                  
+                </td>
+            </tr>
+        </table>
+        </body>
+    </html>
+    
+ }

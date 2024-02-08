@@ -1,0 +1,134 @@
+﻿@model IEnumerable<SmartSys.BL.BOMAdmin.BankChequeModel>
+
+@{
+    ViewBag.Title = "GetBankChequeList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Bank Cheque List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateBankCheque", new { ChequeId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdChequeLst")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                  .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                  {
+                      items.AddTool(ToolBarItems.ExcelExport);
+                  }))
+                  .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExceltoBankCheque")))
+                .AllowSorting()
+                .EnableHeaderHover()
+                        .PageSettings(p => { p.PageSize(20); })
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                    .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+              //.ContextMenuSettings(contextMenu =>
+              //{
+              //    contextMenu.EnableContextMenu()
+              //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+              //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+              //})
+
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit_Record", "Edit Record");                    
+                  });
+
+              })
+                 .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+
+        .Columns(col =>
+        {
+            col.Field("ChequeId").HeaderText("Cheque Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("BankName").HeaderText("Bank Name").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CompCode").HeaderText("Company").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("ChequeNumber").HeaderText("Cheque Number").Width(100).Add();
+            col.Field("ChequeDateStr").HeaderText("Cheque Date").TextAlign(TextAlign.Left).Width(80).Visible(false).Add();
+            col.Field("ChequeDocument").HeaderText("ChequeDocument").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("IssuedToType").HeaderText("Issued Type").Width(70).Add();
+            col.Field("IssuedToName").HeaderText("Issued To").Width(110).Add();
+            col.Field("Amount").HeaderText("Amount").Width(70).Add();
+            col.Field("Remark").Visible(true).AllowEditing(true).HeaderText("Remark").Width(150).Add();
+            col.Field("Currency").HeaderText("Currency").Width(70).Add();
+            col.Field("StatusId").HeaderText("Status Id").Visible(false).Width(150).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy }").Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy }").Width(70).Add();
+            col.HeaderText("Open").Template("#Download").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+                eve.ActionComplete("comp");
+            })
+    )
+</div>
+<script id="Download" type="text/x-jsrender">
+    {{if ChequeDocument =='0' || ChequeDocument ==''  }}
+
+    {{else}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-eye-open" href="/Admin/Download?IssueId=0&amp;Filename={{:ChequeDocument}}"> OPEN </a>
+    {{/if}}
+</script>
+<script>
+    function contextclick(args) {
+        return false;
+    }
+    function contextclick(args) {      
+        if (args.text == "Add Record") {
+                       
+            var grid = $("#grdChequeLst").ejGrid("instance");
+            var result = this.getSelectedRecords();           
+            var path = '@Url.Content("~/BOMAdmin/CreateBankCheque")' + "?ChequeId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        }
+        if (args.text == "Edit Record") {
+                   
+            var grid = $("#grdChequeLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ChequeId = result[0]["ChequeId"];
+            var path = '@Url.Content("~/BOMAdmin/CreateBankCheque")' + "?ChequeId=" + ChequeId
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        }
+        return false;
+    }
+   
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Alert"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Alert"])');
+            return false;
+        }
+    });
+
+
+</script>

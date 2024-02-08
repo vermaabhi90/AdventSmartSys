@@ -1,0 +1,221 @@
+﻿@model SmartSys.BL.DW.ItemModel
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Create  DW Item
+</div>
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Item Category",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp1").select2({
+            placeholder: "Please Select a Brand",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {       
+        $('.save').click(function (e) {         
+            var Itemname = $('#ItemName').val();
+            var PurchaseRate = $('#PurchaseRate').val();
+            var SaleRate = $('#SaleRate').val();
+            var ItemCategory = $('#ItemCategory').val();
+            var mpn = $("#mpn").val();         
+            if (Itemname.toString() == "") {
+                alert("Please Enter Item Name ");
+                return false;
+            }
+
+            if (ItemCategory.toString() == "") {
+                alert("Please Select Category");
+                return false;
+            }
+            if (mpn.toString() == "") {
+                alert("Please Enter the manufacturing part number(MPN)");
+                return false;
+            }
+            if (PurchaseRate.toString() == "") {
+                alert("Please Enter  PurChase Rate");
+                return false;
+            }
+            if (SaleRate.toString() == "") {
+                alert("Please Enter Sale Rate");
+                return false;
+            }           
+            var path = "/DWItem/Checkduplicacy"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ItemName: mpn },
+                success: function (Result) {
+                    if (Result) {
+                        alert("This MPN Already Exists.You Can't Create!!")
+                        return false;
+                    }
+                    else {
+                        $("#Form1").unbind('submit').submit();
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+@using (Html.BeginForm("CreateItem", "DWItem", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+       
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+
+            <tr>
+                <td>
+                    <label for="ItemName">Item Name</label>
+                </td>
+                <td>
+                    <div class="">                      
+                        @Html.EJ().Autocomplete("ItemName").AutoFocus(true).ShowPopupButton(true).Datasource((IEnumerable<SmartSys.BL.DW.ItemDropDwnModel>)ViewBag.ItemList.Data).AutocompleteFields(f => f.Text("Description").Key("ItemId")).Width("400").ClientSideEvents(e => e.Select("onSelect"))                        
+                        @*@Html.EJ().Autocomplete("ItemName").AutoFocus(true).ShowPopupButton(true).Datasource(d => d.URL("/DWItem/GetAllItemDrpData")).AutocompleteFields(f => f.Text("Description").Key("ItemId")).Width("400").ClientSideEvents(e => e.Select("onSelect"))*@                       
+                    </div>
+                </td>
+             
+                <td>
+                    <label for="ItemName">Item Category:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewBag.ItemCategory, "Please Select Item Category", new { id = "ItemCategory", @class = "drp form-control", @style = "width:300px", required = "required" })
+                        @Html.ValidationMessageFor(model => model.ItemName)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ItemName">Brand:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("BrandId", (IEnumerable<SelectListItem>)ViewBag.BrandList, "Please Select the Brand", new { id = "BrandId", @class = "drp1 form-control", @style = "width:300px", required = "required" })
+                        @Html.ValidationMessageFor(model => model.ItemName)
+                    </div>
+                </td>
+              
+                <td>
+                    <label for="">Purchase Rate</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PurchaseRate, new { id = "PurchaseRate", required = "required", @class = "form-control", @type = "Number", @step = "0.01" })
+                        @Html.ValidationMessageFor(model => model.MPN)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="">Sale Rate </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.SaleRate, new { id = "SaleRate", required = "required", @class = "form-control", @type = "Number", @step = "0.01" })
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="mpn">MPN</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.MPN, new { id = "mpn", required = "required", @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.MPN)
+
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <button type="button" class="btn-primary glyphicon glyphicon-search  btnref" style="height:30px"></button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="IsActive">IsActive </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.IsActive)
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetItemList';" );"> Back</button>
+                    <button type="button" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+@{
+
+    Html.EJ()
+       .Dialog("ShowItemDetail")
+       .Title("<a id='Title'> Item List</a>")
+       .Width(1200)
+       .Height(800)
+       .ShowOnInit(false)
+       .ContentTemplate(@<p>Invoice Detail</p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ShowItemDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ShowItemDetail").ejDialog("open");
+        }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+    $(".btnref").click(function () {
+      var MPN = $("#mpn").val();
+        if (+MPN.length < 3) {
+            alert("Please Enter Atleast three Character");
+            return false;
+        }
+        var path = '@Url.Content("~/DWItem/ItemList")' + "?MPN=" + MPN
+        $("#ShowItemDetail").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ShowItemDetail").ejDialog("open");
+    });
+    });
+</script>

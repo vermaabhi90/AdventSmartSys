@@ -1,0 +1,228 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.ReceiptModel>
+
+@{
+    ViewBag.Title = "PurchaseReciptList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Purchase Receipt List
+</div>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<table style="margin-bottom:10px;color:white">
+    <tr>       
+
+        <td>
+            <div class="">
+                <button type="button" class="btn-sm" style="background:#F15A42" value="">Notification Pending</button>
+            </div>
+        </td>
+        <td>
+            <a id="link1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+            @Html.EJ().Tooltip("link1").Content("The Rows Who matches with Background Color of Notification Pending. Those Rows are not Create Our Notification(Note:Notification Create only for which Rows, where Column Permit type Import Permit")
+        </td>
+        <td>
+            <div class="">
+                <button type="button" class="btn-sm" style="background:#3DB172" value="">Pending For Review</button>
+            </div>
+        </td>
+        <td>
+            <a id="link2" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+            @Html.EJ().Tooltip("link2").Content("The Rows Who matches with Background Color of Pending For Review.Those Rows are Pending For Review By Manager")
+        </td>
+        <td>
+            <div class="">
+                <button type="button" class="btn-sm" style="background:#AACB66" value="">Pending For Approval</button>
+            </div>
+        </td>
+        <td>
+            <a id="link3" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+            @Html.EJ().Tooltip("link3").Content("The Rows Who matches with Background Color of Pending For Approval.Those Rows are Pending For Approval By Manager")
+        </td>
+
+        <td>
+            <div class="">
+                <button type="button" class="btn-sm" style="background-color: #6B65A0;" value="">Pending for Process</button>
+            </div>
+        </td>
+        <td>
+            <a id="link4" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+            @Html.EJ().Tooltip("link4").Content("The Rows Who matches with Background Color of Approved.Those Rows are Approved By Manager")
+        </td>
+
+        <td>
+            <div class="">
+                <button type="button" class="btn-sm" style="background-color: #4CAF50;" value="">Processed</button>
+            </div>
+        </td>
+        <td>
+            <a id="link5" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+            @Html.EJ().Tooltip("link5").Content("The Rows Who matches with Background Color of Processed. Those Rows Are Processed Means Navision Entry is Completed")
+        </td>
+        <td>
+            <div class="">
+                <button type="button" class="btn-sm" style="background:#C43A2C" value="">Rejected</button>
+            </div>
+        </td>
+        <td>
+
+            <a id="link6" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+            @Html.EJ().Tooltip("link6").Content("The Rows Who matches with Background Color of Rejected. Those Rows are Rejected By Manager")
+        </td>
+
+    </tr>
+
+</table>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.ReceiptModel>("grdDetailList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowGrouping()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+        }))
+        .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)         
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {                 
+                 c.AddItem("Edit_Record", "Edit Record");
+                 c.AddItem("Notification1", "Notification");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ReceiptId").HeaderText("Receipt Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(40).Add();
+            col.Field("CompanyName").HeaderText("Company Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("VendorInvNo").HeaderText("Vendor Invoice No").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("ReceiptDate").HeaderText("Receipt Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("PermitType").HeaderText("Permit Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("FreightForwarderName").HeaderText("Freight Forwarder").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("FFRef_No").HeaderText("Airway Bill No").ValidationRules(v => v.AddRule("required", true)).Width(50).Add();
+            col.Field("Currency").HeaderText("Currency").ValidationRules(v => v.AddRule("required", true)).Width(50).Add();
+            // col.Field("freightCharges").HeaderText("freight Charges").TextAlign(TextAlign.Center).Width(50).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(50).Add();
+            //col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(70).Add();
+            //col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.HeaderText("Edit")
+           .Template("#edit")
+           .AllowFiltering(false)
+
+       .TextAlign(TextAlign.Center)
+       .Width(50)
+       .Add();
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                     eve.QueryCellInfo("querycellinfo");
+                 })
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Enquiry/PurchaseCreateRecipt?ReceiptId={{:ReceiptId}}"></a>
+</script>
+<script>
+    function querycellinfo(args) {
+
+        if (args.data.Status == "New"  && args.data.PermitType == "ImportPermit") {
+            $($(args.cell).parent()).css("backgroundColor", "#F15A42");
+        }
+        if (args.data.Status == "Approved") {
+            $($(args.cell).parent()).css("backgroundColor", "#6B65A0");/*custom css applied to the row */
+        }
+        if (args.data.Status == "Rejected") {
+            $($(args.cell).parent()).css("backgroundColor", "#C43A2C");/*custom css applied to the row  #*/
+        }
+        if (args.data.Status == "Reviewed") {
+            $($(args.cell).parent()).css("backgroundColor", "#AACB66");/*custom css applied to the row #   */
+        }
+        if (args.data.Status == "Send For Review") {
+            $($(args.cell).parent()).css("backgroundColor", "#3DB172");/*custom css applied to the row */
+        }
+        if (args.data.Status == "Process Purchase Receipt") {
+            $($(args.cell).parent()).css("backgroundColor", "#4CAF50");/*custom css applied to the row */
+        }
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("CreateCompBankDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1100)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+</script>
+
+<script>
+    function contextclick(args) {
+       
+        if (args.text == "Notification") {
+                var tempData = args.text;
+                var grid = $("#grdDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var FFRef_No = result[0]["FFRef_No"];
+                var PermitType = result[0]["PermitType"];
+                var ReceiptId = result[0]["ReceiptId"];
+            if (PermitType == "ImportPermit") {
+
+                var path = '@Url.Content("~/Enquiry/FFNotificationEdit")' + "?AirwaybillNumber=" + FFRef_No +  "&ReceiptId=" + ReceiptId
+                $("#CreateCompBankDetail").ejDialog({
+
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateCompBankDetail").ejDialog("open");
+
+            }
+            else {
+                toastr.error("Notification Only for Import Permit");
+            }
+
+       }
+       else
+           if (args.text == "Edit Record") {
+               var tempData = args.text;
+               var grid = $("#grdDetailList").ejGrid("instance");
+               var result = this.getSelectedRecords();
+               var ReceiptId = result[0]["ReceiptId"];
+               var Status = result[0]["Status"];
+                   var path = '@Url.Content("~/Enquiry/TempPurchaseCreateRecipt")' + "?ReceiptId=" + ReceiptId
+                   event.preventDefault();
+                   window.location.replace(path);
+           }
+    }
+</script>

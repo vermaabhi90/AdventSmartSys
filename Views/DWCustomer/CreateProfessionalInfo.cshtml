@@ -1,0 +1,153 @@
+﻿@model SmartSys.BL.DW.CustomerModel
+
+<div class="page-header glyphicon glyphicon-pencil  text-info ">
+    Edit Professional Information
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("CreateProfessionalInfo", "DWCustomer", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <head>
+       
+      
+    </head>    
+
+    <body>
+
+        <div class="modal-body">
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <label for="emailId">emailId</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.emailId, new { @class = "form-control" })
+                            @Html.HiddenFor(model => model.CustomerId)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td >
+                        <label for="VAT">VAT</label>
+
+                    </td>
+                    <td >
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.VAT, new { @class = "form-control" } )
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="PAN">PAN</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.PAN, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="CST">CST</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.CST, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="TAN">TAN</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.TAN, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+
+                    <td >
+                        <label for="ExciseNo">Excise No</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.ExciseNo, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ExciseRange">Excise Range</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.ExciseRange, new { @class = "form-control" } )
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ExciseDivision">Excise Division</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.ExciseDivision, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ExciseCommissionRate">Excise Commission Rate</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.ExciseCommissionRate, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td >
+                        <label for="Website">Website</label>
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Website, new { @class = "form-control" } )
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="Remark">Remark</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Remark, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+               
+            </table>
+            <table>
+                <tr>
+
+                    <td>
+                        <button type="submit" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

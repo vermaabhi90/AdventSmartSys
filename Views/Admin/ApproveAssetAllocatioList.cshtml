@@ -1,0 +1,112 @@
+﻿@model SmartSys.BL.SysAssetAllocationModel
+
+<style type="text/css">
+    .e-grid .e-excelfilter .e-btncontainer input {
+        padding: .2em .4em .3em;
+    }
+
+    ::-ms-clear {
+        display: none;
+    }
+
+    .EditBtn {
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Approval/Reject Allocation List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.AdminBL>("grdSysAssetsAllocationGrid")
+                .Datasource((IEnumerable<object>)@Model.ApprovalList)
+        .AllowFiltering()
+        .AllowPaging()
+       .EditSettings(e => e.AllowAdding().AllowEditing())
+     .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportAssetAprvLst")))
+     .ContextMenuSettings(contextMenu =>
+     {
+         contextMenu.EnableContextMenu();
+         contextMenu.DisableDefaultItems();
+         contextMenu.CustomContextMenuItems(c =>
+         {
+             c.AddItem("Add_Record", "Add Record");
+             c.AddItem("Edit_Asset_Allocation_Details", "Edit Asset Allocation Details");
+         });
+
+     })
+
+       .AllowSorting()
+       .EnableHeaderHover()
+       .AllowResizing()
+               .PageSettings(p => { p.PageSize(20); })
+       .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+       .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+       .EnableAltRow(true)
+       .Columns(col =>
+       {
+           col.Field("AssignmentId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+           col.Field("AssetName").HeaderText("Asset Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(130).Add();
+           col.Field("AssignedTo").HeaderText("Assigned To").TextAlign(TextAlign.Left).Width(130).Add();
+           col.Field("AssignedType").HeaderText("Assigned Type").TextAlign(TextAlign.Left).Width(120).Add();
+           col.Field("AssignedDate").HeaderText("Assigned Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(130).Add();
+           col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(80).Add();
+           col.Field("ReturnDate").HeaderText("ReturnDate").Format("{0:MM/dd/yyyy  HH:mm}").Width(130).Add();
+           col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(140).Add();
+           col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+           col.Field("ModifiedBy").HeaderText("Modified By").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(120).Add();
+           col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+           col.HeaderText("Approve")
+           .Template("#Approve")
+           
+           .AllowFiltering(false)
+           .TextAlign(TextAlign.Center)
+           .Width(90)
+           .Add();
+
+       })
+        .ClientSideEvents(eve =>
+        {
+
+            eve.ContextClick("contextclick");
+
+        })
+
+    )
+</div>
+<script id="Approve" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/ApproveAssetAllocation?AssignmentId={{:AssignmentId}}"> Approve</a>
+</script>
+
+<script type="text/javascript">
+
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Admin/CreateSysAssetAllocation")' + "?AssignmentId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Asset Allocation Details") {
+                var tempData = args.text;
+
+                var grid = $("#grdSysAssetsGrid").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var AssignmentId = result[0]["AssignmentId"];
+
+                var path = '@Url.Content("~/Admin/CreateSysAssetAllocation")' + "?AssignmentId=" + AssignmentId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+         return false;  
+    }
+</script>
+
+
+
+

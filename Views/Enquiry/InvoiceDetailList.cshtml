@@ -1,0 +1,190 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.InvoiceDetailModel>
+
+@{
+    ViewBag.Title = "  Invoice Detail List";
+}
+@{
+
+    Html.EJ()
+        .Dialog("CreateInvoiceDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1100)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateInvoiceDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateInvoiceDetail").ejDialog("open");
+        }
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Invoice Detail List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateInvoiceDetail", new { InvId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Enquiry.DispatchModel>("grdDetailList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+           .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportInvoiceDetailList")))
+                    .ContextMenuSettings(contextMenu =>
+                    {
+                        contextMenu.EnableContextMenu();
+                        contextMenu.DisableDefaultItems();
+                        contextMenu.CustomContextMenuItems(c =>
+                        {
+                            c.AddItem("Add1", "Add Record");
+                            c.AddItem("Edit1", "Edit Record");
+
+                        });
+
+                    })
+
+        .Columns(col =>
+        {
+            col.Field("InvId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(50).Add();
+            col.Field("CompCode").HeaderText("Company").ValidationRules(v => v.AddRule("required", true)).Width(60).Add();
+            col.Field("InvRefNo").HeaderText("Invoice No.").ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("InvFile").HeaderText("File Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(100).Add();
+            col.HeaderText("Edit")
+                             .Template("#Edit")
+                               .AllowFiltering(false)
+       
+                            .Commands(command =>
+                            {
+                                command.Type("detail")
+                                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                       {
+                                           Text = "Edit",
+                                           Width = "100px",
+                                           Click = "onClick"
+                                       }).Add();
+                            })
+           
+                           .TextAlign(TextAlign.Center)
+                           .Width(70)
+                           .Add();
+            col.HeaderText("DownLoad")
+                    .Template("#DownLoad")
+                    .AllowFiltering(false)
+
+                    .TextAlign(TextAlign.Center)
+                    .Width(50)
+                    .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+
+    <script id="Edit" type="text/x-jsrender">
+
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Enquiry/CreateInvoiceDetail?InvId={{:InvId}}"></a>
+    </script>
+    <script id="DownLoad" type="text/x-jsrender">
+        <a class="btn-xs btn-primary  glyphicon glyphicon-download" href="/Enquiry/InvoiceDownLoad?Filename={{:InvFile}}"></a>
+    </script>
+    @{
+
+        Html.EJ()
+            .Dialog("EmployeeCustomerDetails")
+            .Title("<a id='Title'></a>")
+            .Width(1200)
+            .Height(800)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p>Invoice Detail</p>)
+            .Render();
+    }
+    <script>
+        function openDialog() {
+            $("#EmployeeCustomerDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#EmployeeCustomerDetails").ejDialog("open");
+        }
+    </script>
+    <script>
+        function contextclick(args) {
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/Enquiry/CreateInvoiceDetail")' + "?InvId=" + 0
+              
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Record") {
+                    var tempData = args.text;
+                    var grid = $("#grdDetailList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var InvId = result[0]["InvId"];
+                    var path = '@Url.Content("~/Enquiry/CreateInvoiceDetail")' + "?InvId=" + InvId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+
+        }
+
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            $('.Create').click(function (e) {
+                var path = '@Url.Content("~/Enquiry/CreateInvoiceDetail")' + "?InvId=" + 0
+                $("#CreateInvoiceDetail").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateInvoiceDetail").ejDialog("open");
+
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function onClick(args) {
+            var grid = $("#grdDetailList").ejGrid("instance");
+            var index = this.element.closest("tr").index();
+            var record = grid.getCurrentViewData()[index];
+            alert(record["InvId"]);
+            record["BirthDate"] = ej.format(record["BirthDate"], "MM/dd/yyyy");
+            var path = '@Url.Content("~/Enquiry/CreateInvoiceDetail")' + "?InvId=" + '{{:InvId}}"
+            $("#CreateInvoiceDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateInvoiceDetail").ejDialog("open");
+        }
+    </script>
+    <style>
+        .modal-content {
+            width: 1250px !important;
+            margin: 30px auto !important;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>

@@ -1,0 +1,89 @@
+﻿@model IEnumerable<SmartSys.BL.EmpChartModel>
+
+@{
+    ViewBag.Title = "GetEmployeeViewList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Employee View List
+</div>
+<br />
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.EmpChartModel>("grdEmpList")
+        .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+         //.ContextMenuSettings(contextMenu =>
+         //               {
+         //                   contextMenu.EnableContextMenu()
+         //                   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+
+         //                   .CustomContextMenuItems(new List<string> { "Employee Detail" });
+
+         //               })
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Employee_Detail", "Employee Detail");
+               
+             });
+
+         })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("id").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmpName").HeaderText("Employee Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Designation").HeaderText("Designation").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("UserName").HeaderText("User Name").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("Manager").HeaderText("Manager").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(120).Add();
+            col.HeaderText("Detail")
+                .Template("#edit")
+                .AllowFiltering(false)
+            
+            .TextAlign(TextAlign.Center)
+            .Width(70)
+            .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+@*<script type="text/x-jsrender" id="Image">
+    {{if Photo != null}}
+    <img src="data:image;base64,{{:PhotoBase}}" width="80" height="80" />
+    {{else}}
+    <img src="data:image;base64,{{:PhotoBase}}" width="80" height="80" alt="No Photo" />
+    {{/if}}
+</script>*@
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-primary  glyphicon glyphicon-dashboard" href="/ProViews/EmployeeViewDetail?EmpId={{:id}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Employee Detail") {
+            var tempData = args.text;
+            var grid = $("#grdEmpList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var id = result[0]["id"];
+            var path = '@Url.Content("~/ProViews/EmployeeViewDetail")' + "?EmpId=" + id
+            event.preventDefault();
+            window.location.replace(path);
+        }
+       
+
+    }
+
+</script>

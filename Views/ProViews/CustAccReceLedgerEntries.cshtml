@@ -1,0 +1,40 @@
+﻿@model IEnumerable<SmartSys.BL.ProViews.AccountReceivableModel>
+
+@{
+    ViewBag.Title = "CustAccReceLedgerEntries";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+
+
+    @(Html.EJ().Grid<SmartSys.BL.ProViews.AccountReceivableModel>("CustAccReceLedgerEntries")
+            .Datasource((IEnumerable<object>)ViewBag.CustAccountReceivableLedgerEntries)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+         .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        //.Width("100%")        
+        .Columns(col =>
+        {
+            col.Field("Company").HeaderText("Company").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CustomerNo").HeaderText("CustomerNo").Visible(false).TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("DocumentNo").HeaderText("DocumentNo").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("PostingDate").HeaderText("Posting Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("Amount").HeaderText("Amount").Format("{0:N4}").TextAlign(TextAlign.Right).ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("Amount_LCY").HeaderText("Amount(LCY)").Format("{0:N4}").TextAlign(TextAlign.Right).ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("CreditAmount").HeaderText("Credit Amount").Format("{0:N4}").TextAlign(TextAlign.Right).Width(150).Add();
+            col.Field("CreditAmountLCY").HeaderText("Credit Amount(LCY)").Format("{0:N4}").TextAlign(TextAlign.Right).ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("DebitAmount").HeaderText("Debit Amount").Format("{0:N4}").TextAlign(TextAlign.Right).Width(150).Add();
+            col.Field("DebitAmountLCY").HeaderText("Debit Amount(LCY)").Format("{0:N4}").TextAlign(TextAlign.Right).Width(150).Add();
+
+        })
+    )
+    @Html.EJ().ScriptManager()
+
+
+
+

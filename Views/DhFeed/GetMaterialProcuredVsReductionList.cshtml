@@ -1,0 +1,461 @@
+﻿@model IEnumerable<SmartSys.BL.MaterialProcuredVsReductionModel>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Material Procured Vs Reduction List
+</div>
+<div>
+    <table>
+        <tr>
+            <td><label>Company</label></td>
+            <td>
+                <div class="">
+                    <input type="text" value="Advent" name="CompCode" id="CompCode"/>
+                    @*@Html.DropDownList("CompCode", new List<SelectListItem>
+                           {
+                                    new SelectListItem() {Text="Advent",Value="Advent"},
+                                    new SelectListItem() {Text="SAJ",Value="SAJ"},
+                                    new SelectListItem() {Text="Advent Global",Value="Global"},
+                           }
+                           , "--Select Company Code--", new { @class = "form-control", id = "CompCode" })*@
+                </div>
+            </td>
+            <td>
+                <label>From Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("FromDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>
+            <td>
+                <label>To Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("ToDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    <input type="button" id="Submit" value="Submit" onclick="SubmitDate()" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+                                            top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+                                            opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<br />
+<div id="GridList">
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.MaterialProcuredVsReductionModel>("MaterialProcuredVsReduction")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))                                       
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Add_Comments", "Add Comments");
+                                                c.AddItem("View_History", "View History");
+
+                                            });
+
+                                        })
+                                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentNo").HeaderText("Document No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(40).Add();
+            col.Field("VendorNo").HeaderText("Vendor No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Make").HeaderText("Make").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Quantity").HeaderText("Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("CurrentPurchaseRate").HeaderText("Current Purchase Rate").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("LastPurchaseRate").HeaderText("Last Purchase Rate").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();           
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#GridList').hide();
+       // alert(FromDate);
+        //$('.Chart').hide();
+    });
+</script>
+<script>
+    function SubmitDate() {
+        var CompCode = $('#CompCode').val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();       
+        if (FromDate == null)
+        {
+            alert("Enter Start and End Date");
+            return false;
+
+        }
+        if (ToDate == null)
+        {
+            alert("Enter Start and End Date");
+            return false;
+
+        }
+        $("#divLoading").show(); 
+        $.ajax({
+            url: "/DhFeed/GetMPVRAdventData",
+            dataType: 'json',
+            type: "POST",
+            data: { CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+            success: function (List) {
+
+                var obj = $("#MaterialProcuredVsReduction").ejGrid("instance")
+                obj.dataSource(List);
+                $('#GridList').show();
+                $("#divLoading").hide();
+            },
+            error: function (req, status, err) {
+            console.log('something went wrong', status, err);
+        }
+    })       
+    }
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "View History") {
+            $("#ShowHistory").ejDialog("open");
+            var tempData = args.text;
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var grid = $("#MaterialProcuredVsReduction").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocumentNo = result[0]["DocumentNo"];
+            var ItemName = result[0]["ItemName"];
+
+            $.ajax({
+                url: "/DhFeed/ShowMaterialProcuredVsReduction",
+                dataType: 'json',
+                type: "POST",
+                data: { DocumentNo: DocumentNo, ItemName: ItemName, FromDate: FromDate, ToDate: ToDate, CompCode: CompCode },
+                success: function (MPRList) {
+                    var obj = $("#ViewHistory").ejGrid("instance")
+                    obj.dataSource(MPRList);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+        }
+        else if (args.text == "Add Comments") {
+
+            var tempData = args.text;
+            $("#dialogIcon").ejDialog("open");
+            var grid = $("#grdVendrespLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocumentNo = result[0]["DocumentNo"];
+            var VendorNo = result[0]["VendorNo"];
+            var VendorName = result[0]["VendorName"];
+            var ItemName = result[0]["ItemName"];
+            var Make = result[0]["Make"];
+            var Quantity = result[0]["Quantity"];
+            var CurrentPurchaseRate = result[0]["CurrentPurchaseRate"];
+            var LastPurchaseRate = result[0]["LastPurchaseRate"];
+            $('#DocumentNo').val(DocumentNo);
+            $('#VendorNo').val(VendorNo);
+            $('#VendorName').val(VendorName);
+            $('#ItemName').val(ItemName);
+            $('#Make').val(Make);
+            $('#Quantity').val(Quantity);
+            $('#CurrentPurchaseRate').val(CurrentPurchaseRate);
+            $('#LastPurchaseRate').val(LastPurchaseRate);
+            $('#Comments').val("");
+            var DocumentNo = result[0]["DocumentNo"];
+            var ItemName = result[0]["ItemName"];
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();            
+            $.ajax({
+                url: "/DhFeed/ShowMPRAdvent",
+                dataType: 'json',
+                type: "POST",
+                data: { DocumentNo: DocumentNo, ItemName: ItemName, FromDate: FromDate, ToDate: ToDate, CompCode: CompCode },
+                success: function (MPRList) {
+
+                    var obj = $("#1MaterialProcuredVsReduction").ejGrid("instance")
+                    obj.dataSource(MPRList);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+            //event.preventDefault();
+            //window.location.replace(path);
+        }
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ShowHistory")
+        .Title("<a id='Title'>View History</a>")
+        .Width(1200)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<div>
+        <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.MaterialProcuredVsReductionModel>("ViewHistory")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentNo").HeaderText("Document No").TextAlign(TextAlign.Left).Width(40).Add();
+            //col.Field("VendorNo").HeaderText("Vendor No").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+        })
+        )
+    </div>
+</div>).Render();}
+
+<script>
+    function openDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+</script>
+
+@{Html.EJ().Dialog("dialogIcon").Title("Add Comments").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Add Comments
+        </div>
+        <table>
+            <tr>
+                <td width="80px">
+                    <label>
+                        Document No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="DocumentNo" class="form-control" readonly />
+                        @*<input type="text" id="ItemId" class="form-control" readonly style="display:none" />
+                        <input type="text" id="BrandId" class="form-control" readonly style="display:none" />*@
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Vendor Name:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="VendorName" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>
+                        Item Name:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="ItemName" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>Make</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Make" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>
+                        Quantity:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Quantity" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Current Purchase Rate:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="CurrentPurchaseRate" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Last Purchase Rate:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="LastPurchaseRate" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>           
+        </table>
+        <table style="margin-left:15px">
+            <tr>
+                <td>
+                    <label>
+                        Comments:
+                    </label>
+                </td>
+                <td width="32px"></td>
+                <td>
+                    <div class="">
+                        @Html.TextArea("Comments", new { Id = "Comments", @class = "form-control", @style = "min-width:500px" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table style="margin-left:100px">
+            <tr>
+                <td>
+                    @*<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>*@
+                    <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " data-dismiss="modal" id="Save"> Save</button>
+                </td>
+                <td style="width:50px"></td>
+            </tr>
+        </table>
+    <div>
+        <div>
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.MaterialProcuredVsReductionModel>("1MaterialProcuredVsReduction")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {                     
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                )
+            </div>
+        </div>
+    </div>
+
+    </div>)
+          .Width(1200)
+          .Height(700)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+<script type="text/javascript">
+    $(document).ready(function () {      
+        $('#Save').click(function () {          
+            var DocumentNo = $('#DocumentNo').val();
+            var ItemName = $('#ItemName').val();
+            var Comments = $('#Comments').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var CompCode = $('#CompCode').val();
+            if(Comments =="")
+            {
+                alert("Please Enter Comments");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/DhFeed/SaveMPRA",
+                data: { ItemName: ItemName, DocumentNo: DocumentNo, Comment: Comments},
+                success: function (ErrorCode) {
+                    toastr.success("Saved Successfully!");
+                    $.ajax({
+                        url: "/DhFeed/GetMPVRAdventData",
+                        dataType: 'json',
+                        type: "POST",
+                        data: {CompCode:CompCode, FromDate: FromDate, ToDate: ToDate },
+                        success: function (List) {
+                            var obj = $("#MaterialProcuredVsReduction").ejGrid("instance")
+                            obj.dataSource(List);
+                            $('#GridList').show();
+                            $("#divLoading").hide();
+                            $("#dialogIcon").ejDialog("close");
+                        },
+                        error: function (req, status, err) {
+                            console.log('something went wrong', status, err);
+                        }
+                    })
+                   //alert("Saved Successfully")
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            //window.location.reload();            
+        });
+    });
+</script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />

@@ -1,0 +1,162 @@
+﻿@model SmartSys.BL.TimeManagement.TMEquipmentModel
+
+@{
+    ViewBag.Title = "ProjectEquipment";
+}
+
+@{
+    ViewBag.Title = "DW Customer Pendding Approver  ";
+
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Add Project Equipment
+</div>
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#EquipmentId").select2({
+            placeholder: "Please Select a Equipment",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#SaveId').click(function (e) {         
+            var EquipmentId = $('#EquipmentId').val();
+            var Quantity = $('#Quantity').val();
+
+            if (EquipmentId.toString() == "") {
+                alert("Please Select Equipment");
+                return false;
+            }
+            if (Quantity.toString() == "") {
+                alert("Please Enter Quantity");
+                return false;
+            }
+            if (Quantity.toString() == "0") {
+                alert("Quantity Must be Greater than Zero ");
+                return false;
+            }          
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+
+<div>
+    <table>
+        <tr>
+            <td width="80px">
+                <label> Project Id:</label>
+            </td>
+            <td width="310px">
+                <div class="navbar-text">
+                    <label> @Model.ProjectId </label>
+                </div>
+            </td>
+            <td>
+                <label> Project Name: </label>
+            </td>
+            <td>
+                <div class="navbar-text">
+
+                    <label>@Model.ProjectName </label>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+@using (Html.BeginForm("ProjectEquipment", "ProjectCenter", FormMethod.Post, new { Id = "Form1" }))
+{
+<table>
+    <tr>
+        <td>
+            @Html.HiddenFor(model => model.ProjectId)
+            @Html.HiddenFor(model => model.ProjectName)
+        </td>
+        <td width="50px">
+            <label>Equipment:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                @Html.DropDownList("EquipmentId", (IEnumerable<SelectListItem>)ViewBag.EquipmentItems,"Please Select Equipment", new { id = "EquipmentId", style = "width:310px", @class = "form-control" })
+                </div>
+</td>
+        <td width="100px">
+            <label>Quantity:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                @Html.TextBoxFor(model => model.Quantity, new { id = "Quantity", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+            </div>
+        </td>
+       
+    </tr>
+    
+</table>
+   
+<table>
+    <tr>
+   
+        <td>
+            @if (Model.lstEquipment != null)
+            {
+
+                if (Model.lstEquipment.Count > 0)
+                {
+
+                    @(Html.EJ().Grid<SmartSys.BL.TimeManagement.TMEquipmentModel>("grdEquipList")
+                        .Datasource(Model.lstEquipment)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("EquipmentName").HeaderText("Equipment Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Center).Width(60).Add();
+                          
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                    )
+                  
+                }
+            }
+            else
+            {
+
+            }
+        </td>
+    </tr>
+
+</table>
+    <table>
+        <tr>
+           <td>
+    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Index';" );"> Back</button>
+    <input type="submit" id="SaveId" class="btn-xs btn-info glyphicon glyphicon-save save" />
+
+    </td>
+        </tr>
+    </table>
+}

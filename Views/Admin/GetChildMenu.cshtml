@@ -1,0 +1,19 @@
+﻿@model IEnumerable<SmartSys.BL.SysTaskModel>
+@foreach (SmartSys.BL.SysTaskModel tsk in Model)
+{
+    if (tsk.MenuItems.Count > 0)
+    {
+        <li class='has-sub'>
+            <a href='@tsk.Href'><span>@tsk.MenuName</span></a>
+            <ul>
+                @Html.Partial("GetChildMenu", tsk.MenuItems)
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class='last'>
+            <a href="@tsk.Href"><span>@tsk.MenuName</span></a>
+        </li>
+    }
+}

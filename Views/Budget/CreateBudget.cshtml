@@ -1,0 +1,730 @@
+﻿@model SmartSys.BL.DW.BudgetModel
+
+@{
+    ViewBag.Title = "CreateBudget";
+}
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+       
+     
+        $("#ItemDrp").select2({
+            placeholder: "Please Select a Item",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+
+
+        $("#Employee").select2({
+            placeholder: "Please Select a Employee",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+
+
+        $("#Customer").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {      
+        $('#ItemDrp').change(function (event) {
+            var ddlValue = $('#ItemDrp').val();
+            if (ddlValue.toString() == "") {
+                alert("Please Select valid Item  ");
+                return false;
+            }
+            var path = '@Url.Content("~/Budget/GetEquipmentList")' + "?itemId=" + ddlValue + "&Flag=0" 
+            event.preventDefault();
+            window.location.replace(path);
+        });        
+    });
+</script>
+<script>
+
+    function checkPass() {
+     
+        var UnitPrice = document.getElementById('UnitPrice');
+        if (UnitPrice.value > 0)
+        {           
+            $("#AprUSD").attr('readonly', true);
+            $("#MayUSD").attr("readonly", true);
+            $("#JunUSD").attr("readonly", true);
+            $("#JulUSD").attr("readonly", true);
+            $("#AugUSD").attr("readonly", true);
+            $("#SepUSD").attr("readonly", true);
+            $("#OctUSD").attr("readonly", true);
+            $("#NovUSD").attr("readonly", true);
+            $("#DecUSD").attr("readonly", true);
+            $("#JanUSD").attr("readonly", true);
+            $("#FebUSD").attr("readonly", true);
+            $("#MarUSD").attr("readonly", true);
+            $("#AprQty").attr("readonly", false);         
+            $("#MayQty").attr("readonly", false);
+            $("#JunQty").attr("readonly", false);
+            $("#JulQty").attr("readonly", false);
+            $("#AugQty").attr("readonly", false);
+            $("#SepQty").attr("readonly", false);
+            $("#OctQty").attr("readonly", false);
+            $("#NovQty").attr("readonly", false);
+            $("#DecQty").attr("readonly", false);
+            $("#JanQty").attr("readonly", false);
+            $("#FebQty").attr("readonly", false);
+            $("#MarQty").attr("readonly", false);
+        }
+        else
+        {
+            $("#AprQty").attr("readonly", true);
+            $("#MayQty").attr("readonly", true);
+            $("#JunQty").attr("readonly", true);
+            $("#JulQty").attr("readonly", true);
+            $("#AugQty").attr("readonly", true);
+            $("#SepQty").attr("readonly", true);
+            $("#OctQty").attr("readonly", true);
+            $("#NovQty").attr("readonly", true);
+            $("#DecQty").attr("readonly", true);
+            $("#JanQty").attr("readonly", true);
+            $("#FebQty").attr("readonly", true);
+            $("#MarQty").attr("readonly", true);
+
+            $("#AprUSD").attr('readonly', false);
+            $("#MayUSD").attr("readonly", false);
+            $("#JunUSD").attr("readonly", false);
+            $("#JulUSD").attr("readonly", false);
+            $("#AugUSD").attr("readonly", false);
+            $("#SepUSD").attr("readonly", false);
+            $("#OctUSD").attr("readonly", false);
+            $("#NovUSD").attr("readonly", false);
+            $("#DecUSD").attr("readonly", false);
+            $("#JanUSD").attr("readonly", false);
+            $("#FebUSD").attr("readonly", false);
+            $("#MarUSD").attr("readonly", false);
+        }
+       
+    }
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var ItemDrp = $('#ItemDrp').val();
+          //  var Equipment = $('#Equipment').val();
+            var Employee = $('#Employee').val();
+            var Customer = $('#Customer').val();
+            var CCY = $('#CurrDrp').val();        
+            var UnitPrice = $('#UnitPrice').val();
+
+            var AprQty = $('#AprQty').val();
+            var MayQty = $('#MayQty').val();
+            var JunQty = $('#JunQty').val();
+            var JulQty = $('#JulQty').val();
+            var AugQty = $('#AugQty').val();
+            var SepQty = $('#SepQty').val();
+            var OctQty = $('#OctQty').val();
+            var NovQty = $('#NovQty').val();
+            var DecQty = $('#DecQty').val();
+            var JanQty = $('#JanQty').val();
+            var FebQty = $('#FebQty').val();
+            var MarQty = $('#MarQty').val();
+
+            var AprUSD = $('#AprUSD').val();
+            var MayUSD = $('#MayUSD').val();
+            var JunUSD = $('#JunUSD').val();
+            var JulUSD = $('#JulUSD').val();
+            var AugUSD = $('#AugUSD').val();
+            var SepUSD = $('#SepUSD').val();
+            var OctUSD = $('#OctUSD').val();
+            var NovUSD = $('#NovUSD').val();
+            var DecUSD = $('#DecUSD').val();
+            var JanUSD = $('#JanUSD').val();
+            var FebUSD = $('#FebUSD').val();
+            var MarUSD = $('#MarUSD').val();
+            var Finyear = $('#Finyear').val();
+           
+            if (ItemDrp.toString() == "") {
+                alert("Please Select Item");
+                return false;
+            }
+
+            if (Employee.toString() == "") {
+                alert("Please Select Employee ");
+                return false;
+            }          
+            if (Customer.toString() == "") {
+                alert("Please Select Customer ");
+                return false;
+            }
+            
+            if (CCY.toString() == "") {
+                alert("Please Enter Currency ");
+                return false;
+            }
+            
+            if (UnitPrice.toString() == "") {
+                alert("Please Enter Unit Price");
+                return false;
+            }
+           
+            if (UnitPrice > 0) {
+                if (AprQty.toString() == "") {
+
+                    alert("Please Enter AprQty ");
+                    return false;
+                }
+                if (MayQty.toString() == "") {
+                    alert("Please Enter MayQty ");
+                    return false;
+                }
+                if (JunQty.toString() == "") {
+                    alert("Please ENTER JunQty ");
+                    return false;
+                }
+                if (JulQty.toString() == "") {
+                    alert("Please Enter JulQty ");
+                    return false;
+                }
+                if (AugQty.toString() == "") {
+                    alert("Please Enter AugQty ");
+                    return false;
+                }
+                if (SepQty.toString() == "") {
+                    alert("Please Enter SepQty ");
+                    return false;
+                }
+                if (OctQty.toString() == "") {
+                    alert("Please Enter OctQty ");
+                    return false;
+                }
+
+                if (NovQty.toString() == "") {
+                    alert("Please Enter NovQty ");
+                    return false;
+                }
+                if (DecQty.toString() == "") {
+                    alert("Please Enter DecQty ");
+                    return false;
+                }
+                if (JanQty.toString() == "") {
+                    alert("Please Enter JanQty ");
+                    return false;
+                }
+                if (FebQty.toString() == "") {
+                    alert("Please Enter FebQty ");
+                    return false;
+                }
+                if (MarQty.toString() == "") {
+                    alert("Please Enter MarQty ");
+                    return false;
+                }
+            }
+            else
+            {
+
+                if (AprUSD.toString() == "") {
+
+                    alert("Please Enter Apr Amount ");
+                    return false;
+                }
+                if (MayUSD.toString() == "") {
+                    alert("Please Enter May Amount ");
+                    return false;
+                }
+                if (JunUSD.toString() == "") {
+                    alert("Please ENTER Jun Amount ");
+                    return false;
+                }
+                if (JulUSD.toString() == "") {
+                    alert("Please Enter Jul Amount ");
+                    return false;
+                }
+                if (AugUSD.toString() == "") {
+                    alert("Please Enter Aug Amount ");
+                    return false;
+                }
+                if (SeUSD.toString() == "") {
+                    alert("Please Enter Sep Amount ");
+                    return false;
+                }
+                if (OctUSD.toString() == "") {
+                    alert("Please Enter Oct Amount ");
+                    return false;
+                }
+
+                if (NovUSD.toString() == "") {
+                    alert("Please Enter Nov Amount ");
+                    return false;
+                }
+                if (DecUSD.toString() == "") {
+                    alert("Please Enter Dec Amount ");
+                    return false;
+                }
+                if (JanUSD.toString() == "") {
+                    alert("Please Enter Jan Amount ");
+                    return false;
+                }
+                if (FebUSD.toString() == "") {
+                    alert("Please Enter Feb Amount ");
+                    return false;
+                }
+                if (MarUSD.toString() == "") {
+                    alert("Please Enter Mar Amount ");
+                    return false;
+                }
+
+            }
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create New  Budget
+</div>
+
+@using (Html.BeginForm("CreateBudget", "Budget", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+                    <tr>
+          
+                        <td>
+                            <label>Item</label>
+                        </td>
+                        <td style="width:350px">
+                            <div class="">
+                                @Html.DropDownList("ItemId", (IEnumerable<SelectListItem>)ViewBag.ItemList, "--- Please Select Item ---", new { id = "ItemDrp", @class = "Vendor form-control" })
+                                
+                            </div>
+                          
+                          
+                        </td>
+
+                       
+                        @if (Model.EquipmentLst.Count > 0)
+                        {
+                            <td>
+                                <label>End Equipment</label>
+                            </td>
+
+                            <td>
+                                <div class="">
+                                    @Html.DropDownList("EndEquipment", (IEnumerable<SelectListItem>)ViewBag.EquipmentList, "--- Please Select Equipment ---", new { @class = "Vendor form-control", id = "Equipment" })
+                                </div>
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                            <td>
+                                <div class="">
+                                    <label> Sorry! There is No Information about Equipment Please Select Item  !!!</label>
+                                </div>
+                            </td>
+                        }
+
+                    </tr>
+           
+                    <tr>
+                        <td>
+                            <label>Employee</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.DropDownList("EmpId", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "--- Please Select Employee ---", new { @class = "Vendor form-control",  id = "Employee" })
+                            </div>
+                        </td>
+                        <td>
+                            <label>Customer</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.VendrList, "--- Please Select Customer ---", new { @class = "Vendor form-control",  id = "Customer" })
+                            </div>
+                        </td>
+                    </tr>        
+               <tr>
+                
+                        <td>
+                            <label>Application</label>
+                        </td>
+                        <td >
+                            <div class="">
+                                @Html.EditorFor(model => model.Application, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Application, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td>
+                            <label>CCY</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.DropDownListFor(model => model.CCY, (IEnumerable<SelectListItem>)ViewBag.Currencylst, new { @class = "regionDrp form-control", style = "width:310px", id = "CurrDrp" })
+                            </div>
+                        </td>
+
+                   
+        </tr>
+        <tr>
+          
+                        <td>
+                            <label>Unit Price</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", onkeyup = "checkPass(); return false;", @Value = "Enter Integer Only", id = "UnitPrice" } })
+                                @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+
+
+                        <td>
+                            <label>Financial Year</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.DropDownListFor(model => model.Finyear, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "2015-16", Value="2015-16"},
+                             new SelectListItem() {Text = "2016-17", Value="2016-17"},
+                             new SelectListItem() {Text = "2017-18", Value="2017-18"},
+                             new SelectListItem() {Text = "2018-19", Value="2018-19"},
+                             new SelectListItem() {Text = "2019-20", Value="2019-20"}
+
+
+                       }, new { @class = "form-control" })
+
+                                @Html.ValidationMessageFor(model => model.Finyear)
+
+                            </div>
+                        </td>
+
+                    </tr>
+          
+        <tr>
+          
+                        <td >
+                            <label>Region</label>
+                        </td>
+                        <td >
+                            <div class="">
+                                @Html.DropDownList("RegionId", (IEnumerable<SelectListItem>)ViewBag.LstRegion, new { @class = "regionDrp form-control", style = "width:310px", id = "regionDrp" })
+                            </div>
+                        </td>
+
+
+                        <td>
+                            <label>City</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.DropDownList("CityId", (IEnumerable<SelectListItem>)ViewBag.LstCitry, new { @class = "CityDrp form-control", style = "width:310px", id = "CityDrp" })
+                            </div>
+                        </td>
+                    </tr>
+       
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr align="center">
+            <td>
+                <div class="text-danger">
+                    <h4><label class="text-danger">Quantity</label></h4>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="">
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label>April</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AprQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "AprQty" } })
+                    @Html.ValidationMessageFor(model => model.AprQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>May</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MayQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "MayQty" } })
+                    @Html.ValidationMessageFor(model => model.MayQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>June</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JunQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "JunQty" } })
+                    @Html.ValidationMessageFor(model => model.JunQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>July</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JulQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "JulQty" } })
+                    @Html.ValidationMessageFor(model => model.JulQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>August</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AugQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "AugQty" } })
+                    @Html.ValidationMessageFor(model => model.AugQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>September</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.SepQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control data-fv-integer-message", @Value = "0", id = "SepQty" } })
+                    @Html.ValidationMessageFor(model => model.SepQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>October</label>
+                </td>
+
+                <td>
+
+                    @Html.EditorFor(model => model.OctQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "OctQty" } })
+                    @Html.ValidationMessageFor(model => model.OctQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>November</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.NovQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "NovQty" } })
+                    @Html.ValidationMessageFor(model => model.NovQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>December</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.DecQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "DecQty" } })
+                    @Html.ValidationMessageFor(model => model.DecQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>January</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JanQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "JanQty" } })
+                    @Html.ValidationMessageFor(model => model.JanQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>February</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.FebQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "FebQty" } })
+                    @Html.ValidationMessageFor(model => model.FebQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>March</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MarQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "MarQty" } })
+                    @Html.ValidationMessageFor(model => model.MarQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr align="center">
+            <td>
+                <div class="text-danger">
+                    <h4><label class="text-danger">Amount</label></h4>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="">
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label>April</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AprUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "AprUSD" } })
+                    @Html.ValidationMessageFor(model => model.AprQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>May</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MayUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "MayUSD" } })
+                    @Html.ValidationMessageFor(model => model.MayQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>June</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JunUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "JunUSD" } })
+                    @Html.ValidationMessageFor(model => model.JunQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>July</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JulUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "JulUSD" } })
+                    @Html.ValidationMessageFor(model => model.JulQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>August</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AugUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "AugUSD" } })
+                    @Html.ValidationMessageFor(model => model.AugQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>September</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.SepUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control data-fv-integer-message", @Value = "0", id = "SepUSD" } })
+                    @Html.ValidationMessageFor(model => model.SepQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>October</label>
+                </td>
+
+                <td>
+
+                    @Html.EditorFor(model => model.OctUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "OctUSD" } })
+                    @Html.ValidationMessageFor(model => model.OctQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>November</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.NovUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "NovUSD" } })
+                    @Html.ValidationMessageFor(model => model.NovQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>December</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.DecUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "DecUSD" } })
+                    @Html.ValidationMessageFor(model => model.DecQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>January</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JanUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "JanUSD" } })
+                    @Html.ValidationMessageFor(model => model.JanQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>February</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.FebUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "FebUSD" } })
+                    @Html.ValidationMessageFor(model => model.FebQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>March</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MarUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", @Value = "0", id = "MarUSD" } })
+                    @Html.ValidationMessageFor(model => model.MarQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'BudgetList';" );"> Back</button>
+                <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+            </td>
+        </tr>
+    </table>
+}
+
+

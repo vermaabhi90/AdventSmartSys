@@ -1,0 +1,275 @@
+﻿@model SmartSys.BL.Project.ProjectMaster
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+<link href="~/Content/ej/web/gradient-lime/ej.widgets.all.min.css" rel="stylesheet" />
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Project : <label> @Model.ProjectName</label>
+</div>
+
+@{
+
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+</script>
+
+@(Html.EJ().Gantt("ganttsample")
+    .CssClass("gradient-lime")
+    .TaskIdMapping("TaskID")
+    .TaskNameMapping("TaskName")
+    .StartDateMapping("StartDate")
+    .EndDateMapping("EndDate")
+    .DurationMapping("Duration")
+    .ProgressMapping("Progress")
+    .ScheduleStartDate(Model.startdate.ToShortDateString())
+    .ScheduleEndDate(Model.enddate.ToShortDateString())
+    .DateFormat("MM/dd/yyyy")
+    .HighlightWeekends(true)
+    .TreeColumnIndex(2)
+    .ShowGridCellTooltip(true)
+    .ChildMapping("SubTasks")
+    .AllowSelection(true)
+    .AllowGanttChartEditing(true)
+    .PredecessorMapping("Predecessors")
+    .AllowColumnResize(true)
+    .AllowSorting(true)
+    .IncludeWeekend(true)
+    .ResourceInfoMapping("ResourceID")
+    .ResourceNameMapping("EmpName")
+    .ResourceIdMapping("ResourceID")
+    .ShowResourceNames(true)
+    .EnableContextMenu(true)
+        .EditDialogFields(eve =>
+        {
+            eve.Field("TaskID").Add();
+            eve.Field("TaskName").Add();
+            eve.Field("StartDate").Add();
+            eve.Field("EndDate").Add();
+            eve.Field("ResourceID").Add();
+            eve.Field("Duration").Add();
+            eve.Field("Progress").Add();
+            eve.Field("Predecessors").Add();
+        })
+        .AddDialogFields(eve =>
+        {
+            eve.Field("TaskID").Add();
+            eve.Field("TaskName").Add();
+            eve.Field("StartDate").Add();
+            eve.Field("EndDate").Add();
+            eve.Field("ResourceID").Add();
+            eve.Field("Duration").Add();
+            eve.Field("Progress").Add();
+            eve.Field("Predecessors").Add();
+        })
+    .EditSettings(edit =>
+    {
+        edit.AllowAdding(true);
+        edit.AllowDeleting(true);
+        edit.AllowEditing(true);
+        edit.AllowIndent(true);
+        edit.EditMode("cellEditing");
+    }).
+       ClientSideEvents(eve =>
+       {
+           eve.ActionComplete("ActionComplete");
+           eve.ActionBegin("actionBegin");
+           eve.ContextMenuOpen("contextMenuOpen");
+           eve.Load("Load");
+           eve.BeginEdit("BeginEdit");
+       })
+    .EnableResize(true)
+    .EnableVirtualization(false)
+    .ToolbarSettings(toolbar =>
+    {
+        toolbar.ShowToolbar(true);
+        toolbar.ToolbarItems(new List<GanttToolBarItems>()
+        {
+            GanttToolBarItems.Add,
+            GanttToolBarItems.Search,
+            GanttToolBarItems.Edit,
+            GanttToolBarItems.Delete,
+            GanttToolBarItems.Update,
+            GanttToolBarItems.Cancel,
+            GanttToolBarItems.Indent,
+            GanttToolBarItems.Outdent,
+            GanttToolBarItems.ExpandAll,
+            GanttToolBarItems.CollapseAll
+        });
+    })
+    .SizeSettings(ss => ss.Width("100%").Height("650px"))
+    .Resources(ViewBag.EmpList)
+    .Datasource(@Model.Tasks)
+)
+
+<div>
+    @Html.ActionLink(" Back", "Index", null, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+</div>
+<script type="text/javascript">
+
+
+    function BeginEdit(args)    {
+
+        var tempData = args.data.item;
+        var TaskID = args.data.item.AllowEdit;
+
+    }
+
+    function contextMenuOpen(args) {
+
+        var isExpandable = true, isCollapsable = true, data;
+        data = args.item;
+        if (data && data.hasChildRecords) {
+            if (data.expanded)
+                isExpandable = false;
+            else
+                isCollapsable = false;
+        } else {
+            isExpandable = false;
+            isCollapsable = false;
+        }
+
+        var contextMenuItems = [{
+            headerText: "Edit More Details",
+            eventHandler: customMenuAddHandler,
+            menuId: "EditMoreDetails",
+            iconClass: "e-icon e-edit"
+        }
+        ];
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+
+        var contextMenuItems = [{
+            headerText: "Quick Track",
+            eventHandler: QuickTrack,
+            menuId: "QuickTrack",
+            iconClass: "e-icon e-topIcon"
+        }
+        ];
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+    }
+    function QuickTrack(args) {
+        var tempData = args.data.item;
+        var TaskID = args.data.item.AllowEdit;
+        if(TaskID)
+        {
+            var tempData = args.data.item;
+            var TaskID = args.data.item.TaskID;
+            var Type = args.data.item.TaskType;
+            var TaskName = args.data.item.TaskName;
+
+            if(Type==1)
+            {
+                alert("Quick Track Available only For Risk or Case Task")
+            }
+            else
+            {
+                document.getElementById("Title").innerHTML = TaskName;
+
+                var path1 = '@Url.Action("casetimeline", "quickview")' + "?TaskID=" + TaskID + "&ProjectId=" +'@Model.ProjectId';
+                $("#seconddialog").ejDialog({
+                    contentUrl: path1,
+                    contentType: "ajax"
+                });
+                $("#seconddialog").ejDialog("open");
+            }
+            }
+
+        }
+
+    function customMenuAddHandler(args) {
+        var tempData = args.data.item;
+        var TaskID = args.data.item.AllowEdit;
+        if(TaskID)
+        {
+            var tempData = args.data.item;
+            var TaskID = args.data.item.TaskID;
+            var Id = @Model.ProjectId;
+            var path = '@Url.Content("~/ProjectCenter/ProjectEditMode")' + "?TaskID=" + TaskID + "&ProjectId=" + Id + "&Type=" +  "Project"
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+        {
+            alert("You do not have Permission to edit this task.");
+        }
+    }
+
+    function Load(args) {
+        var columns = this.getColumns();
+        columns.splice(6, 0,
+            {
+                field: "Description",
+                headerText: "Description",
+                //isTemplateColumn: true,
+                //templateID: "customColumnTemplate",
+                width: "400px",
+            });
+        columns.splice(1, 0,
+    {
+        field: "TaskTypeDesc",
+        headerText: "Type",
+        //isTemplateColumn: true,
+        //templateID: "customColumnTemplate",
+        width: "50px",
+    });
+    }
+    function actionBegin(args) {
+        if (args.requestType === 'delete') {
+            if (confirm("Are you sure, you want to delete the task record?") == false) {
+                args.cancel = true;
+            };
+        }
+    }
+
+    function ActionComplete(args) {
+        if (args.requestType === 'save' && args.addedRecord) {
+            var ganttRecord = args.addedRecord.item;
+            var Id = @Model.ProjectId;
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTaskSave",  //Update is Server side method
+                data: { taskDetail: ganttRecord,ProjectId: Id }
+            });          
+        }
+            //alert(args.requestType);
+        else if (args.requestType === 'delete') {
+            var data =args.data;
+            var ganttRecord = data.item;
+            var Id = @Model.ProjectId;
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTaskDelete",  //Update is Server side method
+                data: { taskDetail: ganttRecord, ProjectId: Id }
+            });
+        }
+        else if (args.requestType === 'outdent' || args.requestType === 'recordUpdate') {
+            var ganttRecord = args.data.item;
+            var Res = args.data.resourceInfo;
+            //alert(args.data.item.ParentId);
+            var Id = @Model.ProjectId;
+
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTaskSave",  //Update is Server side method
+                data: { taskDetail: ganttRecord, Resource: Res, ProjectId: Id }
+            });
+        }
+    };
+
+
+
+</script>

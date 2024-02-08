@@ -1,0 +1,86 @@
+﻿@model SmartSys.BL.Project.ProjectMaster
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+<link href="~/Content/ej/web/gradient-lime/ej.widgets.all.min.css" rel="stylesheet" />
+
+@using Syncfusion.JavaScript
+@using Syncfusion.JavaScript.Models
+@using Syncfusion.MVC.EJ
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Project : <label> @Model.ProjectName</label>
+</div>
+
+<div>
+    @(Html.EJ().Gantt("ganttsample")
+                    .TaskIdMapping("TaskID")
+                    .TaskNameMapping("TaskName")
+                    .StartDateMapping("StartDate")
+                    .EndDateMapping("EndDate")
+                    .DurationMapping("Duration")
+                    .ProgressMapping("Progress")
+                    .ScheduleStartDate(Model.startdate.ToShortDateString())
+                    .ScheduleEndDate(Model.enddate.ToShortDateString())
+                    .DateFormat("MM/dd/yyyy")
+                    .HighlightWeekends(true)
+                
+                    .TreeColumnIndex(2)
+                    .ShowGridCellTooltip(true)
+                    .ChildMapping("SubTasks")
+                    .AllowSelection(true)
+                    .AllowGanttChartEditing(false)
+                    .PredecessorMapping("Predecessors")
+                    .AllowColumnResize(false)
+                    .AllowSorting(true)
+                    .IncludeWeekend(true)
+                    .ResourceInfoMapping("ResourceID")
+                    .ResourceNameMapping("EmpName")
+                    .ResourceIdMapping("ResourceID")
+                    .ShowResourceNames(true)
+                    .EnableContextMenu(true)
+                        .EditDialogFields(eve =>
+                    {
+                        eve.Field("TaskID").Add();
+                        eve.Field("TaskName").Add();
+                        eve.Field("StartDate").Add();
+                        eve.Field("EndDate").Add();
+                        eve.Field("ResourceID").Add();
+                        eve.Field("Duration").Add();
+                        eve.Field("Progress").Add();
+                        eve.Field("Predecessors").Add();
+                    })
+                    .AddDialogFields(eve =>
+                    {
+                        eve.Field("TaskID").Add();
+                        eve.Field("TaskName").Add();
+                        eve.Field("StartDate").Add();
+                        eve.Field("EndDate").Add();
+                        eve.Field("ResourceID").Add();
+                        eve.Field("Duration").Add();
+                        eve.Field("Progress").Add();
+                        eve.Field("Predecessors").Add();
+                    })
+                    .EditSettings(edit =>
+                    {
+
+
+                    }).
+                    ClientSideEvents(eve =>
+                    {
+                        eve.ActionComplete("ActionComplete");
+                        eve.ActionBegin("actionBegin");
+                        eve.ContextMenuOpen("contextMenuOpen");
+                        eve.Load("Load");
+                        eve.BeginEdit("BeginEdit");
+                    })
+                    .EnableResize(true)
+                    .EnableVirtualization(false)
+
+                    .SizeSettings(ss => ss.Width("100%").Height("500px"))
+                    .Resources(ViewBag.EmpList)
+                    .Datasource(@Model.Tasks)
+    )
+</div>
+<div>
+    @Html.ActionLink(" Back", "EmployeeViewDetail", new { EmpId = ViewBag.EmpId }, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+</div>

@@ -1,0 +1,323 @@
+﻿@model SmartSys.BL.DW.ItemModel
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "GetItemList";
+}
+@{
+
+    Html.EJ()
+       .Dialog("ShowItemDetail")
+       .Title("<a id='Title'> Item List</a>")
+       .Width(1200)
+       .Height(800)
+       .ShowOnInit(false)
+       .ContentTemplate(@<p>Invoice Detail</p>)
+            .Render();
+}
+<script>
+    $(document).ready(function (e) {
+        var str = '@(TempData["Message"])'.toString();
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');
+        }
+    });
+</script>
+<script>
+        function openDialog() {
+            $("#ShowItemDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ShowItemDetail").ejDialog("open");
+        }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#FilterBtn').click(function () {
+            var MPN = $("#FilterStr").val();
+            if (MPN.length < 3)
+            {
+                alert("Please Enter Atleast three Character");
+                return false;
+            }         
+            var path = '@Url.Content("~/DWItem/ItemList")' + "?MPN=" + MPN
+            $("#ShowItemDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ShowItemDetail").ejDialog("open");            
+        });
+
+    });   
+    </script>
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            url: '/DWItem/GetItemData',
+            type: 'POST',
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                var obj = $("#grdItemList").ejGrid("instance")
+                obj.dataSource(result);
+                obj.AllowFiltering(true);
+                alert("hii");
+            },
+            error: function (err) {
+                $("#divLoading").hide();
+                alert(err.statusText);
+            }
+        });
+
+        $('#btnUpload').click(function () {
+
+        });
+    });
+</script>*@
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Item List
+</div>
+    <table>
+        <tr>
+            <td><div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateItem", new { ItemName = "", BrandId = 0, MPN = "" }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+         </div>
+            </td>
+            <td id="upFile1">
+                <label>Enter MPN:</label>
+            </td>
+            <td id="upFile2">
+                <div>
+                    <input type="text" class="form-control" style="width:310px" , id="FilterStr" />
+                </div>
+            </td>
+            <td id="upFile5">
+                <div class="navbar-text">
+                    <input type="button" id="FilterBtn" value="Refresh" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.DW.ItemModel>("grdItemList")
+           .Datasource(ds => ds.URL("/DWItem/GetItemData").Offline(true))
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+            items.AddTool(ToolBarItems.Search);
+
+        }))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+                 c.AddItem("Map_Item", "Map Item");
+             });
+         })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowFiltering(true)
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+        .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item Name").Width(300).Add();
+            col.Field("BrandName").HeaderText("Brand Name").Width(150).Add();
+            col.Field("Category").HeaderText("Category").Width(150).Add();
+            col.Field("MPN").HeaderText("MPN").Width(150).Add();
+            col.Field("PurchaseRate").HeaderText("Purchase Rate").Width(150).Add();
+            col.Field("SaleRate").HeaderText("Sale Rate").Width(150).Add();
+            //foreach (var obj in ViewBag.lstCompany)
+            //{
+            //    col.Field(obj.CompCode.ToString()).HeaderText(obj.CompName).Template(true).TemplateID(obj.CompTemplet).TextAlign(TextAlign.Center).Width(80).Add();
+            //}
+            col.Field("CreatedBy").HeaderText("Created By").Width(150).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(150).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(150).Add();
+            col.Field("ModifiedDateStr").HeaderText("Modified Date").Width(130).Add();
+            col.HeaderText("Edit").Template("#edit").TextAlign(TextAlign.Center).AllowFiltering(false).Width(90).Add();
+            if (Enumerable.Count(ViewBag.lstCompany) > 0)
+            {
+                col.HeaderText("Map").Template("#BtnTemplate").TextAlign(TextAlign.Center).AllowFiltering(false).Width(90).Add();
+            }
+            col.HeaderText("Brand Map").Template("#BrandMapping").TextAlign(TextAlign.Center).AllowFiltering(false).Width(90).Add();
+        })
+        )
+    </div>
+    <script id="BtnTemplate" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-transfer" href="/DWItem/GetItemMapping?ItemId={{:ItemId}} &ItemName={{:ItemName}}"> </a>
+    </script>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/DWItem/EditItem?ItemId={{:ItemId}}"> </a>
+    </script>
+    <script id="BrandMapping" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-transfer" href="/DWitem/GetItemBrandList?ItemId={{:ItemId}} &ItemName={{:ItemName}}"> </a>
+    </script>
+
+    <script type="text/javascript">
+        function contextopen(sender) {
+
+            var context = this._conmenu.element;
+        }
+
+        function contextclick(sender) {
+        }
+    </script>
+
+    <script type="text/x-jsrender" id="columnTemplateBOM">
+        {{if BOMMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if BOMMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if BOMMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if BOMMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if BOMMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateSAJ">
+        {{if SAJMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if SAJMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if SAJMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if SAJMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if SAJMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateADVENT">
+        {{if ADVENTMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if ADVENTMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateDPK">
+        {{if DPKMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if DPKMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if DPKMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if DPKMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if DPKMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+    <script type="text/x-jsrender" id="columnTemplateTimeSheet">
+        {{if TimeSheetMapStatus =='24' tmpl='#APPROVED'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='26' tmpl='#NEW'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='0' tmpl='#MISSINGMAPPING'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='25' tmpl='#REJECTED'}}
+        {{/if}}
+        {{if TimeSheetMapStatus =='27' tmpl='#REVIEWED'}}
+        {{/if}}
+    </script>
+
+    <script id="APPROVED" type="text/x-jsrender">
+        <span class="glyphicon glyphicon-ok" style="color:green">
+            Yes
+        </span>
+    </script>
+    <script id="REJECTED" type="text/x-jsrender">
+        <span class="glyphicon glyphicon-remove" style="color:red">
+            Rej
+        </span>
+    </script>
+    <script id="NEW" type="text/x-jsrender">
+        <span>
+            PR
+        </span>
+    </script>
+    <script id="REVIEWED" type="text/x-jsrender">
+        <span>
+            PA
+        </span>
+    </script>
+    <script id="MISSINGMAPPING" type="text/x-jsrender">
+        <span class="glyphicon glyphicon-remove" style="color:red">
+            No
+        </span>
+    </script>
+
+    <script>
+        function contextclick(args) {
+
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/DWItem/CreateItem")' + "?BrandId=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Record") {
+                    var tempData = args.text;
+                    var grid = $("#grdItemList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var ItemId = result[0]["ItemId"];
+                    var path = '@Url.Content("~/DWItem/EditItem")' + "?ItemId=" + ItemId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+                else
+                    if (args.text == "Map Item") {
+                        var tempData = args.text;
+                        var grid = $("#grdItemList").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var ItemId = result[0]["ItemId"];
+                        var ItemName = result[0]["ItemName"];
+                        var MPN = result[0]["MPN"];
+                        var Brand = result[0]["BrandName"];
+                        var path = '@Url.Content("~/DWItem/GetItemMapping")' + "?ItemId=" + ItemId + "&ItemName=" + ItemName + "&MPN=" + MPN + "&Brand=" + Brand
+                        event.preventDefault();
+                        window.location.replace(path);
+
+                    }
+                    else
+                        if (args.text == "Item Brand") {
+                            var tempData = args.text;
+                            var grid = $("#grdItemList").ejGrid("instance");
+                            var result = this.getSelectedRecords();
+                            var ItemId = result[0]["ItemId"];
+                            var ItemName = result[0]["ItemName"];
+                            var path = '@Url.Content("~/DWItem/GetItemBrandList")' + "?ItemId=" + ItemId + "&ItemName=" + ItemName
+                            event.preventDefault();
+                            window.location.replace(path);
+
+                        }
+        }
+
+    </script>

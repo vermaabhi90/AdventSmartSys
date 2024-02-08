@@ -1,0 +1,130 @@
+﻿
+@model SmartSys.BL.ProViews.SalesBacklogViewModel
+
+<div class="page-header glyphicon glyphicon-leaf  text-info ">
+    Backlolgs Comments
+</div>
+<link href="~/Content/3D_button.css" rel="stylesheet" />
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <html>
+    <body>
+
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+
+            <tr>
+                <td>
+                    <label for="DeptName">Company:</label>
+                </td>
+                <td>
+                    <div class="" style="color:red">
+                        @Html.TextBoxFor(model => Model.Company, new { @readonly = "readonly", @class = "form-control" })
+
+
+                    </div>
+                </td>
+
+
+                <td>
+                    <label for="DeptName">DocumentNo:</label>
+                </td>
+                <td>
+                    <div class="" style="color:red">
+                        @Html.TextBoxFor(model => Model.DocumentNo, new { @readonly = "readonly", @class = "form-control" })
+
+
+                    </div>
+                </td>
+
+
+                <td>
+                    <label for="DeptName">ItemNo:</label>
+                </td>
+                <td>
+                    <div class="" style="color:red">
+
+                        @Html.TextBoxFor(model => Model.LineNo, new { @readonly = "readonly", @class = "form-control" })
+
+
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label for="DeptName">Comments:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => Model.BacklogCommentId)
+                        @Html.HiddenFor(model => model.Status)
+                        @Html.TextAreaFor(model => model.Comments, new { @class = "form-control", @style = "min-width:500px;max-width:800px" })
+                        @Html.ValidationMessageFor(model => model.Comments)
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
+        @if (Model.CommentsList.Count > 0)
+        {
+            <div id="gridEvent">
+                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("KYCDoCSGrid")
+                    .Datasource((IEnumerable<object>)Model.CommentsList)
+                    .AllowPaging()
+                    .AllowResizing()
+                    .AllowFiltering()
+                    .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                    .AllowGrouping()
+                    .PageSettings(page =>
+                    {
+                        page.PageSize(20);
+                    })
+                  .EnableAltRow(true)
+                    .Columns(col =>
+                    {
+                        col.Field("DocumentNo").HeaderText("Document No").Visible(true).TextAlign(TextAlign.Left).Width(80).Add();
+                        col.Field("LineNo").HeaderText("Line No").Width(80).Add();
+                        col.Field("Comments").HeaderText("Comments").Width(80).Add();
+                        col.Field("Company").HeaderText("Company").Width(80).Add();
+                        col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+                    })
+                )
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about Backlog comment Details !!!</label>
+            </div>
+
+        }
+
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn btn-info glyphicon glyphicon-save save btn3d"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+    </body>
+</html>
+}
+@Html.EJ().ScriptManager()

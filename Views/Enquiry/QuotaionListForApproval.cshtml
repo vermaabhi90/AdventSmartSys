@@ -1,0 +1,57 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.QuotationModel>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Quotation  List For Approval
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.QuotationModel>("QuotationList")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                        .PageSettings(p => { p.PageSize(20); })
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportQuotaionListForApproval")))
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("QuotationId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("QuotationNumber").HeaderText("Quot Number").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(120).Visible(true).Add();
+            col.Field("QuotDate").HeaderText("Quot Date").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("Terms").HeaderText("Terms").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(170).Add();
+            col.Field("EnqId").HeaderText("EnqId").TextAlign(TextAlign.Left).Width(140).Visible(false).Add();
+            col.Field("EnqNumber").HeaderText("EnqNumber").TextAlign(TextAlign.Left).Width(140).Visible(false). Add();
+            col.Field("CompCode").HeaderText("Comp Code").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+            col.HeaderText("Goto Approval")
+                 .Template("#edit")
+          
+                 .AllowFiltering(false)
+                 .TextAlign(TextAlign.Center)
+                 .Width(90)
+                 .Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+    )
+</div>
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Enquiry/ApprovalView?EnqId={{:EnqId}}&QuotId={{:QuotationId}}"></a>
+</script>

@@ -1,0 +1,123 @@
+﻿@model IEnumerable<SmartSys.BL.WeekLySalaryModel>
+
+@{
+    ViewBag.Title = "GetWeeklySalryListList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Weekly Salary List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.ReceiptModel>("grSalList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+         .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+        .EnableAltRow(true)
+                   .ContextMenuSettings(contextMenu =>
+                   {
+                       contextMenu.EnableContextMenu();
+                       contextMenu.DisableDefaultItems();
+                       contextMenu.CustomContextMenuItems(c =>
+                       {
+                           c.AddItem("Edit1", "Edit Record");
+                       });
+
+                   })
+     .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportWeeklySalryList")))
+        .Columns(col =>
+        {
+            col.Field("TimeSheetId").HeaderText("TimeSheet Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy}").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("WorkStartsession").HeaderText("Work Start Session").Visible(false).Format("{0:MM/dd/yyyy}").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("WorkEndsession").HeaderText("Work End Session").Visible(false).Format("{0:MM/dd/yyyy}").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("WeekNo").HeaderText("Week No").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("EmployeeName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("WeeklyWorkHour").HeaderText("Weekly WorkHour").Width(70).Add();
+            col.Field("WeeklyPayment").HeaderText("Weekly Payment").Width(70).Add();
+            col.Field("AnnualPay").HeaderText("Annual Pay").Visible(false).Width(70).Add();
+            col.Field("HourRate").HeaderText("Hour Rate").Visible(false).Width(70).Add();
+            col.Field("WorkingDays").HeaderText("Working Days").Visible(false).Width(70).Add();
+            col.Field("PublicHoliday").HeaderText("PublicHoliday").Visible(false).Width(70).Add();
+            col.Field("TotalSunday").HeaderText("TotalSunday").Visible(false).Width(70).Add();
+        })
+          .ClientSideEvents(eve =>
+          {
+              eve.ActionBegin("toolClick");
+          })
+    )
+</div>
+@{
+   Html.EJ()
+        .Dialog("CreateCompBankDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1100)
+        .Height(750)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+</script>
+
+<script>
+    function toolClick(args) {        
+        if (args.requestType == "beginedit") {          
+            var tempData = args.text;          
+                var grid = $("#grSalList").ejGrid("instance");
+                var result = this.getSelectedRecords();              
+
+                var now = args.row.children().eq(1).text();
+                var StartDate = new Date("MM/dd/yyyy");
+                StartDate = now
+
+                var now1 = args.row.children().eq(2).text();
+                var EndDate = new Date("MM/dd/yyyy");
+                EndDate = now1
+
+                //var now2 = args.row.children().eq(3).text();
+                //var StartSession = new Date("MM/dd/yyyy");
+                //StartSession = now2
+
+                //var now3 = args.row.children().eq(4).text();
+                //var EndSession = new Date("MM/dd/yyyy");
+                //EndSession = now3
+
+                var WeekNo = result[0]["WeekNo"];
+                var EmployeeName = result[0]["EmployeeName"];
+                var WeeklyWorkHour = result[0]["WeeklyWorkHour"];
+                var AnnualPay = result[0]["AnnualPay"];
+                var HourRate = result[0]["HourRate"];
+                var WorkingDays = result[0]["WorkingDays"];
+                var PublicHoliday = result[0]["PublicHoliday"];
+                var TotalSunday = result[0]["TotalSunday"];
+              
+                var path = '@Url.Content("~/Admin/ViewDetailWeeklyPay")' + "?EmployeeName=" + EmployeeName + "&WeeklyWorkHour=" + WeeklyWorkHour + "&AnnualPay=" + AnnualPay + "&HourRate=" + HourRate + "&WorkingDays=" + WorkingDays + "&WeekNo=" + WeekNo + "&startdate=" + StartDate + "&EndDate=" + EndDate + "&PublicHoliday=" + PublicHoliday + "&TotalSunday=" + TotalSunday        
+            $("#CreateCompBankDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+        }
+        return false;
+    }
+</script>
+

@@ -1,0 +1,600 @@
+﻿@model SmartSys.BL.TMPlan.TMPlanModel
+
+@{
+    ViewBag.Title = "Approval Plan";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //Hide the all below elements on document load and make them visible on DropDown selection..
+        $('#LblWeek').hide();
+        $('#WeekChk').hide();
+        $('#LblWeekNo').hide();
+        $('#WeekNo').hide();
+        $('#LblMonthNo').hide();
+        $('#MonthNo').hide();
+        $('#LblFrequency').hide();
+        $('#Frequency').hide();
+        $('#LblNever').hide();
+        $('#Never').hide();
+        $('#LblOn').hide();
+        $('#OndateTD').hide();
+        $('#LblEnded').hide();
+        $('#WeekMonth').hide();
+        $('#MonWeek').hide();
+
+        $('#Edit').on('click', function (e) {
+            var ParamName = $('#Frequency').val();
+            switch (ParamName)
+            {
+                case "D":
+                    $('#LblWeek').hide();
+                    $('#WeekChk').hide();
+                    $('#LblWeekNo').hide();
+                    $('#WeekNo').hide();
+                    $('#LblMonthNo').hide();
+                    $('#MonthNo').hide();
+                    $('#LblNever').show();
+                    $('#Never').show();
+                    $('#LblOn').show();
+                    $('#OndateTD').show();
+                    $('#LblEnded').show();
+                    $('#WeekMonth').hide();
+                    $('#LblFrequency').show();
+                    $('#Frequency').show();
+                    $('#MonWeek').hide();
+
+                    break;
+                case "M":
+                    $('#LblMonthNo').hide();
+                    $('#MonthNo').hide();
+                    $('#LblWeek').hide();
+                    $('#WeekChk').hide();
+                    $('#LblWeekNo').show();
+                    $('#WeekNo').show();
+                    $('#Never').show();
+                    $('#LblOn').show();
+                    $('#OndateTD').show();
+                    $('#LblEnded').show();
+                    $('#LblNever').show();
+                    $('#WeekMonth').show();
+                    $('#LblFrequency').show();
+                    $('#Frequency').show();
+                    $('#MonWeek').show();
+
+                    break;
+                case "W":
+                    $('#LblMonthNo').hide();
+                    $('#MonthNo').hide();
+                    $('#LblWeekNo').hide();
+                    $('#WeekNo').hide();
+                    $('#LblWeek').show();
+                    $('#WeekChk').show();
+                    $('#Never').show();
+                    $('#LblOn').show();
+                    $('#OndateTD').show();
+                    $('#LblEnded').show();
+                    $('#LblNever').show();
+                    $('#WeekMonth').hide();
+                    $('#LblFrequency').show();
+                    $('#Frequency').show();
+                    $('#MonWeek').hide();
+
+                    break;
+                case "Y":
+                    $('#LblWeek').hide();
+                    $('#WeekChk').hide();
+                    $('#LblWeekNo').show();
+                    $('#WeekNo').show();
+                    $('#LblMonthNo').show();
+                    $('#MonthNo').show();
+                    $('#Never').show();
+                    $('#LblOn').show();
+                    $('#OndateTD').show();
+                    $('#LblEnded').show();
+                    $('#LblNever').show();
+                    $('#WeekMonth').show();
+                    $('#LblFrequency').show();
+                    $('#Frequency').show();
+                    $('#MonWeek').show();
+
+                    break;
+            }
+
+        });
+        $('#Repete').on('click', function (e)
+        {
+            if ($('#Repete').is(":checked"))
+            {
+                $('#LblWeek').hide();
+                $('#WeekChk').hide();
+                $('#LblWeekNo').hide();
+                $('#WeekNo').hide();
+                $('#LblMonthNo').hide();
+                $('#MonthNo').hide();
+                $('#LblFrequency').show();
+                $('#Frequency').show();
+                $('#WeekMonth').hide();
+                $('#MonWeek').hide();
+            }
+            else
+            {
+                $('#LblFrequency').hide();
+                $('#Frequency').hide();
+                $('#LblWeek').hide();
+                $('#WeekChk').hide();
+                $('#LblWeekNo').hide();
+                $('#WeekNo').hide();
+                $('#LblMonthNo').hide();
+                $('#MonthNo').hide();
+                $('#LblNever').hide();
+                $('#Never').hide();
+                $('#LblOn').hide();
+                $('#OndateTD').hide();
+                $('#LblEnded').hide();
+                $('#WeekMonth').hide();
+                $('#MonWeek').hide();
+            }
+        });
+        $("#Frequency").change(function (event) {
+            var ParamName = $('#Frequency').val();
+            if (ParamName == "E") {
+                alert("Please Select Valid Option")
+                return false;
+            }
+            if(ParamName =="D")
+            {
+                $('#LblWeek').hide();
+                $('#WeekChk').hide();
+                $('#LblWeekNo').hide();
+                $('#WeekNo').hide();
+                $('#LblMonthNo').hide();
+                $('#MonthNo').hide();
+                $('#LblNever').show();
+                $('#Never').show();
+                $('#LblOn').show();
+                $('#OndateTD').show();
+                $('#LblEnded').show();
+                $('#WeekMonth').hide();
+                $('#MonWeek').hide();
+            }
+            else if (ParamName == "W")
+            {
+                $('#LblMonthNo').hide();
+                $('#MonthNo').hide();
+                $('#LblWeekNo').hide();
+                $('#WeekNo').hide();
+                $('#LblWeek').show();
+                $('#WeekChk').show();
+                $('#Never').show();
+                $('#LblOn').show();
+                $('#OndateTD').show();
+                $('#LblEnded').show();
+                $('#LblNever').show();
+                $('#WeekMonth').hide();
+                $('#MonWeek').hide();
+            }
+            else if (ParamName == "M")
+            {
+                $('#LblMonthNo').hide();
+                $('#MonthNo').hide();
+
+                $('#LblWeek').hide();
+                $('#WeekChk').hide();
+                $('#LblWeekNo').show();
+                $('#WeekNo').show();
+                $('#Never').show();
+                $('#LblOn').show();
+                $('#OndateTD').show();
+                $('#LblEnded').show();
+                $('#LblNever').show();
+                $('#WeekMonth').show();
+                $('#MonWeek').show();
+            }
+            else if (ParamName == "Y")
+            {
+                $('#LblWeek').hide();
+                $('#WeekChk').hide();
+                $('#LblWeekNo').show();
+                $('#WeekNo').show();
+                $('#LblMonthNo').show();
+                $('#MonthNo').show();
+                $('#Never').show();
+                $('#LblOn').show();
+                $('#OndateTD').show();
+                $('#LblEnded').show();
+                $('#LblNever').show();
+                $('#WeekMonth').show();
+                $('#MonWeek').show();
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Project").change(function () {
+            $("#TaskId").empty();
+            var path = "/TMPlan/PlanTasklist"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ProjectId: $("#Project").val(), User_Id: $("#User_Id").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#TaskId").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select Project Name');
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var statusId = $('#statusId').val();                                
+           
+            if (statusId.toString() == "") {
+                alert("Please Select status ");
+                return false;
+            }           
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<table>
+    <tr>
+        <td>
+            @if (Model.PlanId == 0)
+            {
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+                    Approval Plan
+                </div>
+            }
+            else
+            {
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+                    Approval Plan
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+@using (Html.BeginForm("ApprovePlan", "TMPlan", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                @if (Model.EmpId > 0)
+                {
+                    <td>
+                        <label for="EmpId">Employee Id </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.HiddenFor(model => model.PlanId)
+                            @Html.HiddenFor(model => model.User_Id, new { id = "User_Id" })
+                            @Html.TextBoxFor(model => model.EmpId, new { id = "EmpId", @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.EmpId)
+                        </div>
+                    </td>
+                }
+                <td>
+                    <label for="EmpName">Employee Name </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EmpName, new { id = "EmpName", @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.EmpName)
+                    </div>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="Server">Prject</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.TMProjectlist, "Please Select Project", new { style = "width:175px", @disabled = true, @class = "form-control", id = "Project" })
+                        @Html.ValidationMessageFor(model => model.ProjectId, "", new { id = "Experties", @class = "text-danger" })
+
+                    </div>
+                </td>
+                <td>
+                    <label for="UserName">Task</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.DropDownList("TaskId", (IEnumerable<SelectListItem>)ViewBag.TMTasklist, "Please Select Task", new { style = "width:175px", @disabled = true, @class = "form-control", id = "TaskId" })
+                        @Html.ValidationMessageFor(model => model.TaskId, "", new { id = "Qualification", @class = "text-danger" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="StartDate">Start Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @if (Model.StartDate.ToShortDateString() == "1/1/0001")
+                        {
+                            @Html.EJ().DateTimePicker("dtpStartDate").Width("190px").Value(DateTime.Now).ReadOnly()
+                        }
+                        else
+                        {
+
+                            @Html.EJ().DateTimePicker("dtpStartDate").Width("190px").Value(Model.StartDate).ReadOnly()
+                        }
+
+                        @Html.ValidationMessageFor(model => model.StartDate)
+                    </div>
+                </td>
+                <td>
+                    <label for="EndDate">End Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @if (Model.EndDate.ToShortDateString() == "1/1/0001")
+                        {
+
+                            @Html.EJ().DateTimePicker("dtpEndDate").Width("190px").Value(DateTime.Now).ReadOnly()
+                        }
+                        else
+                        {
+                            @Html.EJ().DateTimePicker("dtpEndDate").Width("190px").Value(Model.EndDate).ReadOnly()
+                        }
+                        @Html.ValidationMessageFor(model => model.EndDate)
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="AllDay">All Day</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.CheckBox("AllDay", new { id = "AllDay", @disabled = true })
+                        @Html.ValidationMessageFor(model => model.AllDay)
+                    </div>
+                </td>
+                <td>
+                    <label for="Repete">Repete</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.CheckBox("Repete", new { id = "Repete", @disabled = true })
+                        @Html.ValidationMessageFor(model => model.Repete)
+
+                        @if (Model.PlanId > 0)
+                        {
+                            <button type="button" id="Edit" class="Edit btn btn-success glyphicon glyphicon-pencil" value="Edit"> Edit</button>
+                        }
+                    </div>
+                </td>
+                <td>
+                    <label id="LblFrequency" for="ClientType">Frequency Type</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.FrequencyType, new List<SelectListItem>
+               {
+                    new SelectListItem() {Text = "Please Select Option", Value="E"},
+                     new SelectListItem() {Text = "Daily", Value="D"},
+                     new SelectListItem() {Text = "Weekly", Value="W"},
+                     new SelectListItem() {Text = "Monthly", Value="M"},
+                       new SelectListItem() {Text = "Yearly", Value="Y"}
+
+               }, new { id = "Frequency", @disabled = true, @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.EmpName)
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label id="LblWeek" for="ClientType">Weekly Options :</label>
+                    <label id="MonWeek" for="ClientType">Option :</label>
+                </td>
+                <td>
+                    <div id="WeekChk" class="WeekChk ">
+                        @Html.CheckBox("Monday", new { id = "chkMon", @disabled = true })
+                        <span><b> @Html.DisplayName("Mon") </b></span>
+                        @Html.CheckBox("TuesDay", new { id = "chkTues", @disabled = true })
+                        <span><b> @Html.DisplayName("Tues") </b></span>
+                        @Html.CheckBox("Wednesday", new { id = "chkWen", @disabled = true })
+                        <span><b> @Html.DisplayName("Wed") </b></span>
+                        <br />
+                        @Html.CheckBox("Thursday", new { id = "chkThirs", @disabled = true })
+                        <span><b> @Html.DisplayName("Thus") </b></span>
+                        @Html.CheckBox("Friday", new { id = "chkFri", @disabled = true })
+                        <span><b> @Html.DisplayName("Fri") </b></span>
+                        @Html.CheckBox("Saturday", new { id = "chkSat", @disabled = true })
+                        <span><b> @Html.DisplayName("Sat") </b></span>
+                        @Html.CheckBox("Sunday", new { id = "chkSun", @disabled = true })
+                        <span><b> @Html.DisplayName("Sun") </b></span>
+                    </div>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.WeekNo, new List<SelectListItem>
+               {
+                     new SelectListItem() {Text = "First", Value="1"},
+                     new SelectListItem() {Text = "Second", Value="2"},
+                     new SelectListItem() {Text = "Third", Value="3"},
+                       new SelectListItem() {Text = "Fourth", Value="4"}
+
+               }, new { id = "WeekNo", @class = "form-control", @disabled = true })
+
+                        @Html.ValidationMessageFor(model => model.WeekNo)
+                    </div>
+
+                </td>
+
+                <td>
+                    <label id="LblWeekNo" for="WeekNo">Day</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("WeekMonth", new List<SelectListItem>
+               {
+                     new SelectListItem() {Text = "Monday", Value="MO"},
+                     new SelectListItem() {Text = "TuesDay", Value="TU"},
+                        new SelectListItem() {Text = "Wednesday", Value="WE"},
+                         new SelectListItem() {Text = "Thursday", Value="TH"},
+                     new SelectListItem() {Text = "Friday", Value="FR"},
+                     new SelectListItem() {Text = "Saturday", Value="SA"},
+                     new SelectListItem() {Text = "Sunday", Value="SU"}
+
+               }, new { id = "WeekMonth", @class = "form-control", @disabled = true })
+
+                        @Html.ValidationMessageFor(model => model.EmpName)
+                    </div>
+
+
+                </td>
+
+                <td>
+                    <label id="LblMonthNo" for="MonthNo">Month</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.MonthNo, new List<SelectListItem>
+               {
+                     new SelectListItem() {Text = "Jaunary", Value="1"},
+                     new SelectListItem() {Text = "February", Value="2"},
+                     new SelectListItem() {Text = "March", Value="3"},
+                       new SelectListItem() {Text = "April", Value="4"},
+                        new SelectListItem() {Text = "May", Value="5"},
+                     new SelectListItem() {Text = "June", Value="6"},
+                     new SelectListItem() {Text = "July", Value="7"},
+                       new SelectListItem() {Text = "August", Value="8"},
+                       new SelectListItem() {Text = "September", Value="9"},
+                     new SelectListItem() {Text = "October", Value="10"},
+                     new SelectListItem() {Text = "November", Value="11"},
+                       new SelectListItem() {Text = "December", Value="12"}
+               }, new { id = "MonthNo", @class = "form-control", @disabled = true })
+
+                        @Html.ValidationMessageFor(model => model.MonthNo)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label id="LblEnded">Ended :</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label id="LblNever">Never</label>
+                </td>
+                <td>
+                    @Html.CheckBox("Never", new { id = "Never", @disabled = true })
+                </td>
+                <td>
+                    <label id="LblOn">On</label>
+                </td>
+
+                <td id="OndateTD">
+
+                    @if (Model.OnDate.ToShortDateString() == "1/1/0001")
+                    {
+                        @Html.EJ().DatePicker("OnDate").Value(DateTime.Now).ReadOnly()
+                    }
+                    else
+                    {
+                        @Html.EJ().DatePickerFor(model => model.OnDate).ReadOnly()
+                    }
+                </td>
+
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <label>Remark</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 500Px; max-width: 800px;", @class = "form-controal", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table>           
+            <tr>
+                <td>
+                    <label>Status</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.statusId, new List<SelectListItem>
+               {
+                     new SelectListItem() {Text = "Please Select Status", Value=""},
+                     new SelectListItem() {Text = "Approved", Value="24"},
+                     new SelectListItem() {Text = "Reject", Value="25"},                   
+
+               }, new { id = "statusId", @class = "form-control"})
+
+                        @Html.ValidationMessageFor(model => model.WeekNo)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                @if (Model.PlanId > 0)
+                {
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Index';" );"> Back</button>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Index';" );"> Back</button>
+                    </td>
+                }
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="save btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+    </body>
+</html>
+}
+@Html.EJ().ScriptManager();
+

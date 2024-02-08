@@ -1,0 +1,133 @@
+﻿@model IEnumerable<SmartSys.BL.IssueModel>
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+   Subordinate Issue Details List
+</div>
+<br />
+<style>
+    input[type=text] {
+        width: 180px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+        background-image: url('searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+    }
+
+        input[type=text]:focus {
+            width: 99%;
+        }
+</style>
+<div id="Grid"></div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.IssueModel>("GrdIssueDetails")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                       {
+                           items.AddTool(ToolBarItems.ExcelExport);
+                       }))
+                       .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelPendingSubordinateIssue")))
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()                                              
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .EnableAltRow(true)
+
+                     .ContextMenuSettings(contextMenu =>
+                     {
+                         contextMenu.EnableContextMenu()
+                             .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save));
+                         //.CustomContextMenuItems(new List<string> { "View Detail" });
+
+                     })          
+        .Columns(col =>
+        {
+            col.Field("IssueId").HeaderText("Issue Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Title").HeaderText("Title").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("CreatedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("View Detail").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "View Detail",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+           .AllowFiltering(false)
+           .TemplateID("#BtnEdit")
+           .IsUnbound(true)
+           .TextAlign(TextAlign.Left)
+           .Width(60)
+           .Add();
+
+        })
+                   .ClientSideEvents(eve =>
+                   {
+                       eve.ContextClick("contextclick");
+                       //eve.QueryCellInfo("querycellinfo");
+                   })
+    )
+</div>
+
+<script id="BtnEdit" type="text/x-jsrender">
+    <a class="modal-link  btn-xs btn-info  glyphicon glyphicon-pencil black" href="/Admin/CreateIssuewithcompleteStatus?IssueId={{:IssueId}}&amp;tabIndex=0"> </> </a>
+</script>
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "View Detail") {
+            var tempData = args.text;
+            var grid = $("#GrdIssueDetails").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var IssueId = result[0]["IssueId"];
+            var Risk = "Risk";
+            var button = document.getElementById('clickButton');
+            button.form.submit();
+            var path = '@Url.Content("~/Admin/CreateIssuewithcompleteStatus")' + "?IssueId=" + IssueId + "&tabIndex=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+
+        if (args.text == "Add Record") {
+            var tempData = args.text;
+            var grid = $("#GrdIssueDetails").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var path = '@Url.Content("~/Admin/CreateIssue")' + "?IssueId=" + 0 + "&tabIndex=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+          }
+    }
+
+    function querycellinfo(args) {
+        if (args.column.field == "Status" && args.data.Status == 'NEW')
+            $($(args.cell).parent()).css("backgroundColor", "blue");/*custom css applied to the row */
+        if (args.column.field == "Status" && args.data.Status == 'Complete')
+            $($(args.cell).parent()).css("backgroundColor", "gray");/*custom css applied to the row */
+
+    }
+</script>

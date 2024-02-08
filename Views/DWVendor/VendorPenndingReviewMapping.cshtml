@@ -1,0 +1,184 @@
+﻿@model SmartSys.BL.DW.PenndingVendorApproverMap
+
+@{
+    ViewBag.Title = "DW Vendor Pendding Approver  ";
+  
+}
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+<script>
+
+    $(document).ready(function (e) {
+        $('.Review').on('click', function (e) {
+            var apprvallist = @Model.SelectApproverLst.Count;
+            if(apprvallist <=  0)
+            {
+                alert("Please select atleast one Customer");
+                return false;
+            }
+        });
+    });
+
+</script>
+
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Vendor Mapping Review
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Refresh", "RefreshVenReviewList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-refresh " })
+</div>
+<div>
+ 
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemList")
+        .Datasource((IEnumerable<object>)@Model.lstApprover)
+        .AllowFiltering()
+        .AllowPaging()
+                .PageSettings(p => { p.PageSize(20); })
+                .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportVendorPenndingReviewMapLst")))
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+        .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("VendorId").HeaderText("Vendor Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(20).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").Width(70).Add();
+            col.Field("Vendor_No").HeaderText("Vendor No").Width(30).Add();
+            col.Field("SourceVenderName").HeaderText("Source Vendor Name").Width(70).Add();
+            col.Field("CompCode").HeaderText("Comp Code").Width(30).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(30).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(30).Add();
+
+            col.HeaderText("Mapping").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Map",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#Mapping")
+        
+           .TextAlign(TextAlign.Left)
+           .Width(20)
+           .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .HeaderTextAlign(TextAlign.Center)
+           .Add();
+        })
+        )
+    </div>
+    <br><br>
+    <table>
+        <tr>
+            <td>
+                @if (Model.SelectApproverLst != null)
+                {
+
+                    if (Model.SelectApproverLst.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.DW.PenndingVendorApproverMap>("grdVendList")
+                .Datasource((IEnumerable<object>)@Model.SelectApproverLst)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+       .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("VendorId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").ValidationRules(v => v.AddRule("required", true)).Width(180).Add();
+            col.Field("Vendor_No").HeaderText("External Vendor Id").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("SourceVenderName").HeaderText(" External Vendor Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CompName").HeaderText("Company Name").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(180).Add();
+            col.HeaderText("Remove").Template("#RemoveItem").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                            )
+                        </div>
+                       
+                    }
+                }
+                else
+                {
+
+                }
+            </td>
+        </tr>
+
+    </table>
+    <table>
+        <tr>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs  btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("ApvRejVendorReview", "DWVendor", new { statusCode = 27 })'>
+                        Approve
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs  btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("ApvRejVendorReview", "DWVendor", new { statusCode = 25 })'>
+                        Reject
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs  btn-warning glyphicon glyphicon-remove-circle" href='@Url.Action("ApvRejVendorReview", "DWVendor", new { statusCode = 20 })'>
+                        Cancel
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/x-jsrender" id="Mapping">
+    <a class="btn-xs btn-info  glyphicon glyphicon-check black" href="/DWVendor/AddtoVenReviewList?Vendor_No={{:Vendor_No}}&amp;SourceVenderName={{:SourceVenderName}}&amp;CompName={{:CompCode}}&amp;VendorId={{:VendorId}}&amp;VendorName={{:VendorName}}&amp;ModifiedBy={{:ModifiedBy}}"></a>
+</script>
+<script id="RemoveItem" type="text/x-jsrender">
+
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DWVendor/DeleteSelPendingReview?CompCode={{:CompName}}&amp;Vendor_No={{:Vendor_No}}&amp;SourceVendorName={{:SourceVenderName}}&amp;VendorId={{:VendorId}}&amp;VendorName={{:VendorName}}&amp;ModifiedBy={{:ModifiedBy}}">  Remove</a>
+
+</script>

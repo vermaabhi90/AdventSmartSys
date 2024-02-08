@@ -1,0 +1,234 @@
+﻿@model SmartSys.BL.SysDBCon.SysDBConModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<script>
+    function checkPass() {
+
+        var pass1 = document.getElementById('Txt_Pwd');
+        var pass2 = document.getElementById('Txt_RePwd');
+
+        var message = document.getElementById('confirmMessage');
+
+        var goodColor = "#66cc66";
+        var badColor = "#ff6666";
+
+        if (pass1.value == pass2.value) {
+
+            pass2.style.backgroundColor = goodColor;
+            message.style.color = goodColor;
+            message.innerHTML = ""
+        } else {
+
+            pass2.style.backgroundColor = badColor;
+            message.style.color = badColor;
+            message.innerHTML = "Passwords Do Not Match!"
+        }
+    }
+</script>
+<style> td { padding-right: 15px;  }</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit DataBase Connection Details
+</div>
+@using (Html.BeginForm("Edit", "SysDBCon", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>
+
+        </title>
+    </head>
+    <body>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+
+                    <label for="Connection Id">Connection Id</label>
+
+                </td>
+                <td>
+                    <div class="editor-field  ">
+
+                        @Html.TextBoxFor(model => model.ConnectionId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+
+                    <label for="Connection Name">Connection Name</label>
+
+                </td>
+                <td>
+                    <div class="editor-field  ">
+
+                        @Html.TextBoxFor(model => model.ConName, new { @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="ConnectionType">Connection Type</label>
+                </td>
+
+                <td>
+                    <div class=" ">
+
+                        @Html.DropDownListFor(x => x.ConnectionType, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "ODBC", Value="ODBC"},
+                             new SelectListItem() {Text = "OLEDB", Value="OLEDB"},
+                             new SelectListItem() {Text = "Native", Value="Native"},
+                               new SelectListItem() {Text = "MySql", Value="MySql"}
+                       }, new { @class = "form-control" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>
+                    <label for="Server Nam">Server Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ServerName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ServerName)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Port">Port</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Port, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Port)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="DB Name">DB Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DBName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DBName)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="DefaultTimeOut">Default Time Out</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DefaultTimeOut, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DefaultTimeOut)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="UserName">User Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.UserName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.UserName)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Password">Password</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.PasswordFor(model => model.Password, new { @class = "form-control" , Id = "Txt_Pwd", Name = "Txt_Pwd", value = Model.Password })
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </div>
+                </td>
+                <td>
+                    <label for="Password">Re-Password</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        <input type="password" name="Txt_RePwd" id="Txt_RePwd" onkeyup="checkPass(); return false;"class="form-control">
+                        <span id="confirmMessage" class="confirmMessage"></span>
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+            <tr>
+            <tr>
+                <td>
+
+                    <label for="Created By">Created By</label>
+
+                </td>
+                <td>
+                    <div class="editor-field  ">
+                        @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control" , disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+
+                    <label for="CreatedDate">Created Date</label>
+
+                </td>
+                <td>
+                    <div class="editor-field  ">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control" , disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+
+
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+
+                    <label for="Modified By">Modified By</label>
+
+                </td>
+                <td>
+                    <div class="editor-field  ">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control" , disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="ModifiedDate">Modified Date</label>
+                </td>
+                <td>
+                    <div class="editor-field  ">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control" , disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>                               
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+                   <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save"> Save</button>               
+                </td>              
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

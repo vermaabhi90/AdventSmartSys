@@ -1,0 +1,129 @@
+﻿@model SmartSys.BL.Enquiry.SalesOrderModel
+
+@{
+    ViewBag.Title = "EditSOOrder";
+}
+
+<div style="margin-left:0px;margin-bottom:10px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Sales Order Number
+</div>
+<script>
+    $(function () {      
+        $("#uuu").ejDatePicker({            
+            value: new Date($('#OldPODate').val()), 
+            dateFormat: "MM/dd/yyyy"
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+      
+        $('.save12').click(function (e) {
+            var SOId = $('#SOId').val();
+            var OldSOId = $('#OldSOId').val();
+            var PurchaseOrderId = $('#PurchaseOrderId').val();
+            var OPONumber = $('#OPONO').val();
+            var PONumber = $('#PONO').val();        
+            var OldPODate = $('#OldPODate').val();
+            var PODate = $('#PODate').val();           
+            var OldRemark = $('#OREM').val();
+            var Remark = $('#Rem').val();           
+            if (SOId.toString() == "") {
+                alert("Please Enter Sales Order Number ");
+                return false;
+            }
+            if (PurchaseOrderNumber.toString() == "") {
+                alert("Please Enter Purchase Order Number ");
+                return false;
+            }
+            if (PODate.toString() == "") {
+                alert("Please Select  PO Date ");
+                return false;
+            }
+            if (Remark.toString() == "") {
+                alert("Please Enter  Remark ");
+                return false;
+            }
+            $("#FormSO").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("EditSOOrder", "Enquiry", FormMethod.Post, new { Id = "FormSO" }))
+{
+    <html>
+    <body>
+        <br>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="CompCode">PurchaseOrderId</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldSOId, new { @class = "form-control", id = "OldSOId" })
+                        @Html.TextBoxFor(model => model.PurchaseOrderId, new { @readonly = "readonly", @class = "form-control", id = "PurchaseOrderId" })
+                    </div>
+                </td>
+                <td>
+                    <label for="CompCode">PO Number</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldPurchaseOrderNumber, new { @class = "form-control", id = "OPONO" })
+                        @Html.TextBoxFor(model => model.PurchaseOrderNumber, new {  @class = "form-control", id = "PONO" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="PODate">PO Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldPODate, new { @class = "form-control", id = "OldPODate" })
+                        <div class="">  
+                          <input type="text" value="@Model.PODate" id="uuu" name="PODate"/>                                                           
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <label for="NAVPONO">Sales Order Number</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.SOId, new { @class = "form-control", id = "SOId" })
+                        @Html.ValidationMessageFor(model => model.SOId)
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td width="110px">
+                    <div class="">
+                        <label>Remark</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.OldRemark, new { @class = "form-control", id = "OREM" })
+                        @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 800Px; max-width: 540px;", @class = "form-controal", id = "Rem" })
+                    </div>
+                </td>               
+            </tr>
+        </table>
+        <table>
+            <tr>               
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save12"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+@Html.EJ().ScriptManager()

@@ -1,0 +1,98 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwelve
+
+@{
+    ViewBag.Title = "DataLevelTwelve";
+}
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table style="padding-bottom:10px">
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Item Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ItemName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>MPN:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.MPN, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Brand Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.BrandName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Rate:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Rate, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>VendorName:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.VendorName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Vendor Rate:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.VendorRate, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>SPQ:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.SPQ, new { @style = "width: 250px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>MOQ:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.MOQ, new { @readonly = "readonly", @class = "form-control" })
+        </td>        
+    </tr>   
+</table>
+<table>
+    <tr class="spaceUnder">
+        <td style="width:125px">
+            <label>Remark:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Remark, new { @style = "width: 250px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+<table>
+    <tr class="spaceUnder">
+        <td style="width:125px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Description, new { @style = "width: 480px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+
+@Html.EJ().ScriptManager()
+

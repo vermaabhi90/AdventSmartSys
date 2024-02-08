@@ -1,0 +1,702 @@
+﻿@model SmartSys.BL.Tmleave.ProjectTravelRequestModel
+
+@{
+    ViewBag.Title = "CreateTravelRequest";
+}
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $(".AutoComp").select2({
+            placeholder: "Please Select",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+@if (Model.RequestId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit  Travel Request Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Travel Request Detail
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.edit').on('click', function (e) {
+            e.preventDefault();
+
+
+            var RequestId = $(this).closest('.edit').attr('RequestId');
+            var BudgetTitle = $(this).closest('.edit').attr('BudgetTitle');
+
+            var EditBudget = "EditBudget"; BudgetTitle
+
+            //bootbox.confirm("Are you sure to delete ?", function (result) {
+            //    if (result) {
+
+            var path = '@Url.Content("~/TMLeave/AddTravelBudget")' + "?RequestId=" + RequestId + "&EditBudget=" + EditBudget + "&BudgetTitle=" + BudgetTitle
+            event.preventDefault();
+            window.location.replace(path);
+
+            //    }
+
+            //});
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<style type="text/css">
+    /*.modal-content {
+        width: 90% !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }*/
+
+    .Width {
+        width: 350px;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var Description = $('#Description').val();
+            var Customer = $('#Customer').val();
+            var Vendor = $('#Vendor').val();
+            var EmpId = $('#Employee').val();
+            var Status = $('#Status').val();
+            if (EmpId.toString() == "") {
+                alert("Please Select Employee Name ");
+                return false;
+            }
+            if (Description.toString() == "") {
+                alert("Please Enter Description ");
+                return false;
+            }
+            if (Status.toString() == "") {
+                alert("Please Enter Status");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var status = $("#Status").val();
+        if (status == "APPROVED") {
+            $(".drp").attr("disabled", "disabled");
+            $(".AutoComp").attr("disabled", "disabled");
+        }
+    });
+</script>
+@using (Html.BeginForm("CreateTravelRequest", "TMLeave", FormMethod.Post, new { id = "Form1", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            @Html.HiddenFor(model => model.PurposeofVisitDocs)
+
+            @if (Model.RequestId > 0)
+            {
+                <td>
+
+                    <label for="RequestId">RequestId:</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.TextBoxFor(model => model.RequestId, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.RequestId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.RequestId, new { @class = "form-control", @readonly = "readonly" })
+            }
+
+            <td>
+
+                <label for="EmpId">Employee Name:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("EmpId", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Please Select Employee", new { id = "Employee", style = "width:275px", @class = "drp form-control" })
+                    @Html.ValidationMessageFor(model => model.EmpId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td id="CustomerDrp">
+
+                <label for="CustomerId">Customer Name:</label>
+            </td>
+            <td id="CustomerDrpl">
+                <div class="">
+                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Please Select Customer", new { id = "Customer", style = "width:275px", @class = "cmp AutoComp form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td id="VendorDrp">
+                <label for="VendorId">Vendor Name:</label>
+            </td>
+            <td id="VendorDrpL">
+                <div class="">
+                    @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Please Select Vendor", new { id = "Vendor", style = "width:275px", @class = "cmp AutoComp form-control" })
+                    @Html.ValidationMessageFor(model => model.VendorId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            @if (Model.RequestId > 0)
+            {
+                <td>
+                    <label for="Status">Status:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Status, new { @class = "form-control", id = "Status", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            }
+            <td>
+                <label for="ItemName">Visit Purpose Docs:</label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-info" />
+                </div>
+            </td>
+        </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="Description">Description:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "Description", @style = "min-width:620px" })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+
+                @if (Model.RequestId > 0)
+                {
+                    <td>
+                        <label for="Approver Remark">Approver Remark:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => model.ApproverRemark, new { @class = "form-control", id = "ApproverRemark", @readonly = "readonly", @style = "min-width:620px" })
+                            @Html.ValidationMessageFor(model => model.ApproverRemark, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+
+
+                }
+
+            </tr>
+            <tr>
+
+                @if (Model.RequestId > 0)
+                {
+                    <td>
+                        <label for="ReviewdRemark">Reviewd Remark:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => model.ReviewdRemark, new { @class = "form-control", id = "ReviewdRemark", @readonly = "readonly", @style = "min-width:620px" })
+                        </div>
+                    </td>
+                }
+            </tr>
+            </table>
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    @if (Model.RequestId > 0)
+                {
+                        <td>
+                            <label for="ApproverBy">Approver By:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ApproverBy, new { @class = "form-control", id = "ApproverId", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.ApproverBy, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="ApprovedDate">Approved Date:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ApprovedDate, new { @class = "form-control", id = "ApprovedDate", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.ApprovedDate, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    @if (Model.RequestId > 0)
+                {
+                        <td>
+                            <label for="ReviewedBy">Reviewed By:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ReviewedBy, new { @class = "form-control", id = "ReviewedBy", @readonly = "readonly" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="ReviewedDate">Reviewed Date:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ReviewedDate, new { @class = "form-control", id = "ReviewedDate", @readonly = "readonly" })
+                            </div>
+                        </td>
+                    }
+                </tr>
+                <tr>
+
+                    @if (Model.RequestId > 0)
+                {
+                        <td>
+                            <label for="CreatedBy">Created By:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", id = "CreatedBy", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="CreatedDate">Created Date:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+
+
+                    }
+                <tr>
+
+                    @if (Model.RequestId > 0)
+                {
+
+                        <td>
+                            <label for="ModifiedBy">Modified By:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td>
+
+                            <label for="ModifiedDate">Modified Date:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                    }
+                </tr>
+
+            </table>
+
+    if (Model.RequestId > 0)
+    {
+            <div style="width:100%">
+                @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+                    {
+                    data.Add().ID("Participants").Text("Participants").ContentTemplate(
+                    @<div>
+                      @if (Model.Status == "NEW" || Model.Status == "REJECTED")
+                      {
+                            <table>
+                                <tr>
+                                    <td>
+                                        <button type="button" class="AddParticipant btn-info glyphicon glyphicon-leaf"> Add Participant</button>
+                                    </td>
+                                </tr>
+                            </table>
+                                <br>
+                        }
+                        @if (Model.LstTravelRequestParticipant.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.Tmleave.ProjectTravelRequestModel>("grdparticipant")
+                            .Datasource(Model.LstTravelRequestParticipant)
+                            .AllowPaging()
+                            .AllowSorting()
+                            .EnableHeaderHover()
+                            .AllowResizing()
+                            .AllowScrolling()
+                            .PageSettings(p => { p.PageSize(20); })
+                            .EditSettings(e => e.AllowAdding().AllowEditing())
+                            .ContextMenuSettings(contextMenu =>
+                            {
+                                contextMenu.EnableContextMenu()
+                                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord));
+                            })
+                            .ToolbarSettings(toolbar =>
+                            {
+                                toolbar.ShowToolbar().ToolbarItems(items =>
+                                {
+                                    items.AddTool(ToolBarItems.Add);
+                                });
+                            })
+                            .EnableAltRow(true)
+                            .AllowSorting(true)
+                            .Columns(col =>
+                            {
+                                col.Field("ParticipantId").HeaderText("ParticipantId").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                                col.Field("Name").HeaderText("Participant Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                                col.Field("ParticipantType").HeaderText("Participant Type").TextAlign(TextAlign.Center).Width(150).Add();
+                                col.HeaderText("Remove").Template("#RemoveParticipant").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                            })
+                            .ClientSideEvents(eve =>
+                            {
+                                eve.ActionBegin("toolClickParticipant");
+                                eve.ActionComplete("complete");
+                                eve.ContextClick("contextclickparticipant");
+                            })
+                                                            )
+                                                        </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Participants Details !!!</label>
+                            </div>
+                        }
+                    </div>);
+                    data.Add().ID("Budget").Text("Budget").ContentTemplate(
+                    @<div>
+                    @if (Model.Status == "NEW" || Model.Status == "REJECTED")
+                    {
+                    <table>
+                        <tr>
+                            <td>
+                                <button type="button" class="AddTravelBudget btn-xs btn-info glyphicon glyphicon-leaf"> Add Travel Budget</button>
+                            </td>
+                        </tr>
+                    </table>
+                    }
+
+                    @if (Model.LstTravelBudget.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.Tmleave.TravelBudgetModel>("grdBudgetList")
+        .Datasource(Model.LstTravelBudget)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+         .EditSettings(e => e.AllowAdding().AllowEditing())
+                    .ContextMenuSettings(contextMenu =>
+                    {
+                        contextMenu.EnableContextMenu()
+                              .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                              .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+                    })
+                    .ToolbarSettings(toolbar =>
+                    {
+                        toolbar.ShowToolbar().ToolbarItems(items =>
+                        {
+                            items.AddTool(ToolBarItems.Add);
+                            items.AddTool(ToolBarItems.Edit);
+                        });
+                    })
+
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("BudgetTitle").HeaderText("Budget title ").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Budget").HeaderText("Budget").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("FileAttachment").HeaderText("FileAttachment").TextAlign(TextAlign.Center).Width(150).Add();
+            col.HeaderText("Open").Template("#OpenDOc").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                    .ClientSideEvents(eve =>
+                    {
+                        eve.ActionBegin("toolClickBudget");
+                        eve.ActionComplete("complete");
+                        eve.ContextClick("contextclickBudget");
+                    })
+
+
+                            )
+                        </div>
+
+                    }
+
+
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Information about Participants Details !!!</label>
+                        </div>
+                    }
+                </div>);
+
+                    if (Model.Status == "APPROVED")
+                    {
+                        data.Add().ID("PostCmt").Text("Post Comment").ContentTemplate(
+                            @<div>
+                                 @Html.TextAreaFor(model => model.PostComment, new { @class = "form-control", @maxlength = "500", id = "PostComment", @style = "min-width:620px" })   
+                            </div>);
+                        }
+                    })
+
+                    .EnablePersistence(true)
+                    .Render();
+
+}
+            </div>
+
+    }
+    <table>
+        <tr>
+            <td>
+                <div class="btn" aria-label="...">
+                    @Html.ActionLink(" Back", "GetTravelRequestList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })
+                </div>
+            </td>
+            @if (Model.Status != "REVIEWED")
+            {
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save  save" id="Validation"> Save</button>
+                    </div>
+
+                </td>
+                if (Model.Status == "NEW" || Model.Status == "REJECTED" && Model.Status != "")
+                { 
+                    <td>
+                        <div class="btn" aria-label="...">
+                            @Html.ActionLink(" Send For Review", "RequestSendForReview", new { RequestId = Model.RequestId, statusCode = 56 }, new { @class = "btn-xs btn-success glyphicon glyphicon-Ok" })
+                        </div>
+
+                    </td>
+                }
+            }
+    </table>
+            }
+
+@{
+
+    Html.EJ()
+        .Dialog("AddParticipantDetails")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#AddParticipantDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#AddParticipantDetails").ejDialog("open");
+
+        }
+
+</script>
+
+<script>
+        $(document).ready(function () {
+
+            $('.AddParticipant').click(function (e) {
+                document.getElementById("Title").innerHTML = 'Add Participant Details';
+                var RequestId=  @Model.RequestId;
+                var path = '@Url.Content("~/TMLeave/AddParticipantsCustomer")' + "?RequestId=" + RequestId
+                $("#AddParticipantDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#AddParticipantDetails").ejDialog("open");
+
+            });
+
+        });
+</script>
+<script>
+        function toolClickParticipant(args) {
+            if(args.requestType == "add")
+            {
+                var status1 =$("#Status").val();
+                if (status1 == "NEW" || status1 == "REJECTED")
+                {   
+                document.getElementById("Title").innerHTML = 'Add Participant';
+             var path = '@Url.Content("~/TMLeave/AddParticipantsCustomer")' + "?RequestId=" + @Model.RequestId
+                $("#AddParticipantDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#AddParticipantDetails").ejDialog("open");
+                }
+                else
+                {
+                    alert("You can not Add Participant After Reviewed or Approved !");
+                }
+                }
+            return false;
+
+        }
+</script>
+
+<script>
+        $(document).ready(function () {
+
+            $('.AddTravelBudget').click(function (e) {
+               
+                    document.getElementById("Title").innerHTML = 'Add Budget Details';
+                    var path = '@Url.Content("~/TMLeave/AddTravelBudget")' + "?RequestId=" + @Model.RequestId
+                    $("#AddParticipantDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#AddParticipantDetails").ejDialog("open");
+                
+            });
+
+        });
+</script>
+<script>
+        function toolClickBudget(args) {
+            if(args.requestType == "add")
+            {
+                var status1 =$("#Status").val();
+                if (status1 == "NEW" || status1 == "REJECTED")
+                {                   
+                document.getElementById("Title").innerHTML = 'Add Travel budget';
+
+              var path = '@Url.Content("~/TMLeave/AddTravelBudget")' + "?RequestId=" + @Model.RequestId
+                $("#AddParticipantDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                    $("#AddParticipantDetails").ejDialog("open");
+                }
+                else
+                {
+                    alert("You can not Add Budget After Reviewed or Approved !");
+                }
+
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    if (status1 == "NEW" || status1 == "REJECTED")
+                    {  
+                        document.getElementById("Title").innerHTML = 'Edit Travel Budget';
+                        var grid = $("#grdBudgetList").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var BudgetTitle = result[0]["BudgetTitle"];
+                        var path = '@Url.Content("~/TMLeave/AddTravelBudget")' + "?RequestId=" + @Model.RequestId + "&BudgetTitle=" + BudgetTitle
+                        $("#AddParticipantDetails").ejDialog({
+                            contentUrl: path,
+                            contentType: "ajax"
+                        });
+                        $("#AddParticipantDetails").ejDialog("open");
+                    
+                    }
+                    else
+                    {
+                        alert("You can not Edit Budget After Reviewed or Approved !");
+                    }
+                }
+            return false;
+        }
+</script>
+
+
+
+<script id="RemoveParticipant" type="text/x-jsrender">
+  
+        <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/TMLeave/DeleteTravelRequestParticipants?RequestId=@Model.RequestId&amp;ParticipantId={{:ParticipantId}}&amp;ParticipantsType={{:ParticipantType}}"> Remove</a>    
+</script>
+<script id="OpenDOc" type="text/x-jsrender">
+    {{if FileAttachment !='' }}
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/TMLeave/Download?RequestId=@Model.RequestId&amp;Filename={{:FileAttachment}}"> Open</a>
+    {{else}}
+
+    {{/if}}
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+} 

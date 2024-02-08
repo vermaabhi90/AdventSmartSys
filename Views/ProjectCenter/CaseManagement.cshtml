@@ -1,0 +1,157 @@
+﻿@model SmartSys.BL.Project.TaskDetails
+
+
+@Scripts.Render("~/bundles/jquery")
+<script src="@Url.Content("~/Scripts/jquery.easing.1.3.min.js")"></script>
+<script src="@Url.Content("~/Scripts/ej/ej.web.all.min.js")"></script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var TaskName = $('#TaskName').val();
+            var StartDate = $('#StartDate').val();
+            var EndDate = $('#EndDate').val();
+            var ResourceID = $('#ResourceID').val();
+            //if (StartDate > EndDate)
+            //{   alert("End Date Should be Greater Than StartDate");
+            //    return false;
+            //}
+
+            if (TaskName.toString() == "") {
+                alert("Please Enter Task Name ");
+                return false;
+            }
+            if (StartDate.toString() == "") {
+                alert("Please Select StartDate ");
+                return false;
+            }
+            if (EndDate.toString() == "") {
+                alert("Please Select EndDate ");
+                return false;
+            }
+            if (ResourceID.toString() == "") {
+                alert("Please Select ResourceID ");
+                return false;
+            }
+            $("#Case").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+@if (Model.TaskID > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Edit Case Task
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Create Case Task
+    </div>
+}
+
+@using (Html.BeginForm(new { id = "Case" }))
+{
+    <table style="margin-left:20px;">
+
+        <tr>
+            <td>
+                <label for="ItemName">Task Name:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.HiddenFor(model => model.ProjectId)
+                    @Html.HiddenFor(model => model.TaskID)
+                    @Html.TextBoxFor(model => model.TaskName, new { id = "TaskName" })
+                    @Html.ValidationMessageFor(model => Model.TaskName)
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">Start Date:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @if (Model.TaskID > 0)
+                    {
+                        @Html.EJ().DatePickerFor(model => model.StartDate)
+                    }
+                    else
+                    {
+                        @Html.EJ().DatePicker("StartDate")
+                    }
+
+
+                    @Html.ValidationMessageFor(model => model.StartDate)
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">End Date:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @if (Model.TaskID > 0)
+                    {
+                        @Html.EJ().DatePickerFor(model => model.EndDate)
+                    }
+                    else
+                    {
+                        @Html.EJ().DatePicker("EndDate")
+                    }
+                    @Html.ValidationMessageFor(model => model.EndDate)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">Resources:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownList("Employee", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Select Resource", new { id = "ResourceID", @Class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">Description:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.Description, new { })
+
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+            </td>
+
+        </tr>
+    </table>
+
+    <table style="margin-left:30px;">
+        <tr>
+            @if (Model.Modal == 0)
+            {
+                <td>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    @Html.ActionLink(" Back", "Index", null, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+
+                </td>
+            }
+
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn btn-info glyphicon glyphicon-save save"> Save</button>
+                </div>
+            </td>
+
+        </tr>
+
+
+    </table>
+}
+@Html.EJ().ScriptManager()

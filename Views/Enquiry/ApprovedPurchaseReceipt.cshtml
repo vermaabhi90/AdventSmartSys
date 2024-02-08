@@ -1,0 +1,679 @@
+﻿@model SmartSys.BL.Enquiry.ReceiptModel
+
+@{
+    ViewBag.Title = "ApprovedPurchaseReceipt";
+}
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Approve Purchase Receipt
+</div>
+
+@using (Html.BeginForm("PurchaseCreateRecipt", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+
+            <td>
+                <label>Receipt ID</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReceiptId, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Company</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.CompCode, new { id = "ComDoc" })
+                    @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+            <td>
+                <label>Vendor</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.VendorId, new { id = "VendId" })
+                    @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+
+        </tr>
+        <tr>
+
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.FreightForwarderId, new { id = "FreightForwarderId" })
+                    @Html.TextBoxFor(model => model.FreightForwarderName, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+            <td>
+                <label>Airway Bill No</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.FFRef_No, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+                <label>Permit Type</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PermitType, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label>Currency</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Currency, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+            <td>
+                <label>Vendor Invoice No</label>
+            </td>
+
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.SupplierInvN0, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+
+            <td>
+                <label>Vendor Invoice Date</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.EJ().DatePickerFor(model => model.SupplierInvDate).ReadOnly(true)
+                </div>
+            </td>
+
+        </tr>
+
+        @if (Model.StatusId == 27 || Model.StatusId == 24)
+                {
+            <tr>
+
+                <td>
+                    <label>Reviewed By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ReviewedBy, new { @class = "form-control", @readonly = "Readonly", id = "ReviewedBy" })
+                    </div>
+                </td>
+                <td>
+                    <label for="ReviewedDate">Reviewed Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ReviewedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Reviewed Remark
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.ReviewedRemark, new { @class = "form-control", id = "ReviewedRemark", style = "width:300px;max-width:500px", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+        }
+        <tr>
+            <td>
+                <label for="ItemName">Receipt File:</label>
+            </td>
+            @if (Model.ReceiptFile != null && Model.ReceiptFile.ToString() != "")
+            {
+                <td>
+                    <div class=" input-group-btn">
+                        @Html.ActionLink(" Open", "InvoiceDownLoad", new { Filename = Model.ReceiptFile }, new { @class = "btn btn-info glyphicon glyphicon-open" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <label>There is no Receipt File !!!</label>
+                </td>
+
+            }
+            <td>
+                <label>
+                    Remark:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    <textarea id="ApprovedRemark" name="ApprovedRemark" style="width:300px;max-width:500px" class="abc form-control e-ejinputtext"></textarea>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div style="width:100%">
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+            {
+            data.Add().ID("Carton").Text("Carton").ContentTemplate(
+                @<div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="table-responsive" style="height:300px;width:90%">
+                                <table id="CartonTbl" class="table table-hover">
+                                    <thead>
+                                        <tr style="background-color:#D6EAF8">
+                                            <div style="position:relative">
+                                                @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdCartDetailLst")
+            .Datasource((IEnumerable<object>)ViewBag.LstCart)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .PageSettings(p => { p.PageSize(20); })
+            .EnableAltRow(true)
+            .AllowSorting(true)
+            .FilterSettings(filter =>
+            {
+                filter.FilterType(FilterType.Excel);
+            })
+
+            .Columns(col =>
+            {
+                col.Field("CartonId").HeaderText("Carton Id").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Weight").HeaderText("Weight").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Length").HeaderText("Length").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Width").HeaderText("Width").TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Height").HeaderText("Height").TextAlign(TextAlign.Left).Width(90).Add();
+                col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(160).Add();
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclickCart");
+            })
+                                                )
+                                            </div>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable1"></tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div> );
+            data.Add().ID("ItemDetail").Text("Item").ContentTemplate(
+                @<div id="gridEvent2">
+                    <table>
+                        <tr>
+
+                            <td>
+                                <div style="position:relative">
+                                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDetailLst")
+                .Datasource((IEnumerable<object>)@Model.LstReceiptModel)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+                 .AllowGrouping()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                .GroupSettings(group => { group.GroupedColumns(col => { col.Add("MPN"); }).EnableDropAreaAnimation(false); })
+                 .SummaryRow(row =>
+                 {
+                     row.ShowTotalSummary(false)
+                     .SummaryColumns(col =>
+                     {
+                         col.SummaryType(SummaryType.Sum)
+                         .DisplayColumn("Quantity")
+                         .DataMember("Quantity")
+                         .Prefix("Total Quantity= ")
+                         .Add();
+                     }).Add();
+                 })
+                 .SummaryRow(row =>
+                 {
+                     row.ShowTotalSummary(false)
+                     .SummaryColumns(col =>
+                     {
+                         col.SummaryType(SummaryType.Sum)
+                         .DisplayColumn("InvoiceAmount")
+                         .DataMember("InvoiceAmount")
+                         .Prefix("Total  Amount= ")
+                         .Add();
+                     }).Add();
+                 })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .ToolbarSettings(toolbar =>
+                {
+                    toolbar.ShowToolbar().ToolbarItems(items =>
+                    {
+                        items.AddTool(ToolBarItems.Edit);
+                    });
+                })
+        .Columns(col =>
+        {
+            col.Field("ReceiptId").HeaderText("Receipt Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemId").HeaderText("Item").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("PO_No").HeaderText("PO_No").Width(160).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Dimension").Visible(true).AllowEditing(true).HeaderText("Dimension").Width(70).Add();
+            col.Field("Country").HeaderText("COO").Width(70).Add();
+            col.Field("InvoiceAmount").HeaderText("Invoice Amount").Width(70).Add();
+            col.Field("ReceiptDetailId").HeaderText("ReceiptDetailId").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("SupplierInvN0").HeaderText("SupplierInvN0").Visible(false).TextAlign(TextAlign.Center).Width(60).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+               .ChildGrid(child =>
+               {
+                   child.Datasource((IEnumerable<object>)@Model.LstReceiptTaxModel)
+                   .QueryString("ReceiptDetailId")
+                   .AllowPaging()
+                   .AllowScrolling(true)
+                     .AllowResizing(true)
+                   .ScrollSettings(scroll => { scroll.Width(1200); })
+                   .MinWidth(1200)
+                   .Columns(col =>
+                   {
+                       col.Field("ReceiptDetailId").Visible(false).AllowEditing(false).HeaderText("ReceiptDetailId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).AllowFiltering(true).Add();
+                       col.Field("TaxId").Visible(false).HeaderText("Tax Id").TextAlign(TextAlign.Center).Width(40).Add();
+                       col.Field("TaxName").HeaderText("Tax Name").TextAlign(TextAlign.Left).Width(30).Add();
+                       col.Field("TaxRate").HeaderText("Tax Rate").TextAlign(TextAlign.Left).Width(50).Add();
+                       col.Field("PaidByVendor").HeaderText("Paid By Vendor").Width(50).Add();
+                       col.Field("TaxAmount").HeaderText("Tax Amount").TextAlign(TextAlign.Left).Width(50).Add();
+                       col.Field("ModifiedBy").HeaderText("Modified By").Width(50).Add();
+                       col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(50).Add();
+                   });
+
+               })
+                                    )
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </div> );
+
+            data.Add().ID("LocalCharge").Text("OtherCharges").ContentTemplate(
+                @<div>
+                    <div id="table-wrapper">
+                        <div id="table-scroll" style="overflow-y:scroll;max-height:300px">
+                            <table class="table table-hover">
+                                <thead>
+
+                                    <tr style="background-color:#D6EAF8">
+                                        <div style="position:relative">
+                                            @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdOtherchargesLst")
+            .Datasource((IEnumerable<object>)ViewBag.LstOtherChages)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .PageSettings(p => { p.PageSize(20); })
+            .EnableAltRow(true)
+            .AllowSorting(true)
+            .FilterSettings(filter =>
+            {
+                filter.FilterType(FilterType.Excel);
+            })
+
+            .Columns(col =>
+            {
+                col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Amount").HeaderText("Amount").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("ChargesDescription").HeaderText("Charges Description").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclickCart");
+            })
+                                            )
+                                        </div>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="Items"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div> );
+            })
+              .Render();}
+
+    </div>
+    <table>
+        <tr>
+            <td>
+                <div class="">
+                    @Html.ActionLink(" Back", "GetApprovePurchaseReceiptList", null, new { @class = "btn-sm btn-info glyphicon glyphicon-hand-left" })
+                </div>
+
+            </td>
+            <td>
+                @*<div class="">
+                    @Html.ActionLink(" Approved", "ReviewRejectPurchaseReceipt", new { StatusId = 24, ReceiptId = Model.ReceiptId,Type="Approve" }, new { @class = "btn-sm btn-success glyphicon glyphicon-ok" })
+                </div>*@
+                <div class="btn" aria-label="...">
+                    <button type="button" id="Approved" class="btn-xs btn-info glyphicon glyphicon-eye-close"> Approved</button>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="button" id="Reject" class="btn-xs btn-info glyphicon glyphicon-eye-close"> Reject</button>
+                </div>
+                @*<div class="">
+                    @Html.ActionLink(" Reject", "ReviewRejectPurchaseReceipt", new { StatusId = 25, ReceiptId = Model.ReceiptId, Type = "Approve" }, new { @class = "btn-sm btn-danger glyphicon glyphicon-remove" })
+                </div>*@
+            </td>
+        </tr>
+    </table>
+}
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("Edit / Create Item Enquiry").ContentTemplate(@<div>
+
+
+      
+            <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Edit / Create Item Enquiry
+            </div>
+            <table align="center" style="border-collapse:separate;border-spacing: 0 6px;">
+
+                <tr>
+                    <td>
+                        <label>Invoice</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            <input type="text" id="PO_No" name="PO_No" class="form-control" readonly="readonly" />
+                        </div>
+                    </td>
+
+
+                    <td width="100px">
+                        <label>Item:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="ItemXY" style="width:250px" name="ItemXY" class="form-control" readonly="readonly" />
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td width="100px">
+                        <label>Supplier Inv N0:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                           
+                            @Html.TextBoxFor(model => model.SupplierInvN0, new { id= "SupplierInvN0", @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                    <td width="100px">
+                        <label>Supplier Inv Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                          
+                            @Html.EJ().DatePicker("Date").Value(Model.SupplierInvDate)
+                        </div>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td width="100px">
+                        <label>Quantity:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="number" id="Quantity" name="Quantity" class="form-control" readonly="readonly" />
+                        </div>
+                    </td>
+                    <td width="100px">
+                        <label>Invoice Amount:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="number" id="InvoiceAmount" name="InvoiceAmount" class="form-control" readonly="readonly" />
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+            <br />
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive" style="height:300px;width:90%">
+
+                        <table id="taxTbl" class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+                                    <th style="text-shadow :0 1px black;">Tax Id</th>
+                                    <th style="text-shadow :0 1px black;">Name</th>
+                                    <th style="text-shadow :0 1px black;">Rate</th>
+                                    <th style="text-shadow :0 1px black;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myTable1"></tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+                    </div>
+                </div>
+            </div>
+
+        
+    </div>)
+         .Width(1100)
+         .Height(500)
+        
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+    }
+</div>
+
+
+
+
+<script>
+    function toolClick(args) {
+
+        if(args.requestType == "add")
+        {
+                return false;
+        }
+        if (args.requestType == "beginedit") {
+
+            $("#PO_No").val(args.row.children().eq(3).text());
+            $("#ItemXY").val(args.row.children().eq(2).text());
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetReviewItemTaxDetail",  //Update is Server side method
+                data: { ReceiptDetailId: args.row.children().eq(9).text() },
+                success: function (result) {
+                    $('#taxTbl tbody > tr').remove();
+                    $.each(result, function (i,data) {
+                        $('#taxTbl').append('<tr><td>'+ data.TaxId +'</td><td>' + data.TaxName  +'</td><td>' + data.TaxRate +'</td><td>' + data.TaxAmount +'</td><td>' + '</td></tr>');
+                    });
+                },
+                error: {
+
+                }
+            });
+
+            $("#COOId").val(args.row.children().eq(6).text());
+            $("#CartonId").val(args.row.children().eq(5).text());
+                $("#Quantity").val(args.row.children().eq(5).text());
+                $("#InvoiceAmount").val(args.row.children().eq(8).text());
+                $("#SupplierInvN0").val(args.row.children().eq(10).text());
+                $("#dialogIcon").ejDialog("open");
+                return false;
+            }
+    }
+</script>
+
+<script type="text/javascript">
+    function onDialogClose(args) {
+
+        //$("#ItemDrp").val('1').trigger('change');
+        //$("#Quantity").val(null);
+        $("#Quantity").val(null);
+        $("#SupplierInvN0").val(null);
+        $(".SupplierInvDate").val(null);
+        $("#InvoiceAmount").val(null);
+        $('#divLoading').hide();
+        return false;
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        var recepId = $("#ReceiptId").val();
+        if (recepId > 0)
+        {
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetCartonDetai",  //Update is Server side method
+                data: { Recipt: $("#ReceiptId").val() },
+                success: function (result) {
+                    var obj = $("#grdCartDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    //$('#taxTbl tbody > tr').remove();
+                    //$.each(result, function (i,data) {
+                    //    $('#CartonTbl').append('<tr><td>'+ data.CartonId +'</td><td>' + data.Weight  +'</td><td>' + data.Height +'</td><td>' + data.Width +'</td><td>' + data.Length +'</td><td>' + data.Remark +'</td><td>' + '</td></tr>');
+                    //});
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+            var path = '@Url.Action("GetOtherChargesList")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: {ReceiptId: $("#ReceiptId").val()},
+                success: function (result) {
+                    var obj = $("#grdOtherchargesLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    //data = serverdata;
+                    //var row = "";
+                    //$.each(data, function (index, item) {
+                    //    row += "<tr><td>" + item.Currency + "</td><td>" + item.Amount + "</td><td>" + item.ChargesDescription + "</td></tr>";
+
+                    //});
+                    //$("#Items").html(row);
+
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve .' + ex);
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#Approved").click(function () {
+            var ApprovedRemark = $("#ApprovedRemark").val();
+            if (ApprovedRemark == "")
+            {
+                alert("Please Enter Remark");
+                return false;
+            }
+
+            var StatusId = 24;
+            var Type = "Approve";
+
+            var path = '@Url.Content("~/Enquiry/ReviewRejectPurchaseReceipt")' + "?StatusId=" + StatusId + "&ReceiptId=" + @Model.ReceiptId + "&Type=" + Type + "&ReviewedApprovedRejectRemark=" + ApprovedRemark
+
+            window.location.replace(path);
+            return false;
+        });
+
+
+                    $("#Reject").click(function () {
+                        var ApprovedRemark = $("#ApprovedRemark").val();
+                        if (ApprovedRemark == "") {
+                            alert("Please Enter Remark");
+                            return false;
+                        }
+                        var StatusId = 25;
+                        var Type = "Approve";
+
+                        var path = '@Url.Content("~/Enquiry/ReviewRejectPurchaseReceipt")' + "?StatusId=" + StatusId + "&ReceiptId=" + @Model.ReceiptId + "&Type=" + Type + "&ReviewedApprovedRejectRemark=" + ApprovedRemark
+
+                        window.location.replace(path);
+                        return false;
+                    });
+
+
+
+    });
+</script>
+

@@ -1,0 +1,235 @@
+﻿@model SmartSys.BL.Project.ProjectTypeTaskDetails
+
+@{
+    ViewBag.Title = "VwProjectTypeUpdate";
+}
+@{
+    var gridProjectTaskDocDetail = new WebGrid(source: Model.LstProjectTaskDoc, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+
+}
+<style type="text/css">
+    .modal-content {
+        width: 90% !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Project Task Type Details
+</div>
+
+@using (Html.BeginForm("EditMode", "ProjectCenter", FormMethod.Post, new { Id = "MOM" }))
+{
+
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr style="width:400px">
+            <td>
+                <label for="ItemName">Project Type Id:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ProjectTypeId, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ProjectTypeId)
+                </div>
+            <td>
+                <label for="ItemName">Project Type Task ID:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ProjectTypeTaskID, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ProjectTypeTaskID)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">TaskName:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TaskName, new { required = "required", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TaskName)
+                </div>
+            </td>
+        </tr>
+    </table>
+                <table>
+                     <tr>
+                    <td>
+                        <label for="ItemName">Description:</label>
+                    </td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td style="width:500px">
+                                    <div class="">
+                                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", style="width:600px"})
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+
+                    </td>
+                    </tr>
+                </table>
+                <br>
+                <div style="width:100%">
+                    @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+                        {
+                        data.Add().ID("AttachMent").Text("Attachment").ContentTemplate(
+                            @<div>
+
+                                <table>
+                                    <tr>
+                                        <td >
+                                        
+                                        <button type="button" class="btn-xs btn-info glyphicon glyphicon-upload UploadDoc"> Upload</button>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                @if (Model.LstProjectTaskDoc.Count > 0)
+                                {
+                                    <div style="position:relative">
+                                        @(Html.EJ().Grid<SmartSys.BL.Project.ProcjectTypeDocModel>("grdCommentList")
+         .Datasource(Model.LstProjectTaskDoc)
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .AllowScrolling()
+            .PageSettings(p => { p.PageSize(20); })
+
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("FileName").HeaderText("FileName").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(160).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(100).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(100).Visible(true).Add();
+            col.HeaderText("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                                        )
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info" role="alert">
+                                        <label>Sorry! There is No Information about Attachment Details !!!</label>
+                                    </div>
+                                }
+                            </div>);
+                        })
+        .SelectedItemIndex(0)
+        .Render();}
+
+                </div>
+                <table>
+                    <tr>
+                        <td>
+                            @Html.ActionLink(" Back", "VwProjectType", new { ProjectTypeId = Model.ProjectTypeId }, new { @class = "btn-sm btn-info glyphicon glyphicon-hand-left" })
+                        </td>
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                        }
+
+<script id="OpenDoc" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/ProjectCenter/DocDownload?ProjectTypeTaskID=@Model.ProjectTypeTaskID&amp;ProjectTypeId=@Model.ProjectTypeId&amp;Filename={{:FileName}}">  Open</a>
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('.UploadDoc').click(function (e) {
+            document.getElementById("Title12").innerHTML = 'Upload Document';
+            var path = '@Url.Content("~/ProjectCenter/PrjectTaskAttachment")' + "?ProjectTypeId=" + @Model.ProjectTypeId + "&ProjectTypeTaskId=" + @Model.ProjectTypeTaskID
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("CreateContactDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(900)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+</script>

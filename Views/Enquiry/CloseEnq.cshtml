@@ -1,0 +1,139 @@
+﻿@model SmartSys.BL.Enquiry.ReasonModel
+
+@{
+    ViewBag.Title = "CloseEnq";
+}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info ">
+   Close Enquiry
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {            
+                var Reason = $('#Reasondrp').val();
+                var Remark = $('#Remarkabc').val();
+               // alert(Remark);
+                var EnqId=@Model.EnqId;
+                var Status=$('#Status').val();
+                //var Remark=$('#Status').val();
+               // alert(Status)
+                var Source=$('#Source').val();
+               
+                if (Reasondrp.toString() == "") {
+                    alert("Please Select Reason");
+                    return false;
+                }
+                if (Remarkabc.toString() == "") {
+                    alert("Please Enter Remark");
+                    return false;
+                }   
+                
+               // return false;
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/CloseEnq",
+                    data: { Reason: Reason, Remark: Remark, EnqId:EnqId, Source:Source },
+                    success: function (ErrorCode) {
+                        if(ErrorCode==500001)
+                        {
+                            var path = '@Url.Content("~/Enquiry/CloseEnquiryMail")' + "?EnqId=" + EnqId + "&SourcePage=" + Source + "&Status=" + Status +"&Remark=" + Remark ;
+                            event.preventDefault();
+                            window.location.replace(path);
+                            return false;
+                        }
+                        return false;
+                    },
+                    error: function (msg) {
+                        alert("Error " + msg.d.toString());
+                    }
+                });   
+            return false;
+        });
+       
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("CloseEnq", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px;">
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td width="70px">
+                                <label for="EnqId">EnqId </label>
+                            </td>
+
+                            <td>
+                                <div>
+                                    @Html.HiddenFor(model => model.Status, new { id = "Status" })
+                                    @Html.HiddenFor(model => model.Source,new {id= "Source" })
+                                    @Html.TextBoxFor(model => model.EnqId, new { @readonly = "readonly", id = "EnqId", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReasonId)
+                                </div>
+                            </td>
+
+                            <td>
+                                <label for="Reason">Reason</label>
+                            </td>
+
+                            <td>
+                                <div>
+                                    @Html.DropDownList("Reason", (IEnumerable<SelectListItem>)ViewBag.LstReasonDrp, "--- Please Select Reason ---", new { @class = "form-control", style = "width:370px", id = "Reasondrp" })
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+            
+
+            <tr>
+               
+               <td>
+                   <table>
+                       <tr>
+                           <td>
+                               <label for="Remark">Remark </label>
+                           </td>
+                           <td>
+                               <div class="navbar text-info">
+                                   @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 530Px; max-width: 800px;", @class = "form-controal", id = "Remarkabc" })
+                               </div>
+                           </td>
+                       </tr>
+                   </table>
+                                  
+               </td>
+                   
+                
+            </tr>
+        </table>
+        <table>     
+            
+            <tr>
+               
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+    </body>
+</html>
+}

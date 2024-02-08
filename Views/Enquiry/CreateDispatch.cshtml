@@ -1,0 +1,1230 @@
+﻿@model SmartSys.BL.Enquiry.DispatchModel
+
+@{
+    ViewBag.Title = "CreateDispatch";
+}
+
+
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select",
+            allowClear: true,
+            tags: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+@if (Model.DispatchId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Dispatch
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Dispatch
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var DispatchId = $("#DispatchId").val();
+        if (DispatchId > 0)
+        {
+            $("#InvoiceDrp").empty()
+            var path1 = "/Enquiry/GetItemListBySalInvoiceId"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: $("#ComDoc").val(), Invoice_Id: $("#InvoiceDrp").val() },
+                success: function (Brands) {
+                    
+                    $.each(Brands, function (i, Brand) {
+
+                        $('#ItemDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#ItemDrp").val(Brand.Value).trigger("change");
+                        }
+                    });     
+                    
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });
+            return false;
+        }
+        $("#CompCodeDrp").change(function () {
+            $("#CustomerDrp").empty();
+            $("#PO_NODrp").empty();
+               var path = "/Enquiry/CustomerListByCompCode"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+                        $('#CustomerDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#CustomerDrp").val(Brand.Value).trigger("change");
+                        }
+                    });
+                    $('#CustomerDrp').select2('rebuild');
+                    $('#CustomerDrp').select2('refresh');
+                },
+                error: function (ex) {
+                    alert('Err');
+                }
+            });
+            return false;
+           })
+
+        $("#CustomerDrp").change(function () {
+            $("#InvoiceDrp").empty()
+               var path1 = "/Enquiry/InvoiceListByCustomerId"
+               $.ajax({
+                   type: 'POST',
+                   url: path1,
+                   dataType: 'json',
+                   data: { CompCode: $("#CompCodeDrp").val(), CustomerId: $("#CustomerDrp").val() },
+                   success: function (Brands) {
+                       $.each(Brands, function (i, Brand) {
+
+                           $('#InvoiceDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                           if (i == 0) {
+                               $("#InvoiceDrp").val(Brand.Value).trigger("change");
+
+                           }
+                       });
+                       $('#InvoiceDrp').select2('rebuild');
+                       $('#InvoiceDrp').select2('refresh');
+                   },
+                   error: function (ex) {
+                       alert('Please Select item Name');
+                   }
+               });
+               return false;
+           })
+       
+             
+             
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $("#InvoiceDrp").change(function () {
+            $("#ItemDrp").empty()           
+            var path1 = "/Enquiry/GetItemListBySalInvoiceId"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val(), Invoice_Id: $("#InvoiceDrp").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+
+                        $('#ItemDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#ItemDrp").val(Brand.Value).trigger("change");
+                        }
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });
+            return false;
+        })
+        $("#ItemDrp").change(function () {          
+            var path1 = "/Enquiry/GetItemRateByInvoiceId"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: $("#ComDoc").val(), Invoice_Id: $("#InvoiceDrp").val(),ItemId: $("#ItemDrp").val(),CustomerId: $("#CustomerId").val()},
+                success: function (Result) {
+
+                    var mod=Result;
+                    $("#Quantity").val(mod.Quantity);
+                    if(mod.Rate != 0)
+                    $("#Rate").val(mod.Rate);
+                    $("#FinalQuantity").val(mod.Quantity);
+                    var savety= $("#SaveTypetds").val();
+                    if(savety == 2)
+                    {
+                        var Quat=$("#Qunt").val();
+                        if(Quat > 0)
+                        {
+                            $("#Quantity").val(Quat);
+                            $("#Qunt").val(0);
+                        }
+                    }
+                },
+
+            });
+            return false;
+        })
+    });
+</script>
+@using (Html.BeginForm("CreateDispatch", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        @if (Model.DispatchId > 0)
+        {
+            <tr>
+
+                <td>
+                    <label>Dispatch ID</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DispatchId, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.StatusId, new { id = "StatusId", @class = "form-control", @readonly = "Readonly", style = "display:none;" })
+                    </div>
+                </td>
+            </tr>
+        }
+        <tr>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <label>Company</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.DispatchId, new { id = "DispatchId" })
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = " drp form-control", style = "width:310px", id = "CompCodeDrp" })
+                    </div>
+                </td>
+
+                <td>
+                    <label>Customer</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CustomerId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Customer ---", new { @class = "drp form-control", style = "width:310px", id = "CustomerDrp" })
+                    </div>
+                </td>
+
+
+            }
+            else
+            {
+
+                <td>
+                    <label>Company</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.DispatchId, new { id = "DispatchId" })
+                        @Html.HiddenFor(model => model.CompCode, new { id = "ComDoc" })
+                        @Html.TextBoxFor(model => model.CompanyName, new { style = "width:400px", @readonly = "readonly", @class = "form-control" })
+                    </div>
+                </td>
+
+                <td>
+                    <label>Customer</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.CustomerId, new { id = "CustomerId" })
+                        @Html.TextBoxFor(model => model.CustomerName, new { style = "width:400px", @readonly = "readonly", @class = "form-control" })
+                    </div>
+                </td>
+
+            }
+        </tr>
+        <tr>
+            <td width="100px">
+                <label>Invoice</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Invoice_No", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Invoice Number ---", new { @class = "drp form-control", style = "width:310px", id = "InvoiceDrp" })
+
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Invoice_No, new { style = "width:400px", @readonly = "readonly", @class = "form-control", id = "InvoiceDrp" })
+                    </div>
+                </td>
+            }
+            @*<td>
+                    <label>Country Origin</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.COO, new { id = "COO" })
+                        @Html.DropDownList("COO", (IEnumerable<SelectListItem>)ViewBag.CountryLst, "--- Please Select Country ---", new { @class = " drp form-control", style = "width:310px", id = "COO" })
+                    </div>
+                </td>*@
+
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.STLocationId, new { id = "FreightForwarderId" })
+                    @Html.DropDownList("FreightForwarderId", (IEnumerable<SelectListItem>)ViewBag.FFLst, "--- Please Select Company ---", new { @class = " drp form-control", style = "width:310px", id = "FreightForwarderId" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>DispatchDate</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(model => model.DispatchDate).Value(DateTime.Now)
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(model => model.DispatchDate)
+                    </div>
+                </td>
+            }
+            <td>
+                <label>AirWay Bill No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AirwayBillNo, new { style = "width:300px", @class = "form-control", id = "AirwayBillNo" })
+                </div>
+            </td>
+            <td>
+                <label>Export Permit No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ExportPermitNo, new { style = "width:300px", @class = "form-control", id = "ExportPermitNo" })
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+    if (Model.DispatchId > 0)
+    {
+   <div style="width:100%">
+            @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+                {
+                data.Add().ID("Carton").Text("Carton").ContentTemplate(
+                    @<div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="table-responsive" style="height:300px;width:90%">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    Carton:
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    @Html.DropDownList("drpCartons", (IEnumerable<SelectListItem>)ViewBag.Carton, "--- Please Select Carton ---", new { @class = " drp form-control", style = "width:310px", id = "drpCartons" })
+                                                </div>
+                                            </td>                                          
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    Weight:
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    <input type="number" id="CartonWeight" name="CartonWeight" class="form-control">
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <label>
+                                                    Remark:
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    <textarea id="CartonRemark" name="CartonRemark" style="width:300px;max-width:500px" class="abc form-control e-ejinputtext"></textarea>
+                                                </div>
+                                            </td>
+                                 @if (Model.StatusId == 26 || Model.StatusId == 25)
+                                 {
+                                            <td>
+                                                <div class="btn" aria-label="...">
+                                                    <button type="button" id="SaveCartonDetail" class="btn-sm btn-primary glyphicon glyphicon-save"> Add</button>
+                                                </div>
+                                            </td>
+                                 }
+                                        </tr>
+
+                                    </table>
+                                    <table>
+                                        <tr>
+
+                                            <td>
+                                                <div style="position:relative">
+                                                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdCartDetailLst")
+            .Datasource((IEnumerable<object>)@Model.LstDispatchDetail)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .PageSettings(p => { p.PageSize(20); })
+            .EnableAltRow(true)
+            .AllowSorting(true)
+            .FilterSettings(filter =>
+            {
+                filter.FilterType(FilterType.Excel);
+            })
+
+              //.ContextMenuSettings(contextMenu =>
+              //{
+              //    contextMenu.EnableContextMenu()                   
+              //          .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.DeleteRecord));
+
+              //})
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      
+                       c.AddItem("Delete_Record", "Delete Record");
+                  });
+
+              })
+
+            .Columns(col =>
+            {
+                col.Field("DispatchId").HeaderText("Dispatch Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("CartonId").HeaderText("Carton Id").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Weight").HeaderText("Weight").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Length").HeaderText("Length").TextAlign(TextAlign.Center).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Width").HeaderText("Width").TextAlign(TextAlign.Center).Width(90).Add();
+                col.Field("Height").HeaderText("Height").TextAlign(TextAlign.Left).Width(90).Add();
+                col.Field("Dimension").HeaderText("Dimension").TextAlign(TextAlign.Left).Width(160).Add();
+                col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(160).Add();
+                col.Field("AvlBit").HeaderText("AvlBit").Visible(false).TextAlign(TextAlign.Left).Width(160).Add();
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclickCart");
+            })
+                                                    )
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                            @*<table id="CartonTbl" class="table table-hover">
+                                <thead>
+                                    <tr style="background-color:#D6EAF8">
+                                        <th style=" text-shadow: 0 1px black;">Carton Id</th>
+                                        <th style=" text-shadow :0 1px black;">Weight</th>
+                                        <th style=" text-shadow: 0 1px black;">Length</th>
+                                        <th style=" text-shadow :0 1px black;">Width</th>
+                                        <th style=" text-shadow: 0 1px black;">Height</th>
+                                        <th style=" text-shadow :0 1px black;">Remark</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="myTable1"></tbody>
+                            </table>*@
+                                </div>
+                                @*<div class="col-md-12 text-center">
+                                    <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+                                </div>*@
+                            </div>
+                        </div>
+
+
+
+                    </div> );
+
+                      data.Add().ID("ItemDetail").Text("Item").ContentTemplate(
+                    @<div>
+                         <table>
+                             <tr>
+
+                                 <td>
+                                     <div style="position:relative">
+                                         @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDetailLst")
+            .Datasource((IEnumerable<object>)@Model.LstDispatchDetail)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .PageSettings(p => { p.PageSize(20); })
+            .EnableAltRow(true)
+            .AllowSorting(true)
+            .FilterSettings(filter =>
+            {
+                filter.FilterType(FilterType.Excel);
+            })
+            .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord))
+                     .CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Delete Record");
+               
+             });
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+            .Columns(col =>
+            {
+                col.Field("DispatchDetailId").HeaderText("Dispatch Detail Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("CartonId").HeaderText("Carton Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("Dimension").HeaderText("Dimension").Visible(true).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("DispatchId").HeaderText("Dispatch Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("ItemId").HeaderText("Item Id").TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(160).Add();
+                col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+                col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(80).Add();
+                col.Field("Rate").Visible(true).AllowEditing(true).HeaderText("Rate").Width(70).Add();
+                col.Field("Amount").Visible(true).AllowEditing(true).Format("{0:N2}").HeaderText("Amount").Width(70).Add();
+                col.Field("CreatedBy").HeaderText("Created By").Width(70).Add();
+                col.Field("CreatedDateStr").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(70).Add();
+            })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclickItem");
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                                         )
+                                     </div>
+
+                                 </td>
+                             </tr>
+                         </table>
+                    </div> );
+                 
+
+                data.Add().ID("Document").Text("Document").ContentTemplate(
+                        @<div>
+            <input type="button" id="AddDoc" value="Add Doc" class="btn-sm btn-primary glyphicon glyphicon-plus" />
+                            <table>
+                                <tr>
+
+                                    <td>
+                                        <div style="position:relative">
+               @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDocDetailLst")
+               .Datasource((IEnumerable<object>)@Model.LstDispatchDoc)
+               .AllowFiltering()
+               .AllowPaging()
+               .AllowSorting()
+               .EnableHeaderHover()
+               .AllowResizing()
+                       .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+               .AllowSorting(true)
+               .FilterSettings(filter =>
+               {
+                   filter.FilterType(FilterType.Excel);
+               })
+                 //.ContextMenuSettings(contextMenu =>
+                 //{
+                 //    contextMenu.EnableContextMenu()
+                 //  .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+                 //  .CustomContextMenuItems(new List<string> { "Download Document" });
+
+                 //})
+                 .ContextMenuSettings(contextMenu =>
+                 {
+                     contextMenu.EnableContextMenu();
+                     contextMenu.DisableDefaultItems();
+                     contextMenu.CustomContextMenuItems(c =>
+                     {
+                         c.AddItem("Download_Document", "Download Document");
+                     });
+
+                 })
+               .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+               .Columns(col =>
+               {
+                   col.Field("DispatchId").HeaderText("Dispatch Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+                   col.Field("DocumentTitle").HeaderText("Document Title").TextAlign(TextAlign.Left).Width(150).Add();
+                   col.Field("FilePath").HeaderText("File Path").TextAlign(TextAlign.Left).Width(200).Add();
+                   col.Field("CreatedBy").HeaderText("Created By").Width(70).Add();
+                   col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(70).Add();
+                   col.Field("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).Width(70).Add();
+               })
+               .ClientSideEvents(eve =>
+               {
+                   eve.ContextClick("contextclick");
+                   eve.ContextOpen("contextOpen");
+               })
+                                            )
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div> );
+              
+                 })
+                              .Render();}
+        </div>               
+}
+
+  <table>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'DispatchList';" );"> Back</button>
+            </td>
+           @if (Model.StatusId == 26 || Model.StatusId == 0 || Model.StatusId == 25)
+            {
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+                </div>
+            </td>
+            }
+           @if (Model.StatusId == 26 || Model.StatusId == 25)
+            {
+            <td>
+
+                <div class="btn" aria-label="...">
+                    <button type="button" id="SendForApp" class="btn-xs btn-info glyphicon glyphicon-eye-close"> Send For Approval</button>
+                </div>
+            
+            </td>
+           }
+        </tr>      
+    </table> 
+}    
+ @{Html.EJ().Dialog("dialogIcon").Title("Edit / Create Item Enquiry").ContentTemplate(@<div>
+
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Edit / Create Item Enquiry
+        </div>
+        <table align="center" style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label>Dispatch Detail Id:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        <input type="text" id="DispatchDetailId" name="DispatchDetailId" readonly="readonly" class="form-control" />
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label>Carton:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.Hidden("OldCartonId", null, new { id = "OldCartonId" })
+                        @Html.DropDownList("CartonId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Carton ---", new { @class = "form-control", style = "width:250px", id = "CartonId" })
+                    </div>
+                </td>
+
+                <td>
+                    <label>Item:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ItemId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Item ---", new { id = "ItemDrp", @class = "form-control", style = "width:310px" })
+                        @Html.HiddenFor(model => model.SaveType, new { id = "SaveTypetds" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Quantity:</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        <input type="text" id="Quantity" name="Quantity" class="form-control" />
+                        @Html.HiddenFor(model => model.FinalQuantity, new { id = "FinalQuantity" })
+                    </div>
+                </td>
+                <td>
+                    <label>Rate:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.Hidden("Qunt", new { id = "Qunt" })
+                        <input type="number" id="Rate" name="Rate" readonly="readonly" class="form-control" />
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+        <br />
+        <table align="left">
+            <tr>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="SaveItemEnq" class="btn btn-success glyphicon glyphicon-save"> Save</button>
+                    </div>
+
+                </td>              
+            </tr>
+        </table>
+       
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+
+
+<script>   
+    $('#SaveItemEnq').click(function () 
+    {
+        var Invoice_Id=$("#InvoiceDrp").val();
+        var Itemid = $("#ItemDrp").val();
+        var ItemName = $("#ItemDrp :selected").text();                
+        var Quantity = $("#Quantity").val();
+        var Rate = $("#Rate").val();       
+        var Savetype= $("#SaveTypetds").val();       
+        var FinalQuantity= $("#FinalQuantity").val();    
+        var CartonId=$("#CartonId").val();
+        var DispatchDetailId=$("#DispatchDetailId").val();
+        if (Invoice_Id == null) {
+            alert("Please Select Invoice Number");
+            return false;
+        }
+        if (Invoice_Id.toString() == "") {
+            alert("Please Select Invoice Number");
+            return false;
+        }
+        if (Itemid == null) {
+            alert("Please Select Item");
+            return false;
+        }
+        if (Itemid.toString() == "")
+        {
+            alert("Please Select Item");
+            return false;
+        }
+
+        if (Quantity == "") {
+            alert("Please Enter Quantity");
+            return false;
+        }       
+        if (parseInt(Quantity) > parseInt(FinalQuantity)) {
+            alert("Quantity can not Greater than " + FinalQuantity);
+            return false;
+        }  
+        if(Savetype == 1)
+        {              
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/ChkSalInvoceDetailDup",  //Update is Server side method
+                data: { Itemid: Itemid, DispatchId: @Model.DispatchId,CartonId:CartonId,Invoice_No: $("#InvoiceDrp").val()},
+                success: function (result) {
+                    if(result == "Error")
+                    {
+                        $("#SaveTypetds").val(3)
+                        alert("This Item Already Added!...");
+                        return false;
+                    }
+                    else
+                    {                        
+                        $.ajax({
+                            dataType: 'json',
+                            type: "POST",
+                            url: "/Enquiry/SaveNewDispatchDetails",  //Update is Server side method
+                            data: {CartonId:CartonId, Itemid: Itemid, Invoice_No: Invoice_Id, Quantity: Quantity, Rate: Rate, ItemName: ItemName,DispatchId:$("#DispatchId").val() },
+                            success: function (result) {
+                                var obj = $("#grdDetailLst").ejGrid("instance")
+                                obj.dataSource(result);
+                                $("#dialogIcon").ejDialog("close");
+                                toastr.success("Item Add Successfully!");
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                                toastr.error(errorThrown);
+                            }
+                        });
+                        $("#Quantity").val(null);
+                        $("#Rate").empty()          
+                        $("#dialogIcon").ejDialog("close");
+                    }
+                },
+                error:{
+                }
+            });
+        }
+      else
+        {           
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveDispatchDetails",  //Update is Server side method
+                data: {DispatchDetailId:DispatchDetailId,CartonId:CartonId, Itemid: Itemid, Invoice_No: Invoice_Id, Quantity: Quantity, Rate: Rate, ItemName: ItemName,DispatchId:$("#DispatchId").val() },
+                success: function (result) {
+                    var obj = $("#grdDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    $("#dialogIcon").ejDialog("close");
+                    toastr.success("Item Add Successfully!");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+            $("#Quantity").val(null);
+            $("#Rate").empty()          
+            $("#dialogIcon").ejDialog("close");
+        }
+    });
+
+    function toolClick(args) {
+        var StatusId=$("#StatusId").val();
+       
+        if(args.requestType == "add")
+        {
+            if(StatusId == 24)
+            {
+                alert("Dispatch  Approved you can not Add or Edit !!")
+                return false;
+            }
+            if(StatusId == 26 || StatusId == 25)
+            {
+                $("#dialogIcon").ejDialog("open");
+                $("#SaveTypetds").val(1);
+                $("#DispatchDetailId").val(0);
+                // return false;           
+                //$("#SaveTypetds").val(1); 
+                // $("#DispatchDetailId").val(0);
+        
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/DrpDispatchCarton",  //Update is Server side method
+                    data: { DispatchId: $("#DispatchId").val() },
+                    success: function (result) {
+                        $("#CartonId").empty();
+                        $('#CartonId').append('<option value=0>By Hand</option>');
+                        $.each(result, function (i, data) {
+                            $('#CartonId').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                        });
+                        if(args.row.children().eq(0).text() != "0")
+                        {
+                            $("#CartonId").val(args.row.children().eq(0).text());
+                        }                   
+                    },
+                    error: {
+
+                    }
+                });
+            }
+            else
+            {
+                toastr.info("You can not Add  Dispatch Item Beacause Dispatch Send to the Approval");
+                return false;
+            }
+            return false;     
+        }
+        if (args.requestType == "beginedit") 
+        {
+            if(StatusId == 24)
+            {
+                alert("Dispatch  Approved you can not Add or Edit !!")
+                return false;
+            }
+            if(StatusId == 26 || StatusId == 25)
+            {
+                $("#Qunt").val(args.row.children().eq(7).text());               
+                $("#Rate").val(args.row.children().eq(8).text());     
+                $("#SaveTypetds").val(2);                                    
+                $("#ItemDrp").empty()
+                $('#ItemDrp').append('<option value="' + args.row.children().eq(4).text() + '">' + args.row.children().eq(5).text() + '</option>');
+                $("#ItemDrp").val(args.row.children().eq(4).text()).trigger("change") 
+                //var path1 = "/Enquiry/GetItemListBySalInvoiceId"
+                //$.ajax({
+                //    type: 'POST',
+                //    url: path1,
+                //    dataType: 'json',
+                //    data: { CompCode: $("#ComDoc").val(), Invoice_Id:args.row.children().eq(6).text() },
+                //    success: function (Brands) {
+                //        $.each(Brands, function (i, Brand) {
+                //            $('#ItemDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                //        });
+                      
+                       
+                //    },
+                //    error: function (ex) {
+                //        alert('Please Select item Name');
+                //    }
+                //});
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/DrpDispatchCarton",  //Update is Server side method
+                    data: { DispatchId: $("#DispatchId").val() },
+                    success: function (result) {
+                        $("#CartonId").empty();
+                        $('#CartonId').append('<option value=0>By Hand</option>');
+                        $.each(result, function (i, data) {
+                            $('#CartonId').append('<option value="' + data.Value + '">' + data.Text + '</option>');                          
+                        });
+                        if(args.row.children().eq(1).text() !="0")
+                        {                          
+                            $("#CartonId").val(args.row.children().eq(1).text()).trigger("change");
+                        }                  
+                    },
+                    error: {
+
+                    }
+                });              
+                
+                $("#DispatchDetailId").val(args.row.children().eq(0).text());                  
+                $("#dialogIcon").ejDialog("open");                             
+                return false;
+            }        
+            else
+            {
+                toastr.info("You can not Edit  Dispatch Item Beacause Dispatch Send to the Approval");
+                return false;
+            }
+        }
+    }     
+  
+  
+    function contextclickCart(args)
+    {      
+        if (args.text == "Delete Record")
+        {                   
+            var tempData = args.text;
+            var grid = $("#grdCartDetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DispatchId = result[0]["DispatchId"];
+            var CartonId = result[0]["CartonId"];
+            var AvlBit = result[0]["AvlBit"];
+            var StatusId=$("#StatusId").val();
+            if(StatusId == 24)
+            {
+                alert("Dispatch  Approved you can not Delete !!")
+                return false;
+            }
+            if(StatusId == 26 || StatusId == 25)
+            {                           
+            if(AvlBit == 0)
+            {
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/DeleteDispatchCart",  //Update is Server side method
+                    data: {DispatchId:DispatchId,CartonId:CartonId},
+                    success: function (result) {
+                        var obj = $("#grdCartDetailLst").ejGrid("instance")
+                        obj.dataSource(result);
+                        toastr.success("Carton Delete Successfully!");
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                        toastr.error(errorThrown);
+                    }
+                });
+            }
+            else
+            {
+                alert("This Carton is not Empty")
+                return false;
+            }
+            }
+            else
+            {
+                alert("Dispatch Send to Approval.you Can not Delete.")
+                return false;
+            }
+        }
+    }
+</script>
+<script>
+    function contextclickItem(args)
+    {      
+        if (args.text == "Delete Record")
+        {   
+            var StatusId=$("#StatusId").val();
+            if(StatusId == 24)
+            {
+                alert("Dispatch  Approved you can not Delete !!")
+                return false;
+            }
+            if(StatusId == 26 || StatusId == 25 )
+            {
+                var tempData = args.text;
+                var grid = $("#grdDetailLst").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var DispatchDetailId = result[0]["DispatchDetailId"];
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/DeleteDispatchDetail",  //Update is Server side method
+                    data: {DispatchDetailId:DispatchDetailId},
+                    success: function (result) {
+                        var obj = $("#grdDetailLst").ejGrid("instance")
+                        obj.dataSource(result);
+                        $("#dialogIcon").ejDialog("close");
+                        toastr.success("Item Delete Successfully!");
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert(errorThrown);
+                        toastr.error(errorThrown);
+                    }
+                });
+            }
+            else
+            {
+                alert("Dispatch Send for Process.you can not Delete !!");
+            }
+            
+        }
+    }
+</script>
+<script type="text/javascript">
+    $("#DispatchDate").ejDatePicker({ dateFormat: "MM/dd/yyyy" });
+    $(document).ready(function () {
+
+        function onDialogClose(args) {
+            //$("#ItemDrp").val('1').trigger('change');
+            //$("#Quantity").val(null);
+            $("#Quantity").val(null);
+            $("#SupplierInvN0").val(null);
+            $(".epdt").val(null);
+            $("#InvoiceAmount").val(null);
+            $("#dialogIcon").ejDialog("close");
+            return false;
+        };
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#SaveCartonDetail").click(function () {
+            var Weight=$("#CartonWeight").val();
+            var CartonId=$("#drpCartons").val();           
+            var Remark=$("#CartonRemark").val();
+           
+            if(Weight.toString() == "")
+            {
+                alert("Please Enter Weight");
+                return false;
+            }
+            if(Weight <= 0)
+            {
+                alert("Weight always Greater than Zero");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/SaveDispatchCartonDetail",  //Update is Server side method
+                data: { DispatchId: $("#DispatchId").val(), CartonId: CartonId, Weight: Weight, Remark: Remark},
+                success: function (result) {
+                    var obj = $("#grdCartDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                   
+                    //$('#CartonTbl tbody > tr').remove();
+                    //$.each(result, function (i,data) {
+                    //    $('#CartonTbl').append('<tr><td>'+ data.CartonId +'</td><td>' + data.Weight  +'</td><td>' +data.Length  +'</td><td>' + data.Width +'</td><td>' +  data.Height +'</td><td>' + data.Remark +'</td><td>' + '</td></tr>');
+                    //});
+                    toastr.success("Carton Saved Successfully!");
+                    $("#drpCartons").val(0).trigger("change")
+                    return false;
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+            $("#CartonWeight").val(null);
+            $("#CartonLength").val(null);
+            $("#CartonWidth").val(null);
+            $("#CartonHeight").val(null);
+            $("#CartonRemark").val(null);
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var DispatchId = $("#DispatchId").val();
+        if (DispatchId > 0)
+        {
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetDispatchCartonDetai",  //Update is Server side method
+                data: { DispatchId: $("#DispatchId").val()},
+                success: function (result) {
+                    var obj = $("#grdCartDetailLst").ejGrid("instance")
+                    obj.dataSource(result);
+                    //$('#CartonTbl tbody > tr').remove();
+                    //$.each(result, function (i,data) {
+                    //    $('#CartonTbl').append('<tr><td>'+ data.CartonId +'</td><td>' + data.Weight  +'</td><td>' + data.Length +'</td><td>' + data.Width +'</td><td>' + data.Height +'</td><td>' + data.Remark +'</td><td>' + '</td></tr>');
+                    //});
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+
+    function contextclick(args) {
+
+        if (args.text == "Download Document") {
+            var tempData = args.text;
+            var grid = $("#grdDocDetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var FilePath = result[0]["FilePath"];              
+            var path = '@Url.Content("~/Enquiry/dispatchDocDownload")' + "?DispatchId=" + @Model.DispatchId + "&DocumentPath=" + FilePath
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        }
+    }
+
+    $(document).ready(function () {
+        var StatusId=$("#StatusId").val();
+        var DispatchId =$("#DispatchId").val();
+        if(StatusId != 0)
+        {
+            if(StatusId != 26)
+            {
+                $('#Customerdrp').prop("disabled", true);
+                $('#Remarkabc').prop("disabled", true);
+                $('#Company').prop("disabled", true);
+            }
+        }
+        $("#SendForApp").click(function () {
+            alert ("Dispatch Send For Approval!");
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/DispatchSendForProcess",  //Update is Server side method
+                data: {DispatchId:@Model.DispatchId},
+
+                success: function (result) {
+                    var path = '@Url.Content("~/Enquiry/CreateDispatch")'+ "?DispatchId=" + DispatchId ;
+                    if(result.toString() =="Success")
+                    {
+                        toastr.success("Dispatch Successfully Send to procressing!");
+                        event.preventDefault();
+                        window.location.replace(path);
+                    }
+                    else
+                    {
+                        toastr.error("Dispatch Can not Send to procressing Because It do not have Dispatch Item!");
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error("Dispatch not Successfully Send to procressing!");
+                }
+            });
+
+        });
+
+        $("#AddDoc").click(function () {
+            var path = '@Url.Content("~/Enquiry/DispatchDocument")' + "?DiapatchId=" + @Model.DispatchId
+            $("#AddDispatchDocument").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#AddDispatchDocument").ejDialog("open");
+        });
+    });
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("AddDispatchDocument")
+        .Title("<a id='Add Dispatch Document'></a>")
+        .Width(600)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#AddDispatchDocument").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#AddDispatchDocument").ejDialog("open");
+        }
+</script>
+<script id="OpenDoc" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/Enquiry/dispatchDocDownload?DispatchId=@Model.DispatchId&amp;DocumentPath={{:FilePath}}">  Open</a>
+</script>

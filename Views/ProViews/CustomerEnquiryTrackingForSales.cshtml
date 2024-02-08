@@ -1,0 +1,407 @@
+﻿@model SmartSys.BL.ProViews.EnquiryTrackingViewDetail
+@using SmartSys.Utility;
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="~/Content/W3.css" rel="stylesheet" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<script src="~/Scripts/jquery-ui.min.js"></script>
+<script src="~/Scripts/jquery-ui.js"></script>
+<script src="~/Scripts/primitives.min.js"></script>
+<script src="~/Scripts/primitives.latest.js"></script>
+<link href="~/Content/primitives.latest.css" media="screen" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "CustomerEnquiryTracking";
+}
+@{
+    var jss = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var userInfoJson = jss.Serialize(ViewBag.test);
+}
+<script>
+    $(document).ready(function (e) {
+        var str = '@(TempData["Message"])'.toString();
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');
+        }
+    });
+</script>
+@{
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)//@<p id="Title"></p>)
+        .Render();
+}
+
+<script>
+    function openDialog() {
+        $("#seconddialog").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#seconddialog").ejDialog("open");
+    }
+</script>
+<div id="chart-container">
+
+</div>
+<script>
+     $(window).load(function () {
+
+        var options = new primitives.famdiagram.Config();
+        var userInfo = JSON.parse('@Html.Raw(userInfoJson)');
+            var items = userInfo;
+
+            options.items = items;
+            options.cursorItem = 2;
+            options.linesWidth = 1;
+            options.linesColor = "black";
+            options.hasSelectorCheckbox = primitives.common.Enabled.False;
+            options.normalLevelShift = 20;
+            options.dotLevelShift = 20;
+            options.lineLevelShift = 20;
+            options.normalItemsInterval = 10;
+            options.dotItemsInterval = 10;
+            options.lineItemsInterval = 10;
+            options.pageFitMode = 0;
+            options.templates = [getContactTemplate()];
+            options.onItemRender = onTemplateRender;
+            options.defaultTemplateName = "contactTemplate";
+            options.normalLevelShift = 44;
+
+            
+
+            jQuery("#basicdiagram").famDiagram(options);
+
+            function onTemplateRender(event, data) {
+                switch (data.renderingMode) {
+                    case primitives.common.RenderingMode.Create:
+                        /* Initialize widgets here */
+                        break;
+                    case primitives.common.RenderingMode.Update:
+                        /* Update widgets here */
+                        break;
+                }
+
+                var itemConfig = data.context;
+
+                if (data.templateName == "contactTemplate") {
+                    //data.element.find("[name=photo]").attr({ "src": itemConfig.image, "alt": itemConfig.title });
+                    data.element.find("[name=titleBackground]").css({ "background": itemConfig.itemTitleColor });
+
+                    data.element.find("[name=label]").text(itemConfig.percent * 100.0 + '%');
+
+                    var fields = ["title", "description"];
+                    for (var index = 0; index < fields.length; index++) {
+                        var field = fields[index];
+
+                        var element = data.element.find("[name=" + field + "]");
+                        if (element.text() != itemConfig[field]) {
+                            element.text(itemConfig[field]);
+                        }
+                    }
+                }
+            }
+
+            function getContactTemplate() {
+                var result = new primitives.orgdiagram.TemplateConfig();
+                result.name = "contactTemplate";
+                result.itemSize = new primitives.common.Size(220, 120);
+                result.minimizedItemSize = new primitives.common.Size(3, 3);
+                result.highlightPadding = new primitives.common.Thickness(2, 2, 2, 2);
+                var itemTemplate = jQuery(
+                  '<div class="bp-item bp-corner-all bt-item-frame" style="border-width: 4px; ">'
+                    + '<div name="titleBackground" class="bp-item bp-corner-all bp-title-frame" style="top: 2px; left: 2px; width: 216px; height: 20px; overflow: hidden;">'
+                        + '<div name="title" class="bp-item bp-title" style="top: 3px; left: 6px; width: 208px; height: 18px; font-weight: bold; overflow: hidden;">'
+                        + '</div>'
+                    + '</div>'
+
+                    + '<div name="description" class="bp-item" style="top: 22px; left: 16px; width: 182px; height: 100px; font-size: 14px; font-weight: bold;font-family: "Arial" "></div>'
+                      + '</div>'
+                ).css({
+                    width: result.itemSize.width + "px",
+                    height: result.itemSize.height + "px"
+                }).addClass("bp-item bp-corner-all bt-item-frame");
+                result.itemTemplate = itemTemplate.wrap('<div>').parent().html();
+
+                return result;
+            }
+
+        });//]]>
+</script>
+<style>
+    #chevron {
+        position: relative;
+        text-align: center;
+        padding: 12px;
+        margin-bottom: 6px;
+        height: 80px;
+        width: 100px;
+    }
+
+        #chevron:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 51%;
+            background: red;
+            background: -webkit-linear-gradient(#30AA58,#7DD39A ); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(#30AA58, #7DD39A ); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(#30AA58, #7DD39A ); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(#30AA58, #7DD39A ); /* Standard syntax */
+            -webkit-transform: skew(0deg, 16deg);
+            -moz-transform: skew(0deg, 16deg);
+            -ms-transform: skew(0deg, 16deg);
+            -o-transform: skew(0deg, 16deg);
+            transform: skew(0deg, 16deg);
+        }
+
+        #chevron:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 50%;
+            background: red;
+            background: -webkit-linear-gradient(#30AA58,#7DD39A ); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(#30AA58,#7DD39A ); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(#30AA58,#7DD39A ); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(#30AA58, #7DD39A); /* Standard syntax */
+            -webkit-transform: skew(0deg, -16deg);
+            -moz-transform: skew(0deg, -16deg);
+            -ms-transform: skew(0deg, -16deg);
+            -o-transform: skew(0deg, -16deg);
+            transform: skew(0deg, -16deg);
+        }
+</style>
+<style>
+    #gradientcolstyle {
+        height: 60px;
+        width: 150px;
+        position: relative;
+        text-align: center;
+        background: -webkit-linear-gradient(left, #cce6ff, #80bfff ); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(right,#cce6ff, #80bfff); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(right,#cce6ff, #80bfff); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(to right,#cce6ff, #80bfff);
+    }
+</style>
+<style>
+    #chevronIncomp {
+        position: relative;
+        text-align: center;
+        padding: 12px;
+        margin-bottom: 6px;
+        height: 80px;
+        width: 100px;
+    }
+
+        #chevronIncomp:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 51%;
+            background: red;
+            background: -webkit-linear-gradient(#A6A8A7, #D5D8D6); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(#A6A8A7, #D5D8D6); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(#A6A8A7, #D5D8D6); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(#A6A8A7, #D5D8D6); /* Standard syntax */
+            -webkit-transform: skew(0deg, 16deg);
+            -moz-transform: skew(0deg, 16deg);
+            -ms-transform: skew(0deg, 16deg);
+            -o-transform: skew(0deg, 16deg);
+            transform: skew(0deg, 16deg);
+        }
+
+        #chevronIncomp:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 50%;
+            background: red;
+            background: -webkit-linear-gradient(#A6A8A7, #D5D8D6); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(#A6A8A7, #D5D8D6); /* For Opera 11.1 to 12.0 */
+            background: -moz-linear-gradient(#A6A8A7, #D5D8D6); /* For Firefox 3.6 to 15 */
+            background: linear-gradient(#A6A8A7, #D5D8D6); /* Standard syntax */
+            -webkit-transform: skew(0deg, -16deg);
+            -moz-transform: skew(0deg, -16deg);
+            -ms-transform: skew(0deg, -16deg);
+            -o-transform: skew(0deg, -16deg);
+            transform: skew(0deg, -16deg);
+        }
+</style>
+<style>
+    #gradientcolstyleIncomp {
+        height: 60px;
+        width: 150px;
+        position: relative;
+        text-align: center;
+        background: -webkit-linear-gradient(left,#EFEEBE,#CCCA81); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(right,#EFEEBE,#CCCA81); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(right,#EFEEBE,#CCCA81); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(to right,#EFEEBE,#CCCA81);
+    }
+</style>
+@{
+    Html.EJ()
+        .Dialog("CreateFindData")
+        .Title("<a id='Title'>Find Information</a>")
+        .Width(1200)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateFindData").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateFindData").ejDialog("open");
+        }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#btnSubmit').click(function () {
+            var EnqId = $("#EnqIDDetail").val();
+            if(EnqId.toString() == "")
+            {
+                alert("Please Enter Enquiry Id");
+                return false;
+            }
+            var path = '@Url.Content("~/ProViews/CustomerEnquiryTrackingForSales")' + "?EnqId=" + EnqId
+            event.preventDefault();
+            window.location.replace(path);
+        });
+        $('#btnFind').click(function () {
+            var type = $("#type").val();
+            if (type.toString() == "") {
+                alert("Please Select Type");
+                return false;
+            }
+            var path = '@Url.Content("~/ProViews/FindEnquiryDetail")' + "?Type=" + type + "&Dep=Sales"  
+            $("#CreateFindData").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateFindData").ejDialog("open");
+        });
+    });
+</script>
+<div class="w3-row-padding" style="max-width:100%;height:40px;">
+    <table>
+        <tr>
+            <td style="padding-left:40px">
+                <div class="navbar-text">
+                    <label>Type:</label>
+                </div>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownList("Type", new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Enquiry", Value="Enq"},
+                             new SelectListItem() {Text = "Quotation", Value="Quot"}
+                       }, new { @class = "form-control", id = "type" })
+                </div>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    <label>Enquiry Id:</label>
+                </div>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    <input type="number" class="form-control" id="EnqIDDetail" />
+                </div>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    <button type="button" id="btnFind" class="btn-sm btn-primary glyphicon glyphicon-globe"> </button>
+                </div>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    <button type="button" id="btnSubmit" class="btn-sm btn-primary  glyphicon glyphicon-fire"> Submit</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<body class="w3-light-grey">
+
+    <!-- Page Container -->
+    <div class="w3-content w3-margin-top" style="max-width:100%;height:100%;">
+        <br />
+
+        <!-- The Grid -->
+        <div class="w3-row-padding" style="overflow-y:scroll;overflow-x:scroll;max-width:100%;height:700px;">
+
+            <!-- Left Column -->
+            <div class="w3-third" style="overflow-y:scroll;overflow-x:scroll;max-height:100%;width:320px; background-color:#d3ffce">
+
+
+                <div class="w3-white w3-text-grey w3-card-4">
+
+                    @foreach (var a in Model.EnqStatusList)
+                    {
+                        if (a.CurrentState == "Complete")
+                        {
+                            <div style="height:100px" class="col-md-12">
+                                <div id="chevron" class="col-md-6">
+                                    @a.SeqNo
+                                </div>
+                                <div style="" id="gradientcolstyle" class="col-md-6">
+                                    @a.LableDesc
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="height:100px" class="col-md-12">
+                                <div id="chevronIncomp" class="col-md-6">
+                                    @a.SeqNo
+                                </div>
+                                <div style="" id="gradientcolstyleIncomp" class="col-md-6">
+                                    @a.LableDesc
+                                </div>
+                            </div>
+                        }
+                    }
+                </div><br>
+
+                <!-- End Left Column -->
+            </div>
+
+            <!-- Right Column -->
+            <div class="w3-onethird" style="overflow-y:scroll;max-height:650px ;background-color:#f6ecc2">
+
+                <div id="basicdiagram" style="width:auto;height:3000px;" />
+                @*<div class="w3-container w3-card-2 w3-white" style="min-height:500px;max-height:500px;overflow-y:scroll;background-color:#0eff6a">
+
+                    </div>*@
+                <!-- End Right Column -->
+            </div>
+
+            <!-- End Grid -->
+        </div>
+
+        <!-- End Page Container -->
+    </div>
+
+
+
+</body>

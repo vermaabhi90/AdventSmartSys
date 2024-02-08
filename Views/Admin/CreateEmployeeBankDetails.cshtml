@@ -1,0 +1,116 @@
+﻿@model SmartSys.BL.EmployeeBankDetailModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+         
+            var AccountNo = $('#AccountNo').val();
+            var BankName = $('#BankName').val();
+            var Limit = $('#Limit').val();
+            if (AccountNo.toString() == "") {
+                alert("Please Enter Account Number ");
+                return false;
+            }
+            if (BankName.toString() == "") {
+                alert("Please Enter Bank Name ");
+                return false;
+            }
+            if (Limit.toString() == "") {
+                alert("Please Enter Bank Limit or Limit is not correct Format");
+                return false;
+            }
+            return true;
+            $("#BankDetail").unbind('submit').submit();
+        });
+    });
+</script>
+
+@if (Model.NewAccountNo == "New Entry")
+{
+    <div class="page-header glyphicon glyphicon-pencil  text-info ">
+        Create Bank Information
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Bank Information
+    </div>
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("CreateEmployeeBankDetails", "Admin", FormMethod.Post, new { Id = "BankDetail" }))
+{
+    <html>
+    <head>
+     
+        <style type="text/css">
+            .modal-content {
+                width: 1010px !important;
+                margin: 30px auto !important;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="modal-body">
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+                        <label for="AccountNo">Account No</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.AccountNo, new { id = "AccountNo", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.AccountNo, "", new { id = "AccountNo", @class = "form-control" })
+                            @Html.HiddenFor(model => model.EmpId)
+                            @Html.HiddenFor(model => model.NewAccountNo)
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="BankName">Bank Name:</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.DropDownList("BankName", (IEnumerable<SelectListItem>)ViewBag.Banks, "Please Select Bank", new { style = "width:250px", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.BankName, "", new { id = "BankName", @class = "text-danger" })
+                        </div>
+                    </td>
+
+                    <td>
+
+                        <label for="Limit">Limit:</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Limit, new { @type = "number", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Limit, "", new { id = "Limit", @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="btn-xs btn-success glyphicon glyphicon-save save"> Save</button>
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

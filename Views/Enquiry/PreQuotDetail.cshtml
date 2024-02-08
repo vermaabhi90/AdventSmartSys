@@ -1,0 +1,195 @@
+﻿@model SmartSys.BL.Enquiry.PreliminaryQuotationModel
+
+@{
+    ViewBag.Title = "PreQuotDetail";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Preliminary Quotation Detail
+</div>
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+   
+        <tr>
+            <td>
+                <label>Quot Id:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PreQuotId, new { @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Term:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Terms, new { @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <label>Customer:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CustomerName, new { @readonly = "", @class = "form-control" })
+                </div>
+            </td>           
+        </tr>
+        <tr>
+            <td>
+                <label>Quotation Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.QuotDate, new { @readonly = "", @class = "form-control" })
+                </div>
+
+            </td>
+
+            <td>
+                <label>Currency:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Currency, new { @readonly = "", @class = "form-control" })
+                </div>
+
+            </td>
+
+            <td>
+                <label>CompCode:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CompCode, new { @readonly = "", @class = "form-control" })
+                </div>
+
+            </td>            
+        </tr> 
+    <tr>
+        <td>
+            <label>Status </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.Status, new { @readonly = "", @class = "form-control" })
+            </div>
+
+        </td>
+
+        <td>
+            <label for="Rate">Currency</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.HiddenFor(model => model.FileName, new { id = "FileNM" })
+                @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "", @class = "form-control" })
+            </div>
+        </td>
+    </tr>         
+</table>
+<table>
+    <tr>
+        <td width="130px">
+            <label>Remark</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 600Px; max-width: 800px;", id = "remark", @class = "form-control" })
+            </div>
+        </td>
+    </tr>
+</table>
+<br />
+<div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("grdPreQuotDetailList")
+                .Datasource((IEnumerable<object>)Model.LstDetail)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .PageSettings(p => { p.PageSize(20); })
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu();
+                    contextMenu.DisableDefaultItems();
+                    contextMenu.CustomContextMenuItems(c =>
+                    {
+                        c.AddItem("Select_Response", "Edit Detail");
+
+                    });
+
+                })
+                .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("PreQuotId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("ItemId").Visible(false).HeaderText("ItemId").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("MPN").HeaderText("MPN").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(150).Visible(true).Add();
+            col.Field("ItemName").HeaderText("Item Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(150).Visible(true).Add();
+            col.Field("BrandName").HeaderText("Brand Name").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Rate").HeaderText("Customer Rate").Format("{0:N4}").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(120).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+@{
+    Html.EJ()
+        .Dialog("PreQuotDetail")
+        .Title("<a id='Title'>Item Rate Detail</a>")
+        .Width(750)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#PreQuotDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#PreQuotDetail").ejDialog("open");
+        }
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Edit Detail") {
+            var grid = $("#grdPreQuotDetailList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var PreQuotId = result[0]["PreQuotId"];
+            var ItemId = result[0]["ItemId"];
+            var path = '@Url.Content("~/Enquiry/ViewEditPreQuotDetail")' + "?PreQuotId=" + PreQuotId + "&ItemId=" + ItemId           
+            $("#PreQuotDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#PreQuotDetail").ejDialog("open");
+        }
+    }
+</script>

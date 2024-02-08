@@ -1,0 +1,52 @@
+﻿@using Microsoft.AspNet.Identity
+@if (Request.IsAuthenticated)
+{
+
+    <li>
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm"}))
+        {
+        @Html.AntiForgeryToken()
+        <a href="javascript:document.getElementById('logoutForm').submit()">
+            <i class="fa fa-user fa-lg" style="color:green"></i>
+            <span class="nav-text">@User.Identity.GetUserName() - Log-off</span>
+        </a>
+        }
+    </li>
+
+    <li>
+        <a href="@Url.Action("ChangePassword", "Manage")">
+
+            <span class="nav-text">Change Password</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="@Url.Action("ClearCache", "Home")">
+
+            <span class="nav-text">Clear Cache</span>
+        </a>
+    </li>
+}
+else
+{
+
+    <li>
+        <a href="@Url.Action("Login", "Account")">
+            <i class="fa fa-user fa-lg"></i>
+            <span class="nav-text">Log in</span>
+        </a>
+    </li>
+    <li>
+        <a href="@Url.Action("Register", "Account")">
+            <i class="fa fa-user fa-lg"></i>
+            <span class="nav-text">Register</span>
+        </a>
+    </li>
+}
+
+<script type="text/javascript">
+    $("#LogoffLink").click(function (e) {
+        alert("Success");
+
+    });
+</script>

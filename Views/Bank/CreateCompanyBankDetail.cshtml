@@ -1,0 +1,188 @@
+﻿@model SmartSys.BL.Bank.CompanyBankModel
+
+@if (Model.CompBankAcId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Edit Company Bank Detail
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Create Company Bank Detail
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var DeptName = $('#CompCodeDrp').val();
+
+
+            if ($('#CompCodeDrp').val() == "") {
+                alert("Please Select Company ");
+                return false;
+            }
+            if ($('#BankId').val() == "") {
+                alert("Please Select Bank ");
+                return false;
+            }
+            if ($('#CompCodeDrp').val() == "") {
+                alert("Please Select Company ");
+                return false;
+            }
+            if ($('#Remark').val() == "") {
+                alert("Please Enter Remark ");
+                return false;
+            }
+
+            if ($('#AccountNumber').val() == "") {
+                alert("Please Enter AccountNumber ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+@using (Html.BeginForm("CreateCompanyBankDetail", "Bank", FormMethod.Post, new { Id = "Form1"}))
+{
+
+    <table style="margin-left:10px">
+
+        <tr>
+           
+            @if (Model.CompBankAcId > 0)
+            {
+                <td>
+                    <label>Acc. Id:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.CompBankAcId, new { @class = "form-control", @readonly = "Readonly", @style = "width:100px" })
+                    </div>
+                </td>
+            }
+
+
+            <td>
+                <label>Company</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = "  form-control", style = "width:310px", id = "CompCodeDrp" })
+                </div>
+            </td>
+          
+            <td>
+                <label for="BankName">Bank Name</label>
+            </td>
+
+            <td>
+              
+                <div class="navbar-text">
+                    @Html.DropDownList("BankId", (IEnumerable<SelectListItem>)ViewBag.BankLst, "--please Select Bank--", new { id = "BankId", @class = "form-control" })
+                </div>
+            </td>
+
+
+
+        </tr>
+        <tr>
+            <td>
+                <label for="BankName">Remark:</label>
+            </td>
+
+            <td>
+
+                <div class="navbar-text">
+                    @Html.TextAreaFor(model => model.Remark, new { @class = "form-control" ,@style="width:300px", id = "Remark" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Account Number </label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control", id = "AccountNumber" })
+                </div>
+            </td>
+
+
+
+            <td>
+                <label>isActive </label>
+            </td>
+
+            <td>
+                <div class="navbar-text">
+                    @Html.EditorFor(model => model.isActive, new { @class = "form-control" })
+
+                </div>
+            </td>
+
+        
+
+        </tr>
+        @if (Model.CompBankAcId > 0)
+        {
+            <tr style="width:400px">
+                <td>
+                    <label for="ItemName">Created By:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy)
+                    </div>
+                <td>
+                    <label for="ItemName">Created Date:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="ItemName">Modified By:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy)
+                    </div>
+                </td>
+                <td>
+                    <label for="ItemName">Modified Date:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate)
+                    </div>
+                </td>
+            </tr>
+
+        }
+    </table>
+    <table>
+        <tr>
+            <td>
+                @Html.ActionLink(" Back", "CompanyBankList", null, new { @class = "btn-xs btn-warning glyphicon glyphicon-hand-left" })
+
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="savetot btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+}

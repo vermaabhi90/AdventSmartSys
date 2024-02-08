@@ -1,0 +1,169 @@
+﻿@model SmartSys.BL.DW.CustomerTurnoverModel
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var TurnoverYear = $('#TurnoverYear').val();
+            var Turnover = $('#Turnover').val();
+            var ProjectedTurnover = $('#ProjectedTurnover').val();
+
+            if (TurnoverYear.toString() == "") {
+                alert("Please Enter Turnover Year or invalid input in Turnover Year");
+                return false;
+            }
+            if (TurnoverYear.toString() == 0) {
+                alert("Turnover Year can't be 0 ");
+                return false;
+            }
+            if (true) {
+                var n = TurnoverYear.indexOf('.');
+                if (TurnoverYear.indexOf('.') > -1) {
+                    alert(" Turnover Year Allow only Integer Value ");
+                    return false;
+                }
+            }
+            if (Turnover.toString() == "") {
+                alert("Please Enter Turnover  or invalid input in Turnover ");
+                return false;
+            }
+            if (Turnover.toString() == 0) {
+                alert("Turnover can't be 0 ");
+                return false;
+            }
+            if (ProjectedTurnover.toString() == "") {
+                alert("Please Enter ProjectedTurnover  or invalid input in Projected Turnover ");
+                return false;
+            }
+            if (ProjectedTurnover.toString() == 0) {
+                alert("Projected Turnover  can't be 0 ");
+                return false;
+            }
+
+
+
+            $("#TurnoverDetail").unbind('submit').submit(); S
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<table>
+    <tr>
+        <td>
+            @if (Model.TurnoverYear=="")
+            {
+                <div class="page-header glyphicon glyphicon-leaf  text-info ">
+                    Create Turnover Information
+                </div>
+            }
+            else
+            {
+                <div class="page-header glyphicon glyphicon-pencil  text-info ">
+                    Edit Turnover Information
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+
+
+@using (Html.BeginForm("CreateTurnoverDetails", "DWCustomer", FormMethod.Post, new { Id = "TurnoverDetail" }))
+{
+    <html>
+    <body>
+        <div class="modal-body">
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>@Html.HiddenFor(model => model.CustomerId)</td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="TurnoverYear">Turnover Year</label>
+
+                    </td>
+                    <td>
+
+                        <div class="editor-field ">
+                            @Html.DropDownList("TurnoverYear", (IEnumerable<SelectListItem>)ViewBag.FYYear, "Please Select Year", new { @class = "form-control" })
+
+                            @*@Html.TextBoxFor(model => model.TurnoverYear, new { pattern = "^[0-9]+$", @type = "number", step = "0.01" })*@
+                            @Html.HiddenFor(model => model.NewTurnoverYear)
+                            @Html.ValidationMessageFor(model => model.TurnoverYear, "", new { id = "TurnoverYear", @class = "text-danger" })
+                        </div>
+
+                        @*else
+                    {
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.NewTurnoverYear, new {pattern="^[0-9]+$", @type = "number", step = "0.01" })
+                            @Html.HiddenFor(model => model.TurnoverYear)
+                            @Html.ValidationMessageFor(model => model.NewTurnoverYear, "", new { id = "TurnoverYear", @class = "text-danger" })
+                        </div>
+                    }*@
+
+                    </td>
+                    <td align="center">
+                        <label for="Turnover">Turnover</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Turnover, new { @class = "form-control", @type = "number" })
+                            @Html.ValidationMessageFor(model => model.Turnover, "", new { id = "Turnover", @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ProjectedTurnover">Project Turnover</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.ProjectedTurnover, new { @class = "form-control", @type = "number", step = "0.01" })
+                            @Html.ValidationMessageFor(model => model.ProjectedTurnover, "", new { id = "ProjectedTurnover", @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+
+                @if (Model.Turnover != 0)
+                {
+                    <tr>
+                        <td align="center">
+                            <label for="CreatedBy">Created By</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { id = "CreatedBy", @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td align="center">
+                            <label for="CreatedDate">Created Date</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { id = "CreatedDate", @class = "text-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+
+                    <td>
+
+                        <button type="submit" class="save btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

@@ -1,0 +1,619 @@
+﻿@model SmartSys.BL.Report
+
+@{
+    ViewBag.Title = "Derived Report Setup";
+}
+
+@{
+
+    Html.EJ()
+        .Dialog("UploadReport")
+        .Title("<a id='Title'></a>")
+        .Width(500)
+        .Height(300)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#UploadReport").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#UploadReport").ejDialog("open");
+
+        }
+
+</script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Report Configuration
+</div>
+
+<script type="text/javascript">
+
+    function fileuploadcomplete(e) {
+        var path = '@Url.Content("~/Report/GetReport")'
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function evtpropscheckedevent(args) {
+        uploadObj = $("#UploadDefault").data("ejUploadbox");
+        if (args.isChecked) {
+            switch (args.selectedText) {
+                case "complete": uploadObj.option(args.selectedText, "fileuploadcomplete"); break;
+            }
+        }
+        else uploadObj.option(args.selectedText, null);
+    }
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('.UploadFiles').click(function (e) {
+
+            document.getElementById("Title").innerHTML = 'Upload Report';
+            var path = '@Url.Content("~/Report/UploadReport")' 
+            $("#UploadReport").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#UploadReport").ejDialog("open");
+
+        });
+
+    });
+</script>
+<html>
+<head>
+    <title>Derived Report Setup</title>
+ 
+    <style type="text/css">
+
+
+        .webGrid {
+            margin: 4px;
+            border-collapse: collapse;
+            width: 1000px;
+            background-color: #FCFCFC;
+        }
+
+        .header {
+            background-color: #C1D4E6;
+            font-weight: bold;
+            color: #FFF;
+        }
+
+        .webGrid th, .webGrid td {
+            border: 1px solid #C0C0C0;
+            padding: 5px;
+        }
+
+        .alt {
+            background-color: #E4E9F5;
+            color: #000;
+        }
+
+        .gridHead a:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            width: auto;
+        }
+
+        .select {
+            background-color: #389DF5;
+        }
+
+        .name {
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+
+                        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                            <tr></tr>
+                            <tr>
+                                <td>
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.ReportName, "Report Name ", new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ReportName, (new { @class = "form-control", style = "width:300px" }))
+                                        @Html.ValidationMessageFor(model => model.ReportName)
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.ReportId, "Report Id")
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ReportId, new { @class = "form-control", style = "width:140px", @readonly = "readonly" })
+                                    </div>
+
+                                </td>
+                            <tr>
+
+                                <td>
+                                    <div class="editor-label">
+                                        @Html.Label("Business Line")
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.DropDownList(
+                                    "BLId",
+                                        (IEnumerable<SelectListItem>
+                                        )ViewBag.ListOfBL,
+                                        new { @class = "form-control", style = "max-width: 600px;" }
+                                        )
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.BusinessLineId)
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.BusinessLineId, (new { @class = "form-control", style = "width:90px" }))
+                                        @Html.ValidationMessageFor(model => model.BusinessLineId)
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="editor-label">
+                                        @Html.Label("Report Type ")
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.DropDownList(
+                                    "ReportTypeID",
+                                        (IEnumerable<SelectListItem>
+                                        )ViewBag.ListOfRT,
+                                        new { @class = "form-control", style = "max-width: 600px;" }
+                                        )
+                                    </div>
+
+                                </td>
+                                @if (Model.FileBinary == null)
+                                {
+                                    <td></td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="btn" aria-label="...">
+                                            <button name="submit" type="submit" id="submit" class="btn btn-info">
+                                                <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                                                Download
+                                            </button>
+                                        </div>
+
+                                    </td>
+                                }
+                                <td>
+                                    
+                                    <button type="button" class="btn btn-info glyphicon glyphicon-upload UploadFiles"> Upload</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.FileName, "File Name ")
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.FileName, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.FileName)
+                                    </div>
+
+                                </td>
+                                <td>
+
+                                    <div class="editor-label">
+                                        @Html.Label("Base Report Id", new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.BaseReportId, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.BaseReportId)
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Version, new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.Version, new { @class = "form-control", style = "width:90px", disabled = "disabled", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.Version)
+                                    </div>
+                                </td>
+                            </tr>
+                            @if(Model.ReportId != "New")
+                            {
+                            <tr>
+                                <td>
+                                    <div class="editor-label">
+                                        @Html.Label("Created By", new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                                        @*@Html.ValidationMessageFor(model => model.ModifiedBy)*@
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.CreatedDate, new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                                        <!--Html.ValidationMessageFor(model => model.ModifiedDate)-->
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    <div class="editor-label">
+                                        @*@Html.Label("Modified By", new { style = "width:90px" })*@
+                                        @Html.LabelFor(model => model.ModifiedBy, new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", style = "width:140px", disabled = "disabled", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.ModifiedBy)
+                                    </div>
+                                </td>
+
+                                <td>
+
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.ModifiedDate, new { style = "width:90px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", style = "width:140px", @readonly = true })
+                                        <!--Html.ValidationMessageFor(model => model.ModifiedDate)-->
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+
+                        </table>
+                    </td>
+                </tr>
+               </table>
+    @{
+        var grid = new WebGrid(source: Model.BaseDBObjects);
+    }
+    @if (Model.ReportType != null)
+    {
+        if (Model.ReportType.ToString() == "EW")
+        {
+        
+            @(Html.EJ().Grid<SmartSys.BL.Report>("grdreportlist")
+                        .Datasource(Model.BaseDBObjects)
+                        .AllowFiltering()
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+
+                        .Columns(col =>
+                        {
+                            col.Field("ConnectionId").HeaderText("ConnectionId").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("ObjName").HeaderText("Object Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("SPName").HeaderText("SP Name").TextAlign(TextAlign.Center).Width(160).Add();
+                            col.HeaderText("Select SP").Commands(command =>
+                            {
+                                command.Type("SP")
+                                             .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                             {
+                                                 ContentType=ContentType.TextAndImage,
+                                                 CssClass = "EditBtn",
+                                                 
+                                                
+                                                 Click = "onClick",
+                                                 PrefixIcon = "e-icon e-edit",
+                                                 Size = ButtonSize.Mini
+                            }).Add();
+                        })
+                                .TextAlign(TextAlign.Center)
+                                .Width(60)
+                                .Add();
+
+            col.Field("ServerName").HeaderText("Server Name").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("DBName").HeaderText("DBName").Width(100).Add();
+            col.Field("UserName").HeaderText("UserName").Width(100).Add();
+            col.Field("ConnectionType").HeaderText("Connection Type").Width(100).Add();
+            col.HeaderText("Action").Template("<a class='btn-xs btn-info glyphicon glyphicon-pencil' href='#'></a>").TextAlign(TextAlign.Center).Width(100).Add();
+
+        }).ClientSideEvents(eve =>
+        {
+            eve.Create("onGridCreate");
+            eve.ActionComplete("complete");
+            eve.ContextClick("complete");
+            eve.RowSelected("onRowSelected");
+        })
+            )
+
+        
+                                @*<div id="gridContent">
+                                    @grid.GetHtml(tableStyle: "webGrid",
+                        headerStyle: "header",
+                        alternatingRowStyle: "alt",
+                        selectedRowStyle: "select",
+                        columns: grid.Columns(grid.Column(columnName: "ObjName", header: "ObjName"),
+                         grid.Column(columnName: "SPName", header: "SPName"),
+                             grid.Column(header: "Select SP", format: (item) => Html.ActionLink(" ", "GetSP", new { ObjName = item.ObjName, ConnectionId = item.ConnectionId }, new { @class = "modal-link  btn-xs btn-warning glyphicon glyphicon-pencil black" })),
+
+                        grid.Column(columnName: "ServerName", header: "ServerName"),
+                        grid.Column(columnName: "DBName", header: "DBName"),
+                        grid.Column(columnName: "UserName", header: "UserName"),
+                        grid.Column(columnName: "ConnectionType", header: "ConnectionType"),
+grid.Column(header: "Action", format: (item) => Html.ActionLink(" ", "GetDBConnection", new { ObjName = item.ObjName }, new { @class = "modal-link  btn-xs btn-warning glyphicon glyphicon-pencil black" }))))
+                                </div>*@
+        }
+        else
+        {
+
+            @(Html.EJ().Grid<SmartSys.BL.Report>("grdreportlist1")
+                        .Datasource(Model.BaseDBObjects)
+                        .AllowFiltering()
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+
+                        .Columns(col =>
+                        {
+
+                            col.Field("ObjName").HeaderText("Object Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("SPName").HeaderText("SP Name").TextAlign(TextAlign.Center).Width(160).Add();
+                            col.Field("ServerName").HeaderText("Server Name").TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("DBName").HeaderText("DBName").Width(100).Add();
+                            col.Field("UserName").HeaderText("UserName").Width(100).Add();
+                            col.Field("ConnectionType").HeaderText("Connection Type").Width(100).Add();
+                            col.HeaderText("Action").Template("<a class='btn-xs btn-info glyphicon glyphicon-pencil' href='#'></a>").TextAlign(TextAlign.Center).Width(100).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.Create("onGridCreate");
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                            eve.RowSelected("onRowSelected");
+                        })
+            )
+
+                               
+                            }
+                        }
+                    <br>
+            <br>
+
+                        @(Html.EJ().Grid<SmartSys.BL.Report>("grdreport2list")
+                        .Datasource(Model.ReportParams)
+                        .AllowFiltering()
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+
+                        .Columns(col =>
+                        {
+                            col.Field("BaseObjId").HeaderText("BaseObjId").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("ReportId").HeaderText("Report Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("ParamName").HeaderText("Parameter Name").TextAlign(TextAlign.Center).Width(160).Add();
+                            col.Field("DataType").HeaderText("DataType").TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("DefaultValue").HeaderText("DefaultValue").Width(100).Add();
+                            col.Field("ParamAlias").HeaderText("Parameter Alias").Width(100).Add();
+                            col.Field("LableName").HeaderText("LableName").Width(100).Add();
+                            col.Field("isLinked").HeaderText("Linked").Width(100).Add();
+                            col.Field("ObjName").HeaderText("ObjName").Width(100).Add();
+                            col.HeaderText("Action").Template("<a class='btn-xs btn-info glyphicon glyphicon-pencil' ></a>").Width(100).TextAlign(TextAlign.Center).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.Create("onGridCreate1");
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                            eve.RowSelected("onRowSelected1");
+                        })
+                        )
+
+
+            <br>
+                <table>
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>                                   
+                                        @Html.ActionLink(" Back", "GetReportList", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-hand-left" })    
+                                                                  
+                                </td>
+                                <td>                                   
+                                            <button type="submit" name="submit" id="submit" class="btn-xs buttonCss btn-info">Save</button>                                   
+                                </td>
+                                <td>                                                                   
+                                            <button name="submit" type="submit" id="process" class="btn-xs buttonCss btn-info">Cancel</button>                                                                   
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+     
+                            }
+</body>
+</html>
+<script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdreportlist").ejGrid("instance");
+        var ObjName = grid.getSelectedRecords()[0].ObjName;
+        var ConnectionId = grid.getSelectedRecords()[0].ConnectionId;
+
+       
+            var path = '@Url.Content("~/Report/GetSP")' + "?ObjName=" + ObjName + "&ConnectionId=" + ConnectionId
+        $("#SPDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#SPDetails").ejDialog("open");
+
+       
+
+    };
+
+</script>
+<script type="text/javascript">
+    function onRowSelected(args) {
+        var result = this.getSelectedRecords();
+
+        var ObjName = result[0].ObjName;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+            e.preventDefault();
+
+           
+           
+                document.getElementById("Title12").innerHTML = 'Select User';
+                var tempData = args.text;
+                var path = '@Url.Content("~/Report/GetDBConnection")' + "?ObjName=" + ObjName
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+            
+           
+            });
+        
+    };
+</script>
+<script type="text/javascript">
+    function onRowSelected1(args) {
+    
+        var result = this.getSelectedRecords();
+
+        var ParamName = result[0].ParamName;
+        var ReportId = result[0].ReportId;
+       
+      
+        var BaseObjId = result[0].BaseObjId;
+      
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+            e.preventDefault();
+
+           
+
+            document.getElementById("Title12").innerHTML = 'Update Report Parameter Details';
+                var tempData = args.text;
+                var path = '@Url.Content("~/Report/GetReportParam")' + "?BaseObjId=" + BaseObjId + "&ReportId=" + ReportId + "&ParamName=" + ParamName
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+
+            });
+
+    };
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("CreateContactDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1200)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("SPDetails")
+        .Title("<a id='Title'></a>")
+        .Width(700)
+        .Height(300)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#SPDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#SPDetails").ejDialog("open");
+
+        }
+
+</script>

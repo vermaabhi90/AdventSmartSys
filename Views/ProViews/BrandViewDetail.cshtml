@@ -1,0 +1,313 @@
+﻿@model SmartSys.BL.ProViews.BrandListViewModel
+@{
+    ViewBag.Title = "BrandViewDetail";
+}
+<script src="~/Scripts/tableGrid.js"></script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Brand View: <label> @Model.BrandName</label> &nbsp;
+</div>
+
+<style type="text/css">
+    .modal-content {
+        width: 90% !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .Width {
+        width: 350px;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+@{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+    {
+
+    data.Add().ID("Vendor").Text("Vendor").ContentTemplate(
+        @<div id="gridEvent1">
+            @(Html.EJ().Grid<SmartSys.BL.ProViews.BrandListViewModel>("Summary1")
+                      .Datasource((IEnumerable<object>)@Model.VendorList)
+                      .AllowPaging()
+                      .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })                     
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .PageSettings(page => { page.PageSize(20); })
+                  .Columns(col =>
+                  {
+                      col.Field("VendorId").HeaderText("VendorId").TextAlign(TextAlign.Center).Width(40).Add();
+                      col.Field("VendorName").HeaderText("VendorName").Visible(true).TextAlign(TextAlign.Left).Width(80).Add();
+                      col.HeaderText("Vendor Detail View").Commands(command =>
+                      {
+                          command.Type(UnboundType.Edit)
+
+                                 .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                 {
+                                     CssClass = "EditBtn",
+                                     Text = "Edit",
+                                     ContentType = ContentType.ImageTextImage,
+                                     PrefixIcon = "e-edit",
+                                     Height = "22px",
+                                     Size = ButtonSize.Mini
+                                 }).Add();
+
+                      }).Template("#VendorEdit")
+
+           .IsUnbound(true)
+           .TextAlign(TextAlign.Left)
+           .Width(50)
+           .AllowFiltering(false)
+           .TextAlign(TextAlign.Center)
+           .HeaderTextAlign(TextAlign.Center)
+           .Add();
+
+                  })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+            )
+        </div>);
+        data.Add().ID("Item").Text("Item").ContentTemplate(
+            @<div id="b">
+
+                @(Html.EJ().Grid<SmartSys.BL.ProViews.BrandListViewModel>("Summary2")
+                      .Datasource(ds =>
+
+                  ds.URL("/ProViews/GetBrandItemData?BrandId=" + Model.BrandId).Offline(true))
+                      .AllowPaging()
+                      .AllowResizing()
+                      .AllowFiltering()
+                  .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                  .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                  .PageSettings(page => { page.PageSize(20); })
+                  .Columns(col =>
+                  {
+
+
+                      col.Field("ItemId").HeaderText("ItemId").TextAlign(TextAlign.Center).Width(90).Add();
+                      col.Field("ItemName").HeaderText("Item Name").Width(100).Add();
+                      col.Field("MPN").HeaderText("MPN").Width(100).Add();
+                      col.HeaderText("Item Detail View").TemplateID("#View").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(90).Add();
+                  })
+                )
+
+            </div>);
+        data.Add().ID("Enquiry").Text("Enquiry").ContentTemplate(
+            @<div id="b">
+
+                @(Html.EJ().Grid<SmartSys.BL.ProViews.BrandListViewModel>("Summary3")
+                      .Datasource((IEnumerable<object>)ViewBag.EnquiryForBrand)
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .PageSettings(page => { page.PageSize(20); })
+                  .Columns(col =>
+                  {
+                      col.Field("EnqId").HeaderText("EnqId").TextAlign(TextAlign.Center).Width(70).Add();
+                      col.Field("EnqNumber").HeaderText("EnqNumber").Width(100).Add();
+                      col.Field("ItemName").HeaderText("ItemName").Width(100).Add();
+                      col.Field("MPN").HeaderText("MPN").Width(100).Add();
+                      col.Field("Quantity").HeaderText("Quantity").Width(100).Add();
+                      col.Field("CustomerName").HeaderText("CustomerName").Width(90).Add();
+                      col.HeaderText("Enquiry Details").Commands(command =>
+                      {
+                          command.Type(UnboundType.Edit)
+
+                                 .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                 {
+                                     CssClass = "EditBtn",
+                                     Text = "Edit",
+                                     ContentType = ContentType.ImageTextImage,
+                                     PrefixIcon = "e-edit",
+                                     Height = "22px",
+                                     Size = ButtonSize.Mini
+                                 }).Add();
+
+                      })
+                           .AllowFiltering(false)
+                           .TemplateID("#BtnEdit")
+                           .IsUnbound(true)
+                           .TextAlign(TextAlign.Center)
+                           .Width(60)
+                           .Add();
+                  })
+                )
+
+            </div>);
+        data.Add().ID("Customer").Text("Customer").ContentTemplate(
+            @<div id="b">
+
+                @(Html.EJ().Grid<SmartSys.BL.ProViews.BrandListViewModel>("Summary4")
+                      .Datasource((IEnumerable<object>)ViewBag.CustomerForBrand)
+                      .AllowPaging()
+                      .AllowFiltering()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                      .PageSettings(page => { page.PageSize(20); })
+                  .Columns(col =>
+                  {
+                      col.Field("CustomerId").HeaderText("CustomerId").TextAlign(TextAlign.Center).Width(90).Add();
+                      col.Field("CustomerName").HeaderText("Customer Name").Width(100).Add();
+                      col.HeaderText("Customer Detail View").Commands(command =>
+                      {
+                          command.Type(UnboundType.Edit)
+
+                                 .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                 {
+                                     CssClass = "EditBtn",
+                                     Text = "Edit",
+                                     ContentType = ContentType.ImageTextImage,
+                                     PrefixIcon = "e-edit",
+                                     Height = "22px",
+                                     Size = ButtonSize.Mini
+                                 }).Add();
+
+                      }).Template("#CustomerEdit")
+
+           .IsUnbound(true)
+           .TextAlign(TextAlign.Left)
+           .Width(50)
+           .AllowFiltering(false)
+           .TextAlign(TextAlign.Center)
+           .HeaderTextAlign(TextAlign.Center)
+           .Add();
+
+                  })
+                   .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                )
+
+            </div>);
+    if (Model.isPurchase)
+    {
+        data.Add().ID("PurchaseItemBacklog").Text("Purchase Backlog").ContentTemplate(
+        @<div>
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("grdPurItemBacklog")
+                .Datasource((IEnumerable<object>)ViewBag.PurchaseBrandBacklog)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                .EnableAltRow(true)
+                .Columns(col =>
+                {
+                    col.Field("PONumber").HeaderText("PONumber").TextAlign(TextAlign.Center).Width(100).Add();
+                    col.Field("PODate").AllowEditing(false).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("PO Date").Width(100).Add();
+                    col.Field("VendorName").HeaderText("Vendor Name").Visible(true).TextAlign(TextAlign.Left).Width(100).Add();
+                    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(100).Add();
+                    col.Field("Quantity").HeaderText("Quantity").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+                    col.Field("QtyRec").HeaderText("Qty Rec").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+                    col.Field("QtyInv").HeaderText("Qty Inv").Format("{0:N0}").Width(80).Add();
+                    col.Field("BalanceQty").HeaderText("Balance Qty").Format("{0:N0}").Width(80).Add();
+                    col.Field("UnitCost").HeaderText("Unit Cost").Width(80).Add();
+                    col.Field("Amount").HeaderText("Amount").Width(80).Add();
+                    col.Field("SalesOrderNumber").HeaderText("SalesOrderNumber").Width(140).Add();
+                    col.Field("StrCRD").AllowEditing(false).HeaderText("CRD").Width(100).Add();
+                    col.Field("StrVPD").AllowEditing(false).HeaderText("VPD").Width(100).Add();
+                })
+                )
+            </div>
+        </div>);
+    }
+    if (Model.isSales)
+    {
+        data.Add().ID("SalesItemBacklog").Text("Sales Backlog").ContentTemplate(
+        @<div>
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("SalesItemBacklog")
+                .Datasource((IEnumerable<object>)ViewBag.SalesBrandBacklog)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                .EnableAltRow(true)
+                .Columns(col =>
+                {
+                    col.Field("PONumber").HeaderText("PONumber").TextAlign(TextAlign.Center).Width(100).Add();
+                    col.Field("PODate").AllowEditing(false).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("PO Date").Width(100).Add();
+                    col.Field("CustomerName").HeaderText("Vendor Name").Visible(true).TextAlign(TextAlign.Left).Width(100).Add();
+                    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(100).Add();
+                    col.Field("Quantity").HeaderText("Quantity").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+                    col.Field("QtyRec").HeaderText("Qty Shipped").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+                    col.Field("QtyInv").HeaderText("Qty Inv").Format("{0:N0}").Width(80).Add();
+                    col.Field("BalanceQty").HeaderText("Balance Qty").Format("{0:N0}").Width(80).Add();
+                    col.Field("UnitCost").HeaderText("Unit Cost").Width(80).Add();
+                    col.Field("Amount").HeaderText("Amount").Width(80).Add();
+                    col.Field("SalesOrderNumber").HeaderText("SalesOrderNumber").Width(140).Add();
+                    col.Field("StrCRD").AllowEditing(false).HeaderText("CRD").Width(100).Add();
+                    col.Field("StrVPD").AllowEditing(false).HeaderText("VPD").Width(100).Add();
+                })
+                )
+            </div>
+        </div>);
+    }
+    })
+        .EnablePersistence(true)
+        .Render();}
+
+<table>
+    <tr>
+        <td>
+            @Html.ActionLink(" Back", "BrandList", "ProViews", new { @class = "btn-xs btn-warning glyphicon glyphicon-hand-left" })
+        </td>
+
+    </tr>
+</table>
+<script type="text/x-jsrender" id="CustomerEdit">
+    <a class="btn-xs btn-primary  glyphicon glyphicon-dashboard" href="/ProViews/CustomerViewDetail?CustomerId={{:CustomerId}}&amp;CustomerName={{:CustomerName}}"></a>
+</script>
+<script type="text/x-jsrender" id="VendorEdit">
+    <a class="btn-xs btn-primary  glyphicon glyphicon-dashboard" href="/ProViews/VendorViewDetails?VendorId={{:VendorId}}&VendorName={{:VendorName}}"></a>
+</script>
+<script id="View" type="text/x-jsrender">
+    <a class="btn-xs btn-primary  glyphicon glyphicon-dashboard" href="/ProViews/ItemViewDetail?ItemId={{:ItemId}}&amp;ItemName ={{:ItemName}}"> </a>
+</script>
+<script id="BtnEdit" type="text/x-jsrender">
+    <a class="btn-xs btn-primary  glyphicon glyphicon-dashboard" href="/Enquiry/CretaeCustomerEnquiry?EnqId={{:EnqId}}"></a>
+</script>

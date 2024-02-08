@@ -1,0 +1,249 @@
+﻿@model SmartSys.BL.CompanyModel
+
+@{
+    ViewBag.Title = "EditCompany";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit System Company
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var Name = $('#Name').val();
+            var ShortName = $('#ShortName').val();
+            var AddressLine1 = $('#AddressLine1').val();
+            var AddressLine2 = $('#AddressLine2').val();
+            var City = $('#City').val();
+            var State = $('#State').val();
+            var Country = $('#Country').val();
+            var Pin = $('#Pin').val();
+
+            if (Name.toString() == "") {
+                alert("Please Enter  Name ");
+                return false;
+            }
+            if (ShortName.toString() == "") {
+                alert("Please Enter ShortName ");
+                return false;
+            }
+            if (AddressLine1.toString() == "") {
+                alert("Please Enter AddressLine1 ");
+                return false;
+            }
+            if (AddressLine2.toString() == "") {
+                alert("Please Enter AddressLine2 ");
+                return false;
+            }
+            if (City.toString() == "") {
+                alert("Please Enter City ");
+                return false;
+            }
+            if (State.toString() == "") {
+                alert("Please Enter State ");
+                return false;
+            }
+            if (Country.toString() == "") {
+                alert("Please Enter Country ");
+                return false;
+            }
+            if (Pin.toString() == "") {
+                alert("Please Enter Pin ");
+                return false;
+            }
+            $("#CompanyDetail").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("EditCompany", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "CompanyDetail" }))
+{
+    <html>
+    <body>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 6px;">
+            <tr>
+                <td>
+                    <label for="CompId">Company Id</label>
+                </td>
+                <td>
+                    <div>
+
+                        @Html.TextBoxFor(model => model.CompId, new { @class = "form-control", id = "CompId", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.CompId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Name">Name</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", id = "Name" })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="ShortName">ShortName</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.ShortName, new { @class = "form-control", id = "ShortName" })
+                        @Html.ValidationMessageFor(model => model.ShortName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="AddressLine1">Address Line 1</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.AddressLine1, new { @class = "form-control", id = "AddressLine1" })
+                        @Html.ValidationMessageFor(model => model.AddressLine1, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="AddressLine2">Address Line 2</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.AddressLine2, new { @class = "form-control", id = "AddressLine2" })
+                        @Html.ValidationMessageFor(model => model.AddressLine2, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="City">City</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.City, new { @class = "form-control", id = "City" })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="State">State</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.State, new { @class = "form-control", id = "State" })
+                        @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Country">Country</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.Country, new { @class = "form-control", id = "Country" })
+                        @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Pin">Pin</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.Pin, new { @class = "form-control", id = "Pin" })
+                        @Html.ValidationMessageFor(model => model.Pin, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="TagLine">TagLine</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.TagLine, new { @class = "form-control", id = "TagLine" })
+                        @Html.ValidationMessageFor(model => model.TagLine, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Cst">Cst</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.Cst, new { @class = "form-control"  })
+                        @Html.ValidationMessageFor(model => model.Cst, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Bst">Bst</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.Bst, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Bst, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ServiceTN">ServiceTN</label>
+                </td>
+                <td>
+                    <div>
+                        @Html.TextBoxFor(model => model.ServiceTN, new { @class = "form-control"  })
+                        @Html.ValidationMessageFor(model => model.ServiceTN, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                @if (Model.Logo != null)
+                {
+                    <td>
+                        <label for="Logo">Logo</label>
+                    </td>
+                    <td>
+                        <div>
+                            @{
+                                var base64 = Convert.ToBase64String(Model.Logo);
+                                var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                            }
+                            <img width="80" height="80" src="@imgSrc" />
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Logo">New Logo</label>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="file" class="file form-control" name="uploadFile" />
+                        </div>
+                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <label for="Logo">Logo</label>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <input type="file" class="file form-control" name="uploadFile" />
+
+                                        </div>
+                                    </td>
+                                }
+            </tr>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetCompanyList';" );"> Back</button>
+                   <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>              
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}

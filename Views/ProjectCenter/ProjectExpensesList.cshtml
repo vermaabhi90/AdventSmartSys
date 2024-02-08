@@ -1,0 +1,155 @@
+﻿@model SmartSys.BL.Project.ProjectExpensesModel
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "Project Expenses List";
+}
+
+@{
+
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project Expenses List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateProjectExpenses", new { ExpenseId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProjectExp")
+                .Datasource((IEnumerable<object>)@Model.LstPrjectExp)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+         //.ShowColumnChooser()
+         //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+         //.ToolbarSettings(toolbar =>
+         //    {
+         //        toolbar.ShowToolbar().ToolbarItems(items =>
+         //        {
+         //            items.AddTool(ToolBarItems.Add);
+         //            items.AddTool(ToolBarItems.Edit);
+         //            items.AddTool(ToolBarItems.Update);
+         //            items.AddTool(ToolBarItems.Cancel);
+         //        });
+         //    })
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+         //    //.CustomContextMenuItems(new List<string> { "Edit ", "Quick Track" })
+         //     .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit" } })
+         //      .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Quick Track" } });
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit1", "Edit Record");
+                 c.AddItem("Quick_Track", "Quick Track");
+             });
+
+         })
+        .Columns(col =>
+        {
+            col.Field("ExpenseId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectId").HeaderText("ProjectId").Visible(false).Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("TaskId").HeaderText("TaskId").Visible(false).Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("ExpenseType").HeaderText("Expense Type").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("Employee").HeaderText("Employee Name").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("TaskName").AllowEditing(false).HeaderText("Task Name").Width(200).Add();
+            col.Field("Amount").AllowEditing(false).HeaderText("Amount").Width(200).Add();
+            col.Field("Remark").AllowEditing(false).HeaderText("Remark").Width(200).Add();
+            col.Field("StatusCode").AllowEditing(false).HeaderText("Status").Width(200).Add();
+            col.Field("ExpenseDate").AllowEditing(true).HeaderText("Expense Date").Format("{0:MM/dd/yyyy}").Width(130).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .AllowFiltering(false)
+            .TemplateID("#BtnEdit")
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+
+        })
+            .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+    <script id="BtnEdit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/ProjectCenter/CreateProjectExpenses?ExpenseId={{:ExpenseId}}"></a>
+    </script>
+    <script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/ProjectCenter/CreateProjectExpenses")' + "?ExpenseId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+
+        if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdProjectExp").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var ExpenseId = result[0]["ExpenseId"];
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectExpenses")' + "?ExpenseId=" + ExpenseId
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        if (args.text == "Quick Track") {
+            var tempData = args.text;
+            var grid = $("#grdProjectExp").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskName = result[0]["TaskName"];
+            $("#Title").val(TaskName);
+            document.getElementById("Title").innerHTML = TaskName;
+            var TaskId = result[0]["TaskId"];
+            var path1 = '@Url.Action("casetimeline", "quickview")' + "?TaskID=" + TaskId + "&ProjectId=" + projectId;
+            $("#seconddialog").ejDialog({
+                contentUrl: path1,
+                contentType: "ajax"
+            });
+            $("#seconddialog").ejDialog("open");
+        }
+        }
+
+    </script>

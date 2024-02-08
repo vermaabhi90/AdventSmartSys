@@ -1,0 +1,226 @@
+﻿@model SmartSys.BL.Project.ProjectTypeMaster
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+
+<link href="~/Content/ej/web/gradient-lime/ej.widgets.all.min.css" rel="stylesheet" />
+
+@using Syncfusion.JavaScript
+@using Syncfusion.JavaScript.Models
+@using Syncfusion.MVC.EJ
+
+<div style="margin-top:15px;margin-left:50px" class="glyphicon glyphicon-list  text-info">
+    Project Type
+</div>
+<br>
+<br>
+<div>
+    @(Html.EJ().Gantt("ganttProjectType")
+    .CssClass("gradient-lime")
+    .TaskNameMapping("TaskName")
+    .TaskIdMapping("ProjectTypeTaskID")
+    .StartDateMapping("StartDate")
+    .EndDateMapping("EndDate")
+    .Holidays(h => h.Day("Sunday").Add())
+    .DurationMapping("Duration")
+    .ProgressMapping("Progress")
+    //.ParentTaskIdMapping("ParentTaskId")
+    .ScheduleStartDate(Model.startdate.ToShortDateString())
+    .ScheduleEndDate(Model.enddate.ToShortDateString())
+            .DateFormat("MM/dd/yyyy")
+    .HighlightWeekends(true)
+    .TreeColumnIndex(2)
+    .ShowGridCellTooltip(true)
+    .ChildMapping("SubTasks")
+    .AllowSelection(true)
+    .AllowGanttChartEditing(true)
+    .PredecessorMapping("Predecessors")
+    .AllowColumnResize(true)
+    .AllowSorting(true)
+    .IncludeWeekend(true)
+    .EnableContextMenu(true)
+    .EditDialogFields(eve =>
+    {
+        eve.Field("ProjectTypeTaskID").Add();
+        eve.Field("TaskName").Add();
+        eve.Field("StartDate").Add();
+        eve.Field("EndDate").Add();
+        eve.Field("Duration").Add();
+        eve.Field("Progress").Add();
+        eve.Field("Predecessors").Add();
+    })
+    .AddDialogFields(eve =>
+        {
+            eve.Field("ProjectTypeTaskID").Add();
+            eve.Field("TaskName").Add();
+            eve.Field("StartDate").Add();
+            eve.Field("EndDate").Add();
+            eve.Field("Duration").Add();
+            eve.Field("Progress").Add();
+            eve.Field("Predecessors").Add();
+        })
+    .EditSettings(edit =>
+    {
+        edit.AllowAdding(true);
+        edit.AllowDeleting(true);
+        edit.AllowEditing(true);
+        edit.EditMode("cellEditing");
+    }).
+       ClientSideEvents(eve =>
+       {
+           eve.ActionComplete("ActionComplete");
+           eve.ActionBegin("actionBegin");
+           eve.Load("Load");
+           eve.ContextMenuOpen("contextMenuOpen");
+       })
+    .EnableResize(true)
+    .EnableVirtualization(false)
+    .ToolbarSettings(toolbar =>
+    {
+        toolbar.ShowToolbar(true);
+        toolbar.ToolbarItems(new List<GanttToolBarItems>()
+        {
+            GanttToolBarItems.Add,
+            GanttToolBarItems.Search,
+            GanttToolBarItems.Edit,
+            GanttToolBarItems.Delete,
+            GanttToolBarItems.Update,
+            GanttToolBarItems.Cancel,
+            GanttToolBarItems.Indent,
+            GanttToolBarItems.Outdent,
+            GanttToolBarItems.ExpandAll,
+            GanttToolBarItems.CollapseAll
+        });
+    })
+    .SizeSettings(ss => ss.Width("100%").Height("100%"))
+            .Datasource(@Model.ProjectTypeTasks)
+            
+    )
+
+</div>
+<div>
+    @Html.ActionLink(" Back", "VwProjectTypeList", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-hand-left" })
+</div>
+
+<script type="text/x-jsrender" id="columnTemplate">
+    <div style='height:20px;width:20px;margin:auto; background-repeat:no-repeat;'>{{:#data['ProjectTypeId']}}</div>
+</script>
+
+<script type="text/template" id="customColumnTemplate">
+        <label style="border-color:red">{{:taskName}}</label>
+</script>
+<style>
+    .e-gantt-childtaskbar {
+  background-color: #738d49;
+}
+</style>
+<script type="text/javascript">
+    function contextMenuOpen(args) {
+
+        var isExpandable = true, isCollapsable = true, data;
+        data = args.item;
+        if (data && data.hasChildRecords) {
+            if (data.expanded)
+                isExpandable = false;
+            else
+                isCollapsable = false;
+        } else {
+            isExpandable = false;
+            isCollapsable = false;
+        }
+
+        var contextMenuItems = [{
+            headerText: "Edit More Details",
+            eventHandler: customMenuAddHandler,
+            menuId: "EditMoreDetails",
+            iconClass: "e-topIcon"
+        }
+        ];
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+    }
+
+    function customMenuAddHandler(args) {
+        
+        var tempData = args.data.item;                          
+        var ProjectTypeTaskID=args.data.item.ProjectTypeTaskID;
+        var Id = @Model.ProjectTypeId;
+        var path = '@Url.Content("~/ProjectCenter/EditMode")' + "?ProjectTypeTaskID=" + ProjectTypeTaskID + "&ProjectTypeId=" + Id      
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function Load(args) {
+        var columns = this.getColumns();
+        columns.splice(6, 0,
+            {
+                field: "Description",
+                headerText: "Description",
+                //isTemplateColumn: true,
+                //templateID: "customColumnTemplate",   
+                width: "500px",
+            });
+        columns.splice(1, 0,
+    {
+        field: "TaskTypeDesc",
+        headerText: "Type",
+        //isTemplateColumn: true,
+        //templateID: "customColumnTemplate",   
+        width: "50px",
+    });
+    }
+
+    function ActionComplete(args) {
+
+        if (args.requestType === 'save' && args._cAddedRecord) {
+            var ganttRecord = args._cAddedRecord.item;
+            var Id = @Model.ProjectTypeId;
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTypeAddNew",  //Update is Server side method
+                data: { taskDetail: ganttRecord, ProjTypeId: Id }
+            });
+        }
+
+        else if (args.requestType === 'delete') {
+            var data =args.data;
+            var ganttRecord = data.item;
+            var Id = @Model.ProjectTypeId;
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTypeDelete",  //Update is Server side method
+                data: { taskDetail: ganttRecord, ProjTypeId: Id }
+            });
+        }
+        else if (args.requestType === 'outdent' || args.requestType === 'recordUpdate') {
+            var ganttRecord = args.data.item;
+            //alert(args.data.item.ParentId);
+            var Id = @Model.ProjectTypeId;
+
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTypeUpdate",  //Update is Server side method
+                data: { taskDetail: ganttRecord, ProjTypeId: Id }
+            });
+        }
+    };
+
+    function actionBegin(args) {
+        if (args.requestType === 'delete') {
+            if (confirm("Are you sure, you want to delete the task record?") == false) {
+                args.cancel = true;
+            };
+        }
+    }
+
+    $("#ganttProjectType").on("change",".descriptionslass", function (e) {
+        //var $tr = $(e.target).closest('tr'),
+        //    ganttObj = $("#ganttProjectType").data("ejGantt"),
+        //    checkStatus = $(e.target).is(':checked'),
+        //     $gridRows = ganttObj._gridRows,
+        //     rowIndex = $gridRows.index($tr),
+        //     record = ganttObj._currentViewData && ganttObj._currentViewData[rowIndex];
+        //record["Description"] = checkStatus;
+        alert("Hi");
+    });
+
+</script>
+

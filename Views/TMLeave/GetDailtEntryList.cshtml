@@ -1,0 +1,319 @@
+﻿@model SmartSys.BL.Tmleave.TimeSheetDlyEntryList
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#WeekNolst').change(function (event) {
+            var ddlValue = $('#WeekNolst').val();
+            if (ddlValue.toString() == "")
+            {
+                alert("Please Select Date.");
+                return false;
+            }
+            var path = '@Url.Content("~/TMLeave/GetTMRecordByWeeKNo")' + "?WeekNo=" + ddlValue
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+@{
+//ViewBag.Title = "Daily Time Sheet Entry";
+//var Projectlst = new List<object>();
+//var Tasklst =    new    List<object>();
+//var Daylst = new List<object>();
+//foreach (var product in Model.TMProjectlist)
+//{
+//    Projectlst.Add(new { value = product.ProjectId, text = product.ProjectName });
+//}
+//foreach (var product in Model.TMTasklist)
+//{
+//    Tasklst.Add(new { value = product.TaskId, text = product.TaskName });
+//}
+//Daylst.Add(new { value = 1, text = "Monday" });
+//Daylst.Add(new { value = 2, text = "Tuesday" });
+//Daylst.Add(new { value = 3, text = "Wednesday" });
+//Daylst.Add(new { value = 4, text = "Thursday" });
+//Daylst.Add(new { value = 5, text = "Friday" });
+//Daylst.Add(new { value = 6, text = "Saturday" });
+//Daylst.Add(new { value = 7, text = "Sunday" });
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Time Sheet Entry
+</div>
+
+<table>
+    <tr>
+        @if (Model.TimeSheetId > 0)
+        {
+            <td>
+                <label>TimeSheet Id : </label>
+            </td>
+            <td width="120px">
+                <label>@Model.TimeSheetId</label>
+            </td>
+        }
+        <td>
+            <label> Date :</label>
+        </td>
+        <td width="120px">
+            @Html.DropDownList("WeekNo", (IEnumerable<SelectListItem>)ViewBag.TMDateList, "Please Select Date", new { style = "width:275px", @class = "form-control", id = "WeekNolst" })
+        </td>
+
+    </tr>
+</table>
+
+<br />
+
+<br />
+
+<style>
+    .Tbl1 {
+        border-style: solid;
+        border-color: #c9cad7;
+    }
+</style>
+
+<div style="position:relative">
+    @if (Model.TimeSheetId > 0)
+    {
+        @Html.ActionLink(" Add/Edit Entry", "CreateTMEntry","TMLeave" ,new { TimeSheetEntryId = 0, TimeSheetId = Model.TimeSheetId }, new { @class = " btn-sm btn-info glyphicon glyphicon-leaf" })
+        <span>&nbsp;</span>
+        if (@Model.timeSheetEntrylist.Count == 0)
+        {
+            @Html.ActionLink(" Copy Entries From Last Approved Time Sheet", "SaveTimeSheetEntryLastApproval", new { TimeSheetId = Model.TimeSheetId }, new { @class = "btn-sm btn-info glyphicon glyphicon-leaf" })
+        }
+
+        @(Html.EJ().Grid<SmartSys.BL.Tmleave.TimeSheetDlyEntryList>("grdTMEntry")
+            .Datasource((IEnumerable<object>)@Model.timeSheetEntrylist)
+            .EnableAltRow()
+                            .CssClass("Tbl1")
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+            .AllowScrolling()
+
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportTimeSheetHistoryLst")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Delete1", "Delete");
+             });
+
+         })
+        .Columns(col =>
+        {
+            col.Field("TimeSheetEntryId").HeaderText("Time Sheet Entry Id").IsPrimaryKey(true).Visible(false).CssClass("Tbl1").Width(50).Add();
+            col.Field("TimeSheetId").HeaderText("Time Sheet Id").Visible(false).Width(50).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Left).Add();
+            col.Field("TaskName").HeaderText("Task Name").Width(90).Width(85).Add();
+
+            col.Field("MonTime").HeaderText("Monday").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("TusTime").HeaderText("Tuesday").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("WedTime").HeaderText("Wednesday").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("ThusTime").HeaderText("Thursday").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("FriTime").HeaderText("Friday").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("SatTime").HeaderText("Saturday").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("SunTime").HeaderText("Sunday").TextAlign(TextAlign.Center).Width(85).Add();
+
+            //col.HeaderText("Edit").Commands(command =>
+            //{
+            //    command.Type(UnboundType.Edit)
+
+            //    .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+            //    {
+            //        CssClass = "EditBtn",
+            //        Text = "Edit",
+            //        ContentType = ContentType.ImageTextImage,
+            //        PrefixIcon = "e-edit",
+            //        Height = "22px",
+            //        Size = ButtonSize.Mini
+            //    }).Add();
+            //})
+            //.AllowFiltering(false)
+            //.TemplateID("#BtnEditEntry")
+            //.IsUnbound(true)
+            //.TextAlign(TextAlign.Left)
+            //.Width(60)
+            //.Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ContextClick("contextclick");
+
+            })
+        )
+    }
+    @if (Model.AllowBtn == "Allow")
+    {
+        @Html.ActionLink(" Submit", "UpdateStatusTMEntry", new { TimeSheetId = Model.TimeSheetId }, new { @class = "btn-xs btn-info  glyphicon glyphicon-ok-circle" })
+    }
+</div>
+<script type="text/javascript">
+    function contextclick(args)
+    {
+        if (args.text == "Delete") {
+                    var tempData = args.text;
+                    var grid = $("#grdTMEntry").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var TimeSheetEntryId = result[0]["TimeSheetEntryId"];
+                    var TimeSheetId = result[0]["TimeSheetId"];
+                   var agree=confirm("Are you sure to delete ?")
+                        if (result) {
+                            var path = '@Url.Content("~/TMLeave/DeleteTimeSheetEntry")' + "?TimeSheetEntryId=" + TimeSheetEntryId + "&TimeSheetId=" + TimeSheetId
+
+                            window.location.replace(path);
+                        }
+                   else
+                        {
+                            return false;
+                        }
+
+                }
+    }
+</script>
+<script id="BtnEditEntry" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/TMLeave/CreateTMEntry?TimeSheetEntryId={{:TimeSheetEntryId}}&amp;TimeSheetId={{:TimeSheetId}}"></a>
+</script>
+<script id="BtnDeleteEntry" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash black" href="/TMLeave/DeleteTimeSheetEntry?TimeSheetEntryId={{:TimeSheetEntryId}}&amp;TimeSheetId={{:TimeSheetId}}"></a>
+</script>
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Time Sheet History
+</div>
+<br />
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdHistory")
+                        .Datasource((IEnumerable<object>)ViewBag.HistoryList)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+    .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportTimeSheetHistoryLst")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Edit_TimeSheet", "Edit TimeSheet");
+             });
+
+         })
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("TimeSheetId").HeaderText("TimeSheetId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(160).Add();
+            col.Field("EmpName").HeaderText("Employee Name").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("FromDate").AllowEditing(false).HeaderText("From Date").Format("{0:MM/dd/yyyy}").Width(150).Add();
+            col.Field("ToDate").AllowEditing(false).HeaderText("To Date").Format("{0:MM/dd/yyyy}").Width(150).Add();
+            col.Field("StatusCode").HeaderText("StatusCode").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("WorkingHour").HeaderText("Working Hour").TextAlign(TextAlign.Center).Format("{0:n2}").Width(200).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+            })
+            .AllowFiltering(false)
+            .Template("#BtnEdit")
+            
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+        })
+                   .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script id="BtnEdit" type="text/x-jsrender">
+    {{if StatusCode =='APPROVED'  || StatusCode =='Submitted'}}
+
+    {{else}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/TMLeave/CreateTMEntry?TimeSheetEntryId=0&amp;TimeSheetId={{:TimeSheetId}}"></a>
+    @*<a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/TMLeave/GetDailtEntryList?TimeSheetId={{:TimeSheetId}}"></a>*@
+    {{/if}}
+</script>
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Edit TimeSheet")
+        {
+            var grid = $("#grdHistory").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var TimeSheetId = result[0]["TimeSheetId"];
+            var StatusCode = result[0]["StatusCode"];
+            var FrmDate = result[0]["FromDate"];           
+            var FromDate = FrmDate.toLocaleDateString();          
+            var TDate = result[0]["ToDate"];
+            var ToDate = TDate.toLocaleDateString();
+           // alert(ToDate)
+           // return false;
+            if (StatusCode == "APPROVED" ||  StatusCode == "Submitted")
+            {
+                toastr.error("This TimeSheet is Submitted.you Can not Edit this TimeSheet!");
+            }
+            else
+            {
+                var path = '@Url.Content("~/TMLeave/CreateTMEntry")' + "?TimeSheetEntryId=" + 0 + "&TimeSheetId=" + TimeSheetId + "&FromDate=" + FromDate + "&ToDate=" + ToDate
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        }
+    }
+
+</script>

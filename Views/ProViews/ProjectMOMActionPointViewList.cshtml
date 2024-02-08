@@ -1,0 +1,155 @@
+﻿@model SmartSys.BL.Project.MOMActionPoint
+
+@{
+    ViewBag.Title = "ProjectMOMActionPointViewList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    MOM Action Point Details
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("MOMActionPoint", "ProjectCenter", FormMethod.Post, new { Id = "MOM" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <div class="">
+                    <label for="ItemName">Action Point Id:</label>
+                </div>
+
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ActionPointId, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+            <td>
+                <div class="">
+                    <label for="ItemName">Description:</label>
+                </div>
+
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.ActionDescription, new { required = "required", @class = "form-control", @style = "width:350px", id = "DES" })
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+    <table style="margin-left:50px">
+        <tr>
+            <td style="margin-left:25px">
+                <button type="button" class="btn-xs   glyphicon glyphicon-arrow-down Participant "> Participant List</button>
+            </td>
+            <td width="15px" />
+            <td>
+                <button type="button" class="btn-xs  glyphicon glyphicon-arrow-down CommentList "> Comment List</button>
+            </td>
+        </tr>
+    </table>
+    <hr />
+    <div id="LstActionPointParticipant" class="w3-container city">
+        <label style="color:red;display:none">Participant List:</label>
+        @if (Model.LstActionPointParticipant.Count > 0)
+        {
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Project.MOMActionPoint>("grdParticipantList")
+         .Datasource(Model.LstActionPointParticipant)
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .AllowScrolling()
+            .PageSettings(p => { p.PageSize(20); })
+
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("UserId").HeaderText("User Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("UserName").HeaderText("User Name").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("ParticipantType").HeaderText("Participant Type").Width(160).Add();
+
+
+        })
+
+
+
+                )
+            </div>
+
+
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about MOM Action Point User Details !!!</label>
+            </div>
+        }
+    </div>
+
+    <div id="MOMActionPointCommentList" style="display:none">
+        <label style="color:red">Comment List:</label>
+        @if (Model.MOMActionPointCommentList.Count > 0)
+        {
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Project.MOMActionPoint>("grdCommentList")
+         .Datasource(Model.MOMActionPointCommentList)
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .AllowScrolling()
+            .PageSettings(p => { p.PageSize(20); })
+
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("Comment").HeaderText("Comment").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("CommentedBy").HeaderText("Commented By").Width(180).Add();
+            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+
+
+
+                )
+            </div>
+
+
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about MOM Action Point Comment Details !!!</label>
+            </div>
+        }
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.Participant').click(function (e) {
+            $('#LstActionPointParticipant').show();
+            $('#MOMActionPointCommentList').hide();
+        })
+        $('.CommentList').click(function (e) {
+            $('#LstActionPointParticipant').hide();
+            $('#MOMActionPointCommentList').show();
+        })
+    })
+</script>
+@Html.EJ().ScriptManager()
+
+

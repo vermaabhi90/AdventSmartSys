@@ -1,0 +1,216 @@
+﻿@model SmartSys.BL.RDS.RDSRptSubModel
+
+<script type="text/javascript">
+
+    var selTypeText = $("#DrpDwnUserLst option:selected").text();
+    if (@Model.DistMode == 2)
+    {
+        $('#drpGenOpt').show();
+    }
+    else
+    {
+        $('#drpGenOpt').hide();
+    }
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div class="">
+
+    <table  style="border-collapse:separate;border-spacing: 0 5px;margin-top:40px">
+        <tr>
+
+            @if (Model.DlyGenSubId > 0)
+            {
+                <td>
+                    <label for="RptSubId">RptSub Id</label>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="RptSubId">@Model.RptSubId</label>
+                    </div>
+                </td>
+                <td>
+                    <label for="DlyGenSubId">Daily Id:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <label for="RptSubId">@Model.DlyGenSubId</label>
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <label for="RptSubId">RptSub Id</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.TextBoxFor(model => model.RptSubId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+            }
+        </tr>
+
+        <tr>
+            <td style="width:150px">
+                <label for="SelectReport">Client Name</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.DropDownList("ClientId", (IEnumerable<SelectListItem>)ViewBag.ClientList, "--Select Client--", new { @class = "form-control", id = "drpClient", style = "width:200px", @disabled = true })
+                </div>
+            </td>
+            <td>
+                <label for="SelectReport">Report Name</label>
+            </td>
+
+            <td style="width:150px">
+                <div class="">
+                    @Html.DropDownList("ReportId", (IEnumerable<SelectListItem>)ViewBag.ReportList, "--Select Report--", new { @class = "form-control", @readonly = "readonly", id = "drpReport", style = "width:250px", @disabled = true })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                @Html.Label("Dist Options :")
+            </td>
+            <td>
+                
+                    @Html.DropDownList("DistType", new List<SelectListItem>
+                                    {
+                                        new SelectListItem(){Text = "Distribute At Specific Time",Value="1"},
+                                        new SelectListItem(){Text = "Distribute When ready",Value="2"},
+                                        new SelectListItem(){Text = "Package in ZIP when ready",Value="3"},
+                                        new SelectListItem(){Text = "Package in ZIP and Distribute At Specific Time",Value="4"}
+                                      }
+                                         , "-Select Option-", new { @class = "form-control", id = "drpDistType", style = "width:200px", @disabled = true })
+            </td>
+            <td>
+                @Html.DropDownList("DistMode", new List<SelectListItem>
+                                    {
+                                        new SelectListItem(){Text = "Distribute Manually",Value="1"},
+                                        new SelectListItem(){Text = "Distribute Auto",Value="2"}
+                                      }
+                                               , new { @class = "form-control", id = "drpDistMode", style = "width:150px", @disabled = true })
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.Label("Gen Type:")
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("GenMode"
+                                    , new List<SelectListItem>
+                                    {
+                                        new SelectListItem(){Text = "Daily",Value="1"},
+                                        new SelectListItem(){Text = "Weekly",Value="2"},
+                                        new SelectListItem(){Text = "Monthly",Value="3"},
+                                        new SelectListItem(){Text = "Quterly",Value="4"},
+                                        new SelectListItem(){Text = "Half Yearly",Value="5"},
+                                        new SelectListItem(){Text = "Yearly",Value="6"}
+                                    }
+
+                                                  , "-Select Option-", new { @class = "form-control", id = "drpGenOpt", style = "width:200px", @disabled = true })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.Label("Dist Time :")</td>
+            <td>
+                
+                    @Html.TextBox("txtDistriTime", Model.RptSubDistributionDetails.DistributionTime, new { id = "txtDistrTime", @readonly = "readonly", @class = "Number  form-control", style = "width:80px" })
+                   
+                    <b> @Html.DisplayName("HH:MM") </b>
+               
+            </td>
+            <td>   @Html.Label("Max Dist Time :")</td>
+            <td>
+               
+                    @Html.TextBox("txtMaxDistriTime", Model.RptSubDistributionDetails.MaxDistributionTime, new { id = "txtMaxDistrTime", @readonly = "readonly", @class = "Number  form-control", style = "width:80px" })
+                  
+                   <b> @Html.DisplayName("HH:MM") </b>
+              
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.Label("Distribution :")
+            </td>
+
+            <td>
+
+                <br />
+                @Html.CheckBox("Email", Model.RptSubDistributionDetails.Email, new { id = "chkEmail", @disabled = "disabled" })
+                <span><b> @Html.DisplayName("Email") </b></span>
+
+                @Html.CheckBox("FTP", Model.RptSubDistributionDetails.FTP, new { id = "chkFTP", @disabled = "disabled" })
+                <span><b> @Html.DisplayName("FTP") </b></span>
+                <br />
+
+            </td>
+
+        </tr>
+    </table>
+
+
+    <table>
+        <tr></tr>
+
+
+        <tr>
+            <td>
+                @Html.Label("Weekly Options :")
+            </td>
+            <td>
+                <div class="">
+                    @Html.CheckBox("Monday", new { id = "chkMon", @disabled = true })
+                    <span><b> @Html.DisplayName("Monday") </b></span>
+                    @Html.CheckBox("TuesDay", new { id = "chkTues", @disabled = true })
+                    <span><b> @Html.DisplayName("TuesDay") </b></span>
+                    @Html.CheckBox("Wednesday", new { id = "chkWen", @disabled = true })
+                    <span><b> @Html.DisplayName("Wednesday") </b></span>
+                    <br />
+                    @Html.CheckBox("Thirsday", new { id = "chkThirs", @disabled = true })
+                    <span><b> @Html.DisplayName("Thirsday") </b></span>
+                    @Html.CheckBox("Friday", new { id = "chkFri", @disabled = true })
+                    <span><b> @Html.DisplayName("Friday") </b></span>
+                    @Html.CheckBox("Saturday", new { id = "chkSat", @disabled = true })
+                    <span><b> @Html.DisplayName("Saturday") </b></span>
+                    @Html.CheckBox("Sunday", new { id = "chkSun", @disabled = true })
+                    <span><b> @Html.DisplayName("Sunday") </b></span>
+                </div>
+            </td>
+
+            <td>
+                <div class="">
+                    <label>Generation Time</label>
+                </div>
+            </td>
+            <td colspan="2" align="left">
+                @Html.ListBoxFor(model => model.RDSRptSubGenTimeList, new SelectList(ViewBag.ListGenTime, "Value", "Text"),
+                                                new
+                                                {
+
+                                                    id = "lstGenTime",
+                                                    style = "width: 150px;height:80px",
+                                                    size = 4
+                                                })
+            </td>
+
+    </table>
+   
+
+</div>
+
+
+
+@Html.EJ().ScriptManager()
+

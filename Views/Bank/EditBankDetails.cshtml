@@ -1,0 +1,321 @@
+﻿@model SmartSys.BL.Bank.BankDetailModel
+
+@{
+    ViewBag.Title = "EditBankDetails";
+    var gridAdressDetail = new WebGrid(source: Model.AddressModelList, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridAdressDetail");
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Bank Details
+    </div>
+
+    <style type="text/css">
+        .modal-content {
+            width: 400px !important;
+            margin: 30px auto !important;
+        }
+
+        .webgrid {
+            margin: 4px;
+            border-collapse: collapse;
+            width: 99%;
+            background-color: #B4CFC3;
+        }
+
+        .webgrid-header {
+            background-color: #C1D4E6;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .webgrid th, .webgrid td {
+            border: 1px solid #C0C0C0;
+            padding: 5px;
+            align-content: center;
+        }
+
+        .webgrid th {
+            color: #1E90FF;
+        }
+
+        .webgrid-alt {
+            background-color: #E4E9F5;
+            color: #000;
+        }
+
+        .gridhead a:hover {
+            text-decoration: underline;
+        }
+
+        .webgrid-description {
+            width: auto;
+        }
+
+        .webgrid-select {
+            background-color: #71857C;
+        }
+    </style>
+    <script>
+    $(document).ready(function () {
+
+        $('#saveee').click(function () {
+
+            var BankName = $("#BankName").val();
+
+            var IFSCCode = $('#IFSCCode').val();
+
+
+
+
+            if (BankName.toString() == "") {
+                alert("Please Enter a Bank Name")
+                return false;
+            }
+
+            if (IFSCCode.toString() == "") {
+                alert("Please Enter IFSC Code");
+                return false;
+            }
+
+
+        });
+
+    });
+    </script>
+@{
+
+    Html.EJ()
+        .Dialog("CreateAddressDetails")
+        .Title("<a id='Title'></a>")
+        .Width(1200)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#CreateAddressDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateAddressDetails").ejDialog("open");
+
+        }
+
+</script>
+<script>
+    function toolClickAddress(args) {
+
+            if (args.requestType == "beginedit")
+            {
+                document.getElementById("Title").innerHTML = 'Edit Address Details';
+                var grid = $("#grdAddressList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var AddressId = result[0]["AddressId"];
+                var StateId = result[0]["StateId"];
+                var CountryId = result[0]["CountryId"];
+
+                var path = '@Url.Content("~/Bank/EditAddressDetails")' + "?AddressId=" + @Model.AddressId + "&country=" + CountryId + "&state=" + StateId + "&BankId=" + @Model.BankId
+                $("#CreateAddressDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateAddressDetails").ejDialog("open");
+
+            }
+        return false;
+    }
+</script>
+    @using (Html.BeginForm())
+    {
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label>
+                        Bank ID:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.BankId, new { @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BankId, "", new { @class = "text-danger" })
+                      
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Bank Name:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.BankName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BankName, "", new { @class = "text-danger" })
+                   
+                    </div>
+
+                </td>
+                <td>
+                    <label>
+                        Address ID:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.AddressId, new { @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AddressId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>
+                        IFSC/SWIFT Code:
+
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.IFSCCode, new { id = "IFSCCode", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Created By:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Created Date:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>
+                        Modified By:
+
+                    </label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Modified Date:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <br />
+
+        <table>
+            <tr>
+                <td>
+                    <label style="color:#0E6AA9">
+                        Address Details
+                    </label>
+                </td>
+            </tr>
+        </table>
+        if (Model.AddressModelList.Count > 0)
+        {
+
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Bank.BankDetailModel>("grdbankAddressList")
+         .Datasource(Model.AddressModelList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .EditSettings(e => e.AllowAdding().AllowEditing())
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                     
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                   
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("AddressId").HeaderText("Address Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Line1").HeaderText("Line 1").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Line2").HeaderText("Line 2").Width(160).Add();
+            col.Field("State").HeaderText("State").Width(160).Add();
+            col.Field("City").HeaderText("City").Width(160).Add();
+            col.Field("Country").HeaderText("Country").Width(160).Add();
+            col.Field("Pin").HeaderText("Pin").Width(160).Add();
+            col.Field("LandMark").HeaderText("Land Mark").Width(180).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickAddress");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickAddress");
+            })
+
+
+                )
+            </div>
+           
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about the Bank Address !!!</label>
+            </div>
+        }
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'BankListDetails';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save glyphicon glyphicon-save Save" id="saveee"> Save</button>                  
+                </td>
+            </tr>
+        </table>
+
+    }
+
+
+

@@ -1,0 +1,545 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryModel
+
+@{
+    ViewBag.Title = "ProcessCustomerEnquiry";
+}
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.min.js"></script>
+<script src="~/Scripts/toastr.js"></script>
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<style type="text/css" class="cssStyles">
+    .frame {
+        width: 200%;
+    }
+
+    .txt {
+    color: #676767;
+    display: block;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+</style>
+<script type="text/javascript">
+    $(function () {
+        $('.ItemDrp').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            maxHeight: 400,
+            inheritClass: true,
+        });
+    });
+</script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    DW Customer Enquiry Process
+</div>
+
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+    <tr>
+        <td>
+            <label>Enquiry Id</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.EnqId, new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+        @if (!Model.isOutSourcePerson)
+        {
+        <td>
+            <label>Customer Name</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+        }
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <label>Company</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CompCode, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                </tr>
+            </table>
+           
+        </td>       
+    </tr>    
+    <tr>
+        <td>
+            <label>Enquiry Number</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.EnqNumber, new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+        <td>
+            <label>Enquiry Date</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.EnqDate, "{0:MM/dd/yyyy}", new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+        <td>
+            <div class="frame">
+
+                <div class="control ">
+                    <span class="txt">Enquiry Process</span>
+                    @Html.EJ().ProgressBar("defaultBar").Value(Model.PercentComplete).Width("400px").Height("16px")
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+<div style="width:100%">
+@{Html.EJ().Tab("defaultTabs").Items(data =>
+    {
+
+    data.Add().ID("ItemDetail").Text("Item").ContentTemplate(
+                @<div>
+                     <table>
+                         <tr>
+                             
+                             <td>
+                                 <div style="position:relative">
+                                     @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdEnqProcessLst")
+                                .Datasource((IEnumerable<object>)@Model.lstEnquiryDetail)
+                                .AllowFiltering()
+                                .AllowPaging()
+                                .AllowSorting()
+                                .EnableHeaderHover()
+                                .AllowResizing()
+                                .PageSettings(p => { p.PageSize(20); })
+                                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                                .AllowScrolling()
+
+                                .Columns(col =>
+                                {
+                                    col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                                    col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Center).Width(100).Add();
+                                    col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Center).Width(100).Add();
+                                    col.Field("Quantity").HeaderText("Quantity").Width(80).Add();
+                                    col.Field("Brand").HeaderText("Brand").Width(160).Add();
+                                    col.Field("Status").HeaderText("Status").Width(50).TextAlign(TextAlign.Center).Add();
+                                    col.Field("StatusId").HeaderText("StatusId").Width(160).Visible(false).Add();
+                                    col.HeaderText("Process").Commands(command =>
+                                    {
+                                        command.Type(UnboundType.Edit)
+
+                                               .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                               {
+
+                                                   Text = "Process",
+                                                   Click = "onClick",
+
+
+
+                                                   Size = ButtonSize.Small
+                                               }).Add();
+
+                                    })
+
+                                    .TextAlign(TextAlign.Left)
+                                    .Width(50)
+                                    // .Template("#Process")
+                                    .Add();
+                                    col.HeaderText("Send Mail").Width(50).TextAlign(TextAlign.Center).Template("#SendMail").Add();
+                                })
+                                .ClientSideEvents(eve =>
+                                {
+
+                                })
+                                     )
+                                 </div>
+
+                             </td>
+                         </tr>
+                        
+                     </table>
+
+                     <script type="text/x-jsrender" id="SendMail">
+                         {{if Status == 'Vendor Allocation Done'}}
+                         <a class="btn-xs btn-success glyphicon glyphicon-send text-success" href="/Enquiry/VendorEmailDeatiltoSendEnq?ItemId={{:ItemId}}&EnqId=@Model.EnqId&Type=''Single'&IsPerson=@Model.isOutSourcePerson"> Send Mail</a>
+                         {{/if}}
+
+                     </script>
+                </div> );
+    if(!Model.isOutSourcePerson)
+    { 
+    data.Add().ID("Attachment").Text("Attachment").ContentTemplate(
+                @<div>
+                     <div style="position:relative">
+                         @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDocLst")
+                .Datasource(Model.lstAttchment)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                       .PageSettings(p => { p.PageSize(20); })
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+
+                .Columns(col =>
+                {
+                    col.Field("EnqId").HeaderText("Enquiry Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                    col.Field("File Name").HeaderText("File Name").TextAlign(TextAlign.Center).Width(100).Add();
+                    col.Field("CreatedBy").HeaderText("Created By").Width(160).Add();
+                    col.Field("CreatedDate").HeaderText("Created Date").Width(50).TextAlign(TextAlign.Center).Add();
+                    col.HeaderText("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).Width(160).Add();
+
+                })
+
+
+                )
+                         
+                     </div>
+
+
+                   
+                   
+                        
+                </div> );
+    }
+    })
+            .Render();}
+
+    </div>
+<br>
+<table>
+    <tr>
+        <td>
+            @Html.ActionLink(" Back", "EnquiryProcessList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })
+        </td>
+        @if (Model.RemainprocessItem > 0)
+        {
+            <td>
+                <div class="btn" aria-label="...">
+                    @Html.ActionLink(" Send All", "VendorEmailDeatiltoSendEnq", new { ItemId = 0, EnqId = Model.EnqId, Type = "All" , IsPerson =Model.isOutSourcePerson}, new { @class = "abc btn-xs btn-primary glyphicon glyphicon-send" })
+                    @*<button type="button" id="MailId" class="btn btn-primary glyphicon glyphicon-send"> Send All</button>*@
+                </div>
+
+            </td>
+        }
+    </tr>
+</table>
+
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("Process Item Enquiry").ContentTemplate(@<div>
+
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Process Item Enquiry
+    </div>
+    <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td width="150px">
+                <label>Enquiry Id:</label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="number" readonly="readonly" value="@Model.EnqId" id="EnqiryId"  class="form-control" />
+                </div>
+            </td>
+            <td>
+                <label>Item Id:</label>
+            </td>
+            <td>
+                <div class="">
+                    <select id="EnqItemsDrp" multiple="multiple" name="ItemDrp" class="ItemDrp"></select>
+                    @*<input type="text" readonly="readonly" id="ItemId" name="ItemId" class="ItemAbc form-control" />*@
+                </div>
+            </td>
+
+        </tr>
+       
+        <tr>
+            <td>
+                <label>Vendor:</label>
+            </td>
+            <td >
+                <table>
+                    <tr>
+                        <td>
+                            <div class="">
+                                @*    <select id="VendorDrp" multiple="multiple" name="VendorDrp"  class="VendorDrp" ></select>*@
+                                @Html.DropDownList("VendorLst", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Vendor ---", new { id = "VendorDrp", @class = " drp form-control", style = "width:310px" })
+                            </div>  
+                        </td>
+                        <td>
+                            <a id="link1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                            @Html.EJ().Tooltip("link1").Content(" This is the Active Vendor List  This Vendor Needs to be assigned for logged in User  Vendor must have contact  This Vendor needs to Mappped for Brand.")
+                        </td>
+                    </tr>
+                </table>                              
+            </td>
+           
+            <td>
+                <label>Vendor Contact:</label>
+            </td>
+            <td>
+                <div class="">
+                    @*    <select id="VendorDrp" multiple="multiple" name="VendorDrp"  class="VendorDrp" ></select>*@
+                    @Html.DropDownList("VendorContactLst", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Vendor Contact---", new { id = "VendorContactDrp", @class = " drp form-control", style = "width:250px" })
+                </div>
+            </td>  
+            <td>
+                <button id="SaveVendCont" class="btn-xm btn-success">Add Record</button>
+            </td>          
+        </tr>
+      
+    </table>
+    <table>
+        <tr>
+            <td>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryModel>("grdDWEnquiryItemVendorContact")
+                .Datasource((IEnumerable<object>)ViewBag.EnqItemVendorContList)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .PageSettings(p => { p.PageSize(10); })
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("ItemId").Visible(false).HeaderText("ItemId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ItemName").HeaderText("Description").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("VendorId").Visible(false).HeaderText("VendorId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ContactId").Visible(false).HeaderText("ContactId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("ContactName").HeaderText("Contact Name").TextAlign(TextAlign.Left).Width(100).Add();
+        })
+                    )
+                </div>
+            </td>
+        </tr>
+    </table>
+    @*<table align="left">
+        <tr>
+           
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="button" id="SaveItemEnq" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                </div>
+            </td>
+           
+        </tr>
+    </table>*@
+
+    </div>)
+   .Width(1100)
+   .Height(600)
+    .Position(pos => pos.XValue("300px").YValue("100px"))
+    .ShowOnInit(false)
+    .EnableResize(true)
+    .IsResponsive(true)
+    .ClientSideEvents(evt => evt.Close("onDialogClose"))
+    .Render();
+    }
+</div>              
+
+<script type="text/x-jsrender" id="OpenDoc">
+    <a class="btn-xs btn-info glyphicon glyphicon-download" href="/Enquiry/AttchDownload?EnqId=@Model.EnqId&amp;DocumentPath={{:FileName}}"> Open</a>
+</script>
+<script type="text/javascript">
+    function onClick(args) {
+    $("#VendorDrp").empty()  
+    $('#VendorDrp').append('<option value="0">' + 'Please Select Vendor' + '</option>')    
+    var grid = $("#grdEnqProcessLst").ejGrid("instance");
+    var index = this.element.closest("tr").index();
+    var record = grid.getCurrentViewData()[index];
+    var ItemId = record["ItemId"];
+    var StatusId = record["StatusId"];
+    if(StatusId == 38 || StatusId == 39)
+    {
+        toastr.info("Enquiry Send to Vendor.you Can not process!");
+        return false;
+    }
+    $("#EnqItemsDrp").empty()
+    var array = @Html.Raw(Json.Encode(@ViewBag.LstEnqItem));
+        $.each(array, function (i, Brand) {
+        $('#EnqItemsDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>').multiselect('rebuild');
+    });
+  //  $("#ItemId").val(ItemId);   
+    var path = "/Enquiry/GetItemVendorList"
+    $.ajax({
+        type: 'POST',
+        url: path,
+        dataType: 'json',
+        data: {EnqId:@Model.EnqId, ItemId: ItemId },
+        success: function (Brands) {           
+            $.each(Brands, function (i, Brand) {
+                $('#VendorDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>')
+            });
+            @*$.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetItemVendorAllocateList",  //Update is Server side method
+                data: {EnqId:@Model.EnqId, ItemId: ItemId },
+                success: function (result) {
+                    $.each(result, function (i, SelBrand) {
+                        $('#VendorDrp').multiselect('select',SelBrand.Value)
+                          $('#BrandDrp option').prop ('selected', true); $('#BrandDrp').multiselect ('refresh') (This code work to select all options... by Abhishek Verma)
+                    });
+                    $('#VendorDrp').multiselect ('refresh')
+                },
+            });*@
+        },
+        error: function (ex) {
+        }
+    });
+     $("#dialogIcon").ejDialog("open");
+    return false;
+    }
+
+    $('#SaveItemEnq').click(function () {
+        var selected = $("#VendorDrp option:selected");
+        var selectedItem = $("#EnqItemsDrp option:selected");
+        var message = "";
+        var messageItems = "";
+    selected.each(function () {
+        message +=  $(this).val() + ",";
+    });
+
+    selectedItem.each(function () {
+        messageItems +=  $(this).val() + ",";
+    });
+    if(message.toString() == "")
+    {
+        alert("Please Select Vendor")
+        return false;
+    }
+    if(messageItems.toString() == "")
+    {
+        alert("Please Select Items")
+        return false;
+    }   
+    var EnqiryId = $("#EnqiryId").val();
+    $.ajax({
+        dataType: 'json',
+        type: "POST",
+        url: "/Enquiry/SendVenderEnquiryDetail",  //Update is Server side method
+        data: { ItemId: messageItems, Vendor: message ,EnqId:EnqiryId},
+        success: function (result) {
+            if(result.toString() =="Success")
+            {
+                alert("Process Successfully Complete...");
+                location.reload();
+            }
+            else
+            {
+                alert("Process not Successfully Complete...Please Try Again!");
+            }
+            $("#dialogIcon").ejDialog("close");
+        },
+        error: function (msg) {
+            alert("Error " + msg.d.toString());
+        }
+    });
+    $("#dialogIcon").ejDialog("close");
+    });
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    function onDialogClose(args) {
+        $("#VendorDrp").empty()
+        $('#VendorDrp').multiselect('rebuild');
+        $('#VendorDrp').multiselect ('refresh')
+        $("#dialogIcon").ejDialog("close");      
+        location.reload();
+    };
+    $('#dialogIcon_closebutton').click(function () {      
+        location.reload();
+    })
+    $("#VendorDrp").change(function () {
+        $("#VendorContactDrp").empty()
+        $('#VendorContactDrp').append('<option value= 0>  please Select Contact </option>');
+        var path = "/Enquiry/GetVendorContactList"
+        $.ajax({
+            type: 'POST',
+            url: path,
+            dataType: 'json',
+            data: { VendorId: $("#VendorDrp").val() },
+            success: function (Vendors) {                  
+                $.each(Vendors, function (i, Vendor) {
+                    $('#VendorContactDrp').append('<option value="' + Vendor.Value + '">' + Vendor.Text + '</option>');
+                });
+            },
+            error: function (ex) {
+                alert('Please Select Vendor Name');
+            }
+        });
+        return false;
+    })
+    $("#SaveVendCont").click(function () {       
+        var selectedItem = $("#EnqItemsDrp option:selected");
+        var VendorName=$("#VendorDrp option:selected").text();
+        var VendorId=$("#VendorDrp").val();
+        var VendorContactName=$("#VendorContactDrp option:selected").text();
+        var VendorContactId=$("#VendorContactDrp").val();
+        var EnqiryId=$('#EnqiryId').val();
+        var messageItems = "";
+        selectedItem.each(function () {
+            messageItems +=  $(this).val() + ",";
+        });
+       
+        if(messageItems.toString() == "")
+        {
+            alert("Please Select Items")
+            return false;
+        }   
+        if(VendorId.toString() == "0" || VendorId.toString() == "")
+        {
+            alert("Please Select Vendor")
+            return false;
+        }
+        if(VendorContactId.toString() == "0" || VendorId.toString() == "")
+        {
+            alert("Please Select Vendor")
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/AddItemVendorContact",  //Update is Server side method
+            data: { EnqId: EnqiryId, ItemName: messageItems ,VendorId:VendorId,ContactId:VendorContactId},
+            success: function (result) {
+                
+                    var grid = $("#grdDWEnquiryItemVendorContact").ejGrid("instance");
+                    grid.dataSource(result);
+                    toastr.success("Added  Successfully!");
+                   // alert("Process Successfully Complete...");                                 
+               // $("#dialogIcon").ejDialog("close");
+            },
+            error: function (msg) {
+                alert("Error " + msg.d.toString());
+            }
+        });
+    });
+});
+</script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />

@@ -1,0 +1,20 @@
+﻿@model SmartSys.BL.Adhoc.AdhocModel
+
+<div class="modal-body">
+    <h2>Error Detail</h2>
+    <p>
+
+        @ViewBag.ErrorMsg
+
+
+    </p>
+   
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#approve-btn').click(function () {
+            $('#modal-container').modal('hide');
+        });
+    });
+</script>

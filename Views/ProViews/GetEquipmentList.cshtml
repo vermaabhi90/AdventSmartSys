@@ -1,0 +1,115 @@
+﻿@model IEnumerable<SmartSys.BL.TimeManagement.TMEquipmentModel>
+@{
+    ViewBag.Title = "EquipmentList";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Segment List
+</div>
+<br />
+
+
+@(Html.EJ().TreeGrid("EquipmentTreeGrid")
+          .TreeColumnIndex(1)
+            .AllowColumnResize(true)
+            .ChildMapping("ChildSegList")
+            .TreeColumnIndex(2)
+            .IsResponsive(true)
+            .EnableCollapseAll(true)
+            .AllowSorting(true)
+            .AllowMultiSorting(true)
+            .ShowColumnChooser(true)
+            .AllowFiltering(true)
+          .Columns(co =>
+          {
+              co.Field("SegmentId").Visible(true).HeaderText("Segment Id").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("ParentSegmentId").Visible(false).HeaderText("Parent Segment Id").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("SegmentName").HeaderText("Segment Name").EditType(TreeGridEditingType.String).Add();
+              co.Field("Description").HeaderText("Description").EditType(TreeGridEditingType.String).Add();
+              co.Field("CreatedBy").HeaderText("Created By").EditType(TreeGridEditingType.String).Add();
+              co.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").EditType(TreeGridEditingType.Datepicker).Add();
+          }
+          )
+                           .ClientSideEvents(cv => cv.ContextMenuOpen("contextMenuOpen"))
+                           .SizeSettings(ss => ss.Width("100%").Height("450px"))
+                  .ContextMenuSettings(cms => cms.ShowContextMenu(true)
+                                       .ContextMenuItems(new List<TreeGridContextMenuItems>() {
+              TreeGridContextMenuItems.Add
+          }))
+
+
+                  .SizeSettings(ss => ss.Width("100%").Height("350px"))
+                  .EnableResize(true)
+                  .EditSettings(e => e.AllowAdding(false))
+                  .Datasource(ViewBag.SelectedEquipmentItems)
+
+)
+@{
+
+    Html.EJ()
+        .Dialog("modalFichaEquipo")
+        .Title("<a id='Title'>Segment Equipment tree View</a>")
+        .Width(1000)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p>Equipment Tree View</p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#modalFichaEquipo").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#modalFichaEquipo").ejDialog("open");
+        }
+</script>
+<script type="text/javascript">
+    function contextMenuOpen(args) {
+        var isExpandable = true, isCollapsable = true, data;
+        data = args.item;
+        if (data && data.hasChildRecords) {
+            if (data.expanded)
+                isExpandable = false;
+            else
+                isCollapsable = false;
+        } else {
+            isExpandable = false;
+            isCollapsable = false;
+        }
+
+        var contextMenuItems = [{
+            headerText: "View Equipment",
+            eventHandler: customMenuAddHandler,
+            menuId: "Create",
+            iconClass: "e-topIcon"
+        }
+        ];
+       
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+
+    }
+
+    function customMenuAddHandler(args) {
+        var currentMenuId = args.menuId,
+            tempData = args.data && $.extend({}, args.data.item), rowPosition;       
+         if (currentMenuId == "Create") {
+             var path = '@Url.Content("~/ProViews/ShowEquipmentView")' + "?SegmentId=" + tempData.SegmentId
+             $("#modalFichaEquipo").ejDialog({
+                 contentUrl: path,
+                 contentType: "ajax"
+             });
+             $("#modalFichaEquipo").ejDialog("open");
+             return false;
+        }
+        else if (currentMenuId == "Expand") {
+            expandCollapseArgs.expanded = true;
+        }
+        else if (currentMenuId == "Collapse") {
+            expandCollapseArgs.expanded = false;
+        }
+        this.addRow(tempData, rowPosition);
+    }
+
+
+</script>

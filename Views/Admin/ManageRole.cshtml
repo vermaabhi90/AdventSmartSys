@@ -1,0 +1,150 @@
+﻿@model SmartSys.BL.SysRoleTasks
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Role Management
+</div>
+
+<br>
+<br>
+<table>
+    <tr>
+        <td>
+            <label>Role Name:</label>
+        </td>
+        <td width="20px" />
+        <td>
+            @Html.TextBox("Rolename", (string)ViewBag.Rolename, new { id = "txtrolename", @class = "form-control" })
+        </td>
+    </tr>
+
+</table>
+<br>
+@Html.Hidden("RoleID", (string)ViewBag.roleid, new { id = "txtroleid", @class = "form-control" })
+
+@{List<string> icon = new List<string>() { "close", "collapsible", "maximize", "minimize", "pin" };}
+
+<div class="" style="margin-left:200px">
+
+    @Html.EJ().TreeView("tree").ShowCheckbox(true).ClientSideEvents(e => e.NodeCheck("onCheck")).TreeViewFields(s => s.Datasource((IEnumerable<SmartSys.BL.SysRoleTasks>)ViewBag.datasource).Id("id").ParentId("pid").Text("name").HasChild("hasChild").Expanded("expanded"))
+
+
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $('#btnSave').one('click', function (evt) {
+            var treeobj,data,source;
+            var JSON1 = [];
+
+
+            //var treeObj = $("#tree").ejTreeView('instance');
+            treeobj = $("#tree").data("ejTreeView");
+            var checkednodes = treeobj.getCheckedNodes();
+            var array = @Html.Raw(Json.Encode(
+
+((IEnumerable<SmartSys.BL.SysRoleTasks>)ViewBag.datasource).Select(node => new
+
+{
+     pid = node.pid,
+    name = node.name,
+    hasChild =node.HasChild,
+    id = node.id,
+    IsChecked = node.IsChecked
+})
+))
+           for(data=0;data<checkednodes.length;data++){
+               for(source=0;source<array.length;source++){
+                   if(checkednodes[data].id == array[source].id){
+                       JSON1.push(array[source]);
+                   }
+               }
+           }
+            var dataToSend = JSON.stringify(JSON1);
+            var rolename = $('#txtrolename').val();
+            var roleid = $('#txtroleid').val();
+
+            var currentRequest = null;
+
+            currentRequest = $.ajax({
+
+                url: '/Admin/SaveRoleTasks',
+
+                //contentType: 'application/json',
+                type: 'POST',
+                data: {"str":dataToSend,"RoleName": rolename,"RoleId":roleid },
+                dataType: 'json',
+
+                beforeSend : function()    {
+                    if(currentRequest != null) {
+                        currentRequest.abort();
+                    }
+                },
+                //dataType: 'json'
+            }).
+
+
+
+
+           success(function (result) {
+               console.log(result);
+
+           }).
+
+           error(function (xhr, status) {
+               console.log(status);
+               alert("saved Successfully....");
+
+           })
+
+
+
+        });
+    });
+
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<br>
+<table style="margin-left:200px">
+    <tr>
+        <td>           
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'SytemRoleList';" );"> Back</button>
+            <button type="submit" id="btnSave" class="btn-xs  btn-info glyphicon glyphicon-save" style="" onclick="window.location.reload();"> Save</button>
+        </td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $('#Show').one('click', function (evt) {
+            $("#treediv").show();
+            $("#btnSave").show();
+            $("#Show").show();
+            var treeobj,data,source;
+            var JSON1 = [];
+            var treeObj = $("#tree").ejTreeView('instance');
+            var index, len;
+            var a =  @Html.Raw(Json.Encode(@ViewBag.ids));
+            for (index = 0, len = a.length; index < len; ++index) {
+
+                treeObj.checkNode(a[index]);
+            }
+        })
+
+    })
+</script>
+
+<script type="text/javascript">
+    $(window).load(function(){
+        var index, len;
+        var a =  @Html.Raw(Json.Encode(@ViewBag.ids));
+        for (index = 0, len = a.length; index < len; ++index) {
+            var tree = $("#tree").ejTreeView('instance');
+            tree.checkNode(a[index]);
+        }
+    })
+</script>

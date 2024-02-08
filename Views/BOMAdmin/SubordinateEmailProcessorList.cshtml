@@ -1,0 +1,456 @@
+﻿@model IEnumerable<SmartSys.BL.EmailProcessing.mailmodel>
+@{
+    ViewBag.Title = "Email Processing";
+}
+
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+  Subordinate Email Processing List
+</div>
+
+@Html.EJ().Dialog("EmailText").MinWidth(950).Height(650).EnableModal(true).ShowOnInit(false).Title("Email  Detail").EnableResize(true).EnableModal(true).IsResponsive(true)
+
+<br />
+
+<label style="color:red;font-size:15px">@((string)ViewBag.Message)</label>
+<div style="position:relative">
+    <div id="loaderDiv" style="margin-left:550px;display:none">
+        <a><img src="~/Content/themes/balls (1).gif" alt="Wait" /></a>
+    </div>
+    @(Html.EJ().Grid<SmartSys.BL.EmailProcessing.mailmodel>("EmailProcessing")
+     .Datasource(ds =>
+
+                  ds.URL("/BOMAdmin/GetSubordinateData").Offline(true))
+        .AllowFiltering()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+        }))
+        .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelPendingEmailSegregation")))
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+          .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.Dialog).DialogEditorTemplateID("#template"))
+              //.ContextMenuSettings(contextMenu =>
+              //{
+              //    contextMenu.EnableContextMenu()
+              //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+              //   .CustomContextMenuItems(new List<string> { "Enquiry", "Non Enquiry", "Detail", "Purchase Receipt" });
+
+              //})
+
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Enquiry1", "Enquiry");
+                      c.AddItem("Non_Enquiry1", "Non Enquiry");
+                      c.AddItem("Detail1", "Detail");
+                      c.AddItem("Purchase_Receipt", "Purchase Receipt");
+                  });
+
+              })
+
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("MailId").Visible(true).HeaderText("Mail Id").IsPrimaryKey(true).Width(70).Add();
+            col.Field("ClientMailId").Visible(false).HeaderText("ClientMailId").IsPrimaryKey(true).Width(70).Add();
+            col.Field("EmpId").Visible(false).HeaderText("EmpId").IsPrimaryKey(true).Width(70).Add();
+            col.Field("Employee").HeaderText("Employee").Add();
+            col.Field("Subject").HeaderText("Subject").Width(400).Add();
+            col.Field("From").HeaderText("From").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("TO").HeaderText("TO").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("BCC").HeaderText("BCC").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CC").HeaderText("CC").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Date").HeaderText("Received Date").Format("{0:MM/dd/yyyy  HH:MM}").IsPrimaryKey(true).Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").IsPrimaryKey(true).Width(150).Add();
+
+        })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Enquiry") {
+
+            $('#divLoading').show();
+            var grid = $("#EmailProcessing").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var MailId = result[0]["MailId"];
+            var Date = result[0]["Date"];
+            $('#Status').val(35);
+            $('#MailId').val(MailId);
+
+
+        }
+        else
+            if (args.text == "Non Enquiry") {
+                var grid = $("#EmailProcessing").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var MailId = result[0]["MailId"];
+                var path = '@Url.Content("~/BOMAdmin/UpdatenonEnquiry")' + "?Status=" + 36 + "&MailId=" + MailId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else
+                if (args.text == "Detail") {
+
+                    {
+
+                        var grid = $("#EmailProcessing").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var ClientMailId = result[0]["ClientMailId"];
+                        var EmpId = result[0]["EmpId"];
+                        var url = '@Url.Content("~/BOMAdmin/ViewDetail")' + "?ClientMailId=" + ClientMailId + "&EmpId=" + EmpId
+
+                        var dialogObj = $("#EmailText").ejDialog({
+                            contentUrl: url,
+                            contentType: "ajax"
+
+                        });
+                        var tag = $("<div></div>");
+                        var path = '@Url.Action("GetmailParameter")';
+
+                        $.ajax({
+                            type: 'POST',
+                            url: path, // we are calling json method
+                            dataType: 'json',
+                            beforeSend: function () {
+                                $("#loaderDiv").show();
+                            },
+                            success: function (lst) {
+
+                                var path1 = '@Url.Action("ViewDetail")'
+                                var dialogObj = $("#EmailText").ejDialog({
+                                    contentUrl: path1,
+                                    contentType: "ajax"
+
+                                })
+                                $("#loaderDiv").hide();
+                            },
+
+                            error: function (ex) {
+
+                            }
+                        });
+
+                        return false;
+                    }
+                }
+                else
+                    if (args.text == "Purchase Receipt") {
+                        $('#divLoadingVend').show();
+                        var grid = $("#EmailProcessing").ejGrid("instance");
+                        var result = this.getSelectedRecords();
+                        var MailId = result[0]["MailId"];
+                        $('#MailIdForCustResp').val(MailId)
+
+                        }
+
+    }
+
+</script>
+
+
+<script type="text/javascript">
+                    $(document).ready(function () {
+
+                        $('#Cancel').click(function () {
+                            $('#divLoading').hide();
+                        })
+                        {
+                            $('#CancelCustQuot').click(function () {
+                                $('#divLoadingVend').hide();
+                            })
+
+                        }
+                    })
+
+</script>
+
+<script type="text/javascript">
+                    $(document).ready(function () {
+
+                        $('#Save').click(function () {
+
+
+                            var CustomerId = $('#CustomerId').val();
+                            var CustomerContactId = $('#ContactDrpDwn').val();
+                            if (CustomerId.toString() == "") {
+                                alert("Please Select Customer ");
+                                return false;
+                            }
+                            if (CustomerContactId.toString() == "0") {
+                                alert("Please Select Customer Contact");
+                                return false;
+                            }
+                            var MailId = $('#MailId').val();
+                            var Status = $('#Status').val();
+                            var CustomerId = $('#CustomerId').val();
+                            var enqop = "Save";
+                            var path = '@Url.Content("~/BOMAdmin/UpdateEmailStatus")' + "?Status=" + 35 + "&MailId=" + MailId + "&CustomerId=" + CustomerId + "&Enqop=" + enqop + "&CustomerContactId=" + CustomerContactId
+                            event.preventDefault();
+                            window.location.replace(path);
+
+
+                        });
+
+                        $('#SEE').click(function () {
+
+
+                            var CustomerId = $('#CustomerId').val();
+                            var CustomerContactId = $('#ContactDrpDwn').val();
+                            if (CustomerId.toString() == "") {
+                                alert("Please Select Customer ");
+                                return false;
+                            }
+                            if (CustomerContactId.toString() == "0") {
+                                alert("Please Select Customer Contact");
+                                return false;
+                            }
+                            var MailId = $('#MailId').val();
+                            var Status = $('#Status').val();
+                            var CustomerId = $('#CustomerId').val();
+                            var enqop = "SaveEdit";
+                            var path = '@Url.Content("~/BOMAdmin/UpdateEmailStatus")' + "?Status=" + 35 + "&MailId=" + MailId + "&CustomerId=" + CustomerId + "&Enqop=" + enqop + "&CustomerContactId=" + CustomerContactId
+                            event.preventDefault();
+                            window.location.replace(path);
+
+
+                        });
+                    })
+</script>
+
+
+
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+        top: 0px; width: 100%; height: 100%; background-color: #666666; z-index:  1000;
+        opacity:.95; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        <div style="margin: 0px; padding: 0px; position: fixed;opacity :1;
+        left:200px; top: 200px; width: 60%; height: 50%; background-color: #FBFCFC; z-index:  1000;">
+            <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Add Customer
+            </div>
+            <table style="margin-left:20px">
+                <tr>
+                    <td>
+                        <label>Customer:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustList, "Please Select Customer --", new { style = "min-width:300px", @required = "required", id = "CustomerId", @class = "form-control" })
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <label>Customer Contact</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.DropDownList("CustomerContactId", new SelectList(string.Empty, "Value", "Text"), "--please Select Contact--", new { style = "min-width:300px", id = "ContactDrpDwn", @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr style="height:15px"></tr>
+                <tr>
+                    <td>
+                        <input type="number" id="MailId" class="form-control" readonly style="display:none" />
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td>
+                        <input type="number" id="Status" class="form-control" readonly style="display:none" />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table style="margin-left:100px">
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-info glyphicon glyphicon-save " id="Save"> Save</button>
+                    </td>
+                    <td style="width:50px"></td>
+                    <td>
+                        <button type="button" class="btn btn-success glyphicon glyphicon-save " id="SEE"> Save & Edit Enquiry</button>
+                    </td>
+                    <td style="width:50px"></td>
+                    <td>
+                        <button type="button" class="btn btn-warning glyphicon glyphicon-save save" id="Cancel"> Cancel</button>
+
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+</div>
+<div id="divLoadingVend" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+        top: 0px; width: 100%; height: 100%; background-color: #666666; z-index:  1000;
+        opacity:.95; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        <div style="margin: 0px; padding: 0px; position: fixed;opacity :1;
+        left:200px; top: 200px; width: 60%; height: 50%; background-color: #FBFCFC; z-index:  1000;">
+            <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Add Customer
+            </div>
+            <table style="margin-left:20px">
+                <tr>
+                    <td>
+                        <label>Customer:</label>
+                    </td>
+                    <td style="width:20px"></td>
+                    <td>
+
+                        <input type="number" id="MailIdForCustResp" class="form-control" readonly style="display:none" />
+
+                        @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustList, "---Please Select Customer--", new { style = "min-width:250px", @required = "required", id = "Customer", @class = "form-control" })
+                    </td>
+                    <td style="width:20px"></td>
+                    <td>
+                        <label>Quotation:</label>
+                    </td>
+                    <td style="width:20px"></td>
+                    <td>
+                        @Html.DropDownList("QuotId", new SelectList(string.Empty, "Value", "Text"), "---Please select Quotation---", new { style = "width:250px", @class = "form-control dropdown1", id = "QuotId" })
+
+
+                    </td>
+
+                </tr>
+                <tr style="height:15px"></tr>
+                <tr>
+                    <td>
+                        <input type="number" id="MailId" class="form-control" readonly style="display:none" />
+                    </td>
+
+                </tr>
+                <tr>
+
+                    <td>
+                        <input type="number" id="Status" class="form-control" readonly style="display:none" />
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <table style="margin-left:100px">
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-info glyphicon glyphicon-save " id="Done" onclick="window.location.reload()"> Done</button>
+                    </td>
+                    <td style="width:50px"></td>
+                    <td>
+                        <button type="button" class="btn btn-warning glyphicon glyphicon-save save" id="CancelCustQuot"> Cancel</button>
+
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#Customer").change(function (e) {
+
+            $("#QuotId").empty();
+            var newOption = $('<option value="0">Please Select Receipt</option>');
+
+            $('#QuotId').append(newOption);
+            var CustomerId = $("#Customer").val();
+            var path = '@Url.Action("getPODetail")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { CustomerId: CustomerId },
+                success: function (lst) {
+
+                    //alert(lst);
+                    $.each(lst, function (i, Fw) {
+                        $("#QuotId").append('<option value="' + Fw.Value + '">' +
+                             Fw.Text + '</option>');
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Receipt.' + ex);
+                }
+            });
+            return false;
+        })
+        $("#Done").click(function (e) {
+
+            var Customer = $("#Customer option:selected").text();
+            var QuotId = $("#QuotId").val();
+            var MailId = $("#MailIdForCustResp").val();
+            var path = '@Url.Action("UpdateQuotStatus")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { QuotId: QuotId, MailId: MailId },
+                success: function (lst) {
+
+                    alert("Successfully Done");
+
+                },
+
+                error: function (ex) {
+
+                }
+            });
+            alert("Successfully Done");
+        });
+        $("#QuotId").val(null);
+        $("#Customer").val(null);
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#CustomerId").change(function () {
+
+            $("#ContactDrpDwn").empty()
+            $('#ContactDrpDwn').append('<option value= 0>  please Select Contact </option>');
+            var path = "/Enquiry/GetCustomerContactList"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { CustomerId: $("#CustomerId").val() },
+                success: function (Customer) {
+
+                    $.each(Customer, function (i, Customer) {
+                        $('#ContactDrpDwn').append('<option value="' + Customer.Value + '">' + Customer.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select Customer Name');
+                }
+            });
+            return false;
+        })
+
+
+    });
+</script>

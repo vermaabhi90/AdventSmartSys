@@ -1,0 +1,68 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelFive
+
+@{
+    ViewBag.Title = "DataLevelFive";
+}
+
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table style="padding-bottom:10px">
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Item Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ItemName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>MPN:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.MPN, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+    </tr>
+    <tr class="spaceUnder">
+
+        <td>
+            <label>Expected Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("ExpectedDate").Value(Model.ExpectedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+        <td>
+            <label>Quantity:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Quantity, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>   
+</table>
+<table>
+    <tr class="spaceUnder">
+        <td style="width:105px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Remark, new { @style = "width: 480px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+<table>
+    <tr class="spaceUnder">
+        <td style="width:105px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Description, new { @style = "width: 480px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()
+

@@ -1,0 +1,1753 @@
+﻿@model SmartSys.BL.EmployeeModel
+
+@{
+    ViewBag.Title = "DW Custmer Details";
+  
+
+}
+@{
+    ViewBag.Title = "Edit Employee";
+}
+
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#DrpDwnLstCust").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $("#DrpDwnLst").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    
+</script>
+
+<div>
+    @{
+
+        Html.EJ()
+            .Dialog("CreateDoc")
+            .Title("<a id='Title'></a>")
+            .Width(700)
+            .Height(300)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+
+    <script>
+        function openDialog() {
+            $("#CreateDoc").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateDoc").ejDialog("open");
+
+        }
+
+    </script>
+    @{
+
+        Html.EJ()
+            .Dialog("CreateContactDetails")
+            .Title("<a id='Title1'></a>")
+            .Width(1200)
+            .Height(500)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+
+    <script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.CreateExperience').click(function (e) {
+                document.getElementById("Title1").innerHTML = 'Add Experience Details';
+                var EmpId =  @Model.EmpId;
+                var path = '@Url.Content("~/Admin/EmployeeExprience")' + "?EmpId=" + EmpId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            });
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.EmployeeDocuments').click(function (e) {
+                document.getElementById("Title1").innerHTML = 'Add Document';
+                var EmpId =  @Model.EmpId;
+                var path = '@Url.Content("~/Admin/EmployeeDocuments")' + "?EmpId=" + EmpId
+                $("#CreateDoc").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateDoc").ejDialog("open");
+
+            });
+
+        });
+    </script>
+    <script>
+        function toolClickExperience(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title1").innerHTML = 'Add Experience Details';
+               var path = '@Url.Content("~/Admin/EmployeeExprience")' + "?EmpId=" + @Model.EmpId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title1").innerHTML = 'Edit Experience Details';
+                    var grid = $("#grdexperinceList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var CompanyName = result[0]["CompanyName"];
+                    var path = '@Url.Content("~/Admin/EmployeeExprience")'  + "?EmpId=" + @Model.EmpId + "&CompanyName=" + CompanyName
+                    $("#CreateContactDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreateContactDetails").ejDialog("open");
+                }
+            return false;
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.createExperties').click(function (e) {
+                document.getElementById("Title1").innerHTML = 'Add Experties Details';
+                var EmpId =  @Model.EmpId;
+                var path = '@Url.Content("~/Admin/createExperties")' + "?EmpId=" + EmpId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            });
+
+        });
+    </script>
+    <script>
+        function toolClickExperties(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title1").innerHTML = 'Add Experties Details';
+               var path = '@Url.Content("~/Admin/createExperties")' + "?EmpId=" +  @Model.EmpId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title1").innerHTML = 'Edit Experties Details';
+                    var grid = $("#grdExpertiesList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var Experties = result[0]["Experties"];
+                    var path = '@Url.Content("~/Admin/createExperties")'  + "?EmpId=" + @Model.EmpId + "&Experties=" + Experties
+                    $("#CreateContactDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreateContactDetails").ejDialog("open");
+                }
+            return false;
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.CreateEmployee').click(function (e) {
+                document.getElementById("Title1").innerHTML = 'Add Bank Details';
+                var path = '@Url.Content("~/Admin/CreateEmployeeBankDetails")' + "?EmpId=" +  @Model.EmpId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            });
+
+        });
+    </script>
+    <script>
+        function toolClickBank(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title1").innerHTML = 'Add Bank Details';
+                  var path = '@Url.Content("~/Admin/CreateEmployeeBankDetails")' + "?EmpId=" +  @Model.EmpId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title1").innerHTML = 'Edit Bank Details';
+                    var grid = $("#grdBankList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var AccountNo = result[0]["AccountNo"];
+                      var path = '@Url.Content("~/Admin/CreateEmployeeBankDetails")' + "?EmpId=" +  @Model.EmpId + "&AccountNo=" + AccountNo
+                    $("#CreateContactDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreateContactDetails").ejDialog("open");
+                }
+            return false;
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.CreateEmployeeAddress').click(function (e) {
+                document.getElementById("Title1").innerHTML = 'Add Address Details';
+                var path = '@Url.Content("~/Admin/CreateEmployeeAddress")' + "?EmpId=" + @Model.EmpId + "&AddressId=" + 0
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            });
+
+        });
+    </script>
+    <script>
+    function toolClickAddress(args) {
+        if(args.requestType == "add")
+        {
+            document.getElementById("Title1").innerHTML = 'Add Address Details';
+            var grid = $("#grdAddressList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+                var path = '@Url.Content("~/Admin/CreateEmployeeAddress")' + "?EmpId=" + @Model.EmpId + "&AddressId=" + 0
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        else
+            if (args.requestType == "beginedit")
+            {document.getElementById("Title1").innerHTML = 'Edit Address Details';
+                var grid = $("#grdAddressList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var AddressId = result[0]["AddressId"];
+                var StateId = result[0]["StateId"];
+                var CountryId = result[0]["CountryId"];
+
+                var path = '@Url.Content("~/Admin/EditEmployeeAddress")' + "?EmpId=" + @Model.EmpId + "&AddressId=" + AddressId + "&State=" + StateId + "&country=" + CountryId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            }
+        return false;
+    }
+    </script>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#deallocate').on('click', function (e) {
+            e.preventDefault();
+
+            var EmpId = $('#deallocate').attr('Empid');
+
+            var AssetId = $('#deallocate').attr('AssetId');
+
+            var agree = confirm("Are you sure you want to Deallocate this asset for the Employee?")
+            if (agree) {
+
+                    var path = '@Url.Content("~/Admin/DeallocateAsset")' + "?EmpId=" + EmpId + "&AssetId=" + AssetId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+            else{
+                return false;
+            }
+
+
+        });
+
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.delete').on('click', function (e) {
+            e.preventDefault();
+
+            var EmpId = $(this).closest('.delete').attr('EmpId');
+
+            var AssetId = $(this).closest('.delete').attr('AssetId');
+
+
+           var agree=confirm("Are you sure you want to Delete this asset of this Employee?")
+           if (agree) {
+
+                    var path = '@Url.Content("~/Admin/DeleteAssetDetailsForEmployee")' + "?EmpID=" + EmpId + "&AssetID=" + AssetId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+
+           else
+           {
+               return false;
+           }
+
+        });
+
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.xyz').on('click', function (e) {
+            e.preventDefault();
+            var agree = confirm("Are you sure to Remove User ?")
+                if (agree) {
+                    var id = $('.xyz').attr('Empid')
+
+                    var path = '@Url.Content("~/Admin/SysUesrRemove")' + "?EmpId=" + id
+                        event.preventDefault();
+                        window.location.replace(path);
+
+                    }
+            else
+                {
+                    return false;
+                }
+
+            });
+
+        });
+    $(document).ready(function () {
+        $("#btnAddCust").click(function (e) {
+            var ddlValue = $('#DrpDwnLstCust').val();
+            var AssDept = $('#AssignDrpDwnLst').val();
+            if (ddlValue == '') {
+                alert('Please Select Customer then click on Add.');
+                e.preventDefault();
+                return;
+            }
+            if (AssDept == '') {
+                alert('Please Select Department then click on Add.');
+                e.preventDefault();
+                return;
+            }
+            var id = $('.xyz').attr('Empid')
+            e.preventDefault();
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Admin/SaveEmployeeCustomer",  //Update is Server side method
+                data: { EmpId: id, CustomerId: ddlValue, AssignDept: AssDept },
+                complete: function () {
+                },
+                success: function (errorCode) {
+                    var path = '@Url.Content("~/Admin/EditEmployee")' + "?EmpId=" + id
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        });
+    });
+    $(document).ready(function () {
+        $("#btnAddDept").click(function (e) {
+            var ddlValue = $('#DepartLst').val();
+            if (ddlValue == '') {
+                alert('Please Select Department then click on Add.');
+                return false;
+            }
+            var id = $('.xyz').attr('Empid')
+            e.preventDefault();
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Admin/SaveEmployeeDepartment",  //Update is Server side method
+                data: { EmpId: id, DeptId: ddlValue },
+                complete: function () {
+                },
+                success: function (errorCode) {
+                    var path = '@Url.Content("~/Admin/EditEmployee")' + "?EmpId=" + id
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        });
+    });
+    $(document).ready(function () {
+        $("#btnAddVendor").click(function (e) {
+            var ddlValue = $('#DrpDwnLst').val();
+            if (ddlValue == '') {
+                alert('Please Select Vendor then click on Add.');
+                e.preventDefault();
+                return;
+            }
+            var id = $('.xyz').attr('Empid')
+            e.preventDefault();
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Admin/SaveEmployeeVendor",  //Update is Server side method
+                data: { EmpId: id, VendorId: ddlValue },
+                complete: function () {
+                },
+                success: function (errorCode) {
+                    var path = '@Url.Content("~/Admin/EditEmployee")' + "?EmpId=" + id
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        });
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.btnaddcust').on('click', function (e) {
+            e.preventDefault();
+            var agree=confirm("Are you sure to Remove User ?")
+                if (agree) {
+                    var id = $('.xyz').attr('Empid')
+
+
+                    var path = '@Url.Content("~/Admin/SysUesrRemove")' + "?EmpId=" + id
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+            else
+                {
+                    return false;
+                }
+            
+
+        });
+
+    });
+
+</script>
+
+<script>
+
+    function checkPass() {
+        var pass1 = document.getElementById('Txt_Pwd');
+        var pass2 = document.getElementById('Txt_RePwd');
+        var message = document.getElementById('confirmMessage');
+        var goodColor = "#66cc66";
+        var badColor = "#ff6666";
+        if (pass1.value == pass2.value)
+        {
+            pass2.style.backgroundColor = goodColor;
+            pass1.style.backgroundColor = goodColor;
+            message.style.color = goodColor;
+            message.innerHTML = ""
+        }
+        else
+        {
+            pass2.style.backgroundColor = badColor;
+            message.style.color = badColor;
+            message.innerHTML = "Passwords Do Not Match!"
+        }
+    }
+</script>
+
+<style>
+    .Tbl1 {
+        border-style: solid;
+        border-color: #c9cad7;
+    }
+</style>
+
+<style>
+    td {
+        padding-right: 10px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Employee Details
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#testConn').click(function (e) {
+            var SendingServer=$("#SendingMailServer").val();
+            var SendingPort=$("#SendingEmailPort").val();
+            var UserName=$("#EmailUserName").val();
+            var Password=$("#Txt_Pwd").val();
+            var SSL = $('#Txt_SSL').is(':checked')                                 
+            $("#divLoading1").show();
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: '/Admin/CheckEmailCongig',  //Update is Server side method
+                data: {Server:SendingServer,username: UserName,password:Password,EmailPort:SendingPort,SSL:SSL},
+                success: function (result) {
+                    if(result =="Success")
+                    {
+                        alert("Email Configuration is Valid !")
+                        $("#divLoading1").hide();
+                    }
+                    else
+                    {
+
+                        alert("Email Configuration is Not Valid")
+                        $("#divLoading1").hide();
+                    }
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+        });
+    });
+</script>
+
+<div id="divLoading1" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $('.Save').click(function (e) {
+
+            var FirstName = $('#FirstName').val();
+            var LastName = $('#LastName').val();
+           // var Dept = $('#DrpDwnLstDept').val();
+            var Manager = $('#DrpDwnLstMag').val();
+            var emailId = $('#emailId').val();
+            var Designation = $('#Designation').val();
+            var Qualification = $('#Qualification').val();
+            var DateOfJoin = $('#DateOfJoin').val();
+            var DOJ = $('#DateOfJoin').val();
+            var regionlst = $('#regionlst').val();
+            var ServerName = $('#EmailServer').val();
+            var PortNo = $('#EmailPort').val();
+            var SendingServerName = $('#SendingMailServer').val();
+            var SendingPortNo = $('#SendingEmailPort').val();
+            var Emial = $('#EmailUserName').val();
+            var Pass = $('#Txt_Pwd').val();
+            var RePass = $('#Txt_RePwd').val();
+            if (Pass != RePass)
+            {
+                alert("Password and Conform Password not match");
+                return false;
+            }
+            if (ServerName != "" || PortNo != "" || Emial != "" || Pass != "")
+            {
+                if (ServerName.toString() == "") {
+                    alert("Please Enter Receiving Server Name");
+                    return false;
+                }
+                if (SendingServerName.toString() == "") {
+                    alert("Please Enter Sending Server Name");
+                    return false;
+                }
+                if (PortNo.toString() == "") {
+                    alert("Please Enter Reciving Port No");
+                    return false;
+                }
+                if (SendingPortNo.toString() == "") {
+                    alert("Please Enter Sending Port No");
+                    return false;
+                }
+                if (Emial.toString() == "") {
+                    alert("Please Enter User Name");
+                    return false;
+                }
+                if (Pass.toString() == "") {
+                    alert("Please Enter Password");
+                    return false;
+                }
+
+            }
+            if (FirstName.toString() == "") {
+                alert("Please Enter First Name");
+                return false;
+            }
+            if (LastName.toString() == "") {
+                alert("Please Enter Last Name");
+                return false;
+            }
+            if (emailId.toString() == "") {
+                alert("Please Enter E-mail Address");
+                return false;
+            }
+            //var regex = /^[A-Za-z0-9._%+-]+@@([A-Za-z0-9-]+\.)+([A-Za-z0-9]{2,4}|museum)$/;
+            //if (regex.test(emailId) == false) {
+            //    alert("Enter a valid Email ID")
+            //    return false;
+            //}
+            if (DOJ.toString() == "") {
+                alert("Please Select Date of Join Address");
+                return false;
+            }
+            //if (Dept.toString() == "") {
+            //    alert("Please Select Department Name");
+            //    return false;
+            //}
+            if (regionlst.toString() == "") {
+                alert("Please Select region");
+                return false;
+            }
+            if (Manager.toString() == "") {
+                alert("Please Select Manager Name");
+                return false;
+            }
+            if (Designation.toString() == "") {
+                alert("Please Enter Designation");
+                return false;
+            }
+            if (Qualification.toString() == "") {
+                alert("Please Enter  Qualification");
+                return false;
+            }
+            if (DateOfJoin.toString() == "") {
+                alert("Please Enter  Date Of Join");
+                return false;
+            }
+            $("#EmployeeForm").unbind('submit').submit();
+        });
+    });
+</script>
+@using (Html.BeginForm("EditEmployee", "Admin", FormMethod.Post, new { Id = "EmployeeForm", enctype = "multipart/form-data" }))
+{
+    <html>
+    <body>
+        <div class="Tbl1">
+            <table align="center" height="50">
+                <tr>
+                    <td>
+                        <label for="UserId">User Id</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+
+                            @Html.TextBoxFor(model => model.UserId, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.UserId)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="UserName">UserName</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.UserName)
+                        </div>
+                    </td>
+
+
+
+                    <td></td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.ActionLink(" Select User", "SysUesrList", new { EmpId = Model.EmpId }, new { @class = "modal-link btn-xs btn-info glyphicon glyphicon-screenshot", id = "lnkAdd" })
+                        </div>
+
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.ActionLink(" Remove User", " ", null, new { Empid = Model.EmpId, @id = "xyz", @class = "xyz btn-xs btn-info glyphicon glyphicon-trash" })
+                        </div>
+
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+
+        <table style="border-collapse:separate;border-spacing: 0 8px;">
+            <tr>
+                <td>
+                    <label for="EmpId">Employee Id </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EmpId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="isClient">is Client</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isClient)
+                        @Html.ValidationMessageFor(model => model.isClient)
+                    </div>
+                </td>
+                <td>
+                    <label>Company</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, new { @class = "  form-control", style = "width:310px", id = "CompCodeDrp" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="FirstName">First Name </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", @maxlength = "15", id = "FirstName" })
+                        @Html.ValidationMessageFor(model => model.FirstName)
+                    </div>
+                </td>
+                <td>
+                    <label for="MiddleName">Middle Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.MiddleName, new { @class = "form-control", @maxlength = "20", id = "MiddleName" })
+                        @Html.ValidationMessageFor(model => model.MiddleName)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="LastName">Last Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", @maxlength = "15", id = "LastName" })
+                        @Html.ValidationMessageFor(model => model.LastName)
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="Gender">Gender </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.Gender, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Male", Value="Male"},
+                             new SelectListItem() {Text = "Female", Value="Female"},
+
+                       }, new { @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="emailId">email Id </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.emailId, new { @class = "form-control", @maxlength = "40", id = "emailId" })
+                        @Html.ValidationMessageFor(model => model.emailId)
+                    </div>
+                </td>
+                <td>
+                    <label for="DateOfJoin">Date Of Join</label>
+                </td>
+
+                <td>
+                    <div class="">
+
+
+                        @Html.EJ().DatePicker("DateOfJoin").Value(Model.DateOfJoin).DateFormat("MM/dd/yyyy")
+                        @*@Html.EditorFor(model => model.DateOfJoin, new { id = "DateOfJoin" })*@
+                        @Html.ValidationMessageFor(model => model.DateOfJoin)
+                    </div>
+                </td>
+
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="ManagerName">Manager Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ManagerId", (IEnumerable<SelectListItem>)ViewBag.EmpList, new { @class = "form-control", id = "DrpDwnLstMag", style = "width:310px" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Designation">Designation </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Designation, new { @class = "form-control", @maxlength = "30", id = "Designation" })
+                        @Html.ValidationMessageFor(model => model.Designation)
+                    </div>
+                </td>
+                <td>
+                    <label for="Qualification">Qualification</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Qualification, new { @class = "form-control", @maxlength = "30", id = "Qualification" })
+                        @Html.ValidationMessageFor(model => model.Qualification)
+                    </div>
+                </td>
+
+
+
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="DeptId">Region</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Region", (IEnumerable<SelectListItem>)ViewBag.regiondrppp, "Please Select the Region", new { id = "regionlst", style = "width:200px", @class = "form-control" })
+                    </div>
+                </td>
+
+                @*<td>
+                        <label for="DeptId">Department Name</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.DropDownList("DeptId", (IEnumerable<SelectListItem>)ViewBag.SysDeptList, new { @class = "form-control", id = "DrpDwnLstDept", style = "width:310px" })
+                        </div>
+                    </td>*@
+                <td>
+                    <label for="">Phone Number:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", @maxlength = "20" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="">Mobile:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Mobile, new { @class = "form-control", @maxlength = "15" })
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="CreatedByName">Created By </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="CreatedDate">Created Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+
+
+                <td>
+                    <label for="ModifiedByName">Modified By </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <label for="ModifiedDate">Modified Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+
+                @if (Model.Photo != null)
+                {
+                    <td>
+                        <label for="Photo">Photo</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @{
+                                var base64 = Convert.ToBase64String(Model.Photo);
+                                var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                            }
+                            <img width="80" height="80" src="@imgSrc" />
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Photo">New Photo</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="file" class="file form-control" name="uploadFile" />
+
+                        </div>
+
+                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <label for="Photo">Photo</label>
+                                    </td>
+                                    <td>
+                                        <div class="">
+                                            <input type="file" class="file form-control" name="uploadFile" />
+
+                                        </div>
+                                    </td>
+
+                                }
+            </tr>
+            <tr>
+        </table>
+        <div style="width:100%">
+
+            @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Width("100%").Items(data =>
+                {
+
+                data.Add().ID("Exprence").Text("Experience").ContentTemplate(
+                    @<div>
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateExperience" type="button"> Create</button>
+                        @if (Model.LstExperience.Count > 0)
+                        {
+
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.ExperienceModel>("grdexperinceList")
+         .Datasource(Model.LstExperience)
+
+        .AllowPaging()
+        .AllowSorting()
+         .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .AllowScrolling()
+         .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu()
+                   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+          })
+           .ToolbarSettings(toolbar =>
+           {
+               toolbar.ShowToolbar().ToolbarItems(items =>
+               {
+                   items.AddTool(ToolBarItems.Add);
+                   items.AddTool(ToolBarItems.Edit);
+               });
+           })
+        .Columns(col =>
+        {
+            col.Field("EmpId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CompanyName").HeaderText("Company Name").Width(160).Add();
+            col.Field("Designation").HeaderText("Designation").Width(180).Add();
+            col.Field("JobProfile").HeaderText("Job Profile").Width(180).Visible(true).Add();
+            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(140).Add();
+            col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy}").Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickExperience");
+                eve.ContextClick("contextclickExperience");
+            })
+
+
+                                )
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Employee Experience !!!</label>
+                            </div>
+
+                        }
+                    </div>);
+                data.Add().ID("Experties").Text("Experties").ContentTemplate(
+                    @<div>
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf createExperties" type="button"> Create</button>
+                        @if (Model.LstExperties.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.ExpertiesModel>("grdExpertiesList")
+         .Datasource(Model.LstExperties)
+
+        .AllowPaging()
+        .AllowSorting()
+         .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .AllowScrolling()
+         .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu()
+                   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+          })
+           .ToolbarSettings(toolbar =>
+           {
+               toolbar.ShowToolbar().ToolbarItems(items =>
+               {
+                   items.AddTool(ToolBarItems.Add);
+                   items.AddTool(ToolBarItems.Edit);
+               });
+           })
+        .Columns(col =>
+        {
+            col.Field("Experties").HeaderText("Experties").Width(160).Add();
+            col.Field("Exp_Level").HeaderText("Exp Level").Width(180).Add();
+            col.Field("ExpInYears").HeaderText("ExpInYears").Width(180).Visible(true).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickExperties");
+                eve.ContextClick("contextclickExperties");
+            })
+                                )
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Experties Details !!!</label>
+                            </div>
+
+                        }
+                    </div>);
+                data.Add().ID("BankDetail").Text("BankDetail").ContentTemplate(
+                    @<div>
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateEmployee" type="button"> Create</button>
+                        @if (Model.EmployeeBankDetailLst.Count > 0)
+                        {
+
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.EmployeeBankDetailModel>("grdBankList")
+         .Datasource(Model.EmployeeBankDetailLst)
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+         .EditSettings(e => e.AllowAdding().AllowEditing())
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                     .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("BankName").HeaderText("Bank Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("AccountNo").HeaderText("Account No").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Limit").HeaderText("Limit").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickBank");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickBank");
+            })
+
+
+                                )
+                            </div>
+
+
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Bank Details !!!</label>
+                            </div>
+
+                        }
+
+                    </div>);
+                data.Add().ID("Address").Text("Address").ContentTemplate(
+                    @<div>
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateEmployeeAddress" type="button"> Create</button>
+                        @if (Model.AddressList.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.EmployeeAddressModel>("grdAddressList")
+         .Datasource(Model.AddressList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .EditSettings(e => e.AllowAdding().AllowEditing())
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                     .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("AddressId").HeaderText("Address Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Line1").HeaderText("Line 1").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Line2").HeaderText("Line 2").Width(160).Add();
+            col.Field("LandMark").HeaderText("Land Mark").Width(180).Add();
+            col.Field("City").HeaderText("City").Width(160).Add();
+            col.Field("State").HeaderText("State").Width(160).Add();
+            col.Field("Country").HeaderText("Country").Width(160).Add();
+            col.Field("Pin").HeaderText("Pin").Width(160).Add();
+            col.Field("isPrimary").HeaderText("isPrimary").Width(180).Add();
+            col.Field("Description").HeaderText("Description").Width(180).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickAddress");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickAddress");
+            })
+                                )
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Address Details !!!</label>
+                            </div>
+                        }
+                    </div>);
+
+                data.Add().ID("SalaryComponent").Text("Salary Component").ContentTemplate(
+                    @<div>
+                        @if (Model.Matched.ToString() == "Matched")
+                        {
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="AnnualFixPay">Annual Fix Pay:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.AnnualFixPay, new { @class = "form-control", @type = "Number", @readonly = "readonly" })
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <label for="AnnualVariablePay">Annual Variable Pay:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.AnnualVariablePay, new { @class = "form-control", @type = "Number", @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                            </table>
+
+
+
+                        }
+                        else
+                        {
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label for="AnnualFixPay">Annual Fix Pay:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.AnnualFixPay, new { @class = "form-control", @type = "Number", required = "required" })
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <label for="AnnualVariablePay">Annual Variable Pay:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.AnnualVariablePay, new { @class = "form-control", @type = "Number", required = "required" })
+                                    </td>
+
+                                </tr>
+                            </table>
+                        }
+
+                    </div>);
+
+                data.Add().ID("k").Text("Professional Info").ContentTemplate(
+                    @<div>
+                        <table>
+                            <tr>
+
+                                <td width="20px"></td>
+                                <td>
+                                    <label for="">PAN:</label>
+                                </td>
+                                <td width="20px"></td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.PAN, new { @maxlength = "10", @class = "form-control" })
+                                </td>
+                                <td width="20px"></td>
+                                <td>
+                                    <label for="">Aadhar:</label>
+                                </td>
+                                <td width="22px"></td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.AADHAR, new { @maxlength = "20", @class = "form-control" })
+                                </td>
+                                <td width="22px"></td>
+                                <td>
+                                    <label for="">Passport Number:</label>
+                                </td>
+                                <td width="23px"></td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.PassportNumber, new { @maxlength = "15", @class = "form-control" })
+                                </td>
+                                <td width="5px"></td>
+                                <td>
+                                    <label for="">Leave Opening Balance:</label>
+                                </td>
+                                <td width="20px"></td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.LeaveOpBal, new { @class = "form-control" })
+                                </td>
+
+                            </tr>
+                        </table>
+
+                    </div>);
+
+                data.Add().ID("CustDetail").Text("Customer List").ContentTemplate(
+                    @<div>
+
+                        <table>
+                            <tr>
+                                <td align="center" width="80px">
+                                    Customer
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        @Html.DropDownList("CustomerList", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Please Select Customer", new { @class = " form-control", id = "DrpDwnLstCust", style = "width:310px" })
+                                    </div>
+                                </td>
+                                <td align="center" width="80px">
+                                    Department
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        @Html.DropDownList("AssignDeptList", (IEnumerable<SelectListItem>)ViewBag.SysAssignDeptList, "Please Select Department", new { @class = "form-control", id = "AssignDrpDwnLst", style = "width:310px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        <button id="btnAddCust" class="btn-xs  btn-success"> Add</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        @if (Model.CustList.Count > 0)
+                        {
+                            <div id="gridCust">
+
+                                <div style="position:relative">
+                                    @(Html.EJ().Grid<SmartSys.BL.DW.ItemModel>("grdCustList")
+.Datasource((IEnumerable<object>)@Model.CustList)
+.AllowPaging()
+.AllowSorting()
+.PageSettings(p => { p.PageSize(20); })
+.EnableHeaderHover()
+.AllowResizing()
+.AllowFiltering(true)
+  .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+.EnableAltRow(true)
+.Columns(col =>
+{
+    col.Field("CustomerName").HeaderText("Customer Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+    col.Field("CustomerId").HeaderText("Customer Id").Visible(false).Width(80).Add();
+    col.Field("DepartmentName").HeaderText("Department Name").Visible(true).Width(60).Add();
+    col.Field("ModifiedBy").HeaderText("Modified By").Width(80).Add();
+    col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.HeaderText(" Delete").TemplateID("#DeleteCust").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+})
+                                    )
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! No Customer Selected !!!</label>
+                            </div>
+
+                        }
+
+                    </div>);
+
+                data.Add().ID("VendDetail").Text("Vendor List").ContentTemplate(
+                    @<div>
+                        <table>
+                            <tr>
+                                <td align="center" width="80px">
+                                    Vendor
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        @Html.DropDownList("VendorList", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Please Select Vendor", new { @class = "DrpDwnLst form-control", id = "DrpDwnLst", style = "width:310px" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        <button id="btnAddVendor" class="btn-xs  btn-success"> Add </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        @if (Model.VendList.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.DW.ItemModel>("grdVendList")
+.Datasource((IEnumerable<object>)@Model.VendList)
+.AllowPaging()
+.AllowSorting()
+.PageSettings(p => { p.PageSize(20); })
+.EnableHeaderHover()
+.AllowResizing()
+.AllowFiltering(true)
+  .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+.EnableAltRow(true)
+.Columns(col =>
+{
+    col.Field("VendorName").HeaderText("Vendor Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+    col.Field("VendorId").HeaderText("Vendor Id").Visible(false).Width(80).Add();
+    col.Field("ModifiedBy").HeaderText("Modified By").Width(80).Add();
+    col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.HeaderText(" Delete").TemplateID("#DeleteVend").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+})
+                                )
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! No Vendor Selected !!!</label>
+                            </div>
+
+                        }
+
+                    </div>);
+
+                data.Add().ID("Assets").Text("Assets Details").ContentTemplate(
+                    @<div>
+
+                        @if (Model.AssetsAllow != "Matched")
+                        {
+
+                            if (Model.SysEmpAssetsList.Count > 0)
+                            {
+                                <div style="position:relative">
+                                    @(Html.EJ().Grid<SmartSys.BL.SysEmployeeAssetsModel>("grdAssetList")
+.Datasource((IEnumerable<object>)@Model.SysEmpAssetsList)
+.AllowPaging()
+.AllowSorting()
+.PageSettings(p => { p.PageSize(20); })
+.EnableHeaderHover()
+.AllowResizing()
+.AllowFiltering(true)
+  .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+.EnableAltRow(true)
+.Columns(col =>
+{
+    col.Field("AssetId").HeaderText("AssetId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+    col.Field("AssetName").HeaderText("AssetName").Width(80).Add();
+    col.Field("AssignedDate").HeaderText("Assigned Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.Field("ReturnDate").HeaderText("Return Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.Field("CreatedBy").HeaderText("Created By").Width(80).Add();
+    col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.Field("ModifiedBy").HeaderText("Modified By").Width(80).Add();
+    col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.HeaderText("Dellocate").TemplateID("#DeallocateAsset").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+})
+                                    )
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info" role="alert">
+                                    <label>Sorry! There is No Information about Asset Details !!!</label>
+                                </div>
+
+                            }
+                        }
+                        else
+                        {
+                            if (Model.SysEmpAssetsList.Count > 0)
+                            {
+                                <div style="position:relative">
+                                    @(Html.EJ().Grid<SmartSys.BL.SysEmployeeAssetsModel>("grdAssetList1")
+.Datasource((IEnumerable<object>)@Model.SysEmpAssetsList)
+.AllowPaging()
+.AllowSorting()
+.PageSettings(p => { p.PageSize(20); })
+.EnableHeaderHover()
+.AllowResizing()
+.AllowFiltering(true)
+  .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+.EnableAltRow(true)
+.Columns(col =>
+{
+    col.Field("AssetId").HeaderText("AssetId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+    col.Field("AssetName").HeaderText("AssetName").Width(80).Add();
+    col.Field("AssignedDate").HeaderText("Allocation Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.Field("CreatedBy").HeaderText("Created By").Width(80).Add();
+    col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+    col.Field("ModifiedBy").HeaderText("Modified By").Width(80).Add();
+    col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+
+})
+                                    )
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="alert alert-info" role="alert">
+                                    <label>Sorry! There is No Information about Asset Details !!!</label>
+                                </div>
+
+                            }
+                        }
+
+                    </div>);
+                data.Add().ID("EmailConfig").Text("Email Config").ContentTemplate(
+                    @<div>
+                        
+                              <div class="row">
+                                  <button type="button" id="testConn" class="btn-xs btn-success glyphicon glyphicon-transfer"  > Test Connection</button>
+                              </div>                            
+                            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                                <tr>
+                                    <td>
+                                        <label for="EmailServer">Receiving  Server:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.emailConfig.EmailServer, new { @maxlength = "50", id = "EmailServer", @class = "form-control" })
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <label for="EmailServer">Sending  Server:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.emailConfig.SendingMailServer, new { @maxlength = "50", id = "SendingMailServer", @class = "form-control" })
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <label for="EmailPort">Receiving  Port:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.emailConfig.EmailPort, new { @maxlength = "10", id = "EmailPort", @class = "form-control" })
+                                    </td>
+                                    <td>
+                                        <label for="EmailPort">Sending  Port:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.emailConfig.SendingEmailPort, new { @maxlength = "10", id = "SendingEmailPort", @class = "form-control" })
+                                    </td>                                   
+                                    <td width="20px"></td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="EmailUserName">User Name:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.emailConfig.EmailUserName, new { @maxlength = "50", id = "EmailUserName", @class = "form-control" })
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <label for="EmailPassword">Password:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.emailConfig.EmailPassword, new { @maxlength = "100", Id = "Txt_Pwd", Name = "Txt_Pwd", @type = "Password", @class = "form-control" })
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <label for="ConformnPass">Conform Password:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <input type="password" class="form-control" name="Txt_RePwd" value="@Model.emailConfig.EmailPassword" id="Txt_RePwd" onkeyup="checkPass(); return false;">
+                                        <span id="confirmMessage" class="confirmMessage"></span>
+                                    </td>
+                                    <td>
+                                        <label for="SSL">SSL:</label>
+                                    </td>
+                                    <td width="20px"></td>
+                                    <td>
+                                        <input type="checkbox"   class="btn-sm form-control alignleft" style="height:15px;width:25px" name="Txt_SSL" checked="@Model.emailConfig.SSL" id="Txt_SSL">                                      
+                                    </td>
+                                </tr>
+                            </table>
+                       
+                    </div>);
+
+                data.Add().ID("Documents").Text("Documents").ContentTemplate(
+                    @<div>
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf EmployeeDocuments" type="button"> Create</button>
+                        @if (Model.DocList.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.Documents>("grdDocList")
+.Datasource((IEnumerable<object>)@Model.DocList)
+.AllowPaging()
+.AllowSorting()
+.PageSettings(p => { p.PageSize(20); })
+.EnableHeaderHover()
+.AllowResizing()
+.AllowFiltering(true)
+  .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+.EnableAltRow(true)
+.Columns(col =>
+{
+    col.Field("DocumentName").HeaderText("Document Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+    col.Field("DocumentPath").HeaderText("Document Path").Width(80).Add();
+    col.HeaderText("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+})
+                                )
+                            </div>
+
+
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry!Employee Documents Not Found !!!</label>
+                            </div>
+
+                        }
+                    </div>);
+
+                data.Add().ID("DepartmentLst").Text("Departments").ContentTemplate(
+                    @<div>
+                        <table>
+                            <tr>
+                                <td align="center" width="80px">
+                                    Department
+                                </td>
+                                <td>
+                                    @Html.DropDownList("DeptLst", (IEnumerable<SelectListItem>)ViewBag.SysDeptList, "Please Select Department", new { @class = "DepCust form-control", id = "DepartLst", style = "width:310px" })
+                                </td>
+                                <td>
+                                    <button class="btn-success" id="btnAddDept"> Add</button>
+                                </td>
+                            </tr>
+                        </table>
+                       
+
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.DW.ItemModel>("grdDeptList")
+   .Datasource((IEnumerable<object>)@Model.DeptList)
+   .AllowPaging()
+   .AllowSorting()
+   .EnableHeaderHover()
+           .PageSettings(p => { p.PageSize(20); })
+   .AllowResizing()
+   .AllowFiltering(true)
+     .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+   .EnableAltRow(true)
+   .Columns(col =>
+   {
+       col.Field("DeptName").HeaderText("Department Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+       col.Field("DeptId").HeaderText("Department Id").Visible(false).TextAlign(TextAlign.Left).Width(60).Add();
+       col.Field("DeptHeadName").HeaderText("Department Head").Width(80).Add();
+       col.Field("UseDept").HeaderText("UseDept").Visible(false).Width(80).Add();
+       col.Field("CreatedByName").HeaderText("Modified By").Width(80).Add();
+       col.Field("CreatedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+       col.HeaderText(" Delete").TemplateID("#DeleteDept").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+   })
+                                )
+                            </div>
+                       
+
+                    </div>);
+                }).EnablePersistence(true)
+          .Render();}
+        </div>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetEmployeeList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save glyphicon glyphicon-save Save"> Save</button>
+                </td>
+            </tr>
+
+        </table>
+    </body>
+</html>
+                }
+<script id="DeleteCust" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-trash" href="/Admin/DeleteEmployeeCustomer?EmpId=@Model.EmpId&amp;CustomerId={{:CustomerId}}"></a>
+</script>
+
+<script id="DeleteVend" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-trash" href="/Admin/DeleteEmployeeVendor?EmpId=@Model.EmpId&amp;VendorId={{:VendorId}}"></a>
+</script>
+<script id="DeleteDept" type="text/x-jsrender">
+    {{if UseDept == '0'}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-trash" href="/Admin/DeleteEmployeeDepartment?EmpId=@Model.EmpId&amp;DeptId={{:DeptId}}"></a>
+    {{else}}
+
+    {{/if}}
+</script>
+<script id="OpenDoc" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/Admin/DownloadEmployeeDocuments?EmpId=@Model.EmpId&amp;DocumentPath={{:DocumentPath}}"></a>
+</script>
+
+<script id="DeallocateAsset" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/Admin/DeallocateAsset?EmpId=@Model.EmpId&amp;AssetId={{:AssetId}}"></a>
+</script>

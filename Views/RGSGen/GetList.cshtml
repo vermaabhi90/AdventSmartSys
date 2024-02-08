@@ -1,0 +1,122 @@
+﻿@model IEnumerable<SmartSys.BL.RGSGenModel>
+@{
+    ViewBag.Title = "RGS Generator List";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    RGS Genrator List
+</div>
+   
+    <div style="margin-bottom:8px;margin-top:5px">
+        @Html.ActionLink(" Create", "Create", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-leaf" })
+
+        @Html.ActionLink(" Refresh", "GetList", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-refresh" })
+       </div>
+
+
+        <div style="position:relative">
+            @(Html.EJ().Grid<SmartSys.BL.RGSGenModel>("grdGeneratorList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu();
+            contextMenu.DisableDefaultItems();
+            contextMenu.CustomContextMenuItems(c =>
+            {
+                c.AddItem("Add_Record", "Add Record");
+                c.AddItem("Edit_Report", "Edit Record");
+            });
+
+        })
+         //.EnablePersistence(true)
+         .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("GenId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("GenType").HeaderText("Type").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("Host").HeaderText("Host").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Port").HeaderText("Port").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("isActive").HeaderText("Active").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("PollingInterval").HeaderText("Polling Interval").TextAlign(TextAlign.Center).Width(140).Add();
+            col.Field("BusinessLineName").HeaderText("Business Line").Width(160).Add();
+            col.Field("ProcessId").HeaderText("Process Id").Width(110).Add();
+            col.Field("StatusName").HeaderText("Status").Width(80).Template("#Status").Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Template("#edit").IsUnbound(true).TextAlign(TextAlign.Center).Width(90).AllowFiltering(false).Add();
+            col.HeaderText("Action").AllowFiltering(false).Template("#BtnTemplate").TextAlign(TextAlign.Center).Add();
+        })
+            )
+        </div>
+        <script type="text/x-jsrender" id="BtnTemplate">
+            {{if GenAction == 'Stop'}}
+
+            <a class="btn-xs btn-danger  glyphicon glyphicon-stop" href="/RGSGen/Status?GenId={{:GenId}} &Status=5">Stop</a>
+            {{else}}
+
+            <a class="btn-xs btn-success  glyphicon glyphicon-play" href="/RGSGen/Status?GenId={{:GenId}} &Status=8">Start</a>
+
+            {{/if}}
+
+        </script>
+        <script type="text/x-jsrender" id="Status">
+            {{if StatusId == '4'}}
+            <a class="text-info"> <b>BUSY</b></a>
+            {{/if}}
+
+            {{if StatusId == '0'}}
+            <a class="text-danger"><b>DOWN</b></a>
+            {{/if}}
+
+            {{if StatusId == '1'}}
+            <a class="text-success"><b>Idle</b></a>
+            {{/if}}
+
+            {{if StatusId == '5'}}
+            <a class="text-warning"><b>STOP</b></a>
+            {{/if}}
+
+            {{if StatusId == '6'}}
+            <a class="text-danger"><b>STOPPED</b></a>
+            {{/if}}
+
+            {{if StatusId == '7'}}
+            <a class="text-warning"><b>RESTART</b></a>
+            {{/if}}
+
+            {{if StatusId == '8'}}
+            <a class="text-warning"><b>START</b></a>
+            {{/if}}
+
+        </script>
+        <script id="edit" type="text/x-jsrender">
+            <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/RGSGen/Edit?GenId={{:GenId}}"></a>
+        </script>
+<script>
+    function contextclick(args) {
+            if (args.text == "Add Record") {
+
+                var path = '@Url.Content("~/RGSGen/Create")'
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdReport").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var GenId = result[0]["GenId"];
+
+                var path = '@Url.Content("~/RGSGen/Edit")' + "?GenId=" + GenId 
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        }
+</script>

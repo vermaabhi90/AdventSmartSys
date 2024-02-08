@@ -1,0 +1,71 @@
+﻿@model IEnumerable<SmartSys.BL.Tmleave.TimesheetHistory>
+
+@{
+    ViewBag.Title = "TMPendingTimesheetApproval";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Pending Approval Time Sheet Entry
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Tmleave.TimesheetHistory>("grdTimesheetHistory")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu()
+                .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+        })
+
+       .ToolbarSettings(toolbar =>
+       {
+           toolbar.ShowToolbar().ToolbarItems(items =>
+           {
+               items.AddTool(ToolBarItems.Edit);
+           });
+       })
+        .Columns(col =>
+        {
+            col.Field("TimeSheetId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmpName").HeaderText("Employee").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("FromDate").HeaderText("Start Date").TextAlign(TextAlign.Left).Format("{0:MM/dd/yyyy }").Width(122).Add();
+            col.Field("StatusCode").HeaderText("Status").Width(100).TextAlign(TextAlign.Left).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(130).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ActionBegin("toolClick");
+                 })
+    )
+</div>
+
+@*<script id="edit" type="text/x-jsrender">
+    <a class="modal-link btn-xs btn-info  glyphicon glyphicon-pencil black" href="/TMLeave/ApproveRejectTimesheetEntry?TimeSheetId={{:TimeSheetId}}">  </a>
+</script>*@
+
+<script>
+
+    function toolClick(args) {       
+        if (args.requestType == "beginedit") {         
+            var TimeSheetId=args.row.children().eq(0).text();           
+            var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + TimeSheetId
+            event.preventDefault();
+            window.location.replace(path);
+
+            return false;            
+        }
+    }
+</script>

@@ -1,0 +1,46 @@
+﻿@model SmartSys.BL.Tmleave.CalanderModel
+
+@{
+    ViewBag.Title = "GetCalendarList";
+}
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+@(Html.EJ().Schedule("Schedule1")
+        .Width("100%")
+        .Height("825px")
+        .ToolTipSettings(pre => pre.Enable(true))
+        .CurrentDate(new DateTime(2014, 5, 2))
+             .ScheduleClientSideEvents(eve => eve.Create("onCreate"))
+            //.ContextMenuSettings(menu => menu.Enable(true).MenuItems(item => item.Cells(ViewBag.cell).Appointment(ViewBag.app)))
+                    .CategorizeSettings(fields => fields.Datasource((IEnumerable<object>)ViewBag.categorize).Enable(true).AllowMultiple(true).Id("id").Text("text").Color("color").FontColor("fontColor"))
+                 .Resources(res =>
+                 {
+                     res.Field("Owner").Title("Owner").Name("Owners").AllowMultiple(true)
+                    .ResourceSettings(flds => flds.Datasource((IEnumerable<SmartSys.BL.SysEmploy>)ViewBag.Owners).Text("EmpName").Id("EmpId").Color("Color")).Add();
+                 })
+            
+                 .AppointmentSettings(fields => fields.Datasource(ds => ds.URL("TMLeave/GetData").Adaptor("UrlAdaptor"))
+             .Id("ScheduleId")
+            .Subject("Subject")
+                .StartTime("StartTime")
+                .EndTime("EndTime")
+            .Description("Description")
+            .AllDay("AllDay")
+            .Recurrence("Recurrence")
+            .ResourceFields("Owner")
+            .RecurrenceId("Recurrence")
+            .Recurrence("Recurrence")
+            .StartTimeZone("StartTimeZone")
+            .EndTimeZone("EndTimeZone")
+            .Location("Location")
+            )
+)
+<script src="~/Scripts/bootstrap.js"></script>
+<script src="~/Scripts/respond.js"></script>
+<script>
+    function onCreate(args) {     
+        this._dataManager.dataSource.crudUrl = "/TMLeave/Batch";       
+    }
+</script>

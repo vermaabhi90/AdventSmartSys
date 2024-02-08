@@ -1,0 +1,835 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<link href="~/Content/rating.css" rel="stylesheet" />
+<script src="~/Scripts/rating.js"></script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.ResponseId == 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Enquiry Item Vendor Response
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Enquiry Item Vendor Response
+    </div>
+}
+<script type="text/javascript">
+    $(function () {  
+        $(".drp").select2({
+            placeholder: " -- Please Select Item --",
+            allowClear: true,
+            maximumSelectionLength: 2,
+            width:200
+        });
+    });
+</script>
+<script type="text/javascript">
+
+  
+    $(document).ready(function () {
+        $("#Currency").val('@Model.Currency');        
+    });
+</script>
+<script type="text/javascript" class="jsScript">
+    function onSelect(args) {
+        var i=args.key
+        $("#ItemTxtHide").val(i)
+        $("#BrandDrpDwn").empty()
+        $('#BrandDrpDwn').append('<option value= 0>  please Select Brand </option>');
+        var path = "/Enquiry/GetItemBrandList"
+        $.ajax({
+            type: 'POST',
+            url: path,
+            dataType: 'json',
+            data: { ItemId: i },
+            success: function (Brands) {                 
+                $('#BrandDrpDwn').select('rebuild');
+                $('#BrandDrp').select('refresh')
+                $.each(Brands, function (i, Brand) {
+                    $('#BrandDrpDwn').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>').select('rebuild');
+                    $('#BrandDrpDwn').val(Brand.Value);
+                });                   
+            },
+            error: function (ex) {                
+            }
+        });          
+        }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Exceldata").hide();
+        $("#VendorDrpDwn").change(function () {
+            $("#ContactDrpDwn").empty()
+            $('#ContactDrpDwn').append('<option value= 0>  please Select Contact </option>');
+            var path = "/Enquiry/GetVendorContactList"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { VendorId: $("#VendorDrpDwn").val() },
+                success: function (Vendors) {
+                  
+                    $.each(Vendors, function (i, Vendor) {
+                        $('#ContactDrpDwn').append('<option value="' + Vendor.Value + '">' + Vendor.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select Vendor Name');
+                }
+            });
+            return false;
+        })
+        $('#btnUpload').click(function () {
+
+            // Checking whether FormData is available in browser
+            if (window.FormData !== undefined) {
+
+                var $file = document.getElementById('file'),
+               $formData = new FormData();
+
+                if ($file.files.length > 0) {
+                    for (var i = 0; i < $file.files.length; i++) {
+                        $formData.append('file-' + i, $file.files[i]);
+                    }
+                }
+                
+                $.ajax({
+                    url: '/Enquiry/UploadResponseExcelFile',
+                    type: 'POST',
+                    data: $formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (result) {
+                        var obj = $("#grdVendrespLst").ejGrid("instance")
+                        obj.dataSource(result);
+                        $("#divLoading1").hide();
+                         $("#Exceldata").show();
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+            }
+            else {
+                alert("FormData is not supported.");
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        //if (Curr123.toString() != "")  
+        //{
+        //    var currsw = "";
+        //    var currsw = $("#Curr123").val();
+        //    $(".Currw").val(currsw);
+        //}
+      
+        $('.Processsave').click(function (e) {
+       
+            var VendorDrpDwn = $('#VendorDrpDwn').val();
+            var ContactDrpDwn = $('#ContactDrpDwn').val();
+            var Rep = $('#Repmethod').val(); 
+            var Remark = $('#Remark').val(); 
+            var VendStatus = $('#VendStatus').val(); 
+
+            if(VendStatus.toString() != "NotUse")
+            {
+                alert("This Vendor Response Use in Quotation You Can not Edid ! ");
+                return false;
+            }
+            if (VendorDrpDwn.toString() == "") {
+                alert("Please Select Vendor ");
+                return false;
+            }        
+            if (ContactDrpDwn.toString() == "" || ContactDrpDwn.toString() == "0") {
+                alert("Please Select Contact ");
+                return false;
+            }
+            if (Rep.toString() == "") {
+                alert("Please Select Receipt Method ");
+                return false;
+            }
+            if (Remark.toString() == "") {
+                alert("Please Enter Remark ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+<div id="divLoading1" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<script type="text/javascript">
+        $(function ()
+        {
+            $('.rating').rating();           
+        });
+</script>
+
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                @if (Model.ResponseId > 0)
+                {
+                    <td>
+                        <label for="UserId">Response ID</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.HiddenFor(model => model.VendStatus, new { id = "VendStatus" })
+                            @Html.TextBoxFor(model => model.ResponseId, new { @class = "form-control", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.ResponseId)
+                        </div>
+
+                    </td>
+                }
+                else
+                {
+                    @Html.HiddenFor(model => model.ResponseId)
+                }
+                <td>
+                    <label>Vendor</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "--Please Select Vendor--", new { id = "VendorDrpDwn", @class = "drp" })
+                        @*@Html.TextBoxFor(model => model.ItemId, new { id = "ItemId", @class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.ItemId)*@
+                    </div>
+                </td>
+                <td>
+                    <label>Vendor Contact</label>
+                </td>
+                <td>
+
+                    <div class="">
+                        @Html.DropDownList("ContactId", (IEnumerable<SelectListItem>)ViewBag.ContactList, "--Please Select Contact--", new { id = "ContactDrpDwn", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BrandId)
+                    </div>
+                </td>
+                <td>
+                    <label>Currency</label>
+                </td>
+                <td>
+                    <div class="">
+                        @*@Html.HiddenFor(model => model.Currency, new { id="Curr123"})*@
+                        @Html.DropDownListFor(model => model.Currency, (IEnumerable<SelectListItem>)ViewBag.Currency, new { @class = "form-control", @id = "Currency" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+
+                <td>
+                    <label>
+                        Receipt Method
+                    </label>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(x => x.ReciptMethod, new List<SelectListItem>{
+                        new SelectListItem() {Text = "Mail", Value="Mail"},
+                        new SelectListItem() {Text = "Phone", Value="Phone"},
+                        new SelectListItem() {Text = "Person", Value="Person"}
+                     }, new { @class = "form-control", id = "Repmethod" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="ReciptDate">Receipt Date</label>
+                </td>
+                @if (Model.ResponseId > 0)
+                {
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePickerFor(model => model.ReciptDate)
+                            @Html.ValidationMessageFor(model => model.VendorPromiseDate)
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.EJ().DatePickerFor(model => model.ReciptDate).Value(DateTime.Now)
+                            @Html.ValidationMessageFor(model => model.VendorPromiseDate)
+                        </div>
+                    </td>
+                }
+        </table>
+
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label for="Remark">Remark:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 600Px; max-width: 800px;", id = "Remark", @class = "form-control" })
+                    </div>
+                </td>
+                @if (Model.ResponseId > 0 && Model.VendStatus == "NotUse")
+                {
+                    <td id="upFile3">
+                        <div class="">
+                            <label>File:</label>
+                        </div>
+                    </td>
+                    <td id="upFile4">
+                        <div class="input-group-btn">
+
+                            <input type="file" name="file" id="file" multiple value="uploadfile" class="btn btn-success" />
+
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <a id="link1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                        @Html.EJ().Tooltip("link1").Content(" Here You Are able to Upload File.If you want to Sample Please Click on Download sample")
+
+                    </td>
+                    <td id="upFile5">
+                        <div class="">
+                            <input type="button" id="btnUpload" value="Submit" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                        </div>
+                    </td>
+                    <td id="upFile5">
+                        <div class="">
+                            @Html.ActionLink(" Download Sample", "DownloadResponseSample", "Enquiry", new { @class = "btn btn-info glyphicon glyphicon-hand-download" })
+                        </div>
+                    </td>
+                }
+            </tr>
+        </table>
+
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+
+            @if (Model.ResponseId > 0)
+            {
+                <tr>
+                    <td>
+                        <label for="CreatedBy">Created By:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+
+                        </div>
+                    </td>
+                    <td>
+                        <label for="CreatedDate">Created Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MinimumQty)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ModifiedBy">Modified By:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", @class = "form-control" })
+
+                        </div>
+                    </td>
+                    <td>
+                        <label for="ModifiedDate">Modified Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MinimumQty)
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+@if(Model.ResponseId > 0)
+            {
+        <div>
+            <table>
+                <tr>                 
+                    <td>
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdVendrespLst")
+                .Datasource((IEnumerable<object>)@Model.listEnqItemVendRespDetail)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+               .PageSettings(p => { p.PageSize(20); })
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+               
+
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu()
+                        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+                })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .ToolbarSettings(toolbar =>
+                {
+                    toolbar.ShowToolbar().ToolbarItems(items =>
+                    {
+                        items.AddTool(ToolBarItems.Add);
+                        items.AddTool(ToolBarItems.Edit);
+                        //items.AddTool(ToolBarItems.ExcelExport);
+                    });
+                })
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("BrandId").HeaderText("BrandId").Visible(false).Width(100).Add();
+            col.Field("BrandName").HeaderText("Brand Name").Width(100).Add();
+            col.Field("Rate").HeaderText("Rate").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("MinimumQty").HeaderText("MinimumQty").Width(70).Add();
+            col.Field("BatchNumber").HeaderText("Batch Number").Width(70).Add();
+            col.Field("VendorPromiseDate").HeaderText("Lead Time").Width(70).Add();
+            col.Field("SeqNo").HeaderText("Seq No").Visible(false).Width(70).Add();
+            col.Field("SPQ").HeaderText("SPQ").Visible(true).Width(70).Add();
+            col.Field("MOQ").HeaderText("MOQ").Visible(true).Width(70).Add();
+            col.Field("Check").HeaderText("Check").Visible(false).Width(70).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                            )
+                        </div>
+
+                    </td>
+                </tr>
+            </table>
+        </div>      
+}
+        <table>          
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'EnquiryItemVendorResponseDetail';" );"> Back</button>
+                </td>
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" id="submit" class="btn-xs btn-info glyphicon glyphicon-save Processsave"> Save</button>
+                    </div>
+                </td>
+                @if (@Model.ResponseId > 0)
+                {
+                    <td id="SavExcl">
+                        <div class="btn" aria-label="...">
+                            <button type="button" id="Exceldata" class="btn-xs btn-info glyphicon glyphicon-save" onclick="window.location.reload()"> Save Valid Excel Data</button>
+                        </div>
+                    </td>
+                }                           
+                <td>
+                    <div class="btn" aria-label="...">
+                        <input type="text" name="Rating" value=@Model.rating class="rating rating10" />
+                        </div>
+               </td>
+            </tr>
+        </table>
+
+    </body>
+</html>
+}
+
+<script>
+    function querycellinfo(args) {
+        if (args.column.field == "Check" && args.data.Check == "NotOK") {
+            $($(args.cell).parent()).css("backgroundColor", "Thistle");/*custom css applied to the row */
+        }
+        else {
+        }
+    }
+</script>
+<script>   
+    function toolClick(args) {
+        if(args.requestType == "add")
+        {
+            var VendStatus = $('#VendStatus').val(); 
+
+            if(VendStatus.toString() != "NotUse")
+            {
+                alert("This Vendor Response Use in Quotation You Can not Create ! ");
+                return false;
+            }
+            $("#dialogIcon").ejDialog("open");
+            return false;
+        }
+        if (args.requestType == "beginedit") {   
+            var VendStatus = $('#VendStatus').val(); 
+
+            if(VendStatus.toString() != "NotUse")
+            {
+                alert("This Vendor Response Use in Quotation You Can not Edid ! ");
+                return false;
+            }
+            $("#SeqNo").val(args.row.children().eq(8).text()); 
+            $("#ItemTxtHide").val(args.row.children().eq(0).text());
+            $("#ItemDrpDwn").ejAutocomplete("selectValueByKey",args.row.children().eq(0).text());
+            $("#SPQ").val(args.row.children().eq(9).text());
+            $("#MOQ").val(args.row.children().eq(10).text());
+           // $('#ItemDrpDwn').append('<option value="' + args.row.children().eq(0).text() + '">' + args.row.children().eq(1).text() + '</option>');  
+            //$("#ItemDrpDwn").val(args.row.children().eq(0).text());
+           // $("#ItemDrpDwn").val(args.row.children().eq(0).text()).trigger("change")
+            $("#Rate").val(args.row.children().eq(4).text());
+            $("#MinimumQty").val(args.row.children().eq(5).text());
+            $("#BatchSize").val(args.row.children().eq(6).text());           
+            $("#VendorPromiseDate").val( args.row.children().eq(7).text());
+            $("#BrandDrpDwn").empty()
+            $('#BrandDrpDwn').append('<option value= 0>  please Select Brand </option>');
+            var path = "/Enquiry/GetItemBrandList"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ItemId: args.row.children().eq(0).text() },
+                success: function (Brands) {
+                    $("#BrandDrpDwn").empty()
+                    $.each(Brands, function (i, Brand) {
+                        $('#BrandDrpDwn').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');                      
+                    });
+                    $("#BrandDrpDwn").val(args.row.children().eq(2).text());
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });        
+            $("#dialogIcon").ejDialog("open");
+            return false;
+
+            if (args.requestType == "save") {
+               
+                return false;
+                var Itemid = $("#ItemDrp").val();
+                var ItemName = $("#ItemDrp :selected").text();
+                var Quantity = $("#Quantity").val();
+                var Remark = $(".abc").val();
+                var ExpectedDate = $("#ExpectedDateee").val();
+                $.ajax({
+                    dataType: 'json',
+                    type: "POST",
+                    url: "/Enquiry/AddEnqData",  //Update is Server side method
+                    data: { Itemid: Itemid, Quantity: Quantity, Remark: Remark, ExpectedDate: ExpectedDate, ItemName: ItemName },
+                    complete: function () {
+                    },
+                    success: function (msg) {
+                        var obj = $("#grdVendrespLst").ejGrid("instance")
+                        obj.dataSource(msg);
+                        return false;
+                    },
+                    error: function (msg) {
+                        alert("Error " + msg.d.toString());
+                    }
+                });
+                return false;
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+    
+        $("#SaveVendEnq").click(function () {
+            var Itemid = $("#ItemTxtHide").val();
+            var ItemName = $("#ItemDrpDwn :selected").text();
+            var BrandName = $("#BrandDrpDwn :selected").text();
+            var BrandId = $("#BrandDrpDwn").val();
+            var Rate = $("#Rate").val();
+            var MinimumQty = $("#MinimumQty").val();
+            var BatchSize = $("#BatchSize").val();           
+            var VendorPromiseDate = $("#VendorPromiseDate").val();
+            var SeqNo = $("#SeqNo").val();
+            var SPQ = $("#SPQ").val();
+            var MOQ = $("#MOQ").val();
+            if (Itemid.toString =="" || Itemid ==0)
+            {
+                alert("Please Select Item");
+                return false;
+            }
+            if (BrandId.toString == "" || BrandId == 0)
+            {
+                alert("Please Select Brand");
+                return false;
+            }            
+            if (Rate.toString == "" || Rate == 0)
+            {
+                alert("Please Enter Rate");
+                return false;
+            }
+            if (MinimumQty.toString == "" || MinimumQty == 0)
+            {
+                alert("Please Enter Minimum Qty");
+                return false;
+            }
+            //if (MinimumQty % BatchSize != 0) {
+            //    var multiple = BatchSize * 2;
+            //    var Multiple2 = BatchSize * 3;
+            //    alert("Quntity Should be Multiple OF Batch Size like " + ' : ' + BatchSize + ' , ' + multiple + ' , ' + Multiple2 + '........');
+            //    return false;
+            //}
+            //if (BatchSize.toString == "" || BatchSize == 0)
+            //{
+            //    alert("Please Enter Batch Size");
+            //    return false;
+            //}
+            if (VendorPromiseDate == null || VendorPromiseDate.toString() == "") {
+                alert("Please Enter Vendor Promise Date");
+                return false;
+            }
+
+
+            var path = "/Enquiry/CheckDupli"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ItemId: Itemid, BrandId: BrandId, Rate: Rate, MinimumQty: MinimumQty, SeqNo: SeqNo },
+                success: function (result1) {
+                    if (result1 == "Error")
+                    {
+                        toastr.error("This Item,Brand,Rate,Minimum Qty already  Exist .....");
+                        $("#ItemDrpDwn").ejAutocomplete("clearText");
+                        //$("#ItemDrpDwn").val(null);
+                        $('#BrandDrp').select2('refresh')
+                        $("#BrandDrpDwn").empty()
+                        $('#BrandDrpDwn').append('<option value= 0>  please Select Brand </option>');
+                        $("#Rate").val(null);
+                        $("#MinimumQty").val(null);
+                        $("#BatchSize").val(null);
+                        $("#Rate").val(null);
+                        $("#VendorPromiseDate").val(null);
+                        $("#SeqNo").val(0);
+                        $("#dialogIcon").ejDialog("close");
+                        return false;
+                    }
+                    else
+                    {
+                        var path = "/Enquiry/SaveItemVendorResponse"
+                        $.ajax({
+                            type: 'POST',
+                            url: path,
+                            dataType: 'json',
+                            data: { ItemId: Itemid, ItemName: ItemName, BrandId: BrandId, BrandName: BrandName, Rate: Rate, MinimumQty: MinimumQty, BatchSize: BatchSize, VendorPromiseDate: VendorPromiseDate, SeqNo: SeqNo,SPQ:SPQ,MOQ:MOQ },
+                            success: function (result) {
+                                var obj = $("#grdVendrespLst").ejGrid("instance")
+                                obj.dataSource(result);
+                                toastr.success("Item Saved Successfully!");
+                                $("#ItemDrpDwn").ejAutocomplete("clearText");
+                               // $("#ItemDrpDwn").val(null);
+                                $('#BrandDrp').select2('refresh')
+                                $("#BrandDrpDwn").empty()
+                                $('#BrandDrpDwn').append('<option value= 0>  please Select Brand </option>');
+                                $("#Rate").val(null);
+                                $("#MinimumQty").val(null);
+                                $("#BatchSize").val(null);
+                                $("#Rate").val(null);
+                                $("#VendorPromiseDate").val(null);
+                                $("#SeqNo").val(0);
+                                $("#dialogIcon").ejDialog("close");
+                                return false;
+                            },
+                            error: function (ex) {
+                                toastr.error("Data not Successfully Save!");
+                            }
+                        });
+                        return false;
+                    }
+                },               
+            });                               
+        })
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        function onDialogClose(args) {
+           // $("#ItemDrpDwn").val(null);
+            $("#ItemDrpDwn").ejAutocomplete("clearText");
+            //$("#ItemDrpDwn").val('1').trigger('change');
+            $('#BrandDrp').select2('refresh')
+            $("#BrandDrpDwn").empty()
+            $('#BrandDrpDwn').append('<option value= 0>  please Select Brand </option>');
+            $("#Rate").val(null);
+            $("#MinimumQty").val(null);
+            $("#BatchSize").val(null);
+            $("#Rate").val(null);
+            $("#VendorPromiseDate").val(null);
+            $("#SeqNo").val(0);
+           
+        };
+        $('#Exceldata').click(function ()
+        {           
+            var path = "/Enquiry/SaveExceData"
+                $.ajax({
+                    type: 'POST',
+                    url: path,
+                    dataType: 'json',
+                    data: {ResponseId:@Model.ResponseId,VendorId:@Model.VendorId },
+                    success: function (Brands) {
+                      
+                    },
+                    error: function (ex) {
+                        
+                    }
+                });        
+        }
+        )
+    });
+</script>
+    
+@{Html.EJ().Dialog("dialogIcon").Title(" Edit / Create Item Enquiry").ContentTemplate(@<div>
+
+      <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Edit / Create Item Enquiry
+            </div>
+          <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>                   
+                    <td>
+                        <label> Item ID</label>
+                         @Html.HiddenFor(model => model.SeqNo, new { id = "SeqNo", @class = "form-control" })
+                    </td>
+                    <td width="250px">
+                        <div class="">
+                           
+                            <input type="hidden" id="ItemTxtHide" />
+                            @Html.EJ().Autocomplete("ItemDrpDwn").AutoFocus(true).ShowPopupButton(true).Datasource((IEnumerable<SmartSys.BL.DW.ItemModel>)ViewBag.ItemList).AutocompleteFields(f => f.Text("ItemName").Key("ItemId")).Width("400").ClientSideEvents(e => e.Select("onSelect"))                            
+                        </div>
+                    </td>
+                    <td>
+                        <label>Brand ID</label>
+                    </td>
+                    <td>
+
+                        <div class="">
+                            @Html.DropDownList("BrandId", new SelectList(string.Empty, "Value", "Text"), "--please Select Brand--", new { id = "BrandDrpDwn", @class = "drp1 form-control" })
+                            @Html.ValidationMessageFor(model => model.BrandId)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label>
+                            Rate:
+                        </label>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Rate, new { id = "Rate", @type = "number", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Rate)
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="UserId">Quantity:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.MinimumQty, new { @type = "number", @class = "form-control", id = "MinimumQty" })
+                            @Html.ValidationMessageFor(model => model.MinimumQty)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="UserId">Batch Number:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.BatchNumber, new { @class = "form-control", id = "BatchSize" })
+                            @Html.ValidationMessageFor(model => model.BatchNumber)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="UserId">Lead Time:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="VendorPromiseDate" name="VendorPromiseDate" class="form-control" />                               
+                        </div>                     
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label>
+                            SPQ:
+                        </label>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.SPQ, new {id = "SPQ",  @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.SPQ)
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="MOQ">MOQ:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.MOQ, new { @class = "form-control", id = "MOQ" })
+                            @Html.ValidationMessageFor(model => model.MOQ)
+                        </div>
+                    </td>
+                </tr>
+            </table>     
+            <table align="left">
+                <tr>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="button" id="SaveVendEnq" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                        </div>
+
+                    </td>
+                   
+                </tr>
+            </table>
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+} 
+
+

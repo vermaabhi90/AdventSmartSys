@@ -1,0 +1,1131 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.AllPendingWorkModel>
+@{
+    ViewBag.Title = "TO DO";
+}
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Employee",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });    
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {       
+        $("#Subdrp").change(function () {
+            var User_Id = $('#Subdrp').val();         
+            var path = '@Url.Content("~/Enquiry/GetSubordinateData")' + '?User_Id=' + User_Id
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        })
+    });
+</script>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    To Do List
+</div>
+<br><br>
+<style>
+
+    .e-grid .e-groupcaption, .e-grid .e-groupcaptionsummary { /* grid summary color*/
+   color: black;
+   font-weight:500;
+   font-size:13px;
+    
+}
+</style>
+
+<script>
+    $(document).ready(function () {
+       
+        var path = '@Url.Content("~/Enquiry/GetToDOData")'
+        $.ajax({
+            type: 'POST',
+            url: path,
+            dataType: 'json',
+            data: { TabName: "General TODO" },
+            success: function (Result) {
+                    
+               var obj = $("#GeneralTODO").ejGrid("instance")
+                    obj.dataSource(Result);
+                    if (obj.model.groupSettings.groupedColumns.length)
+                        obj.collapseAll();
+            },
+            error: function (ex) {
+                alert('Please Select item Name');
+            }
+        });
+        $('#TODOTabs li a').click(function (e) {
+            
+
+            var id = "";
+            var tab = $(this).attr('href').substr(1);          
+            $('#' + '' + tab + ' ' + 'div  div').each(function () {
+                id = $(this).attr('id');
+            });
+            var inner = $(this).text()
+            var str = inner;
+            arr = str.split(' ');
+            if (arr.length > 1) {
+                str = arr[0] + ' '  + arr[1]
+            }
+            var ChkGrd;
+            if (arr.length > 1) {
+                 ChkGrd = $('#' + arr[0] + arr[1]).ejGrid("instance")
+            }
+            else
+            {
+                ChkGrd = $('#' + inner).ejGrid("instance")
+            }           
+            var data = ChkGrd.model                     
+            if (data.currentViewData.length == 0) {
+                $("#divLoading").show();
+                var path = '@Url.Content("~/Enquiry/GetToDOData")'
+                $.ajax({
+                    type: 'POST',
+                    url: path,
+                    dataType: 'json',
+                    data: { TabName: str },
+                    success: function (Result) {
+
+                        if (arr.length > 1) {
+                            var obj = $('#' + arr[0] + arr[1]).ejGrid("instance")
+                            obj.dataSource(Result);
+                            if (obj.model.groupSettings.groupedColumns.length)
+                                obj.collapseAll();
+                        }
+                        else {
+                            var obj = $('#' + inner).ejGrid("instance")
+                            obj.dataSource(Result);
+                            if (obj.model.groupSettings.groupedColumns.length)
+                                obj.collapseAll();
+                        }
+                        $("#divLoading").hide();
+                    },
+                    error: function (ex) {
+                        $("#divLoading").hide();
+                        alert('Please Select item Name');
+                    }
+                });
+            }
+        });
+    })
+</script>
+<div class="row" style="padding-bottom:8px;padding-left:20px">
+    @Html.DropDownList("SubOrdinateList", (IEnumerable<SelectListItem>)ViewBag.LstEmp, "Please Select Employee", new { id = "Subdrp", @class = "drp form-control", @style = "width:300px", required = "required" })
+</div>
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+
+@{Html.EJ().Tab("TODOTabs").CssClass("tab").ShowCloseButton(true).Items(data =>
+    {    
+    foreach (string v in ViewBag.Group)
+    {
+        string[] str = v.Split('_');
+        data.Add().ID(str[1]).Text(str[0]).ContentTemplate(
+            @<div>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.Enquiry.AllPendingWorkModel>(str[1])
+                .Datasource((IEnumerable<object>)@ViewBag.Gernal)
+                .AllowFiltering()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowGrouping()
+                 .GroupSettings(group => { group.GroupedColumns(col => { col.Add("DocType"); }); })
+                .AllowScrolling()
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu();
+                    contextMenu.DisableDefaultItems();
+                    contextMenu.CustomContextMenuItems(c =>
+                    {
+                        c.AddItem("Open_Detail", "Open Detail");
+                        c.AddItem("Create_Plan", "Create Plan");
+                    });
+                })
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .EnableAltRow(true)
+                .Columns(col =>
+                {
+                    col.Field("Id").HeaderText("ID").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                    col.Field("DocId").HeaderText("Doc Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                    col.Field("DocType").HeaderText("Doc Type").TextAlign(TextAlign.Left).Width(60).Add();
+                    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(300).Add();
+                    col.Field("PlanId").HeaderText("Plan Id").TextAlign(TextAlign.Left).Width(60).Add();
+                    // col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(100).Add();
+                    col.Field("StrDueDate").HeaderText("Due Date (Month/Date/Year)").TextAlign(TextAlign.Left).Width(100).Add();
+                })
+            .ClientSideEvents(eve =>
+            {
+                eve.Create(str[1].ToString()  + "CollapseCreate");
+                eve.ContextClick(str[1].ToString() + "contextclickOverTODO");
+                eve.QueryCellInfo(str[1].ToString() + "querycellinfo");
+            })
+                    )
+                </div>
+
+            </div>);
+    }
+    
+    })
+        .ClientSideEvents(evt => evt.AjaxBeforeLoad("onClientBeforeLoad").AjaxLoad("onClientLoad")
+            .Create("onClientCreate").BeforeActive("onClientBeforeActive").ItemActive("onClientActive"))
+        .Render();}
+<script>
+
+    function Reviewquerycellinfo(args) {
+
+    if (args.column.field == "PlanId" && args.data.PlanId >= 1)
+
+        $($(args.cell).parent()).css("backgroundColor", "#93DB70");/*custom css applied to the row */
+    }
+    function Approvalquerycellinfo(args) {
+
+        if (args.column.field == "PlanId" && args.data.PlanId >= 1)
+
+            $($(args.cell).parent()).css("backgroundColor", "#93DB70");/*custom css applied to the row */
+    }
+    function ProjectActivitiesquerycellinfo(args) {
+
+        if (args.column.field == "PlanId" && args.data.PlanId >= 1)
+
+            $($(args.cell).parent()).css("backgroundColor", "#93DB70");/*custom css applied to the row */
+    }
+    function PurchaseTODOquerycellinfo(args) {
+
+        if (args.column.field == "PlanId" && args.data.PlanId >= 1)
+
+            $($(args.cell).parent()).css("backgroundColor", "#93DB70");/*custom css applied to the row */
+    }
+    function SalesTODOquerycellinfo(args) {
+
+        if (args.column.field == "PlanId" && args.data.PlanId >= 1)
+
+            $($(args.cell).parent()).css("backgroundColor", "#93DB70");/*custom css applied to the row */
+    }
+    function GeneralTODOquerycellinfo(args) {
+
+        if (args.column.field == "PlanId" && args.data.PlanId >= 1)
+
+            $($(args.cell).parent()).css("backgroundColor", "#93DB70");/*custom css applied to the row */
+    }
+</script>
+<script>
+    function ReviewcontextclickOverTODO(args) {
+        if (args.text == "Open Detail") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            if (DocType == 'Customer Mapping Review') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Review') {
+                var path = '@Url.Content("~/DWItem/ApproverMappingReview")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Review') {
+                var path = '@Url.Content("~/DWVendor/VendorPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Customer Mapping Approve') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Approve') {
+                var path = '@Url.Content("~/DWItem/ApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Approve') {
+                var path = '@Url.Content("~/Enquiry/VendorPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Review') {
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Process') {
+                var path = '@Url.Content("~/Enquiry/ProcessPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Dispatch Approval') {
+                var path = '@Url.Content("~/Enquiry/ApproveRejectDispatch")' + "?DispatchId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'SO Approval') {
+                var path = '@Url.Content("~/Enquiry/POApproveReject")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovalView")' + "?EnqId=" + DocId + "&QuotId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Link Sales Order') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPODetail")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Followup') {
+                var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + DocId
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Travel Request Review') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestReviewList")'
+                window.open(path);
+            }
+            if (DocType == 'Travel Request Aprrove') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestApprovalList")'
+                window.open(path);
+            }
+            if (DocType == 'Project Expenses Approval') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Project Expence Account Approve') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'TimeSheet Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Leave Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'MOM ActionPoint') {
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + Id + "&tabIndex=0"
+                window.open(path);
+            }
+            if (DocType == 'Case') {
+                var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + Id + "&taskid=" + DocId + "&Modal=0&ProjectName=&Type=proviews"
+                window.open(path);
+            }
+        }
+        if (args.text == "Create Plan") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            var PlanId = result[0]["PlanId"];
+            if (PlanId > 0) {
+                var agree = confirm("Plan Already Created. You want to edit ?")
+                if (agree) {
+                    var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+                    $("#CreatePLAN").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreatePLAN").ejDialog("open");
+                }
+            }
+            var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+            $("#CreatePLAN").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreatePLAN").ejDialog("open");
+        }
+    }
+</script>
+<script>
+    function ApprovalcontextclickOverTODO(args) {
+        if (args.text == "Open Detail") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            if (DocType == 'Customer Mapping Review') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Review') {
+                var path = '@Url.Content("~/DWItem/ApproverMappingReview")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Review') {
+                var path = '@Url.Content("~/DWVendor/VendorPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Customer Mapping Approve') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Approve') {
+                var path = '@Url.Content("~/DWItem/ApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Approve') {
+                var path = '@Url.Content("~/Enquiry/VendorPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Review') {
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Process') {
+                var path = '@Url.Content("~/Enquiry/ProcessPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Dispatch Approval') {
+                var path = '@Url.Content("~/Enquiry/ApproveRejectDispatch")' + "?DispatchId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'SO Approval') {
+                var path = '@Url.Content("~/Enquiry/POApproveReject")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovalView")' + "?EnqId=" + DocId + "&QuotId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Link Sales Order') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPODetail")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Followup') {
+                var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + DocId
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Travel Request Review') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestReviewList")'
+                window.open(path);
+            }
+            if (DocType == 'Travel Request Aprrove') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestApprovalList")'
+                window.open(path);
+            }
+            if (DocType == 'Project Expenses Approval') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Project Expence Account Approve') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'TimeSheet Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Leave Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'MOM ActionPoint') {
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + Id + "&tabIndex=0"
+                window.open(path);
+            }
+            if (DocType == 'Case') {
+                var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + Id + "&taskid=" + DocId + "&Modal=0&ProjectName=&Type=proviews"
+                window.open(path);
+            }
+        }
+        if (args.text == "Create Plan") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            var PlanId = result[0]["PlanId"];
+            if (PlanId > 0) {
+                var agree = confirm("Plan Already Created. You want to edit ?")
+                if (agree) {
+                    var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+                    $("#CreatePLAN").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreatePLAN").ejDialog("open");
+                }
+            }
+            var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+            $("#CreatePLAN").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreatePLAN").ejDialog("open");
+        }
+    }
+</script>
+<script>
+    function ProjectActivitiescontextclickOverTODO(args) {
+        if (args.text == "Open Detail") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            if (DocType == 'Customer Mapping Review') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Review') {
+                var path = '@Url.Content("~/DWItem/ApproverMappingReview")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Review') {
+                var path = '@Url.Content("~/DWVendor/VendorPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Customer Mapping Approve') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Approve') {
+                var path = '@Url.Content("~/DWItem/ApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Approve') {
+                var path = '@Url.Content("~/Enquiry/VendorPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Review') {
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Process') {
+                var path = '@Url.Content("~/Enquiry/ProcessPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Dispatch Approval') {
+                var path = '@Url.Content("~/Enquiry/ApproveRejectDispatch")' + "?DispatchId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'SO Approval') {
+                var path = '@Url.Content("~/Enquiry/POApproveReject")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovalView")' + "?EnqId=" + DocId + "&QuotId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Link Sales Order') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPODetail")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Followup') {
+                var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + DocId
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Travel Request Review') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestReviewList")'
+                window.open(path);
+            }
+            if (DocType == 'Travel Request Aprrove') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestApprovalList")'
+                window.open(path);
+            }
+            if (DocType == 'Project Expenses Approval') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Project Expence Account Approve') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'TimeSheet Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Leave Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'MOM ActionPoint') {
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + Id + "&tabIndex=0"
+                window.open(path);
+            }
+            if (DocType == 'Case') {
+                var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + Id + "&taskid=" + DocId + "&Modal=0&ProjectName=&Type=proviews"
+                window.open(path);
+            }
+        }
+        if (args.text == "Create Plan") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            var PlanId = result[0]["PlanId"];
+            if (PlanId > 0) {
+                var agree = confirm("Plan Already Created. You want to edit ?")
+                if (agree) {
+                    var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+                    $("#CreatePLAN").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreatePLAN").ejDialog("open");
+                }
+            }
+            var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+            $("#CreatePLAN").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreatePLAN").ejDialog("open");
+        }
+    }
+</script>
+<script>
+    function PurchaseTODOcontextclickOverTODO(args) {
+        if (args.text == "Open Detail") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            if (DocType == 'Customer Mapping Review') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Review') {
+                var path = '@Url.Content("~/DWItem/ApproverMappingReview")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Review') {
+                var path = '@Url.Content("~/DWVendor/VendorPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Customer Mapping Approve') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Approve') {
+                var path = '@Url.Content("~/DWItem/ApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Approve') {
+                var path = '@Url.Content("~/Enquiry/VendorPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Review') {
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Process') {
+                var path = '@Url.Content("~/Enquiry/ProcessPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Dispatch Approval') {
+                var path = '@Url.Content("~/Enquiry/ApproveRejectDispatch")' + "?DispatchId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'SO Approval') {
+                var path = '@Url.Content("~/Enquiry/POApproveReject")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovalView")' + "?EnqId=" + DocId + "&QuotId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Link Sales Order') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPODetail")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Followup') {
+                var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + DocId
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Travel Request Review') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestReviewList")'
+                window.open(path);
+            }
+            if (DocType == 'Travel Request Aprrove') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestApprovalList")'
+                window.open(path);
+            }
+            if (DocType == 'Project Expenses Approval') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Project Expence Account Approve') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'TimeSheet Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Leave Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'MOM ActionPoint') {
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + Id + "&tabIndex=0"
+                window.open(path);
+            }
+            if (DocType == 'Case') {
+                var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + Id + "&taskid=" + DocId + "&Modal=0&ProjectName=&Type=proviews"
+                window.open(path);
+            }
+        }
+        if (args.text == "Create Plan") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            var PlanId = result[0]["PlanId"];
+            if (PlanId > 0) {
+                var agree = confirm("Plan Already Created. You want to edit ?")
+                if (agree) {
+                    var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+                    $("#CreatePLAN").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreatePLAN").ejDialog("open");
+                }
+            }
+            var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+            $("#CreatePLAN").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreatePLAN").ejDialog("open");
+        }
+    }
+</script>
+<script>
+    function SalesTODOcontextclickOverTODO(args) {
+        if (args.text == "Open Detail") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            if (DocType == 'Customer Mapping Review') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Review') {
+                var path = '@Url.Content("~/DWItem/ApproverMappingReview")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Review') {
+                var path = '@Url.Content("~/DWVendor/VendorPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Customer Mapping Approve') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Approve') {
+                var path = '@Url.Content("~/DWItem/ApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Approve') {
+                var path = '@Url.Content("~/Enquiry/VendorPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Review') {
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Process') {
+                var path = '@Url.Content("~/Enquiry/ProcessPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Dispatch Approval') {
+                var path = '@Url.Content("~/Enquiry/ApproveRejectDispatch")' + "?DispatchId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'SO Approval') {
+                var path = '@Url.Content("~/Enquiry/POApproveReject")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovalView")' + "?EnqId=" + DocId + "&QuotId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Link Sales Order') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPODetail")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Followup') {
+                var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + DocId
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Travel Request Review') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestReviewList")'
+                window.open(path);
+            }
+            if (DocType == 'Travel Request Aprrove') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestApprovalList")'
+                window.open(path);
+            }
+            if (DocType == 'Project Expenses Approval') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Project Expence Account Approve') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'TimeSheet Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Leave Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'MOM ActionPoint') {
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + Id + "&tabIndex=0"
+                window.open(path);
+            }
+            if (DocType == 'Case') {
+                var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + Id + "&taskid=" + DocId + "&Modal=0&ProjectName=&Type=proviews"
+                window.open(path);
+            }
+        }
+        if (args.text == "Create Plan") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            var PlanId = result[0]["PlanId"];
+            if (PlanId > 0) {
+                var agree = confirm("Plan Already Created. You want to edit ?")
+                if (agree) {
+                    var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+                    $("#CreatePLAN").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreatePLAN").ejDialog("open");
+                }
+            }
+            var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+            $("#CreatePLAN").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreatePLAN").ejDialog("open");
+        }
+    }
+</script>
+<script>
+    function GeneralTODOcontextclickOverTODO(args) {
+        if (args.text == "Open Detail") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            if (DocType == 'Customer Mapping Review') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Review') {
+                var path = '@Url.Content("~/DWItem/ApproverMappingReview")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Review') {
+                var path = '@Url.Content("~/DWVendor/VendorPenndingReviewMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Customer Mapping Approve') {
+                var path = '@Url.Content("~/DWCustomer/CustomerPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Item Mapping Approve') {
+                var path = '@Url.Content("~/DWItem/ApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Vendor Mapping Approve') {
+                var path = '@Url.Content("~/Enquiry/VendorPenndingApproverMapping")' + "?RefershFlag=0"
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Review') {
+                var path = '@Url.Content("~/Enquiry/ReviewdPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Purchase Receipt Process') {
+                var path = '@Url.Content("~/Enquiry/ProcessPurchaseReceipt")' + "?ReceiptId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Dispatch Approval') {
+                var path = '@Url.Content("~/Enquiry/ApproveRejectDispatch")' + "?DispatchId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'SO Approval') {
+                var path = '@Url.Content("~/Enquiry/POApproveReject")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Approval') {
+                var path = '@Url.Content("~/Enquiry/ApprovalView")' + "?EnqId=" + DocId + "&QuotId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Link Sales Order') {
+                var path = '@Url.Content("~/Enquiry/ApprovedPODetail")' + "?PurchaseOrderId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Quotation Followup') {
+                var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + DocId
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Travel Request Review') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestReviewList")'
+                window.open(path);
+            }
+            if (DocType == 'Travel Request Aprrove') {
+                var path = '@Url.Content("~/TMLeave/TravelRequestApprovalList")'
+                window.open(path);
+            }
+            if (DocType == 'Project Expenses Approval') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'Project Expence Account Approve') {
+                var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpensesbyAccount")' + "?ExpensesId=" + Id
+                $("#ViewDet").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#ViewDet").ejDialog("open");
+            }
+            if (DocType == 'TimeSheet Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectTimesheetEntry")' + "?TimeSheetId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'Leave Approval') {
+                var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + Id
+                window.open(path);
+            }
+            if (DocType == 'MOM ActionPoint') {
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + Id + "&tabIndex=0"
+                window.open(path);
+            }
+            if (DocType == 'Case') {
+                var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + Id + "&taskid=" + DocId + "&Modal=0&ProjectName=&Type=proviews"
+                window.open(path);
+            }
+        }
+        if (args.text == "Create Plan") {
+            var grid = $("#grdToDoList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var Id = result[0]["Id"];
+            var DocId = result[0]["DocId"];
+            var DocType = result[0]["DocType"];
+            var PlanId = result[0]["PlanId"];
+            if (PlanId > 0) {
+                var agree = confirm("Plan Already Created. You want to edit ?")
+                if (agree) {
+                    var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+                    $("#CreatePLAN").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreatePLAN").ejDialog("open");
+                }
+            }
+            var path = '@Url.Content("~/Enquiry/CreatePlanForTODO")' + "?DocType=" + DocType + "&DocId=" + DocId + "&DocRefId=" + Id + "&PlanId=" + PlanId
+            $("#CreatePLAN").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreatePLAN").ejDialog("open");
+        }
+    }
+</script>
+
+
+@{
+
+    Html.EJ()
+        .Dialog("ViewDet")
+        .Title("<a id='Title'>View TO DO Detail</a>")
+        .Width(1000)
+        .Height(700)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ViewDet").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ViewDet").ejDialog("open");
+        }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("CreatePLAN")
+        .Title("<a id='Title'>Create Plan</a>")
+        .Width(1100)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreatePLAN").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreatePLAN").ejDialog("open");
+        }
+</script>

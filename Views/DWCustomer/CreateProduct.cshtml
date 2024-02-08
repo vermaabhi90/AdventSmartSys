@@ -1,0 +1,186 @@
+﻿@model SmartSys.BL.DW.ProductModel
+
+@{
+    ViewBag.Title = "CreateProduct";
+}
+
+
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Create Product Deatils
+    </div>
+@{
+    var gridProductdetail = new WebGrid(source: Model.ItemList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+}
+
+<style type="text/css">
+    .modal-content {
+        width: 100% !important;
+        margin: 30px auto !important;
+        left: 50%;
+         transform: translateX(-50%);
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+        color: #483D8B;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+<script>
+
+    $(document).ready(function () {
+        $('#save').click(function (e) {
+            e.preventDefault();
+            var ProductName = $('#EquipmentId').val();
+            var TAM = $('#TAM').val();
+            var Itemid = $('#Itemid').val();
+            if (ProductName.toString() == "") {
+                alert("Please Select Equipment ");
+                return false;
+            }
+            if (TAM < 1) {
+                alert("Tam Not Less Than Equal To Zero (0)");
+                return false;
+            }
+
+            $("#form").unbind('submit').submit(); S
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.valid').click(function (e) {
+            var Quantity = $('#Quantity').val();
+            var Item = $('#Itemid').val();
+    
+            if (Item.toString() == "") {
+                alert("Please Select Item Name");
+                return false;
+            }
+            if (Quantity.toString() == "") {
+                alert("Please Enter Quantity or You are Enter Invlaid Quantity ");
+                return false;
+            }
+            return true;
+            $("#form").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#myDiv').click(function () {
+            var ItemId = $('#Itemid').val();
+            var Quantity = $('#Quantity').val();
+            var productid = $('#productid').val();
+            var ProductName = $('#ProductName').val();
+            var url = '@Url.Action("selectedParam", "DWCustomer")';
+            var data = { ItemId: ItemId, Quantity: Quantity, productid: productid, productname: ProductName };
+            $.post(url, data, function (result) {
+            });
+
+        });
+    });
+</script>
+
+
+    @using (Html.BeginForm("CreateProduct", "DWCustomer", FormMethod.Post, new { id = "form" }))
+    {
+        <html>
+        <head>
+            <title>WebgridSample</title>
+            <style type="text/css">
+                .modal-content {
+                    width: 850px !important;
+                    margin: 30px auto !important;
+                }
+            </style>
+
+        </head>
+        <body>
+            <div id="myModal" style="margin-left:20px">
+                <table>
+                    <tr>
+                        <td>
+                            <label>Customer Id</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.TextBoxFor(model => model.CustomerId, new { @readonly = "readonly", @class = "form-control" })
+                            </div>
+                        </td>
+                        <td>
+                            <label>Customer Name</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.TextBoxFor(model => model.CustomerName, new { @readonly = "readonly", @class = "form-control" })
+                            </div>
+                        </td>
+                      
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Equipment</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.DropDownList("EquipmentId", (IEnumerable<SelectListItem>)ViewBag.EquipmentLst, "-Select Equipment Name-", new { @class = "form-control", id = "EquipmentId", style = "width:310px" })
+                            </div>
+                        </td>
+                        <td>
+                            <label>TAM</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.TextBoxFor(model => model.TAM, new { @class = "form-control",id = "TAM" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <input type="submit" value="Save" class="btn-xs btn-success " id="save">
+                            </div>
+                        </td>
+                       
+                    </tr>
+                </table>                 
+                </div>
+            </body>
+</html>
+
+      }
+

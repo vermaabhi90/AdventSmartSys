@@ -1,0 +1,94 @@
+﻿@using Syncfusion.JavaScript.DataVisualization
+
+<html>
+<body style="color:#eb3a7b">
+    <div style=" background-color :white;border-color:blue;
+           border-width:2px;
+            border-style:solid;">
+
+        <div id="IssueDetail"></div>
+
+
+    </div>
+</body >
+</html>
+<div>
+    @(Html.EJ().Chart("IssueDetail")
+              .PrimaryXAxis(pr => pr.Title(tl => tl.Text("Minerals")).ValueType(AxisValueType.Category).LabelFormat("MMMM")
+                      .MajorGridLines(mgl => mgl.Visible(false).Color("#ffd800").Opacity(0.12)))
+                      .PrimaryYAxis(pr => pr.MajorGridLines(mgl => mgl.Visible(true).Color("#ffd800").Opacity(0.12)))
+              .CommonSeriesOptions(cr => cr.Tooltip(tt => tt.Visible(true).Format("Issue Status Detail <br/> #point.x# : #point.y#"))
+              .Type(SeriesType.Column))
+            //  .Enable3D(true)
+              .EnableRotation(true)
+              .WallSize(2)
+              .Tilt(0)
+                        .Title(title => title.Text("Issue Status Details"))
+              .Legend(lg => { lg.Visible(true).Position(LegendPosition.Top); })
+              .PrimaryXAxis(x => x.LabelRotation(-20))
+              .Rotation(34)
+              .Size(sz => sz.Height("350"))
+              .PerspectiveAngle(90)
+              .SideBySideSeriesPlacement(true)
+              .Series(sr =>
+            {
+                sr.Name("Total Status");
+                sr.Fill("#00CED1");
+                sr.DataSource(@ViewBag.TotalIssues);
+                sr.XName("Description");
+                sr.YName("Count");
+                sr.Query("ej.Query().from('Statuscode').take(12)").Add();
+            
+            })
+                .Series(sr =>
+            {
+                sr.Name("My Issue Created");
+                sr.Fill("#FF8C00");
+                sr.DataSource(@ViewBag.MyIssues);
+                sr.XName("Description");
+                sr.YName("Count");
+                sr.Query("ej.Query().from('Statuscode').take(12)").Add();
+
+            })
+    )
+  </div>
+
+@*<div>
+    @(Html.EJ().Chart("IssueDetail")
+             
+                                      .Series(ser =>
+                            {
+                                ser.Name("Total Status");
+                                ser.Fill("#EDB04D");
+                                ser.Tooltip(tooltip => tooltip.Format("#point.x# : #point.y# <br/>").Visible(true));
+                                ser.DataSource(ViewBag.TotalIssues);
+                                ser.XName("Description");
+                                ser.YName("Count");
+                                ser.Query("ej.Query().from('Statuscode').take(10)")
+                                .EnableAnimation(true).Add();
+                            })
+                    .Series(ser =>
+                            {
+                                ser.Name("My Issue Created");
+                                ser.Fill("#3C6C9D");
+                                ser.Tooltip(tooltip => tooltip.Format("#point.x# : #point.y# <br/>").Visible(true));
+                                ser.DataSource(ViewBag.MyIssues);
+                                ser.XName("Description");
+                                ser.YName("Count");
+                                ser.Query("ej.Query().from('Statuscode').take(12)")
+                                .EnableAnimation(true).Add();
+                            })
+             .Load("loadTheme")
+             .PrimaryXAxis(x => x.LabelRotation(-30))
+             .CommonSeriesOptions(cr => cr.EnableAnimation(true))
+             .CanResize(true)
+                             .Title(title => title.Text("Issue Status Detail"))
+             .Size(sz => sz.Height("350"))
+
+             .Legend(lg => { lg.Visible(true).Position(LegendPosition.Top); })
+    )
+    <script>
+        $("#controlarea").css("visibility", "visible");
+    </script>
+
+</div>*@

@@ -1,0 +1,267 @@
+﻿@model IEnumerable<SmartSys.BL.Project.ProjectModel>
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project View
+</div>
+
+
+<style type="text/css">
+    .modal-content {
+        width: 1000px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProject")
+        .Datasource((IEnumerable<SmartSys.BL.Project.ProjectModel>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+
+                .PageSettings(p => { p.PageSize(20); })
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord))
+         //        .CustomContextMenuItems(new List<string> { "View Detail" });
+
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Edit_Record", "Edit Record");
+                 c.AddItem("View_Detail", "View Detail");
+             });
+
+         })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+
+
+        .Columns(col =>
+        {
+            col.Field("ProjectId").Visible(false).AllowEditing(false).HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectTypeId").Visible(false).AllowEditing(false).ValidationRules(v => v.AddRule("required", true)).HeaderText("Type ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectName").HeaderText("Project Name").Width(160).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("Description").Width(180).Add();
+            col.Field("ProjectManagerId").Width(180).Visible(false).Add();
+            col.Field("ProjectManager").HeaderText("Project Manager").Width(180).Add();
+            col.Field("StatusDescription").HeaderText("Status").Add();
+            col.Field("StartDate").AllowEditing(false).HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(110).Add();
+            col.Field("EndDate").AllowEditing(false).HeaderText("End Date").Format("{0:MM/dd/yyyy}").Width(110).Add();
+            col.Field("Region").HeaderText("Region").Add();
+            col.Field("CustomerId").Visible(false).Add();
+            col.Field("VendorId").Visible(false).Add();
+            col.Field("ItemPermission").Visible(false).Add();
+            col.Field("CompCode").Visible(true).Add();
+            col.Field("CreatedByName").AllowEditing(false).HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").AllowEditing(false).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(180).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            //   col.HeaderText("Risk Task").Template("#CreateRisk").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            //  col.HeaderText("Case Task").Template("#CreateCase").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            col.Field("SegmentId").Visible(false).Add();
+            col.Field("SegmentName").HeaderText("Segment").Width(100).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").Width(100).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").Width(100).Add();
+            col.HeaderText("View Detail").Template("#ManageProjectTemplate").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclick");
+            })
+    )
+</div>
+
+<script type="text/x-jsrender" id="ManageProjectTemplate">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href='/ProViews/ProjectView?ProjectId={{:ProjectId}}'></a>
+</script>
+
+<script type="text/x-jsrender" id="EditRiskTask">
+    {{if Status =='REVIEWED' || Status =='REJECTED'|| Status =='Closed' }}
+
+    {{/if}}
+    {{if  Status =='Inprogress' || Status =='APPROVED'||Status =='OnHold'||Status =='Complete'||Status =='Cancelled' }}
+    <a class="  btn-xs btn-info  glyphicon glyphicon-pencil black" href='/ProjectCenter/RiskManageMent?ProjectId={{:ProjectId}}&amp;taskid={{:TaskID}}&amp;Modal=0&amp;ProjectName={{:ProjectName}}'></a>
+    {{/if}}
+    {{if  Status =='NEW' && Edit=='Edit' }}
+    <a class=" btn-xs btn-info  glyphicon glyphicon-pencil black" href='/ProjectCenter/RiskManageMent?ProjectId={{:ProjectId}}&amp;taskid={{:TaskID}}&amp;Modal=0&amp;ProjectName={{:ProjectName}}'></a>
+
+    {{/if}}
+</script>
+<script type="text/template" id="template">
+    <b>Project Details</b>
+    <table cellspacing="10" style="width:900px">
+        <tr id="IDs">
+            <td style="text-align: right; width:100px">
+                Project Id
+            </td>
+            <td style="text-align: left">
+                <input id="ProjectId" name="ProjectId" value="{{: ProjectId}}" disabled="disabled" class="e-field e-ejinputtext valid e-disable"
+                       style="text-align: right; width: 116px; height: 28px" />
+            </td>
+
+
+            <td style="width:90px; text-align: right;">
+                Project Name
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="ProjectName" readonly="readonly" name="ProjectName" class="form-control" value="{{:ProjectName}}" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width:90px; text-align: right;">
+                Project Type
+            </td>
+            <td style="text-align: left">
+                @Html.DropDownList("ProjectTypeId", (IEnumerable<SelectListItem>)ViewBag.ProjTypeList, "Select Project Type", new { id = "ProjectTypeId", @Class = "form-control" })
+            </td>
+            <td style="width:90px; text-align: right;">
+                Region
+            </td>
+            <td style="text-align: left">
+                <select id="Region" name="Region" class="form-control">
+                    <option value="East">East</option>
+                    <option value="West">West</option>
+                    <option value="North">North</option>
+                    <option value="South">South</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right;">
+                Project Manager
+            </td>
+            <td style="text-align: left">
+                @Html.DropDownList("ProjectManagerId", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Select Manager", new { id = "ProjectManagerId", @Class = "form-control" })
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right;">
+                Start Date
+            </td>
+            <td style="text-align: left">
+                <input id="StartDate" name="StartDate" readonly="readonly" class="form-control" value="{{:StartDate}}" />
+            </td>
+            <td style="text-align: right;">
+                End Date
+            </td>
+            <td style="text-align: left">
+                <input id="EndDate" name="EndDate" readonly="readonly" class="form-control" value="{{:EndDate}}" />
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right;">
+                Description
+            </td>
+            <td style="text-align: left">
+                <input type="text" id="Description" readonly="readonly" class="form-control" name="Description" value="{{:Description}}" />
+            </td>
+            <td style="text-align: right;">
+                Remark
+            </td>
+            <td style="text-align: left">
+                <textarea id="Remark" name="Remark" readonly="readonly" class="form-control e-ejinputtext" value="{{: Remark}}">{{: Remark}}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right;">
+                Segment
+            </td>
+            <td style="text-align: left">
+                @Html.DropDownList("SegmentId", (IEnumerable<SelectListItem>)ViewBag.SegmentList, "Select Segment", new { id = "SegmentId", @Class = "form-control" })
+            </td>
+
+        </tr>
+        <tr>
+            <td style="text-align: right;">
+                Customer
+            </td>
+            <td style="text-align: left">
+                @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Select Customer", new { id = "CustomerId", @Class = "form-control" })
+            </td>
+            <td style="text-align: right;">
+                Vendor
+            </td>
+            <td style="text-align: left">
+                @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Select Vendor", new { id = "VendorId", @Class = "form-control" })
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right;">
+                Company
+            </td>
+            <td style="text-align: left">
+                @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompanyList, new { id = "CompCode", @Class = "form-control" })
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/javascript">
+   
+    function contextclick(args) {
+
+        if (args.text == "View Detail") {
+            var tempData = args.text;
+
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var path = '@Url.Content("~/ProViews/ProjectView")' + "?ProjectId=" + projectId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+    function onClick(args) {
+
+        var grid = $("#grdProject").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["ProjectId"];
+        var path = '@Url.Content("~/ProViews/ProjectView")' + "?ProjectId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function complete(args) {
+        if (args.requestType == "beginedit" || args.requestType == "add") {
+                     
+            if (args.requestType == "beginedit") {
+                $("#ProjectManagerId").val(args.row.children().eq(5).text());
+                $("#ProjectTypeId").val(args.row.children().eq(2).text());
+                $("#Region").val(args.row.children().eq(10).text());
+                $("#CustomerId").val(args.row.children().eq(11).text());
+                $("#VendorId").val(args.row.children().eq(12).text());
+                $("#CompCode").val(args.row.children().eq(14).text());
+                $("#SegmentId").val(args.row.children().eq(22).text());
+                $("#StartDate").val(args.row.children().eq(8).text());
+                $("#EndDate").val(args.row.children().eq(9).text());
+                $("#EndDate").attr("disabled", "disabled");
+                $("#StartDate").attr("disabled", "disabled");
+                $("#ProjectTypeId").attr("disabled", "disabled");
+
+                $("#Region").attr("disabled", "disabled");
+                $("#CustomerId").attr("disabled", "disabled");
+                $("#SegmentId").attr("disabled", "disabled");
+                $("#VendorId").attr("disabled", "disabled");
+                $("#CompCode").attr("disabled", "disabled");
+            };
+
+        }        
+    }
+</script>
+
+

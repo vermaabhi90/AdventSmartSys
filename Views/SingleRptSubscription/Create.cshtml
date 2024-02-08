@@ -1,0 +1,680 @@
+﻿@model SmartSys.BL.RDS.RDSRptSubModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create New RDS Single Subscription
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var url = "";
+
+
+        $("#drpGenOpt").change(function (event)
+            {
+            var ddlValue = $('#drpGenOpt').val();
+
+                if (ddlValue == 2)
+                {
+                    $('.WeekChk').show();
+                }
+                else
+                {
+                    $('.WeekChk').hide();
+                }
+            });
+
+        $("#btnAddGenTime").on("click", function (e) {
+            var genTime = $("#txtGenTime").val();
+
+            var arrGenTime = genTime.split(":");
+            if(arrGenTime[0] >=24 )
+            {
+                alert("HH should be less than 24");
+                $("#txtGenTime").focus();
+                $("#txtGenTime").val(null)
+                return false;
+            }
+            else if(arrGenTime.length > 1 && arrGenTime[1] >= 60)
+            {
+                alert("MM should be less than 60");
+                $("#txtGenTime").focus();
+                $("#txtGenTime").val(null)
+                return false;
+            }
+            if(arrGenTime.length==1)
+            {
+                genTime = genTime + ':00';
+                $("#txtGenTime").val(null)
+            }
+
+            $("#lstGenTime").append('<option value="' + genTime + '">' + genTime + '</option>');
+
+        });
+
+            $("form1").submit(function (e) {
+                $("#lstGenTime option").attr("selected", "selected");
+            });
+
+        $("#btnRemoveTime").on("click", function (e) {
+            $("#lstGenTime option:selected").remove()
+        });
+
+        $("#lnkDeleteRpt").on("click", function (e) {
+            // e.preventDefault(); use this or return false
+            url = $(this).attr('href');
+            $("#dialog-confirm").dialog('open');
+            return false;
+        });
+
+        $("#lnkDeleteClient").on("click", function (e) {
+            // e.preventDefault(); use this or return false
+            url = $(this).attr('href');
+            $("#dialog-confirm").dialog('open');
+            return false;
+        });
+
+        //Validate the text boxes for numbers
+        $("input.Number").keypress(function (e) {
+            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 58)) {
+                $(document.getElementById(this.id.toString().substr(3, this.id.toString().length - 1))).html("Digits Only Please..").show().fadeOut(1000);
+                return false;
+            }
+        });
+
+
+        //Following code is to append :00 at the end of hrs entered by user
+        $("#txtDistrTime").change(function (e) {
+            if(!$("#txtDistrTime").val()=="")
+            {
+                var strdistrTime = $("#txtDistrTime").val();
+                var arrTDistrTime = strdistrTime.split(":");
+                if(arrTDistrTime.length==1)
+                {
+                    $("#txtDistrTime").val(strdistrTime + ':00');
+                }
+                else if (arrTDistrTime[1] > 60 || arrTDistrTime[2] > 60)
+                {
+                    alert("HH  & MM should be less than 24");
+                    $("#txtDistrTime").focus();
+                    $("#txtDistrTime").val(null)
+                    return false;
+                }
+            }
+
+        });
+        $("#txtMaxDistrTime").focusout(function(e){
+            if(!$("#txtMaxDistrTime").val()=="")
+            {
+                var strmaxdistrTime = $("#txtMaxDistrTime").val();
+                var arrMaxDistrTime = strmaxdistrTime.split(":");
+                if(arrMaxDistrTime.length==1)
+                {
+                    $("#txtMaxDistrTime").val(strmaxdistrTime + ':00');
+                }
+            }
+        });
+
+        $("#txtStartTime").focusout(function(e){
+            if(!$("#txtStartTime").val()=="")
+            {
+                var strStartTime = $("#txtStartTime").val();
+                var arrStartTime = strStartTime.split(":");
+                if(arrStartTime.length==1)
+                {
+                    $("#txtStartTime").val(strStartTime + ':00');
+                }
+            }
+        });
+
+
+        $("#txtEndTime").focusout(function(e){
+            if(!$("#txtEndTime").val()=="")
+            {
+
+                var strEndTime = $("#txtEndTime").val();
+                var arrEndTime = strEndTime.split(":");
+                if(arrEndTime.length==1)
+                {
+                    $("#txtEndTime").val(strEndTime + ':00');
+                }
+
+            }
+        });
+
+
+
+        $("#RdsSubForm").submit(function (e) {
+
+            $("#lstGenTime option").prop("selected", true);
+            e.preventDefault();
+            var flag = false;
+
+            if ($("#drpReport option:selected").text() == "--Select Report--") {
+                alert("Please select Report option");
+                $("#drpGenOpt").focus();
+                return false;
+            }
+            else if ($("#drpClient option:selected").text() == "--Select Client--") {
+                alert("Please select Client option");
+                $("#drpGenOpt").focus();
+                return false;
+            }
+
+           else if($("#drpGenOpt option:selected").text()=="-Select Option-")
+            {
+                alert("Please select generation option");
+                $("#drpGenOpt").focus();
+                return false;
+            }
+            else if($("#drpDistType option:selected").text()=="-Select Option-"){
+                alert("Please select Distribution option");
+                $("#drpDistType").focus();
+                return false;
+            }
+
+
+            if($("#drpDistType option:selected").text()!="Distribute When ready"){
+                if($("#txtDistrTime").val()=="")
+                {
+                    alert("Please Enter Distribution Time");
+                    $("#txtDistrTime").focus();
+                    $(document.getElementById("DistrTime")).html("*").show();
+                    return false;
+                }
+                    //validate for time format HH:MM
+                else
+                {
+                    var strdistrTime = $("#txtDistrTime").val();
+                    var arrTDistrTime = strdistrTime.split(":");
+                    if(arrTDistrTime[0] >=24 )
+                    {
+                        alert("HH should be less than 24");
+                        $("#txtDistrTime").focus();
+                        return false;
+                    }
+                    else if(arrTDistrTime.length > 1 && arrTDistrTime[1] >= 60)
+                    {
+                        alert("MM should be less than 60");
+                        $("#txtDistrTime").focus();
+                        return false;
+                    }
+
+                    if(arrTDistrTime.length==1)
+                    {
+                        $("#txtDistrTime").val(strdistrTime + ':00');
+                    }
+                }
+            }
+            else{
+                $(document.getElementById("DistrTime")).html("*").show().fadeOut();
+            }
+
+            if($("#txtMaxDistrTime").val()=="")
+            {
+                alert("Please Enter Max Distribution Time");
+                $(document.getElementById("MaxDistrTime")).html("*").show();
+                $("#txtMaxDistrTime").focus();
+                return false;
+            }
+            else
+            {
+
+                var strmaxdistrTime = $("#txtMaxDistrTime").val();
+                var arrMaxDistrTime = strmaxdistrTime.split(":");
+                if(arrMaxDistrTime[0] >=24 )
+                {
+                    alert("HH should be less than 24");
+                    $("#txtMaxDistrTime").focus();
+                    return false;
+                }
+                else if(arrMaxDistrTime.length > 1 && arrMaxDistrTime[1] >= 60)
+                {
+                    alert("MM should be less than 60");
+                    $("#txtMaxDistrTime").focus();
+                    return false;
+                }
+                if(arrMaxDistrTime.length==1)
+                {
+                    $("#txtMaxDistrTime").val(strmaxdistrTime + ':00');
+                }
+            }
+
+
+            if($("#lstGenTime option").length == 0)
+            {
+                if($("#txtStartTime").val()=="")
+                {
+                    alert("Please Enter Start Time");
+                    $("#txtStartTime").focus();
+                    $(document.getElementById("StartTime")).html("*").show();
+                    return false;
+                }
+                else
+                {
+                    var strStartTime = $("#txtStartTime").val();
+                    var arrStartTime = strStartTime.split(":");
+                    if(arrStartTime[0] >=24 )
+                    {
+                        alert("HH should be less than 24");
+                        $("#txtStartTime").focus();
+                        return false;
+                    }
+                    else if(arrStartTime.length > 1 && arrStartTime[1] >= 60)
+                    {
+                        alert("MM should be less than 60");
+                        $("#txtStartTime").focus();
+                        return false;
+                    }
+                    if(arrStartTime.length==1)
+                    {
+                        $("#txtStartTime").val(strStartTime + ':00');
+                    }
+
+                }
+
+                if($("#txtEndTime").val()=="")
+                {
+                    alert("Please Enter End Time");
+                    $("#txtEndTime").focus();
+                    $(document.getElementById("EndTime")).html("*").show();
+                    return false;
+                }
+                else
+                {
+                    var strEndTime = $("#txtEndTime").val();
+                    var arrEndTime = strEndTime.split(":");
+                    if(arrEndTime[0] >=24 )
+                    {
+                        alert("HH should be less than 24");
+                        $("#txtEndTime").focus();
+                        return false;
+                    }
+                    else if(arrEndTime.length > 1 && arrEndTime[1] >= 60)
+                    {
+                        alert("MM should be less than 60");
+                        $("#txtEndTime").focus();
+                        return false;
+                    }
+                    if(arrEndTime.length==1)
+                    {
+                        $("#txtEndTime").val(strEndTime + ':00');
+                    }
+
+                }
+
+                if($("#txtInterval").val()==""){
+                    alert("Please Enter Time Interval");
+                    $("#txtInterval").focus();
+                    $(document.getElementById("Interval")).html("*").show();
+                    return false;
+                }
+
+            }
+            else
+            {
+                $(document.getElementById("StartTime")).html("*").show().fadeOut();
+                $(document.getElementById("EndTime")).html("*").show().fadeOut();
+                $(document.getElementById("Interval")).html("*").show().fadeOut();
+            }
+
+
+            //Check for Max and min values
+            if(!$("#txtDistrTime").val()=="" )
+            {
+
+                var MaxDistTime= $("#txtMaxDistrTime").val();
+                var MinDistTime = $("#txtDistrTime").val();
+
+                var Min = new Date("July 13, 2015 " +MinDistTime);
+                Min = Min.getTime();
+
+                var Max = new Date("July 13, 2015 " +MaxDistTime);
+                Max = Max.getTime();
+
+                if(Min>Max)
+                {
+                    alert("Distribution time should be less than Max Distribution time..");
+                    $("#txtDistrTime").focus();
+                    return false;
+                }
+
+            }
+
+            var StartTime= $("#txtStartTime").val();
+            var EndTime = $("#txtEndTime").val();
+
+            var Min = new Date("July 13, 2015 " +StartTime);
+            Min = Min.getTime();
+
+            var Max = new Date("July 13, 2015 " +EndTime);
+            Max = Max.getTime();
+
+            if(Min>Max)
+            {
+                alert("Start time should be less than End time..");
+                $("#txtStartTime").focus();
+                return false;
+            }
+
+
+            //SubMit the form when no validation errrors
+            $("#RdsSubForm").unbind('submit').submit();
+        });
+
+
+
+
+    });
+
+
+</script>
+
+<div id="dialog-confirm" style="display: none">
+    <p>
+        <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+        Are you sure to delete?
+    </p>
+</div>
+
+<div id="dialog-edit" style="display: none">
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("Create", "SingleRptSubscription", FormMethod.Post, new { Id = "RdsSubForm" }))
+{
+    <html>
+    <body>
+        <br>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="SelectReport">Select Report:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ReportList", (IEnumerable<SelectListItem>)ViewBag.ReportList, "--Select Report--", new { @class = "form-control", id = "drpReport", style = "width:300px" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="SelectReport">Select Client:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ClientList", (IEnumerable<SelectListItem>)ViewBag.ClientList, "--Select Client--", new { @class = "form-control", id = "drpClient" })
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <div>
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.Label("Generation Options :")
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.DropDownList("GenMode", new List<SelectListItem>
+                                    {
+                                        new SelectListItem(){Text = "Daily",Value="1"},
+                                        new SelectListItem(){Text = "Weekly",Value="2"},
+                                        new SelectListItem(){Text = "Monthly",Value="3"},
+                                        new SelectListItem(){Text = "Quterly",Value="4"},
+                                        new SelectListItem(){Text = "Half Yearly",Value="5"},
+                                        new SelectListItem(){Text = "Yearly",Value="6"}
+                                    }
+
+                                , "-Select Option-", new { @class = "form-control", id = "drpGenOpt", style = "width:200px" })
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr></tr>
+                            <tr>
+                                <td>
+                                    @Html.Label("Weekly Options :")
+                                </td>
+                                <td>
+                                    <div id="WeekChk" class="WeekChk ">
+                                        @Html.CheckBox("Monday", new { id = "chkMon" })
+                                        <span><b> @Html.DisplayName("Monday") </b></span>
+                                        @Html.CheckBox("TuesDay", new { id = "chkTues" })
+                                        <span><b> @Html.DisplayName("TuesDay") </b></span>
+                                        @Html.CheckBox("Wednesday", new { id = "chkWen" })
+                                        <span><b> @Html.DisplayName("Wednesday") </b></span>
+                                        @Html.CheckBox("Thirsday", new { id = "chkThirs" })
+                                        <span><b> @Html.DisplayName("Thirsday") </b></span>
+                                        @Html.CheckBox("Friday", new { id = "chkFri" })
+                                        <span><b> @Html.DisplayName("Friday") </b></span>
+                                        @Html.CheckBox("Saturday", new { id = "chkSat" })
+                                        <span><b> @Html.DisplayName("Saturday") </b></span>
+                                        @Html.CheckBox("Sunday", new { id = "chkSun" })
+                                        <span><b> @Html.DisplayName("Sunday") </b></span>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+                    <br>
+                    <div id="tabs-container" style="height:220px; border:1px #aaa solid;width:600px;">
+
+                        <div id="tabs" style="width:100%">
+                            <ul id="tabs" class="nav nav-tabs " data-tabs="tabs">
+                                <li class="active ">
+                                    <a href="#tbr" class="tab-pane  active" data-toggle="tab">Time based Recurring</a>
+                                </li>
+                                <li class="">
+                                    <a href="#tbf" data-toggle="tab">Time based Fixed</a>
+                                </li>
+                            </ul>
+                            <div id="my-tab-content" class="tab-content">
+                                <div class="tab-pane active" id="tbr">
+                                    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                                        <tr>
+                                            <td>@Html.Label("Start Time :")</td>
+                                            <td>
+                                                <div class="">
+                                                    @Html.TextBox("txtStartTime", "", new { id = "txtStartTime", @Class = "Number form-control" })
+                                                    <span style="display:none;color:red" id="StartTime"></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a id="link1"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                                @Html.EJ().Tooltip("link1").Content("HH:MM")
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.Label("End Time :")</td>
+                                            <td>
+                                                <div class="">
+                                                    @Html.TextBox("txtEndTime", "", new { id = "txtEndTime", @Class = "Number form-control" })
+                                                    <span style="display:none;color:red" id="EndTime"></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a id="link2"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                                @Html.EJ().Tooltip("link2").Content("HH:MM")
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>@Html.Label("Interval (Min) :")</td>
+                                            <td>
+                                                <div class="">
+                                                    @Html.TextBox("txtInterval", "", new { id = "txtInterval", @Class = "Number form-control" })
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a id="link3"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                                @Html.EJ().Tooltip("link3").Content("HH:MM")
+
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+
+                                <div class="tab-pane" id="tbf">
+                                    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                                        <tr>
+                                            <td>@Html.Label("Generation Time :")
+                                            </td>
+                                            <td>
+                                                <div class="">
+                                                    @Html.TextBox("txtGenTime", "", new {@class= "form-control" , id = "txtGenTime" })
+                                                </div>
+                                                <input type="button" id="btnAddGenTime" class="btn-xs  btn-info" value="Add" />
+                                            </td>
+                                            <td>
+                                                <a id="link4"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                                @Html.EJ().Tooltip("link4").Content("HH:MM")
+
+                                            </td>
+
+                                            <td colspan="2" align="center">
+
+                                                @Html.ListBoxFor(model => model.RDSRptSubGenTimeList,
+                                                new List<SelectListItem>(),
+                                                new
+                                                {
+                                                    id = "lstGenTime",
+                                                    style = "width: 150px;height:100px",
+                                                    size = 4,
+                                                 @class="form-control"})
+                                                <input type="button" id="btnRemoveTime" class="btn-xs  btn-warning" value="Remove" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                   
+                </td>
+
+                <td>
+
+                    <div class="">
+                        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                            <tr>
+                                <td>
+                                    @Html.Label("Distribution Options :")
+                                </td>
+                                <td>
+                                   
+                                        @Html.DropDownList("DistType", new List<SelectListItem>
+                                    {
+                                        new SelectListItem(){Text = "Distribute At Specific Time",Value="1"},
+                                        new SelectListItem(){Text = "Distribute When ready",Value="2"},
+                                        new SelectListItem(){Text = "Package in ZIP when ready",Value="3"},
+                                        new SelectListItem(){Text = "Package in ZIP and Distribute At Specific Time",Value="4"}
+                                      }
+                                , "-Select Option-", new { @class = "form-control", id = "drpDistType", style = "width:200px" })
+
+                                </td>
+                                <td>
+                                    @Html.DropDownList("DistMode", new List<SelectListItem>
+                                    {
+                                        new SelectListItem(){Text = "Distribute Manually",Value="1"},
+                                        new SelectListItem(){Text = "Distribute Auto",Value="2"}
+                                      }
+                                      , new { @class = "form-control", id = "drpDistMode", style = "width:150px" })
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@Html.Label("Distribution Time :")</td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBox("txtDistriTime", "", new { id = "txtDistrTime", @Class = "Number form-control" })
+                                        <span style="display:none;color:red" id="DistrTime"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a id="link5"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                    @Html.EJ().Tooltip("link5").Content("HH:MM")
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@Html.Label("Max Distribution Time :")</td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBox("txtMaxDistriTime", "", new { id = "txtMaxDistrTime", @Class = "Number form-control" })
+                                        <span style="display:none;color:red" id="MaxDistrTime"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a id="link6"><i class="glyphicon glyphicon-info-sign"></i></a>
+                                    @Html.EJ().Tooltip("link6").Content("HH:MM")
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Html.Label("Distribution :")
+                                </td>
+
+                                <td>
+                                    <div class="">
+                                        <br />
+
+                                        @Html.CheckBox("Email", new { id = "chkEmail" })
+                                        <span><b> @Html.DisplayName("Email") </b></span>
+                                        <br />
+                                        @Html.CheckBox("FTP", new { id = "chkFTP" })
+                                        <span><b> @Html.DisplayName("FTP") </b></span>
+                                        <br />
+
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td></td>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'SubscriptionList';" );"> Back</button>
+
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs RdsSubForm btn-info glyphicon glyphicon-save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+}
+
+
+
+

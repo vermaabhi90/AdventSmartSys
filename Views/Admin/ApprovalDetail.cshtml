@@ -1,0 +1,215 @@
+﻿@model SmartSys.BL.IssueModel
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Issue Detail
+</div>
+@{
+    ViewBag.Title = "Issue Detail";
+}
+<style>
+    td {
+        padding-right: 10px;
+    }
+</style>
+@using (Html.BeginForm("CreateIssue", "Admin", FormMethod.Post, new { id = "Issue", enctype = "multipart/form-data" }))
+{
+   <table>
+        <tr>
+            <td>
+                <label for="ItemName">Title:</label>
+            </td>
+            <td>
+                <div>
+                    @Html.HiddenFor(model => model.IssueId)
+                  
+                        @Html.TextBoxFor(model => model.Title, new {@class="form-control", required = "required", @style = "width:400px", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.Title)               
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <div style="width:100%">
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("Description").Text("Description").ContentTemplate(
+                @<div>
+                    <table style="width:100%">
+                        @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                        List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                        List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                        List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                        List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                        List<String> indenting = new List<string> { "outdent", "indent" };
+                        List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                        List<String> doAction = new List<string>() { "undo", "redo" };
+                        List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                        List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                        List<String> links = new List<string>() { "createLink", "removeLink" };
+                        List<String> images = new List<string>() { "image" };
+                        List<String> media = new List<string>() { "video" };
+                        List<String> effects = new List<string>() { "superscript", "subscript" };
+                        List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                        List<String> formatStyle = new List<string>() { "format" };
+                        List<String> view = new List<string>() { "fullScreen" };
+
+                        }
+                        <tr>
+                            <td>
+                                   <div>
+                                   
+                                       
+                                        @Html.EJ().RTEFor(model => model.Description, new { id = "hello" }).Width("100%").Height("50%").EnableResize(true).AllowEditing(false).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                   
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </div>);
+
+
+           })
+        .SelectedItemIndex(Model.TabIndex)
+        .Render();}
+    </div>
+    <br>
+    <table>   
+            <tr>
+                     <td>
+                            <label for="ItemName">Status:</label>
+                        </td>
+                        <td>
+                            <div>
+                                @Html.DropDownListFor(model => model.Status, new List<SelectListItem>
+                         {
+                             new SelectListItem() {Text = "In Progress", Value="29"},
+                             new SelectListItem() {Text = "Complete", Value="30"},
+                             new SelectListItem() {Text = "Closed", Value="31"},
+                             new SelectListItem() {Text = "Cancelled", Value="32"},
+                             new SelectListItem() {Text = "OnHold", Value="33"},
+                        }, "New", new { @class = "text-danger form-control", style = "width: 200px;", id = "StatusDetail", disabled = "disabled" })
+
+                                @Html.ValidationMessageFor(model => model.Status)
+                            </div>
+                        </td>
+                <td>
+                    <label for="ItemName">Estimation Hours:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.EstimatedHours, new { @class = "form-control", @readonly = "", @style = "color:red;background-color:#F6D8CE" })
+                        </div>
+                     </td>
+                </tr>
+    </table>
+    <br>
+    <div>
+
+        @if (Model.LstCommentList.Count > 0)
+        {
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Project.TaskDetails>("grdEventList")
+                        .Datasource((IEnumerable<object>)ViewBag.comments)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+                //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("IssueId").Visible(false).AllowEditing(false).HeaderText("Issue Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Comments").Visible(true).AllowEditing(false).HeaderText("Comments").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(130).Add();
+            col.Field("Status").HeaderText("Status").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("Attachment").HeaderText("Attachment").Width(100).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("CommentedBy").HeaderText("Commented By").Width(140).Add();
+            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.HeaderText("Open").Template("").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+
+                )
+            </div>
+        }
+        else if (Model.IssueId > 0)
+        {
+
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is no Comment Detail!!!</label>
+            </div>
+        }
+    </div>
+
+
+    <table>
+        <tr>
+        <td>
+            @Html.ActionLink(" Back", "IssueApprovalList", null, new { @class = "btn-sm btn-info glyphicon glyphicon-hand-left" })
+        </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-sm btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateApprovalDetail", "Admin", new { IssueId = Model.IssueId, statusid = 24, Comments="" })'>
+                        Approve
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="btn-sm btn-danger glyphicon glyphicon-remove-circle" id="Reject">
+                        Reject
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
+}
+<script>
+    $(document).ready(function (e) {
+
+        $('#Reject').click(function (e) {
+            var path = '@Url.Content("~/Admin/IssueRejectedComments")' + "?IssueId=" + @Model.IssueId + "&statusid=" + 25 + "&View=" + "Approval"
+            $("#RejectView").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#RejectView").ejDialog("open");
+
+        });
+
+    });
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("RejectView")
+        .Title("<a id='Title'></a>")
+        .Width(600)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+
+<script>
+        function openDialog() {
+            $("#RejectView").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#RejectView").ejDialog("open");
+
+        }
+
+</script>
+
+
+
+

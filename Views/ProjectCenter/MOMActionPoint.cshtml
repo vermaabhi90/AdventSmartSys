@@ -1,0 +1,582 @@
+﻿@model SmartSys.BL.Project.MOMActionPoint
+@{
+    ViewBag.Title = "ActionPoint";
+}
+
+@if (Model.ActionPointId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit MOM Action Point
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create MOM Action Point
+    </div>
+}
+
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+        $('#Empid').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+        $('#Contact').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+        $('#VendorContact').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<style>
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+<script type="text/javascript">
+    $(document).on("change", "#Type", (function () {
+        var e = $("#Type").val();
+
+        if (e == "Employee") {
+
+            $('#emp').show();
+        } else {
+            $('#emp').hide();
+        }
+        if (e == "Customer") {
+            $('#Customer').show();
+        } else {
+            $('#Customer').hide();
+        }
+        if (e == "Vendor") {
+            $('#Vendor').show();
+        } else {
+            $('#Vendor').hide();
+        }
+    }));
+    $(document).on("change", "#Type", (function () {
+
+        var e = $("#Type").val();
+        if (e == "Customer") {
+            $('#CCI').show();
+        } else {
+            $('#CCI').hide();
+        }
+        if (e == "Vendor") {
+            $('#VCI').show();
+        } else {
+            $('#VCI').hide();
+        }
+        if (e == "Employee") {
+            $('#VendorContact').hide();
+
+            $('#Contact').hide();
+        }
+    }));
+
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        var data = "@Model.Resource"
+        $("#Status").val(@Model.Status);
+        $("#Type").val("Employee");
+
+
+        var dataarray = data.split(',');
+
+        for (var i = 0; i < dataarray.length; i++) {
+            // Trim the excess whitespace.
+            dataarray[i] = dataarray[i].replace(/^\s*/, "").replace(/\s*$/, "");
+            // Add additional code here, such as:
+        }
+
+
+
+        $("#Empid").val(dataarray);
+
+        $('.save').click(function (e) {
+            // var rr = [];
+            var Duedate = $('#DueDate').val();
+            var Comment = $('#Comment').val();
+
+            var pid ="";
+            var Type = $('#Type').val();
+
+            if (Type.toString() == "") {
+                alert("Please Select Participant Type ");
+
+                return false;
+            }
+            if (Type.toString() == "Employee")
+            {
+                var selected = $("#Empid option:selected");
+
+                var message = "";
+                selected.each(function () {
+                    message +=  $(this).val() + ",";
+
+                });
+                message =message.substring(0, message.length - 1);
+
+                pid = message;
+            }
+            else if (Type.toString() == "Vendor")
+            {
+                var Vndrmessage = "";
+                var Vendor = $('#VendorContact option:selected')
+                Vendor.each(function () {
+                    Vndrmessage += $(this).val() + ",";
+                });
+                Vndrmessage = Vndrmessage.substring(0, Vndrmessage.length - 1);
+
+                pid = Vndrmessage;
+
+            }
+            else
+            {
+                var Custmessage = "";
+                var Customer = $('#Contact option:selected')
+                Customer.each(function () {
+                    Custmessage += $(this).val() + ",";
+                });
+                Custmessage = Custmessage.substring(0, Custmessage.length - 1);
+                pid = Custmessage;
+
+            }
+            var Description = $('#DES').val();
+            var MOMId = $('#MOMId').val();
+            //  var UserID = $('#UserID').val();
+            if(@Model.ActionPointId > 0)
+            {
+                var ActionPointId = $('#ActionPointId').val();
+                var Status = $('#Status').val();
+            }
+
+            else
+            {
+                var Status = 26;
+                var ActionPointId  = 0;
+            }
+
+            if (Description.toString() == "") {
+                alert("Please Enter Description ");
+                return false;
+            }
+
+            if (pid.toString() == "") {
+                alert("Please Select Resource ");
+                return false;
+            }
+
+            if (Status.toString() == "") {
+                alert("Please Select Status");
+                return false;
+            }
+            if(Duedate.toString() =="" || Duedate == null)
+            {
+                Duedate= "01/01/0001 12:00:00 AM";
+            }
+            var path = '@Url.Content("~/ProjectCenter/MOMActionPointSave")' + "?Description=" + Description + "&Status=" + Status + "&ActionPointId=" + ActionPointId + "&MOMId=" + MOMId + "&PType=" + Type + "&PID=" +  pid.toString() + "&Duedate=" +  Duedate+ "&Comment=" +  Comment
+            event.preventDefault();
+            window.location.replace(path);
+
+        });
+
+    })
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Customerid").change(function (e) {
+
+            $("#Contact").empty();
+
+            var selectedId = $("#Customerid").val();
+
+
+            var path = '@Url.Action("GetContactBYCustomerId")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { CustomerId: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, Custcontact) {
+                        $('#Contact').append('<option value="' + Custcontact.Value + '">' + Custcontact.Text + '</option>').multiselect('rebuild');
+
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Contact.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Vendorid").change(function (e) {
+
+            $("#VendorContact").empty();
+            // var newOption = $('<option value="0">Please Select Contact</option>');
+            // $('#VendorContact').append(newOption);
+            var selectedId = $("#Vendorid").val();
+
+
+            var path = '@Url.Action("GetContactBYVendorId")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { VendorId: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, VendorContact) {
+                        $('#VendorContact').append('<option value="' + VendorContact.Value + '">' + VendorContact.Text + '</option>').multiselect('rebuild');
+
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Contact.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+
+@using (Html.BeginForm("MOMActionPoint", "ProjectCenter", FormMethod.Post, new { Id = "MOM" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;margin-left:50px">
+        @Html.HiddenFor(model => model.MOMId, new { required = "required", @readonly = "readonly", @class = "form-control", id = "MOMId" })
+        <tr>
+            @if (Model.ActionPointId > 0)
+            {
+                <td>
+                    <label for="ItemName">Action Point Id:</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ActionPointId, new { required = "required", @readonly = "readonly", @class = "form-control", id = "ActionPointId" })
+                    </div>
+                </td>
+            }
+            <td>
+                <label for="ItemName">Participant Type:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.MOMId, new { id = "MOMId" })
+                    @Html.DropDownList("ParticipantType", new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Customer", Value="Customer"},
+                             new SelectListItem() {Text = "Vendor", Value="Vendor"},
+                             new SelectListItem() {Text = "Employee", Value="Employee"},
+
+                       }, "Please Select ParticipantsType", new { id = "Type", @required = "required", @class = "form-control" })
+
+                </div>
+            </td>
+        </tr>
+
+        <tr></tr>
+        <tr id="Vendor" style="display: none">
+            <td>
+                <label for="ItemName">Vendor:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("ParticipantId", (IEnumerable<SelectListItem>)ViewBag.Vendor, "Please Select Vendor", new { style = "width:300px", id = "Vendorid", @required = "required", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr id="Customer" style="display: none">
+            <td>
+                <label for="ItemName">Customer:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("ParticipantId", (IEnumerable<SelectListItem>)ViewBag.Customer, "Please Select Customer", new { style = "width:300px", id = "Customerid", @required = "required", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr id="CCI" style="display: none">
+            <td>
+                <label for="">Customer Contact:</label>
+            </td>
+            <td>
+                <div class="">
+                    <select id="Contact" multiple="multiple" name="Employee" size="5"></select>
+                    @*@Html.DropDownList("CustomerContactId", new SelectList(string.Empty, "Value", "Text"), new { style = "width:300px", @class = "form-control", id = "Contact", @required = "required" })*@
+                </div>
+            </td>
+        </tr>
+        <tr id="VCI" style="display: none">
+            <td>
+                <label for="">Vendor Contact:</label>
+            </td>
+            <td>
+                <div class="">
+                    <select id="VendorContact" multiple="multiple" name="Employee" size="5"></select>
+                    @*@Html.DropDownList("VendorContactId", new SelectList(string.Empty, "Value", "Text"), new { style = "width:300px", @class = "form-control", id = "VendorContact", @required = "required" })*@
+                </div>
+            </td>
+        </tr>
+        <tr id="emp" style="">
+            <td>
+                <label for="ItemName">Resource:</label>
+
+            </td>
+
+            <td>
+                <div class="">
+                    <select id="Empid" multiple="multiple" name="Employee" class="dropdown-menu" size="5">
+                        @foreach (var item in ViewBag.UserList)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+
+                    </select>
+                </div>
+
+               
+            </td>
+        </tr>
+
+        <tr>
+            @if (Model.ActionPointId > 0)
+            {
+                <td>
+                    <label for="ItemName">Status:</label>
+
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Status", (IEnumerable<SelectListItem>)ViewBag.Status, "Select Action Point Status", new { @style = "width:400px", id = "Status", @class = "form-control" })
+                    </div>
+                </td>
+            }
+            <td>
+                <label> Due Date:</label>
+            </td>
+            <td>
+                @if (Model.ActionPointId > 0)
+                {
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DueDate, new { @type = "date", @class = "form-control", id = "DueDate", @Value = Model.DueDateNULL.ToString("yyyy-MM-dd") })
+                    </div>
+                }
+                else
+                {
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DueDate, new { @type = "date", @class = "form-control", id = "DueDate" })
+                    </div>
+                }
+
+            </td>
+        </tr>
+
+
+        
+    </table>
+    <table>
+        <tr>
+            <td>
+                <label>Description:</label>
+
+            </td>
+            <td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.ActionDescription, new { required = "required", @class = "form-control", @style = "width:350px", id = "DES" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td >
+            @if (Model.ActionPointId > 0)
+            {
+                <td>
+                    <label>Comment:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextArea("Comment", new { @type = "Comment", @class = "form-control", id = "Comment", @style = "width:350px" })
+                    </div>
+                </td>
+            }
+        </tr>
+
+    </table>
+
+    <table>
+        @if (Model.ActionPointId > 0)
+        {
+            <tr>
+                <td style="margin-left:25px">
+                    <button type="button" class="btn-xs  glyphicon glyphicon-arrow-down Participant "> Participant List</button>
+                </td>
+                <td width="15px" />
+                <td>
+                    <button type="button" class="btn-xs  glyphicon glyphicon-arrow-down CommentList "> CommentList</button>
+                </td>
+            </tr>
+        }
+    </table>
+    <hr />
+    <div id="LstActionPointParticipant" class="w3-container city">
+        <label style="color:red;display:none">Participant List:</label>
+        @if (Model.LstActionPointParticipant.Count > 0)
+        {
+
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Project.MOMActionPointComment>("grdParticipantLst")
+                            .Datasource(Model.LstActionPointParticipant)
+                            .AllowFiltering()
+                            .AllowPaging()
+                            .AllowSorting()
+                            .EnableHeaderHover()
+                            .AllowResizing()
+                            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                            .AllowScrolling()
+
+                                    .PageSettings(p => { p.PageSize(20); })
+                            .EnableAltRow(true)
+                            .AllowSorting(true)
+                            .Columns(col =>
+                            {
+                                col.Field("UserId").HeaderText("User Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+                                col.Field("UserName").HeaderText("User Name").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.Field("ParticipantType").HeaderText("Participant Type").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.HeaderText("Remove").Template("#RemovePart").TextAlign(TextAlign.Left).Width(120).Add();
+
+                            })
+                )
+            </div>
+
+
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about MOM Action Point User Details !!!</label>
+            </div>
+        }
+    </div>
+
+    <div id="MOMActionPointCommentList" style="display:none">
+        <label style="color:red">Comment List:</label>
+        @if (Model.MOMActionPointCommentList.Count > 0)
+        {
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Project.MOMActionPointComment>("grdcomentLst")
+                            .Datasource(Model.MOMActionPointCommentList)
+                            .AllowFiltering()
+                            .AllowPaging()
+                            .AllowSorting()
+                            .EnableHeaderHover()
+                            .AllowResizing()
+                            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                            .AllowScrolling()
+
+                                    .PageSettings(p => { p.PageSize(20); })
+                            .EnableAltRow(true)
+                            .AllowSorting(true)
+                            .Columns(col =>
+                            {
+                                col.Field("Comment").HeaderText("Comment").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(130).Add();
+                                col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(120).Add();
+
+                                col.Field("CommentedBy").HeaderText("Commented By").TextAlign(TextAlign.Left).Width(120).Add();
+                                col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+                            })
+                )
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about MOM Action Point Comment Details !!!</label>
+            </div>
+        }
+    </div>
+    <table style="margin-left:50px">
+        <tr>
+
+            <td id="save">
+                <div class="btn" aria-label="...">
+                    <button type="button" class="btn btn-info glyphicon glyphicon-save save "> Save</button>
+                </div>
+            </td>
+            
+        </tr>
+    </table>
+
+}
+
+
+<script>
+    $(document).ready(function () {
+        $('.Participant').click(function (e) {
+            $('#LstActionPointParticipant').show();
+            $('#MOMActionPointCommentList').hide();
+        })
+        $('.CommentList').click(function (e) {
+            $('#LstActionPointParticipant').hide();
+            $('#MOMActionPointCommentList').show();
+        })
+    })
+</script>
+
+<script type="text/x-jsrender" id="RemovePart">
+    <a class="abc btn-xs btn-danger glyphicon glyphicon-trash" href='/ProjectCenter/DeleteUser?ParticipantType={{:ParticipantType}} &amp;UserId={{:UserId}} &amp;ActionPointId=@Model.ActionPointId&amp;MOMId=@Model.MOMId'> Remove</a>
+</script>
+@Html.EJ().ScriptManager()

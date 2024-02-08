@@ -1,0 +1,511 @@
+﻿@model IEnumerable<SmartSys.BL.Project.ProjectModel>
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project
+</div>
+
+
+@{
+
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+
+</script>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProject")
+        .Datasource((IEnumerable<SmartSys.BL.Project.ProjectModel>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+       
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu()
+                .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord))
+                .CustomContextMenuItems(c =>
+              {
+                 
+                  c.AddItem("Add_Risk", "Add Risk");
+                  c.AddItem("Manage_Task", "Manage Task");
+                  c.AddItem("Add_Case", "Add Case");
+                  c.AddItem("Delete", "Delete");
+                  c.AddItem("Add_Equipment", "Add Equipment");
+                  c.AddItem("Add_Item", "Add Item");
+              });
+
+        })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                    //items.AddTool(ToolBarItems.ExcelExport);
+                });
+            })
+        .Columns(col =>
+        {
+            col.Field("ProjectId").Visible(false).AllowEditing(false).HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectTypeId").Visible(false).AllowEditing(false).ValidationRules(v => v.AddRule("required", true)).HeaderText("Type ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectName").HeaderText("Project Name").Width(160).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("Description").Width(180).Add();
+            col.Field("ProjectManagerId").Width(180).Visible(false).Add();
+            col.Field("ProjectManager").HeaderText("Project Manager").Width(180).Add();
+            col.Field("StatusDescription").HeaderText("Status").Add();
+            col.Field("StartDate").AllowEditing(false).HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(110).Add();
+            col.Field("EndDate").AllowEditing(false).HeaderText("End Date").Format("{0:MM/dd/yyyy}").Width(110).Add();
+            col.Field("Region").HeaderText("Region").Add();
+            col.Field("CustomerId").Visible(false).Add();
+            col.Field("VendorId").Visible(false).Add();
+            col.Field("ItemPermission").Visible(false).Add();
+            col.Field("CompCode").Visible(true).Add();
+            col.Field("CreatedByName").AllowEditing(false).HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").AllowEditing(false).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(180).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.HeaderText("Manage Task").Template("#ManageProjectTemplate").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            col.HeaderText("Risk Task").Template("#CreateRisk").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            col.HeaderText("Case Task").Template("#CreateCase").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            col.Field("SegmentId").Visible(false).Add();
+            col.Field("SegmentName").HeaderText("Segment").Width(100).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").Width(100).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").Width(100).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclick");
+            })
+            .ClientSideEvents(eve => eve.DetailsExpand("detailsexpand"))
+                .ChildGrid(child =>
+                {
+
+                    child.Datasource((IEnumerable<object>)ViewBag.SelectedRiskDetail)
+                    .QueryString("ProjectId")
+                    .AllowPaging()
+                    .AllowFiltering()
+                    .AllowScrolling(true)
+                      .AllowResizing(true)
+                     .ContextMenuSettings(contextMenu =>
+                     {
+                         contextMenu.EnableContextMenu()
+                                 .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+
+                                 .CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Quick_track", "Quick Track");
+                  
+              });
+
+                     })
+                .ClientSideEvents(eve =>
+                {
+
+                    eve.ContextClick("Conclick");
+                })
+                    .ScrollSettings(scroll => { scroll.Width(1200); })
+                    .MinWidth(1200)
+                    .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                    .Columns(col =>
+                    {
+                        col.Field("ProjectId").Visible(false).AllowEditing(false).HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).AllowFiltering(true).Add();
+                        col.Field("TaskID").Visible(true).AllowEditing(false).HeaderText("Risk ID/Case ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                        col.Field("TskType").HeaderText("Type").Width(60).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+                        col.Field("TaskName").HeaderText("Risk/Case Task Name").Width(170).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).AllowFiltering(true).Add();
+                        col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(150).Add();
+                        col.Field("EndDate").HeaderText("End Date").Width(100).Format("{0:MM/dd/yyyy }").AllowFiltering(true).Add();
+                        col.Field("Status").HeaderText("Status").Width(100).Add();
+                        col.Field("Edit").HeaderText("EAll").Visible(false).Width(180).Add();
+                        col.Field("Description").HeaderText("Description").Width(200).Add();
+                        col.Field("ModifiedBy").HeaderText("Modified By").Width(100).Add();
+                        col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(100).Add();
+                        col.HeaderText("Edit").Template("#EditRiskTask").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+                    });
+
+                })
+
+    )
+</div>
+
+<script type="text/x-jsrender" id="CreateRisk">
+    <a class="btn-xs btn-danger glyphicon glyphicon-pencil black" href='/ProjectCenter/RiskManageMent?ProjectId={{:ProjectId}}&amp;Taskid=0&amp;Modal=0&amp;Type=Risk'></a>
+</script>
+<script type="text/x-jsrender" id="CreateCase">
+    <a class="btn-xs btn-warning glyphicon glyphicon-pencil black" href='/ProjectCenter/RiskManageMent?ProjectId={{:ProjectId}}&amp;Taskid=0&amp;Modal=0&amp;Type=Case'></a>
+</script>
+<script type="text/x-jsrender" id="ManageProjectTemplate">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href='/ProjectCenter/VwProject?ProjectId={{:ProjectId}}'></a>
+</script>
+
+<script type="text/x-jsrender" id="EditRiskTask">
+    {{if Status =='REVIEWED' || Status =='REJECTED'|| Status =='Closed' }}
+
+    {{/if}}
+    {{if  Status =='Inprogress' || Status =='APPROVED'||Status =='OnHold'||Status =='Complete'||Status =='Cancelled' }}
+    <a class="btn-xs btn-info glyphicon glyphicon-pencil black" href='/ProjectCenter/RiskManageMent?ProjectId={{:ProjectId}}&amp;taskid={{:TaskID}}&amp;Modal=0&amp;ProjectName={{:ProjectName}}&amp;Type=Project'></a>
+    {{/if}}
+    {{if  Status =='NEW' && Edit=='Edit' }}
+    <a class="btn-xs btn-info glyphicon glyphicon-pencil black" href='/ProjectCenter/RiskManageMent?ProjectId={{:ProjectId}}&amp;taskid={{:TaskID}}&amp;Modal=0&amp;ProjectName={{:ProjectName}}&amp;Type=Project'></a>
+
+    {{/if}}
+</script>
+<script type="text/template" id="template">
+    <b>Project Details</b>
+    <table>
+        <tr id="IDs">
+            <td>
+                Project Id
+            </td>
+            <td width="50px">
+                <input id="ProjectId" name="ProjectId" value="{{: ProjectId}}" disabled="disabled" class="e-field e-ejinputtext valid e-disable"
+                       style="text-align: right; width: 116px; height: 28px" />
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                Project Name
+            </td>
+            <td>
+                <input type="text" id="ProjectName"  class="form-control" value="{{:ProjectName}}" />
+            </td>
+            <td>
+                Region
+            </td>
+            <td>
+                <select id="Region" name="Region" class="form-control">
+                    <option value="East">East</option>
+                    <option value="West">West</option>
+                    <option value="North">North</option>
+                    <option value="South">South</option>
+                </select>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                Project Type
+            </td>
+            <td>
+                @Html.DropDownList("ProjectTypeId", (IEnumerable<SelectListItem>)ViewBag.ProjTypeList, "Select Project Type", new { id = "ProjectTypeId", @Class = "form-control" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Project Manager
+            </td>
+            <td>
+                @Html.DropDownList("ProjectManagerId", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Select Manager", new { id = "ProjectManagerId", @Class = "form-control" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Start Date
+            </td>
+            <td>
+                <input id="StartDate" name="StartDate" class="form-control" value="{{:StartDate}}" />
+            </td>
+            <td>
+                End Date
+            </td>
+            <td>
+                <input id="EndDate" name="EndDate" class="form-control" value="{{:EndDate}}" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Description
+            </td>
+            <td>
+                <input type="text" id="Description" class="form-control" name="Description" value="{{:Description}}" />
+            </td>
+            <td>
+                Remark
+            </td>
+            <td>
+                <textarea id="Remark" name="Remark" class="form-control e-ejinputtext" value="{{: Remark}}">{{: Remark}}</textarea>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Segment
+            </td>
+            <td>
+                @Html.DropDownList("SegmentId", (IEnumerable<SelectListItem>)ViewBag.SegmentList, "Select Segment", new { id = "SegmentId", @Class = "form-control" })
+            </td>
+
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                Customer
+            </td>
+            <td>
+                @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Select Customer", new { id = "CustomerId", @Class = "form-control" })
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                Vendor
+            </td>
+            <td>
+                @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Select Vendor", new { id = "VendorId", @Class = "form-control" })
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Company
+            </td>
+            <td>
+                @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompanyList, new { id = "CompCode", @Class = "form-control" })
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/javascript">
+    function contextMenuOpen(args) {
+
+        var isExpandable = true, isCollapsable = true, data;
+        data = args.item;
+        if (data && data.hasChildRecords) {
+            if (data.expanded)
+                isExpandable = false;
+            else
+                isCollapsable = false;
+        } else {
+            isExpandable = false;
+            isCollapsable = false;
+        }
+
+        var contextMenuItems = [{
+            headerText: "Edit More Details",
+            eventHandler: customMenuAddHandler,
+            menuId: "EditMoreDetails",
+            iconClass: "e-topIcon"
+        }
+        ];
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+    }
+    function Conclick(args) {
+        if (args.text == "Quick Track") {
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskId = result[0]["TaskID"];
+            var path1 = '@Url.Action("casetimeline", "quickview")' + "?TaskID=" + TaskId + "&ProjectId=" + projectId;
+            $("#seconddialog").ejDialog({
+                contentUrl: path1,
+                contentType: "ajax"
+            });
+            $("#seconddialog").ejDialog("open");
+
+        }
+    }
+
+    function contextclick(args) {
+
+            if (args.text == "Add Risk") {
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var ProjectName = result[0]["ProjectName"];
+            var Risk = "Risk";
+            var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + projectId + "&Taskid=" + 0 + "&Modal=" + 1 + "&Type=" + Risk + "&ProjectName=" + ProjectName
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+        else
+            if (args.text == "Manage Task") {
+                var tempData = args.text;
+
+                var grid = $("#grdProject").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var projectId = result[0]["ProjectId"];
+                var path = '@Url.Content("~/ProjectCenter/VwProject")' + "?ProjectId=" + projectId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+        if (args.text == "Add Case") {
+
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var CAse = "Case";
+            var ProjectName = result[0]["ProjectName"];
+            var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + projectId + "&Taskid=" + 0 + "&Modal=" + 1 + "&Type=" + CAse + "&ProjectName=" + ProjectName
+
+           event.preventDefault();
+         window.location.replace(path);
+        }
+        if (args.text == "Delete") {
+            @*if(@ViewBag.Deleted == "AllowDelete" )
+            {*@
+
+            var str = '@(TempData["Message"])'.toString();
+            if (str.toString() == "" || str == null) {
+                alert("You Have No Rights To Delete This Project");
+                return false;
+            }
+            else {
+                var tempData = args.text;
+                var grid = $("#grdProject").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var projectId = result[0]["ProjectId"];
+                var ProjectManagerId = result[0]["ProjectManagerId"];
+                var ProjectName = result[0]["ProjectName"];
+               var agree=confirm("Are you sure to delete ?")
+                   if (agree) {
+                        var path = '@Url.Content("~/ProjectCenter/DeleteProject")' + "?ProjectId=" + projectId + "&ManagerId=" + ProjectManagerId + "&ProjectName=" + ProjectName
+
+                        window.location.replace(path);
+                    }
+               else
+                   {
+                       return false;
+                   }
+
+            }
+
+        }
+        if (args.text == "Add Equipment") {
+
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var projectName = result[0]["ProjectName"];
+            var ItemPermission = result[0]["ItemPermission"];
+
+            if (ItemPermission.toString() == "AllowItem") {
+            var path = '@Url.Content("~/ProjectCenter/ProjectEquipment")' + "?ProjectId=" + projectId + "&projectName=" + projectName
+            event.preventDefault();
+            window.location.replace(path);
+            }
+            else {
+                alert("You do not Add Equipment in this Project.Because This Project not a Product Project");
+            }
+        }
+        if (args.text == "Add Item") {
+
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var projectName = result[0]["ProjectName"];
+            var ItemPermission = result[0]["ItemPermission"];
+            if (ItemPermission.toString() == "AllowItem") {
+                var path = '@Url.Content("~/ProjectCenter/ProjectItems")' + "?ProjectId=" + projectId + "&projectName=" + projectName
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+            {
+                alert("You do not Add Item in this Project.Because This Project not a Product Project");
+            }
+        }
+    }
+
+    function onClick(args) {
+
+        var grid = $("#grdProject").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["ProjectId"];
+        var path = '@Url.Content("~/ProjectCenter/VwProject")' + "?ProjectId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function complete(args) {
+        if (args.requestType == "beginedit" || args.requestType == "add") {
+            $("#ProjectId").attr("visible", "false");
+            $("#IDs").hide();
+            if (args.requestType == "add") {
+
+                $("#StartDate").ejDatePicker({ value: new Date() });
+                $("#EndDate").attr("disabled", "disabled");
+            };
+            //alert(args.row.children().eq(5).text());
+            if (args.requestType == "beginedit") {
+                $("#ProjectManagerId").val(args.row.children().eq(5).text());
+                $("#ProjectTypeId").val(args.row.children().eq(2).text());
+                $("#Region").val(args.row.children().eq(10).text());
+                $("#CustomerId").val(args.row.children().eq(11).text());
+                $("#VendorId").val(args.row.children().eq(12).text());
+                $("#CompCode").val(args.row.children().eq(14).text());
+                $("#SegmentId").val(args.row.children().eq(22).text());
+                $("#StartDate").val(args.row.children().eq(8).text());
+                $("#EndDate").val(args.row.children().eq(9).text());
+                $("#EndDate").attr("disabled", "disabled");
+                $("#StartDate").attr("disabled", "disabled");
+                $("#ProjectTypeId").attr("disabled", "disabled");
+            };
+        }
+        if (args.requestType == "save") {
+            var rec = args.data;
+            var x = $("#StartDate").val();
+            rec.StartDate = x;
+
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/ProjectCenter/VwProjectAddNew",  //Update is Server side method
+                data: { ProjDetail: rec },
+                complete: function () {
+                },
+                success: function (msg) {
+                    alert("New Project Successfully Created. Click ok to Continue with Task Management.");
+                    var path = '@Url.Content("~/ProjectCenter/VwProject")' + "?ProjectId=" + msg
+                    event.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        }
+    }
+</script>
+
+
+<style>
+    td {
+        padding-right: 5px;
+    }
+</style>

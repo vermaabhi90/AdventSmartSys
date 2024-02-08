@@ -1,0 +1,223 @@
+﻿@model SmartSys.BL.EmployeeModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<style>
+    .Tbl1 {
+        border-style: solid;
+        border-color: #c9cad7;
+    }
+</style>
+
+<style> 
+    td {padding-right: 10px;}
+    </style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create New  Employee
+</div>
+
+@using (Html.BeginForm("CreateEmployee", "Admin", FormMethod.Post, new { Id = "EmployeeForm", enctype = "multipart/form-data" }))
+{
+    <html>
+    <body>
+        <div class="Tbl1">  
+          <table align="center" height="50">
+                <tr>
+                    <td>
+                        <label for="UserId">User Id</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.UserId, new { @readonly = "readonly" , @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.UserId)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="UserName">UserName</label>
+                    </td>
+
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.UserName, new { @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.UserName)
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            @Html.ActionLink(" Select User", "SysUesrList", new { EmpId = Model.EmpId }, new { id = "lnkAdd", @class = "modal-link btn-xs btn-info glyphicon glyphicon-screenshot" })
+                        </div>
+                    </td>
+            
+                </tr>
+            </table>
+   </div>
+        <br>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="FirstName">First Name </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.FirstName, "", new { id = "FirstName", @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label for="MiddleName">Middle Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.MiddleName, new { @class = "form-control", style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.MiddleName)
+                    </div>
+                </td>
+                <td>
+                    <label for="LastName">Last Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.LastName, "", new { id = "LastName", @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label for="isClient">isClient</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isClient, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.isClient)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Gender">Gender </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.Gender, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Male", Value="Male"},
+                             new SelectListItem() {Text = "Female", Value="Female"},
+
+                       }, new { @class = "form-control", style = "width:250px" })
+                    </div>
+                </td>
+                <td>
+                    <label for="emailId">email Id </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.emailId, new { @class = "form-control", style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.emailId)
+                    </div>
+                </td>
+                <td>
+                    <label for="DeptId">Region</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Region", (IEnumerable<SelectListItem>)ViewBag.regiondrppp, "Please Select the Region", new { id = "regionlst", style = "width:250px", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ManagerName">Manager Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ManagerId", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Please Select Manager Name", new { id = "DrpManager", style = "width:250px", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="">Phone Number:</label>
+                </td>
+               <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", style = "width:250px" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="">Mobile:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Mobile, new { @class = "form-control", style = "width:250px" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="">PAN:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PAN, new { @class = "form-control", style = "width:250px" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Designation">Designation </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Designation, new { @class = "form-control", style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.Designation)
+                    </div>
+                </td>
+                <td>
+                    <label for="DateOfJoin">Date Of Join</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.EJ().DatePicker("DateOfJoin").Value(System.DateTime.Now).Width("250px")
+                        @*@Html.EditorFor(model => model.DateOfJoin, new { id = "DateOfJoin", @class = "text-danger" })*@
+                        @Html.ValidationMessageFor(model => model.DateOfJoin)
+                    </div>
+                </td>               
+            </tr>
+            <tr>
+                <td>
+                    <label for="Qualification">Qualification</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Qualification, new { @class = "form-control", style = "width:250px" })
+                        @Html.ValidationMessageFor(model => model.Qualification)
+                    </div>
+                </td>
+                <td>
+                    <label>Company</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, new { @class = "  form-control", style = "width:250px", id = "CompCodeDrp" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Photo">Photo</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="file" class="file form-control " name="uploadFile" style="width:250px" />
+
+                    </div>
+                </td>
+            </tr>           
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetEmployeeList';" );"> Back</button>
+                   <button type="submit" class="Save btn-xs  btn-info glyphicon glyphicon-save"> Save</button>
+                </td>
+          </tr>
+        </table>
+    </body>
+</html>
+}
+

@@ -1,0 +1,221 @@
+﻿@model SmartSys.BL.SysAssetAllocationModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@if (Model.AssignmentId > 0)
+{ 
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Asset Allocation Details
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create New  Asset Allocation
+    </div>
+}
+@*<script src="~/Scripts/bootbox.min.js"></script>
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>*@
+
+<script type="text/javascript">
+
+            $(document).ready(function () {
+
+                $('#Validation').click(function (e) {
+
+                    //e.preventDefault();
+                    var assetName = $('#assetName').val();
+                    var assignTo = $('#assignTo').val();
+                    var assignType = $('#assignType').val();
+                    var AssignedDate = $('#AssignedDate').val();
+
+                    if (AssignedDate.toString()== "") {
+                        alert("Please Enter Assign Date");
+                        return false;
+                    }
+              
+
+                    if (assetName.toString() == "") {
+                        alert("Please Select Asset Name ");
+                        return false;
+                    }
+                    if (assignTo.toString() == "") {
+                        alert("Please Enter Assign To ");
+                        return false;
+                    }
+                    if (assignType.toString() == "") {
+                        alert("Please Enter Assign Type");
+                        return false;
+                    }
+                 
+                    return false;
+                });
+            });
+</script>
+<link rel="stylesheet" href="~/Content/spaceAndButton.css">
+
+@using (Html.BeginForm("CreateSysAssetAllocation", "Admin", FormMethod.Post, new { Id = "AssetForm" }))
+{
+    <br><br>
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            @if (Model.AssignmentId > 0)
+            {
+                <td width="120px">
+                    <label>
+                        Assignment ID:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.AssignmentId, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.AssignmentId, "", new { @class = "text-danger" })
+                    </div>
+
+                </td>
+            }
+            @if (Model.AssignmentId == 0)
+            {
+
+                @Html.HiddenFor(model => model.AssignmentId, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+
+            }
+            <td>
+                <label>
+                    Asset Name:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("AssetId", (IEnumerable<SelectListItem>)ViewBag.assetList, "--select the Asset Types--", new { id = "assetName", style = "width:210px", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Assigned To:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("AssigntoEmpId", (IEnumerable<SelectListItem>)ViewBag.EmpDropDowmn, "--select the Employee--", new { id = "assignTo", style = "width:210px", @class = "form-control" })
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    Assigned Type:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("AssignedType", new List<SelectListItem>
+                           {
+                                    new SelectListItem() {Text="Employee",Value="Employee"},
+
+
+                           }
+                         , "--Select--", new { id = "OfficeLocationId", style = "width:210px", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Assigned Date:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("AssignedDate").Value(Model.AssignedDate)
+                    @*.Value(@Model.AssignedDate)*@
+                    @Html.ValidationMessageFor(model => model.AssignedDate)
+                </div>
+            </td>
+            <td>
+                <label>
+                    Return Date:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("ReturnDate")
+
+                    @Html.ValidationMessageFor(model => model.ReturnDate)
+                </div>
+            </td>
+        </tr>
+        <tr>
+
+            @if (Model.AssetId > 0)
+            {
+                <td>
+                    <label>
+                        Created By:
+                    </label>
+                </td>
+                            <td>
+                                <div class="">
+                                    @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+
+                            <td>
+                                <label>
+                                    Created Date:
+                                </label>
+                            </td>
+                            <td>
+                                <div class="">
+                                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+            }
+        </tr>
+        @if (Model.AssetId > 0)
+        {
+            <tr>
+                <td>
+                    <label>
+                        Modified By:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @readonly = "readonly", @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Modified Date:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+    <table>
+        <tr>
+            <td>              
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'AssetAllocationList';" );"> Back</button>
+                <button type="submit" class="SaveAll btn-xs  btn-info glyphicon glyphicon-save" id="Validation"> Save</button>          
+            </td>
+        </tr>
+
+    </table>
+}
+
+
+
+

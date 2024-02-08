@@ -1,0 +1,128 @@
+﻿@model SmartSys.BL.DW.VendorCertificationModel
+
+<script type="text/javascript">
+    $("#CertificateDate").ejDatePicker({ dateFormat: "MM/dd/yyyy" });
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var VendorCertification = $('#VendorCertification').val();
+            var CertificateDate = $('#CertificateDate').val();
+
+            if (VendorCertification.toString() == "") {
+                alert("Please Enter Certification Detail ");
+                return false;
+            }
+            if (CertificateDate.toString() == "") {
+                alert("Please Enter Certificate Date ");
+                return false;
+            }
+            $("#CertificationDetail").unbind('submit').submit();
+        });
+    });
+</script>
+<table>
+    <tr>
+        <td>
+            @if (Model.NewVendorCertification  == "New Entry")
+            {
+                <div class="page-header glyphicon glyphicon-leaf  text-info ">
+                    Create Certificaton Information
+                </div>
+            }
+            else
+            {
+                <div class="page-header glyphicon glyphicon-pencil  text-info ">
+                    Edit Certificaton Information
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+
+
+@using (Html.BeginForm("CreateVendorCertificationDetails", "DWVendor", FormMethod.Post, new { Id = "CertificationDetail" }))
+{
+    <html>
+    <head>
+        <title>WebgridSample</title>
+        <style type="text/css">
+            .modal-content {
+                width: 750px !important;
+                margin: 30px auto !important;
+                left: 50%;
+         transform: translateX(-50%);
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td>@Html.HiddenFor(model => model.VendorId)</td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="Certification">Certification</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field navbar-text">
+                            @Html.TextBoxFor(model => model.VendorCertification, new { @class = "form-control" })
+                            @Html.HiddenFor(model => model.NewVendorCertification)
+                            @Html.ValidationMessageFor(model => model.VendorCertification, "", new { id = "CustomerCertification", @class = "text-danger" })
+                        </div>
+
+                    </td>
+                    <td>
+
+                        <label for="CertificateDate">Certificate Date</label>
+
+                    </td>
+                    <td>
+                        
+                            @Html.EJ().DatePicker("CertificateDate").Value(DateTime.Now)
+                       
+                    </td>
+                </tr>
+
+                @if (Model.VendorCertification != null)
+                {
+                    <tr>
+                        <td align="center">
+                            <label for="CreatedBy">Created By</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field navbar-text">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { id = "CreatedBy", @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td align="center">
+                            <label for="CreatedDate">Created Date</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field navbar-text">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { id = "CreatedDate", @class = "text-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>
+                            <button type="submit" class="save btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+                </td>
+                        </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+
+

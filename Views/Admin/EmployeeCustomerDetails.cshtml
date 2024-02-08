@@ -1,0 +1,142 @@
+﻿@model SmartSys.BL.EmployeeCustomerDetail
+
+@{
+    ViewBag.Title = "EmployeeCustomerDetail";
+}
+<script>
+    $(document).ready(function () {
+
+        $("#lstAssignedCustomer").empty()
+        $("#AssignDrpDwnLst").change(function () {         
+            $("#lstAssignedCustomer").empty()          
+            var path = "/Admin/GetAssignCustByDept"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { EmpId: $("#EmpIdDet").val(), DeptId: $("#AssignDrpDwnLst").val() },
+                success: function (Vendors) {
+
+                    $.each(Vendors, function (i, Vendor) {
+                        $('#lstAssignedCustomer').append('<option value="' + Vendor.Value + '">' + Vendor.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert(ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $("#frmRoleRptMap").submit(function (e) {
+            var Dept = $("#AssignDrpDwnLst").val();
+            if (Dept.toString() == "")
+            {
+                alert("Please Select Department")
+            }        
+            $("#lstAssignedCustomer option").prop("selected", true);;
+        })
+        //followin code is for txfering items from one list to another
+        $("#btnAdd").click(function (e) {
+
+            $("#CustomerList > option:selected").appendTo("#lstAssignedCustomer");
+        })
+        $("#btnAddAll").click(function (e) {
+
+            $("#CustomerList > option").appendTo("#lstAssignedCustomer");
+        })
+        $("#btnRemove").click(function (e) {
+            $("#lstAssignedCustomer > option:selected").appendTo("#CustomerList");
+
+        })
+        $("#btnRemoveAll").click(function (e) {
+            $("#lstAssignedCustomer > option").appendTo("#CustomerList");
+        })
+    })
+</script>
+<div class="page-header glyphicon glyphicon-pencil  text-info " style="margin-left:30Px">
+    <span style="color:red">Employee Customer Details</span>
+
+</div>
+
+
+
+@using (Html.BeginForm("EmployeeCustomerDetails", "Admin", FormMethod.Post, new { id = "frmRoleRptMap" }))
+{
+
+    <table style="margin-left:30px">
+        <tr>
+            <td style="margin-left:30px">
+                <label for="ShortName" style="color:blue">Employee Name : </label>
+            </td>
+            <td width="5px">
+                
+            </td>
+            <td>
+                @Html.TextBox("Employee", (string)ViewBag.EmpName, new { @readonly = "readonly", @style = "width:400px", @class = "form-control" })
+                @Html.Hidden("EmpId", (int)ViewBag.EmpId, new { @readonly = "readonly",id="EmpIdDet" })
+            </td>
+            <td align="center" width="80px">
+                Department
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownList("AssignDeptId", (IEnumerable<SelectListItem>)ViewBag.SysAssignDeptList, "--- Please Select Department  ---", new { @class = "form-control", id = "AssignDrpDwnLst", style = "width:310px" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table style="margin-left:30px">
+        <tr>
+            <td align="center">
+                @Html.Label("Customer List")<br />
+                @Html.ListBoxFor(model => model.lstCustomer, (IEnumerable<SelectListItem>)ViewBag.CustomerList, new { id = "CustomerList", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+            </td>
+            <td width="30px"></td>
+            <td align="center">
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnAdd" class="btn btn-info glyphicon glyphicon-forward"></button>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <small> <button type="button" id="btnAddAll" class="btn btn-info glyphicon glyphicon-fast-forward"></button></small>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemove" class="btn btn-info glyphicon glyphicon-backward"></button>
+                </div><br />
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemoveAll" class="btn btn-info glyphicon glyphicon-fast-backward"></button>
+                </div><br />
+            </td>
+            <td width="30px"></td>
+            <td align="center">
+                @Html.Label("Assigned Customer List")<br />
+                @Html.ListBoxFor(model => model.lstAssignedCustomer, (IEnumerable<SelectListItem>)ViewBag.AssignedCustomer, new { id = "lstAssignedCustomer", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-left:30px">
+        <tr>
+            <td>
+                @Html.ActionLink(" Back", "GetEmployeeList", null, new { @class = "btn btn-warning glyphicon glyphicon-hand-left" })
+
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" id="BtnSub" class="btn btn-info glyphicon glyphicon-save"> Save</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+}
+
+

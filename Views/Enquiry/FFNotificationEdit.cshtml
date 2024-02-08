@@ -1,0 +1,218 @@
+﻿@model SmartSys.BL.Enquiry.FFNotificationModel
+
+@{
+    ViewBag.Title = "FFNotificationEdit";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.NotificationId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Edit Notification Detail
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        New Notification Create
+    </div>
+}
+
+<script>
+    $(document).ready(function () {        
+        $("#CurrencyId").val($("#Curr").val());
+    });
+</script>
+@using (Html.BeginForm("FFNotificationEdit", "Enquiry", FormMethod.Post, new { Id = "RecForm" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label>Receipt ID</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReceiptId, new { @class = "form-control", @readonly = "Readonly", id = "ReciptId" })
+                </div>
+            </td>
+            <td>
+                <label>Notification ID</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.NotificationId, new { @class = "form-control", @readonly = "Readonly", id = "NotificationId" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Recipt Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePickerFor(M => M.ReceiptDate).Value(Model.ReceiptDate).ReadOnly(true)
+                </div>
+            </td>
+            <td>
+                <label>Company</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "Readonly" })
+
+                </div>
+            </td>
+            <td>
+                <label>Vendor</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.FreightForwarderName, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+                <label>Air Way bill No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.FFRef_No, new { @readonly = "Readonly", @class = "form-control", style = "width:200px" })
+                </div>
+            </td>
+            <td>
+                <label>Vendor Invoice No</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.VendorInvNo, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Permit Type</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PermitType, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+                <label>Ref No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.RefNo, new { @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Notification Date</label>
+            </td>
+            @if (Model.NotificationId > 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(M => M.NotificationDate).Value(Model.NotificationDate)
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(M => M.NotificationDate).Value(DateTime.Now)
+                    </div>
+                </td>
+            }
+        </tr>
+        <tr>
+            <td>
+                <label>Permit Number</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PermitNo, new { @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>GST Amount</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.GSTAmount, new { @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Currency</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("Currency", (IEnumerable<SelectListItem>)ViewBag.Currency, "--- Please Select Currency ---", new { @class = "dpr form-control", style = "width:210px", id = "CurrencyId" })
+                    @Html.HiddenFor(model => model.Currency, new { id = "Curr" })
+                </div>
+            </td>
+        </tr>
+        @if (Model.NotificationId > 0)
+        {
+            <tr>
+                <td>
+                    <label>Created By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Created Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "Readonly", @class = "form-control", style = "width:200px" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label>Modified By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Modified Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "Readonly", @class = "form-control", style = "width:200px" })
+                    </div>
+                </td>
+
+            </tr>
+        }
+
+    </table>
+    <table>
+        <tr><td>       
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save"> Save</button>      
+            </td>
+        </tr>
+    </table>
+}
+@Html.EJ().ScriptManager()

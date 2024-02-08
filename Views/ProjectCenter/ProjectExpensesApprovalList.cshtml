@@ -1,0 +1,106 @@
+﻿@model SmartSys.BL.Project.ProjectExpensesModel
+
+@{
+    ViewBag.Title = "Project Expenses Approval List";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project Expenses Approval List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProjectExp")
+                .Datasource((IEnumerable<object>)@Model.LstPrjectExp)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .PageSettings(p => { p.PageSize(20); })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Approve111", "Approve");
+             });
+
+         })
+        .EnableAltRow(true)
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+        //.ToolbarSettings(toolbar =>
+        //    {
+        //        toolbar.ShowToolbar().ToolbarItems(items =>
+        //        {
+        //            items.AddTool(ToolBarItems.Add);
+        //            items.AddTool(ToolBarItems.Edit);
+        //            items.AddTool(ToolBarItems.Update);
+        //            items.AddTool(ToolBarItems.Cancel);
+        //        });
+        //    })
+        .Columns(col =>
+        {
+            col.Field("ExpenseId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("Employee").HeaderText("Employee Name").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("TaskName").AllowEditing(false).HeaderText("Task Name").Width(200).Add();
+            col.Field("Amount").AllowEditing(false).HeaderText("Amount").Width(200).Add();
+            col.Field("Remark").AllowEditing(false).HeaderText("Remark").Width(200).Add();
+            col.Field("StatusCode").AllowEditing(false).HeaderText("Status").Width(200).Add();
+            col.Field("ExpenseDate").AllowEditing(true).HeaderText("Expense Date").Format("{0:MM/dd/yyyy}").Width(120).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+
+
+        })
+         .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+
+  
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Approve") {
+            var tempData = args.text;
+            document.getElementById("Title12").innerHTML = 'Project Expense Approve Reject';
+            var grid = $("#grdProjectExp").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ExpensesId = result[0]["ExpenseId"];
+            var path = '@Url.Content("~/ProjectCenter/ApproveRejectExpenses")' + "?ExpensesId=" + ExpensesId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("CreateContactDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1200)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+</script>

@@ -1,0 +1,108 @@
+﻿@model IEnumerable<SmartSys.BL.Departmentmodel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "GetDepartmentList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Department List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "Create", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Departmentmodel>("grdDepartmentList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+        .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportDepartmentLst")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_DepartMent", "Edit DepartMent");
+
+
+             });
+
+
+
+
+         })
+        //   .ToolbarSettings(toolbar =>
+        //{
+        //    toolbar.ShowToolbar().ToolbarItems(items =>
+        //    {
+        //        items.AddTool(ToolBarItems.Add);
+        //        items.AddTool(ToolBarItems.Edit);
+        //        //items.AddTool(ToolBarItems.ExcelExport);
+        //    });
+        //})
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("DeptId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("DeptHeadName").HeaderText("Department Head").ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("DeptName").HeaderText("Department Name").ValidationRules(v => v.AddRule("required", true)).Width(140).Add();
+            col.Field("CreatedByName").HeaderText("Created By").TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(180).Add();
+
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+            col.HeaderText("Edit")
+                .Template("#edit")
+                .AllowFiltering(false)
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+        })
+                  .ClientSideEvents(eve =>
+                  {
+
+                      eve.ContextClick("contextclick");
+                      //eve.("contextMenuOpen");
+                  })
+        )
+    </div>
+
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditDepartment?DeptId={{:DeptId}}"></a>
+    </script>
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Admin/Create")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit DepartMent") {
+                var tempData = args.text;
+
+                var grid = $("#grdProject").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var DeptId = result[0]["DeptId"];
+                var path = '@Url.Content("~/Admin/EditDepartment")' + "?DeptId=" + DeptId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+    }
+
+    </script>

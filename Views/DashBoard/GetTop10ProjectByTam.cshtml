@@ -1,0 +1,47 @@
+﻿@model List<SmartSys.BL.Project.ProjectModel>
+   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    google.load("visualization", "1", { packages: ["corechart"] });
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['@Model[0].ProjectName.ToString()', 'link', 'Hours per Day'],
+              ['@Model[0].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[0].ProjectId }))', @Model[0].TAMCOUNT],
+              ['@Model[1].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[1].ProjectId }))', @Model[1].TAMCOUNT],
+              ['@Model[2].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[2].ProjectId }))', @Model[2].TAMCOUNT],
+              ['@Model[3].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[3].ProjectId }))', @Model[3].TAMCOUNT],
+              ['@Model[4].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[4].ProjectId }))',@Model[4].TAMCOUNT],
+              ['@Model[5].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[5].ProjectId }))',@Model[5].TAMCOUNT],
+              ['@Model[6].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[6].ProjectId }))',@Model[6].TAMCOUNT],
+              ['@Model[7].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[7].ProjectId }))',@Model[7].TAMCOUNT],
+              ['@Model[8].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[8].ProjectId }))',@Model[8].TAMCOUNT],
+              ['@Model[9].ProjectName.ToString()', '@Html.Raw(@Url.Action("ProjectView", "ProViews", new { @ProjectId = Model[9].ProjectId }))',@Model[9].TAMCOUNT]
+        ]);
+
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 2]);
+
+
+        var options = {
+            title: 'Top 10 Project By TAM',
+            is3D: true,
+         
+        };
+        var chart = new google.visualization.PieChart(
+          document.getElementById('chart_div'));
+        chart.draw(view, options);
+
+        var selectHandler = function (e) {
+            window.location = data.getValue(chart.getSelection()[0]['row'], 1);
+        }
+
+        // Add our selection handler.
+        google.visualization.events.addListener(chart, 'select', selectHandler);
+    }
+</script>
+
+
+    <div id="chart_div" style=" background-color :white;border-color:blue;
+           border-width:2px;
+            border-style:solid;min-height:300px"></div>
+

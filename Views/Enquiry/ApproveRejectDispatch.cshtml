@@ -1,0 +1,396 @@
+﻿@model SmartSys.BL.Enquiry.DispatchModel
+
+@{
+    ViewBag.Title = "CreateDispatch";
+}
+
+
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+
+    function contextclick(args) {
+
+        if (args.text == "Download Document") {
+            var tempData = args.text;
+            var grid = $("#grdDocDetailLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var FilePath = result[0]["FilePath"];
+            var path = '@Url.Content("~/Enquiry/dispatchDocDownload")' + "?DispatchId=" + @Model.DispatchId + "&DocumentPath=" + FilePath
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        }
+    }
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Item",
+            allowClear: true,
+            tags: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+@if (Model.DispatchId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Approve Dispatch Receipt
+    </div>
+}
+
+@using (Html.BeginForm("CreateDispatch", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        @if (Model.DispatchId > 0)
+        {
+            <tr>
+
+                <td>
+                    <label>Dispatch Id</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DispatchId, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                <label>Company</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.DispatchId, new { id = "ReceiptId" })
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = " drp form-control", style = "width:310px", id = "CompCodeDrp" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.CompCode, new { id = "ComDoc" })
+                        @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+            <td>
+                <label>Customer</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CustomerId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Customer ---", new { @class = "drp form-control", style = "width:310px", id = "CustomerDrp" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.CustomerId, new { id = "CustomerId" })
+                        @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+
+        </tr>
+        <tr>
+            <td width="100px">
+                <label>Invoice</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Invoice_No", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Invoice Number ---", new { @class = "drp form-control", style = "width:310px", id = "InvoiceDrp" })
+
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Invoice_No, new { style = "width:400px", @readonly = "readonly", @class = "form-control", id = "InvoiceDrp" })
+                    </div>
+                </td>
+            }
+            <td>
+                <label>Freight Forwarder</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("STLocationId", (IEnumerable<SelectListItem>)ViewBag.FFLst, "--- Please Select Company ---", new { @class = " drp form-control", style = "width:310px", id = "FreightForwarderId" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.FreightForwarder, new { id = "FreightForwarderId" })
+                        @Html.TextBoxFor(model => model.FreightForwarder, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+
+
+
+        </tr>
+        <tr>
+            <td>
+                <label>Dispatch Date</label>
+            </td>
+            @if (Model.DispatchId == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DispatchDate, "{0:MM/dd/yyyy}", new { @class = " form-control" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DispatchDate, "{0:MM/dd/yyyy}", new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+            <td>
+                <label>AirWay Bill No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AirwayBillNo, new { style = "width:300px", @class = "form-control", id = "AirwayBillNo", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+                <label>Export Permit No</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ExportPermitNo, new { style = "width:300px", @class = "form-control", id = "ExportPermitNo", @readonly = "Readonly" })
+                </div>
+            </td>
+        </tr>
+        <tr></tr>
+
+    </table>
+    <div style="width:100%">
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+                {
+                    data.Add().ID("Carton").Text("Carton").ContentTemplate(
+                        @<div>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="table-responsive" style="height:200px;width:90%">
+                                        <table>
+                                            <tr>
+
+                                                <td>
+                                                    <div style="position:relative">
+                                                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdCartonDetailLst")
+                .Datasource((IEnumerable<object>)@Model.LstDispatchCartonDetail)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                        .PageSettings(p => { p.PageSize(20); })
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+               
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))                
+                 .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)               
+
+        .Columns(col =>
+        {
+            col.Field("DispatchId").HeaderText("Dispatch Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CartonId").HeaderText("CartonId").TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("Weight").HeaderText("Weight").TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("Length").HeaderText("Length").Width(30).Add();
+            col.Field("Width").HeaderText("Width").TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("Height").HeaderText("Height").Width(30).Add();
+            col.Field("Remark").HeaderText("Remark").Width(30).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                                                        )
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+                                        </table>
+                                     
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div> );
+
+                    data.Add().ID("ItemDetail").Text("Item").ContentTemplate(
+                        @<div>
+    <div class="table-responsive" style="height:300px;width:90%">
+        <table>
+            <tr>
+
+                <td>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDetailLst")
+                .Datasource((IEnumerable<object>)@Model.LstDispatchDetail)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                        .PageSettings(p => { p.PageSize(20); })
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })               
+
+                .EditSettings(e => e.AllowAdding().AllowEditing())
+               
+                 .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+               
+        .Columns(col =>
+        {
+            col.Field("DispatchId").HeaderText("Dispatch Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemId").HeaderText("Item Id").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(390).Add();
+            col.Field("MPN").HeaderText("MPN").Width(160).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Rate").Visible(true).AllowEditing(true).HeaderText("Rate").Width(70).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(170).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(170).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                        )
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</div> );
+
+                data.Add().ID("Document").Text("Document").ContentTemplate(
+                    @<div>                       
+                        <table>
+                            <tr>
+
+                                <td>
+                                    <div style="position:relative">
+                                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDocDetailLst")
+               .Datasource((IEnumerable<object>)@Model.LstDispatchDoc)
+               .AllowFiltering()
+               .AllowPaging()
+               .AllowSorting()
+               .EnableHeaderHover()
+               .AllowResizing()
+                       .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+               .AllowSorting(true)
+               .FilterSettings(filter =>
+               {
+                   filter.FilterType(FilterType.Excel);
+               })
+               //.ContextMenuSettings(contextMenu =>
+               //{
+               //    contextMenu.EnableContextMenu()
+               //  .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+               //  .CustomContextMenuItems(new List<string> { "Download Document" });
+
+               //})
+               .ContextMenuSettings(contextMenu =>
+               {
+                   contextMenu.EnableContextMenu();
+                   contextMenu.DisableDefaultItems();
+                   contextMenu.CustomContextMenuItems(c =>
+                   {
+                       c.AddItem("Download_Document", "Download Document");
+                   });
+
+               })
+               .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+               .Columns(col =>
+               {
+                   col.Field("DispatchId").HeaderText("Dispatch Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+                   col.Field("DocumentTitle").HeaderText("Document Title").TextAlign(TextAlign.Left).Width(150).Add();
+                   col.Field("FilePath").HeaderText("File Path").TextAlign(TextAlign.Left).Width(200).Add();
+                   col.Field("CreatedBy").HeaderText("Created By").Width(70).Add();
+                   col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(70).Add();
+                   col.Field("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).Width(70).Add();
+               })
+               .ClientSideEvents(eve =>
+               {
+                   eve.ContextClick("contextclick");
+                   eve.ContextOpen("contextOpen");
+               })
+                                        )
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div> );
+                })
+                              .Render();}
+    </div>
+    <table>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'DispatchApprovalList';" );"> Back</button>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateApprovalDetail", "Enquiry", new { DispatchId = Model.DispatchId, Status = 24 })'>
+                        Approve
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn-xs btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("UpdateApprovalDetail", "Enquiry", new { DispatchId = Model.DispatchId, Status = 25 })'>
+                        Reject
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+}
+
+<script id="OpenDoc" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/Enquiry/dispatchDocDownload?DispatchId=@Model.DispatchId&amp;DocumentPath={{:FilePath}}">  Open</a>
+</script>
+

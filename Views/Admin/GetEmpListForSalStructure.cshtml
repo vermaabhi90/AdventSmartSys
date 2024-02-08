@@ -1,0 +1,175 @@
+﻿@model IEnumerable<SmartSys.BL.EmployeeModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "GetEmployeeList";
+}
+@{
+
+    Html.EJ()
+        .Dialog("EmployeeCustomerDetails")
+        .Title("<a id='Title'></a>")
+        .Width(1200)
+        .CloseOnEscape(false)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#EmployeeCustomerDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#EmployeeCustomerDetails").ejDialog("open");
+        }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("EmployeeVendor")
+        .Title("<a id='Title'></a>")
+        .Width(1200)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#EmployeeVendor").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#EmployeeVendor").ejDialog("open");
+        }
+</script>
+<style type="text/css">
+    .e-grid .e-excelfilter .e-btncontainer input {
+        padding: .2em .4em .3em;
+    }
+
+    ::-ms-clear {
+        display: none;
+    }
+
+    .EditBtn {
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Employee List
+</div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdEmpGrid")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .AllowGrouping()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+         //         //.CustomContextMenuItems(new List<string> { "salary Structure" })
+         //        // .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "salary Structure" } });
+
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("salary_Structure", "salary Structure");
+             });
+
+         })
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+
+        .Columns(col =>
+        {
+            col.Field("EmpId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmpName").HeaderText("Employee Name").ValidationRules(v => v.AddRule("required", true)).Width(160).Add();
+            col.Field("Gender").HeaderText("Gender").Width(140).Add();
+            col.Field("Designation").HeaderText("Designation").Width(140).Add();
+            col.Field("AnnualFixPay").HeaderText("AnnualFixPay").Width(110).TextAlign(TextAlign.Right).Add();
+            col.Field("AnnualVariablePay").HeaderText("AnnualVariablePay").Width(110).TextAlign(TextAlign.Right).Add();
+            col.Field("ManagerName").HeaderText("Manager Name").Width(150).Add();
+            col.Field("DeptName").AllowEditing(false).HeaderText("Department").Width(160).Add();
+            col.Field("Deleted").AllowEditing(false).HeaderText("In-Active").TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(160).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(120).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           Click = "onClick",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .Template("#edit")
+
+            .TextAlign(TextAlign.Center)
+            .AllowFiltering(false)
+            .Width(90)
+            .Add();
+        })
+                 .ClientSideEvents(eve =>
+                 {
+
+                     eve.ContextClick("contextclick");
+                     //eve.("contextMenuOpen");/Admin/EmployeeCustomerDetails")' + "?EmpId=" + EmpId
+                 })
+
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/GetselectedEmpSalaryStructureDetails?EmpId={{:EmpId}}"></a>
+</script>
+
+<script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdEmpGrid").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["EmpId"];
+        var path = '@Url.Content("~/Admin/EditEmployee")' + "?EmpId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function contextclick(args) {
+
+    
+
+        if (args.text == "salary Structure") {
+                var tempData = args.text;
+
+                var grid = $("#grdEmpGrid").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var EmpId = result[0]["EmpId"];
+                var path = '@Url.Content("~/Admin/GetselectedEmpSalaryStructureDetails")' + "?EmpId=" + EmpId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+          
+                    
+    }
+</script>
+

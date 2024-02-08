@@ -1,0 +1,526 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryModel
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Quotation Preparation
+</div>
+<link href="~/Content/rating.css" rel="stylesheet" />
+<script src="~/Scripts/rating.js"></script>
+<script>
+    $(document).ready(function (e) {
+        var str = '@(TempData["Message"])'.toString();
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');          
+        }
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Currency").change(function (e) {
+            $("#AirwaysReceiptId").empty();
+        
+            alert("hi");
+            var QuotationId = $("#QuotationId").val();
+            var Currency = $("#Currency").val();
+            var path = '@Url.Action("GetExchangeRate")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { Currency: Currency,QuotationId : QuotationId},
+
+                success: function (lst) {
+             
+                },
+
+                error: function (ex) {
+                  
+                }
+            });
+            return false;
+        })
+        $("#AirwaysReceiptId").change(function (e) {
+
+            var FFId = $("#AirwaysReceiptId").val();
+            var FFIdTxt =  $("#AirwaysReceiptId option:selected").text();
+
+            $("#ReceiptId").val(FFId);
+            $("#FFRef").val(FFIdTxt);
+
+        })
+    });
+</script>*@
+<script type="text/javascript">
+        $(function ()
+        {
+            $('.rating').rating();
+        });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#AutoG').click(function () {
+            var Margin = $('#Margin').val();
+            var QuotationId = $('#QuotationId').val();
+            var CustomerName = $('#CustomerName').val();
+            var Currency = $('#Currency').val();
+            if(Currency =="")
+            {
+                //alert("You Can not Proceed Without Margin ,Please  Enter Margin");
+                var agree=confirm("You Can not Proceed Without Selecting Currency");
+                    if (agree) {
+                    }
+                return false
+            }
+            if(Margin =="")
+            {
+                //alert("You Can not Proceed Without Margin ,Please  Enter Margin");
+                var agree=confirm("You Can not Proceed Without Margin ,Please  Enter Margin");
+                    if (agree) {
+                    }
+                return false
+            }
+
+            var Mode = "Auto";
+          //  var QuotationId = 0;
+          //  var QuotationNumber ="";
+            var path = '@Url.Content("~/Enquiry/ResponseListByItem")' + "?&EnqId=" + @Model.EnqId + "&GenerateMode=" + Mode + "&QuotId=" + QuotationId + "&Margin=" + Margin + "&ItemId=0"
+
+            event.preventDefault();
+            window.location.replace(path);
+        });
+        $('#SendMail').click(function () {
+            var QuotationId = $('#QuotationId').val();
+            var QuotationNumber=$('#QuotationNumber').val();
+            var FileNM=$("#FileNM").val();
+            var path = '@Url.Content("~/Enquiry/CustomerEmailDeatiltoSendQuotation")' + "?QuotId=" + QuotationId + "&QuotNumber=" + QuotationNumber  + "&EnqId=" + @Model.EnqId  + "&FileName=" + FileNM;
+            event.preventDefault();
+            window.location.replace(path);
+        });      
+        $('#Appr').click(function () {
+            var QuotationId = $('#QuotationId').val();
+            var path = '@Url.Content("~/Enquiry/UpdateQuotation")' + "?EnqId=" + @Model.EnqId + "&StatusId=" +42 + "&QuotationId=" + $('#QuotationId').val() + "&Remark=" + "Ready For Approval"
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Currency').val('@Model.Currency');
+        $('#Done').click(function () {
+            var Terms = $('#Terms').val();
+            var Currency = $('#Currency').val(); 
+            var remark= $('#remark').val();
+            var Rating= $('#Rating').val();
+            if (Terms.toString() == "" || Terms == null) {
+                alert("Plese Select Term");
+                return false;
+            }    
+            if (remark.toString() == "" || remark == null) {
+                alert("Plese Enter Remark");
+                return false;
+            } 
+            var path = '@Url.Content("~/Enquiry/UpdateQuotationTerm")' + "?Terms=" + Terms + "&EnqId=" + @Model.EnqId + "&QuotId=" +@Model.QuotationId + "&Currency=" +Currency + "&Remark=" + remark  + "&Rating=" + Rating
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Terms = '@Model.TermId';    
+        $('#Terms').val(Terms);
+       
+    });
+</script>
+
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+    @foreach (var item in @Model.QuotList)
+    {
+        <tr>
+            <td>
+                <label>Enquiry No:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.EnqId, new { @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Term:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("PTID", (IEnumerable<SelectListItem>)ViewBag.Paymentterms, "Select Terms", new { id = "Terms", @class = "form-control" })
+
+                </div>
+            </td>
+            <td>
+                <label>Customer:</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBox("CustomerName", item.CustomerName, new { @Readonly = "", @style = "width:200px", @class = "form-control", id = "CustomerName" })
+                </div>
+            </td>
+
+            <td>
+                <label>Margin:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("Margin", "", new { @class = "form-control", id = "Margin" })
+                </div>
+            </td>
+            <td><span style="color:red">%</span></td>
+        </tr>
+        <tr>
+
+            <td style="display:none">
+                <div class="">
+                    @Html.TextBox("QuitId", item.QuotationId, new { @class = "form-control", id = "QuotationId", @readonly = "" })
+                </div>
+
+            </td>
+            <td>
+                <label>Quotation Number:</label>
+            </td>
+            <td>
+                <div class=" ">
+                    @Html.TextBox("QuotationNumber", item.QuotationNumber, new { @class = "form-control", id = "QuotationNumber", @readonly = "" })
+                </div>
+
+            </td>
+            <td>
+                <label>Quot Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("QuotDate", item.QuotDate, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+
+            </td>
+            <td>
+                <label>Status </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("Status", item.Status, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+
+            </td>
+            <td>
+                <label for="Rate">Currency</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.FileName, new { id = "FileNM" })
+                    @Html.DropDownList("CurrencyCodes", (IEnumerable<SelectListItem>)ViewBag.Currency, "Select Currency", new { style = "width:200px", id = "Currency", @class = "form-control " })
+                </div>
+            </td>
+
+
+        </tr>
+        <tr>
+            <td>
+                <label for="Company">Company</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("CompCode", item.CompCode, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+            </td>
+            <td>
+                <label>Modified By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("ModifiedBy", item.ModifiedBy, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+
+            </td>
+            <td>
+                <label>Modified Date </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("ModifiedDate", item.modifyDt, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+
+            </td>
+        </tr>
+
+    }
+</table>
+<table>
+    <tr>
+        <td width="130px">
+            <label>Remark</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 600Px; max-width: 800px;", id = "remark", @class = "form-control" })
+            </div>
+        </td>
+    </tr>
+</table>
+<br />
+
+@Html.HiddenFor(model => model.CustomerId)
+@Html.HiddenFor(model => model.EnqId)
+<div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("grdVendrespLst")
+                .Datasource((IEnumerable<object>)@ViewBag.CustItemList)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                        .PageSettings(p => { p.PageSize(20); })
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                //.ContextMenuSettings(contextMenu =>
+                //{
+                //    contextMenu.EnableContextMenu()
+                //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+                //    .CustomContextMenuItems(new List<string> { "Select Response" });
+                //})
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu();
+                    contextMenu.DisableDefaultItems();
+                    contextMenu.CustomContextMenuItems(c =>
+                    {
+                        c.AddItem("Select_Response", "Select Response");
+
+                    });
+
+                })
+                .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("MPN").HeaderText("MPN").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(150).Visible(true).Add();
+            col.Field("ItemName").HeaderText("Item Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(150).Visible(true).Add();
+            col.Field("Rate").HeaderText("Customer Rate").Format("{0:N4}").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("CRate").HeaderText("Vendor Rate").Format("{0:N4}").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("SPQ").HeaderText("SPQ").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("MOQ").HeaderText("MOQ").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("VendorPromiseDate").HeaderText("Lead Time").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+
+<table>
+    <tr>
+        <td>
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Quotation';" );"> Back</button>
+        </td>
+        @if (Model.StatusId != 24 && Model.StatusId != 45 && Model.StatusId != 42 && Model.StatusId != 62)
+        {
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" id="Done" class="btn-xs btn-success glyphicon glyphicon-ok"> Done</button>
+                </div>
+
+            </td>
+            <td id="autoGenrate">
+                <div class="btn" aria-label="...">
+                    <button type="submit" id="AutoG" class="btn-xs btn-white glyphicon glyphicon-align-justify"> Generate Auto</button>
+                </div>
+            </td>
+        }
+        <td>
+
+            @if (Model.StatusId != 50 && Model.StatusId != 45 && Model.StatusId != 25 && Model.StatusId != 62)
+            {
+                <div class="btn" aria-label="...">
+                    <button type="submit" id="SendMail" class="btn-xs btn-warning glyphicon glyphicon-send"> Send Mail</button>
+                </div>               
+                <div class="btn" aria-label="...">
+                    <button class="btn-xs btn-info glyphicon glyphicon-leaf Preview"> Preview</button>
+                </div>
+                if (Model.FileName != "")
+                {
+                    <div class="btn" aria-label="...">
+                        <button class="btn-xs btn-success glyphicon glyphicon-refresh RefreshPreview"> Refresh Preview</button>
+                    </div>
+                }
+            }
+            @if (Model.StatusId == 45 && Model.StatusId != 25 && Model.StatusId != 62)
+            {
+                <div class="btn" aria-label="...">
+                    <button type="submit" id="SendMail" class="btn-xs btn-success glyphicon glyphicon-send"> Re-Send Mail</button>
+                </div>               
+                <div class="btn" aria-label="...">
+                    <button class="btn-xs btn-info glyphicon glyphicon-leaf Preview"> Preview</button>
+                </div>
+            }
+            @if (Model.StatusId == 50 || Model.StatusId == 25 && Model.StatusId != 62)
+            {
+                <div class="btn" aria-label="..." id="sndApp">
+                  
+                    <button type="submit" id="Appr" class="btn-xs btn-primary glyphicon glyphicon-send"> Send To Approval</button>
+                </div>                
+            }
+            @if (Model.StatusId == 45)
+            {
+                <div class="btn" aria-label="..." id="sndApp">
+                    <button type="submit" id="Reviewed" class="btn-xs btn-primary glyphicon glyphicon-scissors"> Reviewed Quot</button>
+                </div>
+            }
+           
+        </td>
+        <td>
+            <div class="btn" aria-label="...">
+                <input type="text" name="Rating" id="Rating" value=@Model.Rating class="rating rating10" />
+            </div>
+        </td>
+    </tr>
+        @if (Model.StatusId == 62)
+        {
+            <tr>
+                <td>                    
+                    <div class="alert alert-danger" role="alert">
+                        There is Revised Quotation on Top of This With Quotation Number @Model.RevisedQuotationNumber
+                    </div>
+                </td>
+                
+            </tr>
+        }
+</table>
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Select Response") {
+            var StatusId = @Model.QuotList[0].StatusId;
+            var Currency = $('#Currency').val();
+            if(Currency=="")
+                {
+                var agree=confirm("Please Select Currency");
+                     if (agree) {
+                }            
+            return false;
+            }
+            if(StatusId==24 || StatusId==45)
+            {
+
+               //alert("Editing Not Allowed after Quotation Approved");
+                var agree=confirm("Editing Not Allowed after Quotation Approved");
+                    if (agree) {
+
+                    }            
+                return false;
+            }
+
+            var tempData = args.text;
+            var grid = $("#grdVendrespLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ItemId = result[0]["ItemId"];
+            var Mode = "Response";
+        //  var QuotationNumber = $('#QuotationNumber').val();
+        //  var QuotationId = $('#QuotationId').val();
+        //  var CustomerName = $('#CustomerName').val();
+            var Margin =0;
+
+            var path = '@Url.Content("~/Enquiry/ResponseListByItem")' + "?EnqId=" + @Model.EnqId + "&GenerateMode=" + Mode  + "&QuotId=" +@Model.QuotationId + "&Margin=" + Margin + "&ItemId=" + ItemId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+
+        var Curr=$("#Currency").val();
+        if(Curr.toString() == "")
+        {
+            $("#autoGenrate").hide();
+            $("#sndApp").hide();
+        }
+
+        $('.Preview').click(function (e) {
+            var QuotationNumber=$("#QuotationNumber").val();
+            var FileNM=$("#FileNM").val();
+            var path = '@Url.Content("~/Enquiry/PreviewQuotation")' + "?QuotId=" + @Model.QuotationId  + "&QuotNumber=" + QuotationNumber  + "&EnqId=" + @Model.EnqId  + "&FileName=" + FileNM;
+            //e.preventDefault();
+            window.open(path);
+            //$("#Preview").ejDialog({
+            //    contentUrl: path,
+            //    contentType: "ajax"
+            //});
+            //$("#Preview").ejDialog("open");
+
+        });
+        $('.RefreshPreview').click(function (e) {
+            var QuotationNumber=$("#QuotationNumber").val();
+            var FileNM=$("#FileNM").val();
+            var path = '@Url.Content("~/Enquiry/RefreshPreview")' + "?QuotId=" + @Model.QuotationId  + "&QuotNumber=" + QuotationNumber  + "&EnqId=" + @Model.EnqId  + "&FileName=" + FileNM;
+            window.open(path);
+        });
+        $('#Reviewed').click(function (e) {
+            var agree=confirm("You Want to Reviewed Your Quotation ?.");
+            if (agree) {
+                    var path = '@Url.Content("~/Enquiry/ReviewedQuotation")' +  "?QuotId=" + @Model.QuotationId  + "&EnqId=" + @Model.EnqId;
+                    event.preventDefault();
+                    window.location.replace(path);
+                }                
+           
+            
+        });
+    });
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("Preview")
+        .Title("")
+        .Width(1100)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#Preview").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#Preview").ejDialog("open");
+        }
+</script>

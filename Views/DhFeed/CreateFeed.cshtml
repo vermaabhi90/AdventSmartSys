@@ -1,0 +1,399 @@
+﻿@model SmartSys.BL.DHFeedActionModel
+
+@{
+    ViewBag.Title = "CreateFeed";
+    var grid = new WebGrid(source: Model.ListOfFeedActions, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "Mappedgrid");
+    var gridActionParam = new WebGrid(source: Model.ListOfFeedActionParameters, canPage: true, rowsPerPage: 15, ajaxUpdateContainerId: "grid");
+}
+
+@if (Model.ListActionType.Count > 6)
+{
+    <script>
+        $(document).ready(function () {
+                var FeedType = $('#drpFeedType').val();
+                if (FeedType == "XLSLoader" || FeedType == "CSVLoader" || FeedType == "DBLoader") {
+                    var path = '@Url.Content("~/DhFeed/GetActionTypDrpList")' + "?FeedType=" + FeedType
+                    event.href = path;
+                    $(this).attr('href', path);
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+            });
+    </script>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.xyz').click(function (event) {
+            var ActionType = $('#drpActionType').val();
+            if (ActionType.toString() == "") {
+                alert("Please Select Action Type ");
+                return false;
+            }
+            var FeedType = $('#drpFeedType').val();
+            if (FeedType.toString() == "DBLoader")
+            {
+                FeedType = "DBLoaderProcess";
+
+            }
+            var ActionType = $('#drpActionType').val();
+            var TxtColDesrip = $('#TxtColDesrip').val();
+            var TxtColSequ = parseInt($('#TxtColSequ').val());
+
+            if (FeedType.toString != "")
+            {
+                var path = '@Url.Content("~/DhFeed/DHActionDetail")' + "?ActionType=" + ActionType + "&Description=" + TxtColDesrip + "&Sequence=" + TxtColSequ + "&FeedType=" + FeedType
+                event.href = path;
+                $(this).attr('href', path);
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+            {
+                alert("Please Select Feed Type Code");
+                return false;
+            }
+        });
+      
+
+
+        $('#drpFeedType').change(function (event) {
+            var FeedType = $('#drpFeedType').val();
+            if (FeedType == "XLSLoader" || FeedType == "CSVLoader" || FeedType == "DBLoader")
+            {
+                var path = '@Url.Content("~/DhFeed/GetActionTypDrpList")' + "?FeedType=" + FeedType
+                event.href = path;
+                $(this).attr('href', path);
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        });
+       
+        $('.save').click(function (event) {
+              var FeedName =  $('#txtFeedName').val();
+            if (FeedName.toString() == "")
+            {
+                alert("Please Fill Feed Name ");
+                return false;
+            }
+
+            $("#FormFeed").unbind('submit').submit();
+        });
+
+
+    });
+
+</script>
+
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.FeedActionID > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Feed Details
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Feed Details
+    </div>
+}
+
+@using (Html.BeginForm("SaveFeedDetails", "DhFeed", FormMethod.Post, new { id = "FormFeed" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <br>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.FeedModel.FeedName)
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.FeedModel.FeedName, new { @class = "form-control", id = "txtFeedName" })
+                    @Html.ValidationMessageFor(model => model.FeedModel.FeedName)
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.LabelFor(model => model.FeedModel.Description)
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.FeedModel.Description, new { @class = "form-control", id = "Txtdescrip" })
+                    @Html.ValidationMessageFor(model => model.FeedModel.Description)
+                </div>
+            </td>
+
+            <td>
+                <div class="editor-label">
+                    @Html.Label("Feed Type")
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("FeedTypeCode", new List<SelectListItem>
+                           {
+                                    new SelectListItem() {Text="XLSLoader",Value="XLSLoader"},
+                                    new SelectListItem() {Text="CSVLoader",Value="CSVLoader"},
+                                     new SelectListItem() {Text="DBLoader",Value="DBLoader"},
+                           }
+                           , "--Select Feed Type--", new { @class = "form-control", id = "drpFeedType" })
+                </div>
+            </td>
+        </tr>
+
+        @if (Model.ListActionType.Count > 0)
+        {
+            <tr>
+                <td>
+                    <label> ActionType: </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ActionTypeCode", (IEnumerable<SelectListItem>)ViewBag.DrpDwnDHActionMast, "--Select Action Type--", new {  @class = "form-control" ,id = "drpActionType" })
+                    </div>
+                </td>
+                <td><label>Description</label></td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new  { @class = "form-control", @id = "TxtColDesrip" } )
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                <td><label>Sequence</label></td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Sequence, new  { @class = "form-control", id = "TxtColSequ"  })
+                        @Html.ValidationMessageFor(model => model.Sequence, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    @Html.ActionLink(" Add Actions", "DHActionDetail", null, new { @class = "xyz  btn-sm btn-info glyphicon glyphicon-plus" })
+                </td>
+            </tr>
+        }
+
+        else
+        {
+            <tr>
+            <td>
+            <div style="border:dotted 1px black" class="label label-info">
+                No Actions Record Found
+            </div>
+        </td>
+                </tr>
+        }
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                @if (Model.ListOfFeedActions.Count > 0)
+                {
+
+                    @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdActionFeedList")
+                        .Datasource(Model.ListOfFeedActions)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("ActionType").HeaderText("Action Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("SequenceNO").HeaderText("Sequence NO").Width(60).Add();
+                            col.HeaderText("Action").Template("<a class='btn-xs btn-info glyphicon glyphicon-plus' href='#'>Add Param</a>").TextAlign(TextAlign.Center).Width(100).Add();
+                            col.HeaderText("Delete").Commands(command =>
+                            {
+                                command.Type("Delete")
+                                             .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                             {
+                                                 
+                                                 ContentType=ContentType.TextAndImage,
+                                                 Text = "Delete",
+                                                 Width = "100px",
+                                                 Click = "onClick",
+                                                 PrefixIcon = "e-trash"
+                                             }).Add();
+                            })
+.TextAlign(TextAlign.Center)
+.Width(150)
+.Add();
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                            eve.Create("onGridCreate");
+                            eve.RowSelected("onRowSelected");
+                        })
+                    )
+                   
+                }
+                else
+                {
+                    <br />
+                    <div style="border:dotted 1px black" class="label label-info">
+                        No Actions Record Found
+                    </div>
+                }
+
+            </td>
+        </tr>
+    </table>
+    <br><br>
+    <table>
+
+        <tr>
+            <td>
+                @if (Model.ListOfFeedActionParameters.Count > 0)
+                {
+
+                    @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdActionFeedparamList")
+                        .Datasource(Model.ListOfFeedActionParameters)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("SequenceNO").HeaderText("Sequence NO").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ActionType").HeaderText("Action Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ParamName").HeaderText("Parameter Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Value").HeaderText("Parameter Value").Width(60).Add();
+                            col.HeaderText("Delete").Template("#DeleteActionFeedParam").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                    )
+                   
+                }
+                else
+                {
+                    <br />
+                    <div style="border:dotted 1px black" class="label label-info">
+                        No Parameters Record Found
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'FeedList';" );"> Back</button>
+                    <button type="submit" value="Save" class="save btn-xs buttonCss btn-info glyphicon glyphicon-save"> Save</button>
+            </td>
+        </tr>
+    </table>
+}
+<script type="text/javascript">
+    function GridUpdate(data) {
+        $('#grid').html(data);
+    }
+</script>
+
+
+<script id="DeleteActionFeedParam" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DhFeed/DeleteParam?Value={{:Value}}&amp;strParamName={{:ParamName}}&amp;url=Create">  Delete</a>
+</script>
+
+<script type="text/javascript">
+    function onRowSelected(args) {
+     
+        var result = this.getSelectedRecords();
+        
+        var ActionType = result[0].ActionType;
+        var SequenceNO = result[0].SequenceNO;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+            e.preventDefault();
+            var FeedType = $('#drpFeedType').val();
+         
+
+            if (FeedType.toString() == "XLSLoader" || FeedType.toString() == "DBLoader") {
+                if (ActionType.toString() == "SourceInfo" || ActionType.toString() == "DBLoaderProcess" || ActionType.toString() == "ExceSP") {
+                    var path = '@Url.Content("~/DhFeed/EWSourceInfo")' + "?ActionType=" + ActionType + "&SequenceNo=" + SequenceNO
+                    event.href = path;
+                    $(this).attr('href', path);
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+                else if (ActionType.toString() == "DestTable") {
+                    var path = '@Url.Content("~/DhFeed/XLSDestTable")' + "?ActionType=" + ActionType + "&SequenceNo=" + SequenceNO
+
+                    event.href = path;
+                    $(this).attr('href', path);
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+                else {
+                    alert("There are no any parameter");
+                    return false;
+                }
+            }
+            else if (FeedType.toString() == "CSVLoader") {
+                if (ActionType.toString() == "SourceInfo") {
+                    var path = '@Url.Content("~/DhFeed/SourceInfo")' + "?ActionType=" + ActionType + "&SequenceNo=" + SequenceNO
+                    event.href = path;
+                    $(this).attr('href', path);
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+                else if (ActionType.toString() == "DestTable") {
+                    var path = '@Url.Content("~/DhFeed/XLSDestTable")' + "?ActionType=" + ActionType + "&SequenceNo=" + SequenceNO
+                    event.href = path;
+                    $(this).attr('href', path);
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+                else {
+                    alert("There are no any parameter");
+                    return false;
+                }
+            }
+        });
+    };
+
+</script>
+<script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdActionFeedList").ejGrid("instance");
+        var ActionType = grid.getSelectedRecords()[0].ActionType;
+        var SequenceNO = grid.getSelectedRecords()[0].SequenceNO;
+
+        var agree = confirm("Are you sure to delete ?")
+        if (agree) {
+            var path = '@Url.Content("~/DhFeed/DeleteAction")' + "?iSequenceNumber=" + SequenceNO
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+        else {
+            return false;
+        }
+
+
+    };
+               
+</script>
+

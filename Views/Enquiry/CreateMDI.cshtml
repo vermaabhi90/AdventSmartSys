@@ -1,0 +1,568 @@
+﻿@model SmartSys.BL.Enquiry.MDIModel
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select",
+            allowClear: true,
+            tags: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+@{
+    ViewBag.Title = "CreateMDI";
+}
+ <style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+   Create Metrial Receipt Intimetion
+</div>   
+@using (Html.BeginForm("CreateMDI", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            @if(Model.MRIId > 0)
+            { 
+            <tr>
+                <td>
+                    <label for="MRIId">MRI Id </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.MRIId, new { @class = "form-control", id = "MRIId", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.MRIId)
+                    </div>
+                </td>               
+            </tr>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.MRIId)
+            }
+            <tr>
+                <td>
+                    <label for="CompCode">Company</label>
+                </td>
+                @if (Model.MRIId > 0)
+                {
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CompCode, new { @class = "form-control", id = "CompCodeDrp", @readonly = "readonly" })                           
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = " drp form-control", style = "width:310px", id = "CompCodeDrp" })
+                        </div>
+                    </td>
+                }                               
+                <td>
+                    <label for="Vendor">Vendor</label>
+                </td>
+                @if (Model.MRIId > 0)
+                {
+                    <td>
+                        <div class="">
+                            @Html.HiddenFor(model => model.VendorId,new { id="vendId"})
+                            @Html.TextBoxFor(model => model.VendorName, new { @class = "form-control", id = "", @readonly = "readonly" })
+                            
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.DropDownList("VendorId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Vendor ---", new { @class = " drp form-control", style = "width:310px", id = "VendorDrp" })
+                        </div>
+                    </td>
+                }
+                
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="DocumentNo">Document No </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DocumentNo, new { @class = "form-control", id = "DocumentNo" })
+                        @Html.ValidationMessageFor(model => model.DocumentNo)
+                    </div>
+                </td>
+                <td>
+                    <label for="MRIDate">MRI Date</label>
+                </td>
+                @if (Model.MRIId == 0)
+                {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(model => model.MRIDate).Value(DateTime.Now)
+                    </div>
+                </td>
+                }
+                else
+                {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePickerFor(model => model.MRIDate)
+                    </div>
+                </td>
+                }
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td style="width:104px">
+                    <label> Remark</label>
+                </td>
+                <td>
+                    @Html.TextAreaFor(model => model.Remark, new { @maxlength = "500", id = "Remark", @style = "width: 545px; max-width: 800px;", @class = "form-control" })
+                </td>
+            </tr>
+        </table>
+
+        @if (Model.MRIId > 0)
+        {
+        <table>
+            <tr>
+              
+                <td>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdMDIItemLst")
+                .Datasource((IEnumerable<object>)@Model.LstMDIItemList)
+                .AllowFiltering()
+                .AllowPaging()
+                .PageSettings(p => { p.PageSize(20); })
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu();
+                    contextMenu.DisableDefaultItems();
+                    contextMenu.CustomContextMenuItems(c =>
+                    {
+                        c.AddItem("Add_Record", "Add Record");
+                        c.AddItem("Edit1", "Edit Record");
+                        c.AddItem("Delete1", "Delete Record");
+                    });
+                })
+                 .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .ClientSideEvents(eve => { eve.ActionBegin("toolClick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .ToolbarSettings(toolbar =>
+                {
+                    toolbar.ShowToolbar().ToolbarItems(items =>
+                    {
+                        items.AddTool(ToolBarItems.Add);
+                        items.AddTool(ToolBarItems.Edit);
+                        items.AddTool(ToolBarItems.Delete);
+                    });
+                })
+        .Columns(col =>
+        {
+            col.Field("MRIDetailId").HeaderText("MRI Detail Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MRIId").HeaderText("MRI Id").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("Rate").HeaderText("Rate").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("NAVPONO").HeaderText("NAVPONO").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("StrNAVPODate").HeaderText("NAVPODate").Width(70).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(70).Add();
+            col.Field("strCreatedDate").HeaderText("Created Date").Width(70).Add();
+            col.Field("ReceiptId").HeaderText("ReceiptId").Width(70).Add();
+
+        })
+                        )
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+        }
+
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+           
+                @if (Model.MRIId > 0)
+                {
+                    <tr>
+                        <td>
+                            <label>Created By</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                            </div>
+                        </td>
+                        <td>
+                            <label>Created Date</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "Readonly" })
+                            </div>
+                        </td>
+                        
+                        
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Modified By</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                            </div>
+                        </td>
+                        <td>
+                            <label>Modified Date</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'MDIList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+    </body>
+</html>
+}
+<script>
+    $(document).ready(function () {
+        $("#CompCodeDrp").change(function () {
+            $("#VendorDrp").empty();           
+            var path = "/Enquiry/GetVendorListByCompCode"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+                        $('#VendorDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#VendorDrp").val(Brand.Value).trigger("change");
+                        }
+                    });
+                    $('#VendorDrp').select2('rebuild');
+                    $('#VendorDrp').select2('refresh');
+                },
+                error: function (ex) {
+                    alert('Err');
+                }
+            });
+            return false;
+        })
+    }); 
+</script>
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("Edit / Create Item Enquiry").ContentTemplate(@<div>
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Edit / Create Material Dispatch Intimetion
+        </div>
+        <table style="border-collapse:separate;border-spacing: 0 6px;">
+            <tr>
+                <td width="100px">
+                    <label>MRI Detail Id:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="number" id="MRIDetailId" name="MRIDetailId" readonly="readonly" class="form-control" />
+                    </div>
+                </td>
+            </tr>           
+            <tr>
+                <td width="100px">
+                    <label>ItemId:</label>
+                </td>
+                <td>
+                    <div id="Ittemp">
+                        <input type="hidden" id="ItemTxtHide" />
+                        @Html.EJ().Autocomplete("ItemDrp").AutoFocus(true).ShowPopupButton(true).Datasource((IEnumerable<SmartSys.BL.Enquiry.InvoiceItemModel>)ViewBag.itemlist).AutocompleteFields(f => f.Text("ItemName").Key("ItemId")).EnableAutoFill(true).ShowPopupButton(true).Width("400").ClientSideEvents(e => e.Select("onSelect"))                                             
+                    </div>
+                    <div id="temp">
+                        <input type="text" id="MPNt" name="MPNt" readonly="readonly" class="form-control" />
+                    </div>
+                </td>
+                <td width="100px">
+                    <label>NAV PO NO:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="hidden" id="POTxtHide" />
+                        @Html.DropDownList("DocumentNo", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Carton ---", new { @class = "xyz form-control", style = "width:250px", id = "DocNo" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td width="100px">
+                    <label>Quantity:</label>
+                </td>
+                <td>
+                    <div class="">                       
+                        <input type="number" id="Quantity" onkeyup="checkQty(); return false;" name="Quantity" class="form-control" />
+                    </div>
+                </td>
+                <td width="100px">
+                    <label>Rate:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="number" id="Rate"  name="Rate" class="form-control" />
+                    </div>
+                </td>                
+            </tr>
+        <tr>
+            <td width="100px">
+                <label>PO Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("NAVPODate").Value(DateTime.Now)                 
+                </div>
+            </td>
+        </tr>
+        </table>       
+        <table>
+            <tr>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="SaveItemEnq" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                    </div>
+
+                </td>
+
+            </tr>
+        </table>
+
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+    }
+</div>
+<script type="text/javascript" class="jsScript">
+    function onSelect(args) {
+        var i=args.key
+        $("#ItemTxtHide").val(i)           
+        $("#DocNo").empty()
+            var path1 = "/Enquiry/GetPOforReceiptByItem"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val(), ItemId: args.key },
+                success: function (Brands) {
+                    $.each(Brands, function (i, Brand) {
+                        $('#DocNo').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');                       
+                    });  
+                    var str =   $(".xyz :selected").text();                       
+                    arr = str.split('-');                   
+                    strFine = arr[arr.length-1];
+                    strRate = arr[arr.length-2];
+                    $("#Quantity").val(parseFloat(strFine)); 
+                    $("#Rate").val(parseFloat(strRate));                  
+                    $("#POTxtHide").val(arr[arr.length - 4]);
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });            
+            return false;         
+        }
+    function toolClick(args) {
+       
+        if(args.requestType == "add")
+        {
+            $('#ItemTxtHide').val(0)
+            $('#MRIDetailId').val(0)
+            $('#DocNo').empty();
+            $('#MPNt').val(0)
+            $('#MPNt').hide();
+            $('#Quantity').val(0)
+            $('#Rate').val(0)
+           
+            $('#Ittemp').show();
+                $("#dialogIcon").ejDialog("open");
+                return false;            
+        }
+        if (args.requestType == "beginedit") {
+            $("#dialogIcon").ejDialog("open");
+            $('#ItemTxtHide').val(args.row.children().eq(2).text())
+            $('#MRIDetailId').val(args.row.children().eq(0).text())
+            $('#MPNt').val(args.row.children().eq(4).text())
+            $('#MPNt').show();
+            $('#Ittemp').hide();
+            $('#DocNo').empty();
+            $('#DocNo').append('<option value=' + args.row.children().eq(7).text() + '>' + args.row.children().eq(7).text() + '-' + ' ' + '-' + args.row.children().eq(6).text() + '-' + args.row.children().eq(5).text() + '</option>');
+            $("#DocNo").val(args.row.children().eq(7).text()).trigger("change")
+            $('#Quantity').val(args.row.children().eq(5).text())
+            $('#Rate').val(args.row.children().eq(6).text())
+            $('#NAVPODate').val(args.row.children().eq(8).text())            
+            return false;
+        }
+        
+    }
+</script>
+
+<script>
+    function checkQty() {     
+        var str =   $(".xyz :selected").text();   
+        var Quantity = $("#Quantity").val();          
+        arr = str.split('-');
+        strFine = arr[arr.length-1];
+        strRate = arr[arr.length-2];
+        var Quantity = $("#Quantity").val();    
+        if(Quantity > parseFloat(strFine))
+        {
+            alert("Quantity must be Less than  or Equal to "+ strFine);
+            $("#Quantity").val(parseFloat(strFine));           
+            return false;
+        }        
+    }
+</script>
+<script>
+    $(document).ready(function () {      
+        $('#DocNo').change(function ()
+        {
+            var str = $(".xyz :selected").text();
+            arr = str.split('-');
+            strFine = arr[arr.length - 1];
+            strRate = arr[arr.length - 2];
+            $("#Quantity").val(parseFloat(strFine));
+            $("#Rate").val(parseFloat(strRate));
+            $("#POTxtHide").val(arr[arr.length - 4]);
+        });
+    });
+</script>
+<script>
+    $('#SaveItemEnq').click(function () {
+        var Itemid = $("#ItemTxtHide").val();
+        var MRIDetailId = $("#MRIDetailId").val();
+        var Quantity = $("#Quantity").val();
+        var PONo = $("#POTxtHide").val();
+        var Rate = $("#Rate").val();
+        var ExpectedDate = $("#NAVPODate").val();
+        if(Itemid.toString() == "")
+        {
+            alert("Please Select Item");
+            return false;
+        }
+        if (PONo.toString() == "") {
+            alert("Please Select PO");
+            return false;
+        }
+        if (Quantity.toString() == "") {
+            alert("Please Enter Quantity");
+            return false;
+        }
+        if (Rate.toString() == "") {
+            alert("Please Enter Rate");
+            return false;
+        }
+        if (ExpectedDate.toString() == "") {
+            alert("Please Select PO Date");
+            return false;
+        }       
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/SavePurMRIntimetionItem",  
+            data: { Itemid: Itemid, Quantity: Quantity, PONo: PONo, ExpectedDate: ExpectedDate, Rate: Rate, MRIId: $("#MRIId").val(), MRIDetailId: MRIDetailId },
+            success: function (result) {
+                var obj = $("#grdMDIItemLst").ejGrid("instance")
+                obj.dataSource(result);
+                $("#dialogIcon").ejDialog("close");
+                toastr.success("Data Saved Successfully!");
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(errorThrown);
+                toastr.error(errorThrown);
+            }
+        });
+       
+        $("#dialogIcon").ejDialog("close");
+    });  
+</script>
+
+<script>
+    function contextclick(args) {       
+        if (args.text == "Delete Record") {
+            var tempData = args.text;
+                var grid = $("#grdMDIItemLst").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var MRIDetailId = result[0]["MRIDetailId"];
+                var MRIId = result[0]["MRIId"];
+                var ReceiptId = result[0]["ReceiptId"];
+                if (ReceiptId == 0) {
+                    var agree = confirm("You Want to Delete Item")
+                    if (agree) {
+                        $.ajax({
+                            dataType: 'json',
+                            type: "POST",
+                            url: "/Enquiry/DeleteIntimetionItem",
+                            data: { MRIId: MRIId, MRIDetailId: MRIDetailId },
+                            success: function (result) {
+                                var obj = $("#grdMDIItemLst").ejGrid("instance")
+                                obj.dataSource(result);
+                                $("#dialogIcon").ejDialog("close");
+                                toastr.success("Data Delete Successfully!");
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(errorThrown);
+                                toastr.error(errorThrown);
+                            }
+                        });
+                        return false;
+                    }                   
+                }
+                else
+                {                    
+                    toastr.error("You can not Delete This Item.");
+                }
+        }
+    }
+</script>
+@Html.EJ().ScriptManager()

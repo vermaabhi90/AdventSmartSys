@@ -1,0 +1,618 @@
+﻿@model SmartSys.BL.Enquiry.ItemStockAuditModel
+<script src="~/Scripts/toastr.min.js"></script>
+<script src="~/Scripts/toastr.js"></script>
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+@{
+    ViewBag.Title = "CreateAudit";
+}
+@*<script type="text/javascript">
+    $(function () {
+        $(".drp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });      
+</script>*@
+@if (Model.AuditId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Item Stock Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Item Stock Detail
+    </div>
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateAudit", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label for="AuditId">AuditId </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.AuditId, new { @readonly = "readonly", id = "AuditId", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AuditId)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Reason">Audit Date</label>
+                </td>
+
+                <td>
+                    @if(Model.AuditId > 0)
+                    {
+                        @Html.EJ().DatePicker("AuditDate").Value(Model.AuditDate).ReadOnly(true)
+                    }
+                    else
+                    {
+                        @Html.EJ().DatePicker("AuditDate").Value(DateTime.Now).ReadOnly(true)
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="AuditId">Company </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, new { @class = "form-control", style = "width:200px", id = "Company" })
+                    </div>
+                </td>
+               
+                @if (Model.AuditId > 0)
+                {
+                <td>
+                    <label for="AuditId">Audit By </label>
+                </td>
+
+                <td>
+                    <div class="">
+                       @Html.TextBoxFor(model => model.AuditBy, new { @readonly = "readonly", id = "AuditBy", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AuditBy)
+                    </div>
+                </td>
+                }
+            </tr>
+            <tr>
+                @if (Model.AuditId > 0)
+                {
+                    <td id="upFile3">
+                        <label>File:</label>
+                    </td>
+                    <td id="upFile4">
+                        <div class="input-group-btn">
+
+                            <input type="file" name="file" id="file" multiple value="uploadfile" class="btn btn-success" />
+
+                        </div>
+
+                    </td>
+                   
+                    <td id="upFile5">
+                        <div class="">
+                            <input type="button" id="btnUpload" value="Submit" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                        </div>
+                    </td>
+                    @*<td id="upFile5">
+                        <div class="">
+                            @Html.ActionLink(" Download Sample", "DownloadItemStocksample", "Enquiry", new { @class = "btn btn-info glyphicon glyphicon-hand-download" })
+                           
+                        </div>
+                        </td>*@
+                        <td>
+                        <button type="button" name="RunReport" class="btn btn-success glyphicon glyphicon-thumbs-up RunReport"> Run Report</button>
+                        @if (Model.StatusId == 9 && Model.CurrentDate.Date == Model.RunDate.Date)
+                        {
+                            @*@Html.ActionLink(" Open", "DownloadItemStocksample", "Enquiry", new { @class = "btn btn-info glyphicon glyphicon-hand-download" })*@
+                            <button type="button" name="Open" class="btn btn-success glyphicon glyphicon-thumbs-up Open"> Open</button>
+                        }
+                        else if (Model.StatusId == 10)
+                        {
+                            <button type="button" name="Open" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</button>
+                        }
+                        else if (Model.StatusId == 2 || Model.StatusId == 3)
+                        {
+                            <button type="button" name="Open" class="btn-xs btn-info glyphicon glyphicon-refresh"> Report Running</button>
+                        }
+                        else
+                        {
+                            <label>Please Run The Report</label>
+                        }
+                        &nbsp;
+                        @if (Model.StatusId > 0)
+                        {
+                            <label> Run Date: </label>  <label> @Model.RunDate</label>
+                        }
+
+                    </td>
+                   
+                    @*<td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.OutputLocation, new { @readonly = "readonly", id = "OutputLocation", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.OutputLocation)
+                        </div>
+                    </td>*@
+                }
+            </tr>
+                       
+                                   
+        </table>  
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td width="80px">
+                    <label for="Remark">Remark </label>
+                </td>
+                <td>
+                    @Html.TextAreaFor(model => model.Remark, new { style = "width:500px", @class = "form-control", id = "Remarkabc" ,@maxlength="200"})
+                </td>
+            </tr>
+        </table>  
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            @if (Model.AuditId > 0)
+            {
+                <tr>
+                    <td>
+                        <label for="ModifiedBy">Modified By</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", id = "ModifiedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="ModifiedDate">Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", id = "ModifiedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+
+                </tr>
+            }
+        </table>    
+        @if (Model.AuditId > 0)
+        {
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdstockdetailList")
+        .Datasource((IEnumerable<object>)@Model.DetailList)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add_Record", "Add Record");
+                  c.AddItem("Edit1", "Edit Record");
+                  c.AddItem("Error_Detail", "Error Detail");
+              });
+          })
+         .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+        .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .ToolbarSettings(toolbar =>
+        {
+            toolbar.ShowToolbar().ToolbarItems(items =>
+            {
+                items.AddTool(ToolBarItems.Add);
+                items.AddTool(ToolBarItems.Edit);
+            });
+        })
+        .Columns(col =>
+        {
+            col.Field("AuditDetailId").HeaderText("Audit Detail Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("ItemName").HeaderText("ItemName").Width(110).Add();
+            col.Field("MPN").HeaderText("MPN").Width(110).Add();
+            col.Field("Quantity").HeaderText("Quantity").Width(110).Add();
+            col.Field("LocationIdDesc").HeaderText("Location").Width(110).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("AuditId").HeaderText("AuditId").Visible(false).Width(110).Add();
+            col.Field("ItemId").HeaderText("ItemId").Visible(false).Width(110).Add();
+            col.Field("LocationId").HeaderText("LocationId").Visible(false).Width(110).Add();
+            col.Field("ErrorDetail").HeaderText("ErrorDetail").Visible(false).Width(110).Add();
+            col.Field("Check").HeaderText("Check").Visible(false).Width(110).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+                        )
+                    </div>
+                </td>
+            </tr>
+        </table>
+        }
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetItemStockAuditList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+                <td id="SavExcl">
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="Exceldata" class="btn-xs btn-default glyphicon glyphicon-save"> Save Valid Excel Data</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+<script>
+    $(document).ready(function () {
+
+        $('.RunReport').click(function (e) {
+
+            var TxtParamValue = '@Model.TxtParamValue';
+            var selTypeText = '@Model.TxtParamValue';
+            var ParamId = '@Model.ParamId';
+            var hidText = "";
+            var ParamValue = null;
+            var Parmname = null;
+            var ReportId = '@Model.ReportId';
+            //alert("hi")
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                //url: "/Enquiry/CreateAudit",
+                @*data: { AuditId: '@Model.AuditId' },*@
+                url: "/AdhocReporting/ReportParam",
+                data: { hidText: hidText, TxtParamValue: TxtParamValue, ParamId: ParamId, ReportId: ReportId },
+                success: function (data) {                  
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+
+            window.location.reload();          
+        });
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.Open').click(function (e) {
+            var path = '@Url.Content("~/AdhocReporting/Download")' + "?FileName=" + '@Model.OutputLocation'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+    });
+</script>
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("Edit / Create Stock Audit Item").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Edit / Create Item Enquiry
+        </div>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td width="100px">
+                    <label>Detail Id:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="number" readonly="readonly"  id="AuditDetailId" name="AuditDetailId" class="form-control" />
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 6px;">
+
+            <tr>
+                <td width="100px">
+                    <label>Item:</label>
+                </td>
+                <td>
+                    <div id="ItemAuto" class="">
+                        <input type="hidden" id="ItemTxtHide" />
+                        @Html.EJ().Autocomplete("ItemDrp").AutoFocus(true).ShowPopupButton(true).Datasource((IEnumerable<SmartSys.BL.Enquiry.ItemListModel>)ViewBag.itemlist).AutocompleteFields(f => f.Text("ItemName").Key("ItemId")).Width("400").ClientSideEvents(e => e.Select("onSelect"))
+                    </div>
+                    <div id="Itemtxt" class="">
+                        <input type="text" readonly="readonly" id="ItemDet" name="ItemDet" class="form-control" />
+                    </div>
+                </td>
+                <td id="ItemAutoBtn">
+                    <input type="button" value="Get All" id="UpdateItem" class="btn-xm btn-success" />
+                </td>
+                <td width="100px">
+                    <label>Quantity:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="number" id="Quantity" name="Quantity" class="form-control" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Location">Location </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("LocationId", (IEnumerable<SelectListItem>)ViewBag.LstStockLocation, "--- Please Select Location ---", new { @class = "drp form-control", style = "width:300px", id = "LocationId" })
+                    </div>
+                </td>
+            </tr>
+        </table>        
+        <table>
+            <tr>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="SaveItem" class="btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                    </div>
+
+                </td>
+
+            </tr>
+        </table>
+
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+    }
+</div>
+<script>
+    $('#SaveItem').click(function () {        
+        var Itemid = $("#ItemTxtHide").val();
+        var Quantity = $("#Quantity").val();
+        var AuditDetailId = $("#AuditDetailId").val();
+        var AuditId = '@Model.AuditId'; 
+        var LocationId = $("#LocationId").val();
+        if (LocationId.toString() == "")
+        {
+            LocationId = 0;
+        }
+        if (Itemid.toString() == "") {
+            alert("Please Select Item");
+            return false;
+        }
+        if (Quantity.toString() == "") {
+            alert("Please Enter Quantity");
+            return false;
+        }
+        if (Quantity.toString() == "0") {
+            alert("Quantity must be greater Than Zero.");
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/SaveItemAuditDetail",  //Update is Server side method
+            data: { Itemid: Itemid, Quantity: Quantity, AuditId: AuditId, AuditDetailId: AuditDetailId, LocationId: LocationId },
+            success: function (result) {
+                var obj = $("#grdstockdetailList").ejGrid("instance")
+                obj.dataSource(result);
+                toastr.success("Item Saved Successfully!");
+                $("#dialogIcon").ejDialog("close");                
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(errorThrown);
+                toastr.error(errorThrown);
+            }
+        });
+        $("#ItemDrp").val(null);
+        $("#ItemTxtHide").val(null);
+        $("#Quantity").val(null);
+        $("#dialogIcon").ejDialog("close");
+    });
+
+    function toolClick(args) {
+        if (args.requestType == "add") {
+            $("#AuditDetailId").val(0);
+            $("#ItemDrp").val(null);
+            $("#ItemTxtHide").val(null);
+            $("#Quantity").val(null);
+            $("#dialogIcon").ejDialog("open");
+            $("#Itemtxt").hide()
+            $("#ItemAuto").show()
+            $("#ItemAutoBtn").show()
+            return false;
+        }
+        if (args.requestType == "beginedit") {
+            $("#ItemDrp").ejAutocomplete("selectValueByKey", args.row.children().eq(10).text());
+            $("#Quantity").val(args.row.children().eq(3).text());
+            $("#LocationId").val(args.row.children().eq(11).text());
+            $("#AuditDetailId").val(args.row.children().eq(0).text());
+            $("#ItemDet").val(args.row.children().eq(2).text());
+            $("#ItemTxtHide").val(args.row.children().eq(10).text());
+            $("#Itemtxt").show()
+            $("#ItemAuto").hide()
+            $("#ItemAutoBtn").hide()
+            $("#dialogIcon").ejDialog("open");
+            return false;
+        }
+    }
+</script>
+<script type="text/javascript">
+    $('#SavExcl').hide();
+    $(document).ready(function () {
+        $("#UpdateItem").click(function () {
+            $("#ItemDrp").empty()
+            var path1= "/Enquiry/GetUpdateItems"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                success: function (Items) {
+                    $("#ItemDrp").ejAutocomplete("destroy");
+                    $('#ItemDrp').ejAutocomplete({
+                        "dataSource": Items,
+                        "fields": { text: "ItemName", key: "ItemId"  },
+                        "width": '400px',
+                        "showRoundedCorner": true,
+                        "showPopupOnLoad": true,
+                        "showPopupButton": true,
+                        select:"onSelect"
+                    });
+                },
+            });
+            return false;
+        })
+
+        $('#Exceldata').click(function () {
+            var path = '@Url.Action("SaveDataFromExcel")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { AuditId: '@Model.AuditId' },
+                success: function (result) {
+                    var obj = $("#grdstockdetailList").ejGrid("instance")
+                    obj.dataSource(result);
+                    toastr.success("Item Saved Successfully!");
+                },
+                error: function (ex) {
+
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script type="text/javascript" class="jsScript">
+    $('#btnUpload').click(function () {        
+        if (window.FormData !== undefined) {
+            var $file = document.getElementById('file'),
+           $formData = new FormData();
+            if ($file.files.length > 0) {
+                for (var i = 0; i < $file.files.length; i++) {
+                    $formData.append('file-' + i, $file.files[i]);
+                }
+            }
+            $('#divLoading1').show();
+            $.ajax({
+                url: '/Enquiry/StockExcelFile',
+                type: 'POST',
+                data: $formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    var obj = $("#grdstockdetailList").ejGrid("instance")
+                    obj.dataSource(result);
+                    $("#divLoading1").hide();
+                    $('#SavExcl').show();
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                    $("#divLoading1").hide();
+                }
+            });
+        }
+        else {
+            alert("FormData is not supported.");
+        }
+    });
+    function onSelect(args) {
+        var i=args.key
+        $("#ItemTxtHide").val(i)       
+        }
+</script>
+<script>
+    function querycellinfo(args) {
+        if (args.data.Check == "NotOk") {
+            $($(args.cell).parent()).css("backgroundColor", "Thistle");/*custom css applied to the row */
+        }
+        else {
+        }
+    }
+    function contextclick(args) {        
+        if (args.text == "Error Detail") {
+            $("#ErrordialogIcon").ejDialog("open");
+            var tempData = args.text;
+            var grid = $("#grdstockdetailList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ErrorDetail = result[0]["ErrorDetail"];
+            $("#ErrRemark").val(ErrorDetail);
+        }
+    }
+</script>
+<div id="divLoading1" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+@{Html.EJ().Dialog("ErrordialogIcon").Title("Error Description").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Error Description
+        </div>
+        <table align="center">
+            <tr>
+                <td>
+                    Description
+                </td>
+                <td>
+                    <div class="">
+                        <textarea id="ErrRemark" name="ErrRemark" readonly="readonly" style="Width: 500Px; height:100px; max-width: 800px;" class="form-control e-ejinputtext"></textarea>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>)
+         .Width(900)
+         .Height(400)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onErrorDialogClose"))
+          .Render();
+}

@@ -1,0 +1,124 @@
+﻿@model SmartSys.BL.IssueModel
+
+@if (Model.IssueId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Approve Issue Detail
+    </div>
+}
+<style type="text/css">
+    .modal-content {
+        width: 1200px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+<table style="margin-left:50px">
+
+        <tr>
+            <td>
+                <label for="ItemName">Issue Id:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.IssueId ,new { required = "required", @style = "width:300px", disabled = "disabled" })
+                    
+                    @Html.ValidationMessageFor(model => model.Title)
+
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">Title:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                      
+                        @Html.TextBoxFor(model => model.Title, new { required = "required", @style = "width:400px", disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.Title)
+               
+                </div>
+            </td>
+
+                <td>
+                    <label for="ItemName">Status:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.DropDownListFor(model => model.Status, new List<SelectListItem>
+                       {      new SelectListItem() {Text = "New", Value="26"},
+                             new SelectListItem() {Text = "In Progress", Value="29"},
+                             new SelectListItem() {Text = "Complete", Value="30"},
+                             new SelectListItem() {Text = "Closed", Value="31"},
+                             new SelectListItem() {Text = "Cancelled", Value="32"},
+                             new SelectListItem() {Text = "OnHold", Value="33"},
+                       }, "Please Select Status", new { @class = "text-danger", style = "width: 200px;", id = "StatusDetail", disabled = "disabled" })
+
+                        @Html.ValidationMessageFor(model => model.Status)
+                    </div>
+                </td>
+            </tr>
+        <tr style="width:1000px">
+            <td>
+                <label for="ItemName">Comments:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.Comments, new { @style = "Width: 300Px", id = "Comments", disabled = "disabled" })
+
+                    @Html.ValidationMessageFor(model => model.Comments)
+                </div>
+            </td>
+
+            <td >
+                <label for="ItemName">Modified By:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.ModifiedBy, new { required = "required", @style = "width:200px", disabled = "disabled" })
+                    </div>
+</td>
+            <td >
+                <label for="ItemName">Modified Date:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @style = "width:200px", disabled = "disabled" })
+                </div>
+</td>
+        </tr>
+
+
+    </table>
+
+    <table style="margin-left:50px">
+    <tr>
+        <td>
+            <div class="btn" aria-label="...">
+                <a class="save btn btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateApprovalDetail", "Admin", new { IssueId = Model.IssueId, statusid = 24, Comments="" })'>
+                    Approve
+                </a>
+            </div>
+        </td>
+        <td>
+            <div class="btn" aria-label="...">
+                <a class="modal-link save btn btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("IssueRejectedComments", "Admin", new { IssueId = Model.IssueId, statusid = 25 })'>
+                    Reject
+                </a>
+            </div>
+        </td>
+        <td>
+            <div class="btn" aria-label="...">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+

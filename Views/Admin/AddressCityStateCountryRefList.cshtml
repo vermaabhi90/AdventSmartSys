@@ -1,0 +1,112 @@
+﻿@model IEnumerable<SmartSys.BL.ContyStateCityModel>
+@{
+    ViewBag.Title = "AddressCityStateCountryRefList";
+}
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Country State City Relation  List
+</div>
+<br />
+@Html.ActionLink(" Create", "CreateAddressCityStateCountryRef", new { Countryid = 0, Stateid= 0 }, new { @class = "btn btn-info glyphicon glyphicon-leaf" })
+<br />
+<br />
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdCityCoutryState")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord));
+
+         //    //.CustomContextMenuItems(new List<string> { "Edit" });
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 //c.AddItem("Edit1", "Edit");
+             });
+
+         })
+
+        .Columns(col =>
+        {
+            col.Field("Country").HeaderText("Country").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("State").HeaderText("State").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("City").HeaderText("City").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(100).Add();
+            col.Field("CreatedDate").AllowEditing(false).HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(100).Add();
+            col.Field("ApprovedBy").AllowEditing(false).HeaderText("Approved By").Width(100).Template("#BtnApp").Add();
+            col.Field("ApprovedDate").AllowEditing(false).HeaderText("Approved Date").Template("#BtnApp").Format("{0:MM/dd/yyyy}").Width(100).Add();
+            col.Field("Status").HeaderText("Status").Width(70).Add();
+            //col.HeaderText("Edit").Commands(command =>
+            //{
+            //    command.Type(UnboundType.Edit)
+
+            //           .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+            //           {
+            //               CssClass = "EditBtn",
+            //               Text = "Edit",
+            //               ContentType = ContentType.ImageTextImage,
+            //               PrefixIcon = "e-edit",
+            //               Height = "22px",
+            //               Size = ButtonSize.Mini
+            //           }).Add();
+
+            //}).TemplateID("#BtnTemplate")
+            //.IsUnbound(true)
+            //.TextAlign(TextAlign.Left)
+            //.AllowFiltering(false)
+            //.Width(40)
+            //.Add();
+        })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+    @*<script id="BtnTemplate" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditAddressCityStateCountryRef?Country={{:Country}}&amp;State={{:State}} &amp;City={{:City}}"> </a>
+    </script>*@
+</div>
+<script type="text/x-jsrender" id="BtnApp">
+    {{if ApprovedBy == ''}}
+    <label> Not Approveed</label>
+    {{/if}}
+
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Admin/CreateAddressCityStateCountryRef")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit") {
+                var tempData = args.text;
+                var grid = $("#grdTrigger").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var Country = result[0]["Country"];
+                var State = result[0]["State"];
+                var City = result[0]["City"];
+                var path = '@Url.Content("~/Admin/EditAddressCityStateCountryRef")' + "?Country=" + Country + "&State=" + State + "&City=" + City
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+
+</script>

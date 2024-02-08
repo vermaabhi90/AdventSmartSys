@@ -1,0 +1,117 @@
+﻿@model IEnumerable<SmartSys.BL.Dashboard>
+
+<style>
+
+    .scrollbar {
+        overflow: visible;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+</style>
+
+<h3>User DashBoard</h3>
+@if(ViewBag.signoffCount >0)
+{ 
+<div class="alert" id="alert" >
+    <span class="closebtn">&times;</span>
+     <a  href ="@Url.Action("GetIssueListWithCompleteStatus" ,"Admin")" style="color:white">You Have @ViewBag.signoffCount Pending Signoff Issues. Press Ok Or Click Here to Go To the SignOff List !</a><br /><br />
+    <button type="button" class="btn-info btn-xs" id="Ok" >OK</button>
+    <button type="button" class="btn-warning btn-xs" id="Cancel">Cancel</button>
+</div>
+}
+<div class="scrollbar">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-@(item.Width)">
+
+            @Html.Action(item.ActionName, item.ControllerName)
+
+        </div>
+
+    }
+</div>
+
+<style>
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+        opacity: 1;
+        transition: opacity 0.6s;
+        margin-bottom: 15px;
+    }
+
+        .alert.success {
+            background-color: #4CAF50;
+        }
+
+        .alert.info {
+            background-color: #2196F3;
+        }
+
+        .alert.warning {
+            background-color: #ff9800;
+        }
+
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .closebtn:hover {
+            color: black;
+        }
+</style>
+
+@*<script>
+
+    $(document).ready(function () {
+        var x;
+        if(@ViewBag.signoffCount > 0)
+            {
+    if (confirm("You Have "+@ViewBag.signoffCount+" Pending Signoff Issues. Press Ok To Go To the SignOff List!") == true) {
+        var path = '@Url.Content("~/Admin/GetIssueListWithCompleteStatus")'
+        event.preventDefault();
+        window.location.replace(path);
+    } else {
+        
+    }
+        }
+})
+</script>*@
+<script>
+var close = document.getElementsByClassName("closebtn");
+var i;
+for (i = 0; i < close.length; i++) {
+    close[i].onclick = function () {
+     document.getElementById('alert').setAttribute("style", "display:none");
+     }
+}
+</script>
+<script>
+
+    $(document).ready(function () {
+        $('#Cancel').click(function () {
+            document.getElementById('alert').setAttribute("style", "display:none");
+        });
+        $('#Ok').click(function () {
+            var path = '@Url.Content("~/Admin/GetIssueListWithCompleteStatus")'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+    </script>
+<script type="text/javascript">
+    var closeit = function () {
+     document.getElementById('alert').setAttribute("style", "display:none");
+    }
+    if(@ViewBag.signoffCount > 0)
+    {  setTimeout(closeit, 15000);}else {setTimeout(closeit, 0)}
+  
+</script>

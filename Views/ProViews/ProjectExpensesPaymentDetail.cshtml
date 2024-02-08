@@ -1,0 +1,271 @@
+﻿@model  SmartSys.BL.Project.PaymentExpenseStatus
+
+<style type="text/css">
+    .modal-content {
+        width: 1100px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 250%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+        color: #483D8B;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+@if (Model.PaymentId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+      Expenses Payment Detail
+    </div>
+}
+
+<script>
+    function checkPass() {
+        var pass1 = $('#Amount').val();
+
+        var Newamount = $('#CurrentAmt').val();
+
+        var EnteredAmount= $('#EnteredAmount').val();
+        var pass2 = (+Newamount) + (+EnteredAmount);
+        var NeedAmount = (+pass1)- (+EnteredAmount);
+        if(pass2.toString()==""||pass2.toString()==Newamount  )
+        {
+            return false;
+        }
+       // $("#CurrentAmt").empty();
+       // $("#CurrentAmt").val(pass2)
+        var BGC = document.getElementById('CurrentAmt');
+        var message = document.getElementById('Amount');
+        var Warning = "#FFA500";
+        var badColor = "#ff6666";
+        if (+pass1 == +pass2)
+        {
+            BGC.style.backgroundColor = Warning;
+          //  pass1.style.backgroundColor = Warning;
+            message.style.color = Warning;
+            message.innerHTML = ""
+           ;
+        }
+        else
+            if(+pass2 > +pass1)
+            {
+
+                BGC.style.backgroundColor = badColor;
+                message.innerHTML = ""
+
+                alert("Amount Not More Than :" + NeedAmount );
+            }
+            else
+                if (+pass2 < +pass1)
+                {
+                    BGC.style.backgroundColor = "#b6d378";
+                }
+
+          }
+</script>
+<script>
+    $(document).ready(function () {
+        var BGC = document.getElementById('CurrentAmt');
+        //var Amount = $('#Amount').val();
+       // var CurrentAmt = $('#CurrentAmt').val();
+        $("#Amount").val(@Model.Amount)
+        if (+CurrentAmt == +Amount)
+        {
+            BGC.style.backgroundColor = "#FFA500";
+            //  pass1.style.backgroundColor = Warning;
+            message.style.color = Warning;
+            message.innerHTML = "";
+
+        }else
+        {
+
+            BGC.style.backgroundColor = "#b6d378";
+        }
+        $('.save').click(function (e) {
+
+            var PaymentType = $('#PaymentType').val();
+            var Amount = $('#Amount').val();
+            var CurrentAmt = $('#CurrentAmt').val();
+
+            if (PaymentType.toString() == "") {
+                alert("Please Enter PaymentType  ");
+                return false;
+            }
+            if (+CurrentAmt > +Amount) {
+                alert("Current Amount Not More Than Amount ");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+@using (Html.BeginForm("ProjectPayMentStatusDetail", "ProjectCenter", FormMethod.Post, new { Id = "Form1" }))
+{
+    <div class="modal-body">
+        <table style="margin-left:0px">
+
+            <tr>
+                @Html.HiddenFor(model => model.PaymentId)
+                @Html.HiddenFor(model => model.EmpId)
+                <td>
+                    <label for="Type">Payment Type:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.DropDownListFor(model => model.PaymentType, new List<SelectListItem>
+                       {
+                              new SelectListItem() {Text = "Project Expenses", Value="Project Expenses"},
+
+                       }, new { @readonly = "readonly", @class = "form-control", style = "width: 150px;", id = "PaymentType" })
+
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Type">Amount:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.Amount, new { @readonly = "readonly",@style = "", @class = "form-control", id = "Amount"})
+                    </div>
+                </td>
+                <td>
+                    <label for="Type">Total Paid Amount:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.TotalPaid, new { @class = "form-control", id = "EnteredAmount", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="Type">Current Amount:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.NewAmount, new { @style = "", @class = "form-control", @onkeyup = "checkPass();", id = "CurrentAmt", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Type">Remark:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextAreaFor(model => model.Remark, new { @class = "form-control", id = "PaymentType", @style = "width:800px", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Type">Employee:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.Employee, new { @style = "", @class = "form-control", id = "RefId", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="navbar-text">
+                        @Html.HiddenFor(model => model.RefId, new { @style = "", @class = "form-control", id = "RefId", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+        @if (Model.PaymentId > 0)
+        {
+            <table>
+                <tr>
+                    <td>
+                        <label for="Type">Created by:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Type">Created Date:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Type">Modified by:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Type">Modified Date:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        }
+        <table>
+            <tr>
+
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+
+                </td>               
+            </tr>
+
+        </table>
+    </div>
+
+}

@@ -1,0 +1,96 @@
+﻿@model SmartSys.BL.DW.ItemBrandAllocationDetail
+
+@{
+    ViewBag.Title = "";
+}
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $("#frmRoleRptMap").submit(function (e) {
+            $("#AssignedList option").prop("selected", true);;
+        })
+
+
+
+
+        //followin code is for txfering items from one list to another
+        $("#btnAdd").click(function (e) {
+
+            $("#TotalItemBrand > option:selected").appendTo("#AssignedList");
+        })
+        $("#btnAddAll").click(function (e) {
+
+            $("#TotalItemBrand > option").appendTo("#AssignedList");
+        })
+        $("#btnRemove").click(function (e) {
+            $("#AssignedList > option:selected").appendTo("#TotalItemBrand");
+
+        })
+        $("#btnRemoveAll").click(function (e) {
+            $("#AssignedList > option").appendTo("#TotalItemBrand");
+        })
+    })
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    <span style="color:red">Item Brand Details</span>
+</div>
+@using (Html.BeginForm("SaveItemBrand", "DWItem", FormMethod.Post, new { id = "frmRoleRptMap" }))
+{
+    <table style="margin-left:30px">
+        <tr>
+            <td style="margin-left:30px">
+                <label for="ShortName" style="color:blue">Item : </label>
+            </td>
+            <td width="5px"></td>
+            <td>
+                @Html.TextBox("ItemName", (string)ViewBag.ItemName, new { @readonly = "readonly", @style = "min-width:400px", @class = "form-control" })
+              @Html.HiddenFor(model => model.ItemId)
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table style="margin-left:30px">
+        <tr>
+            <td align="center">
+                @Html.Label("Brand List")<br />
+                @Html.ListBoxFor(model => model.TotalItemBrand, (IEnumerable<SelectListItem>)ViewBag.TotalItemBrand, new { id = "TotalItemBrand", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+            </td>
+            <td width="30px"></td>
+            <td align="center">
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnAdd" class="btn btn-info glyphicon glyphicon-forward"></button>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <small> <button type="button" id="btnAddAll" class="btn btn-info glyphicon glyphicon-fast-forward"></button></small>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemove" class="btn btn-info glyphicon glyphicon-backward"></button>
+                </div><br />
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemoveAll" class="btn btn-info glyphicon glyphicon-fast-backward"></button>
+                </div><br />
+            </td>
+            <td width="30px"></td>
+            <td align="center">
+                @Html.Label("Assigned Brand List")<br />
+                @Html.ListBoxFor(model => model.AssignedItemBrand, (IEnumerable<SelectListItem>)ViewBag.AssignedList, new { id = "AssignedList", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table style="margin-left:30px">
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetItemList';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save"> Save</button>
+            </td>
+        </tr>
+    </table>
+
+
+}
+
+

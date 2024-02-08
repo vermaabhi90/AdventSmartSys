@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DE115A8C-63F6-4C28-81A4-792C5364398F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SmartSys.BL</RootNamespace>
+    <AssemblyName>SmartSys.BL</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ActiveUp.Net.Common">
+      <HintPath>..\..\..\..\Users\Abhishek\Downloads\ActiveUp.Net.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ActiveUp.Net.Imap4">
+      <HintPath>..\..\..\..\Users\Abhishek\Downloads\ActiveUp.Net.Imap4.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\..\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Adhoc\AdhocBL.cs" />
+    <Compile Include="Adhoc\AdhocModel.cs" />
+    <Compile Include="AdminBL.cs" />
+    <Compile Include="AdminModel.cs" />
+    <Compile Include="Bank\BankBL.cs" />
+    <Compile Include="Bank\BankDetailModel.cs" />
+    <Compile Include="BOMAdmin\BOMAdminBL.cs" />
+    <Compile Include="BOMAdmin\BOMAdminModel.cs" />
+    <Compile Include="Calandar\CalandarBL.cs" />
+    <Compile Include="Calandar\CalandarModel.cs" />
+    <Compile Include="DashBoard\DashBoardBL.cs" />
+    <Compile Include="DashBoard\DashBoardModel.cs" />
+    <Compile Include="DataHub\DHFeedBL.cs" />
+    <Compile Include="DataHub\DHEventBL.cs" />
+    <Compile Include="DataHub\DHEventModel.cs" />
+    <Compile Include="DataHub\DHFeedModel.cs" />
+    <Compile Include="DataHub\DHLoaderBL.cs" />
+    <Compile Include="DataHub\DHLoaderModel.cs" />
+    <Compile Include="DataHub\DHTriggerBL.cs" />
+    <Compile Include="DataHub\DHTriggerModel.cs" />
+    <Compile Include="DW\BudgetBL.cs" />
+    <Compile Include="DW\BudgetModel.cs" />
+    <Compile Include="DW\CustomerBL.cs" />
+    <Compile Include="DW\CustomerModel.cs" />
+    <Compile Include="DW\ItemBL.cs" />
+    <Compile Include="DW\ItemModel.cs" />
+    <Compile Include="DW\VendorBL.cs" />
+    <Compile Include="DW\VendorModel.cs" />
+    <Compile Include="EmailProcessing\MailBL.cs" />
+    <Compile Include="EmailProcessing\mailmodel.cs" />
+    <Compile Include="EmailProcess\EmailBL.cs" />
+    <Compile Include="EmailProcess\EmailModel.cs" />
+    <Compile Include="Enquiry\EnquiryBL.cs" />
+    <Compile Include="Enquiry\EnquiryModel.cs" />
+    <Compile Include="Loader\LoaderBL.cs" />
+    <Compile Include="Loader\LoaderModel.cs" />
+    <Compile Include="Project\ProjectBL.cs" />
+    <Compile Include="Project\ProjectModel.cs" />
+    <Compile Include="ProViews\ViewsBL.cs" />
+    <Compile Include="ProViews\ViewsModel.cs" />
+    <Compile Include="RDS\RDSClientBL.cs" />
+    <Compile Include="RDS\RDSClientModel.cs" />
+    <Compile Include="RDS\RDSEngineBL.cs" />
+    <Compile Include="RDS\RDSEngineModel.cs" />
+    <Compile Include="RDS\RDSRptSubBL.cs" />
+    <Compile Include="RDS\RDSRptSubscriptionModel.cs" />
+    <Compile Include="RDS\RDSReportBL.cs" />
+    <Compile Include="RDS\RDSReportModel.cs" />
+    <Compile Include="RDS\RDSTriggerBL.cs" />
+    <Compile Include="RDS\RDSTriggerModel.cs" />
+    <Compile Include="RGS\GeneratorBL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RGS\InstanceManagerBL.cs" />
+    <Compile Include="RGS\InstanceManagerModel.cs" />
+    <Compile Include="RGS\ReportModel.cs" />
+    <Compile Include="RDS\RDSEventBL.cs" />
+    <Compile Include="RDS\RDSEventModel.cs" />
+    <Compile Include="Sysadmin\BusinessLineBL.cs" />
+    <Compile Include="Sysadmin\BusinessLineModel.cs" />
+    <Compile Include="Sysadmin\SysDBConBL.cs" />
+    <Compile Include="Sysadmin\SysDBConModel.cs" />
+    <Compile Include="TimeManagement\TMEquipmentBL.cs" />
+    <Compile Include="TimeManagement\TMEquipmentModel.cs" />
+    <Compile Include="Tmleave\TMLeaveBL.cs" />
+    <Compile Include="Tmleave\TMLeaveModel.cs" />
+    <Compile Include="TMPlan\TMPlanBL.cs" />
+    <Compile Include="TMPlan\TMPlanModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmartSys.DL\SmartSys.DAL.csproj">
+      <Project>{e24462e8-c1f5-44cc-95d9-cbeea1d0d607}</Project>
+      <Name>SmartSys.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmartSys.Utility\SmartSys.Utility.csproj">
+      <Project>{8d277f95-3a8a-4c65-b2bf-ac3dc9ba3887}</Project>
+      <Name>SmartSys.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

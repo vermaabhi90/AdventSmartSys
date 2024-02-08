@@ -1,0 +1,347 @@
+﻿@model SmartSys.BL.DW.ItemMappingModel
+
+
+
+@{
+    var grid = new WebGrid(source: Model.GridList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "Mappedgrid");
+}
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Item",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+
+<script >
+
+    $(document).ready(function () {
+        $('#CompCode').change(function (event) {
+            var ddlValue = $('#CompCode').val();
+           
+            var path = '@Url.Content("~/DWItem/GetClientItem")' + "?CompCode=" + ddlValue
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+
+        $('.xyz').on('click', function (e) {
+            event.preventDefault();
+            var CompName = $(this).closest('.xyz').attr('CompName');
+            var Sysid = $(this).closest('.xyz').attr('itemID');
+            var ItemName = $(this).closest('.xyz').attr('ItemName');
+   
+            var agree = confirm("Are you sure to delete ?") 
+            if (agree) {
+                    var path = '@Url.Content("~/DWItem/DeleteItemMapping")' + "?CompName=" + CompName + "&ItemId=" + Sysid + "&ItemName=" + ItemName
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+            else
+            {
+                return false;
+            }
+       
+
+        });
+
+        $('.AddItem').click(function (event) {
+
+            var ItemName = $("#FlStr").val();
+            var Item_No = $('#combobox').val();
+            var CompCode = $('#CompCode').val();
+            var ItemId = $('#DWItemId').val();
+            alert
+            if (Item_No == null || Item_No.toString() == "") {
+                    alert("Please Select Extenal Item Name ");
+                    return false;
+                }
+
+            else
+            {
+                var path = '@Url.Content("~/DWItem/SaveMapping")' + "?Item_No=" + Item_No + "&CompCode=" + CompCode + "&ItemId=" + ItemId + "&ItemName=" + ItemName
+                event.preventDefault();
+                window.location.replace(path);
+            }
+
+        });
+
+        $('.GetMap').click(function (event) {
+
+                var ItemName = $("#FlStr").val();
+                var CompCode = $('#CompCode').val();
+                var ItemId = $('#DWItemId').val();
+                var path = '@Url.Content("~/DWItem/GetAutoMapping")' + "?ItemName=" + ItemName + "&CompCode=" + CompCode + "&ItemId=" + ItemId
+                event.preventDefault();
+                window.location.replace(path);
+
+        });
+    });
+</script>
+
+
+<style type="text/css">
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 800px;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+
+    .Tbl1 {
+        border-style: solid;
+        border-color: #c9cad7;
+    }
+
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: auto;
+        max-width: 480px;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 450px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Item Mapping
+</div>
+
+@using (Html.BeginForm("Edit", "RDSEngine", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+
+        <table>
+
+            <tr>
+                <td>
+                    <div class="navbar-text  glyphicon glyphicon-th-list">
+                        Item Name
+                    </div>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.ItemName, new { htmlAttributes = new { id = "FlStr", @readonly = "readonly", @class = "form-control" } })
+                    @Html.Hidden("ItemId", null, new { @id = "DWItemId" })
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="navbar-text">
+                                    MPN
+                                </div>
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => model.MPN, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        Brand
+                    </div>
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.Brand, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+                </td>
+            </tr>
+            <tr>
+                <td height="10px"></td>
+            </tr>
+           
+            <tr>
+                <td>
+                    <div class="navbar-text glyphicon glyphicon-globe">
+                        Company
+                    </div>
+                </td>
+
+                <td>
+                    @Html.DropDownList("selectedComp", (IEnumerable<SelectListItem>)ViewBag.ItemMapList, "-Select Company Name-", new { @class = "form-control", id = "CompCode", style = "width:310px" })
+
+                </td>
+
+                @if (Model.lstClientMapItemList != null && Model.lstClientMapItemList.Count > 0)
+                {
+                    <td>
+                        <div class="navbar-text  glyphicon glyphicon-th-list">
+                            Item
+                        </div>
+                    </td>
+                    <td>
+                        @Html.DropDownList("ComEmpID", (IEnumerable<SelectListItem>)ViewBag.ComItemList, new { @class = "drp", id = "combobox", style = "width:310px" })
+                    </td>
+                    <td style="width:37px"></td>
+                    if (Model.AutoMapBtn != null && Model.AutoMapBtn.ToString() != "")
+                    {
+
+                        <td>
+                            <button type="button" value="Get Mapping" id="GetMap" class="GetMap btn-sm btn-info  glyphicon glyphicon-leaf black"> Create Item</button>
+                        </td>
+                    }
+                }
+                else
+                {
+                    <td>
+                        <span>No Connection Avaliable, Please try later.</span>
+                    </td>
+                }
+
+
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td>
+                    @if (Model.GridList != null && Model.GridList.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.DW.SysNavRelListModel>("grdList")
+                .Datasource((IEnumerable<object>)@Model.GridList)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+       .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("CompName").HeaderText("Company").ValidationRules(v => v.AddRule("required", true)).Width(180).Add();
+            col.Field("CompItemID").HeaderText("Item No").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.HeaderText("Delete").TemplateID("#DeleteItem").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+                            )
+                        </div>
+                      
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Infornation about Item List !!!</label>
+                        </div>
+                    }
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'BackToList';" );"> Back</button>
+                        <button type="button" value="Save Mapping" class="AddItem btn-xs  btn-info glyphicon glyphicon-save"> Save Mapping</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+<script id="DeleteItem" type="text/x-jsrender">
+
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DWItem/DeleteItemMapping?CompName={{:CompName}}&amp;ItemId=@Model.ItemId&amp;ItemName={{:ItemName}}"> Remove</a>
+
+</script>

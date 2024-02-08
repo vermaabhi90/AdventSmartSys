@@ -1,0 +1,155 @@
+﻿@model SmartSys.BL.RDS.RDSEngineModel
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create New RDS Engine
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+          
+            e.preventDefault();
+            var JobPollingInterval = $('#JobPollingInterval').val();
+            var ProcessPollingInterval = $('#ProcessPollingInterval').val();
+            var EventPollingIntterval = $('#EventPollingIntterval').val();
+            var Host = $('#Host').val();
+            var Port = $('#Port').val();
+            if (JobPollingInterval.toString() == "") {
+                alert("Please Enter JobPollingInterval");
+                return false;
+            }
+            if (ProcessPollingInterval.toString() == "") {
+                alert("Please Enter ProcessPollingInterval ");
+                return false;
+            }
+            if (EventPollingIntterval.toString() == "") {
+                alert("Please Enter EventPollingIntterval ");
+                return false;
+            }
+            if (Host.toString() == "") {
+                alert("Please Enter Host");
+                return false;
+            }
+            if (Port.toString() == "") {
+                alert("Please Enter Port ");
+                return false;
+            }
+          
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+@using (Html.BeginForm("Create", "RDSEngine", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <br>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+            <tr>
+                <td>
+                    <label for="Host">Host </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Host, new { @class = "form-control", id = "Host" })
+                        @Html.ValidationMessageFor(model => model.Host)
+                    </div>
+                </td>
+                <td>
+                    <label for="Port">Port</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Port, new { @class = "form-control", id = "Port" })
+                        @Html.ValidationMessageFor(model => model.Port)
+                    </div>
+                </td>
+
+
+            <tr>
+                <td>
+                    <label for="JobPollingInterval">Job Polling Interval </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.JobPollingInterval, new { @class = "form-control", id = "JobPollingInterval" })
+                        @Html.ValidationMessageFor(model => model.JobPollingInterval)
+                    </div>
+                </td>
+                <td>
+                    <label for="ProcessPollingInterval">Process Polling Interval</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ProcessPollingInterval, new { @class = "form-control", id = "ProcessPollingInterval" })
+                        @Html.ValidationMessageFor(model => model.ProcessPollingInterval)
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="EventPollingIntterval">Event Polling Intterval </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EventPollingIntterval, new { @class = "form-control", id = "EventPollingIntterval" })
+                        @Html.ValidationMessageFor(model => model.EventPollingIntterval)
+                    </div>
+                </td>
+                <td>
+                    <label for="TriggerPollingInterval">Trigger Polling Interval</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.TriggerPollingInterval, new { @class = "form-control", id = "TriggerPollingInterval" })
+                        @Html.ValidationMessageFor(model => model.TriggerPollingInterval)
+                    </div>
+                </td>
+
+            </tr>
+
+
+
+            <tr>
+                <td>
+                    <label for="isActive">Active</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isActive, new { id = "" })
+                        @Html.ValidationMessageFor(model => model.isActive)
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+                        <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+

@@ -1,0 +1,146 @@
+﻿@model IEnumerable<SmartSys.BL.BOMAdmin.VendorBrandModel>
+
+@{
+    ViewBag.Title = "BrandList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Brand List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateBrand", new { BrandId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdBrand")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        {
+            items.AddTool(ToolBarItems.ExcelExport);
+        }))
+                       .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelBrandList")))
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  
+                  c.AddItem("Add_Record", "Add Record");
+                  c.AddItem("Edit_Record", "Edit Record");
+                  c.AddItem("Allocate_Vendor", "Allocate Vendor");
+              });
+
+          })
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("BrandId").HeaderText("Brand Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("BrandName").HeaderText("Brand Name").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("CreatedBy").AllowEditing(false).HeaderText("Created By").Width(200).Add();
+            col.Field("CreatedDate").AllowEditing(false).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .AllowFiltering(false)
+            .TemplateID("#BtnEdit")
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+
+            col.HeaderText("Vendor Allocation").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+                      .AllowFiltering(false)
+                      .TemplateID("#AllocateVendor")
+                      .IsUnbound(true)
+                      .TextAlign(TextAlign.Left)
+                      .Width(60)
+                      .Add();
+        }).ClientSideEvents(eve =>
+        {
+
+            eve.ContextClick("contextclick");
+
+        })
+
+        )
+    </div>
+    <script id="BtnEdit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/BOMAdmin/CreateBrand?BrandId={{:BrandId}}"></a>
+    </script>
+
+    <script id="AllocateItem" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-briefcase black" href="/BOMAdmin/AllocateBrandItem?BrandId={{:BrandId}}&amp;BrandName={{:BrandName}}"></a>
+    </script>
+    <script id="AllocateVendor" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-briefcase black" href="/BOMAdmin/AllocateBrandVendor?BrandId={{:BrandId}}&amp;BrandName={{:BrandName}}"></a>
+    </script>
+<script type="text/javascript">
+
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/BOMAdmin/CreateBrand")' + "?BrandId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+
+                var grid = $("#grdBrand").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var BrandId = result[0]["BrandId"];
+                var path = '@Url.Content("~/BOMAdmin/CreateBrand")' + "?BrandId=" + BrandId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+            else
+                if (args.text == "Allocate Vendor") {
+                    var tempData = args.text;
+
+                    var grid = $("#grdBrand").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var BrandId = result[0]["BrandId"];
+                    var path = '@Url.Content("~/BOMAdmin/AllocateBrandVendor")' + "?BrandId=" + BrandId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+
+    }
+</script>

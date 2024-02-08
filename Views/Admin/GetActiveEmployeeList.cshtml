@@ -1,0 +1,75 @@
+﻿@model IEnumerable<SmartSys.BL.EmpChartModel>
+
+@{
+    ViewBag.Title = "GetEmployeeList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Employee List
+</div>
+<br>
+<br>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.EmpChartModel>("grdEmpList")
+        .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportSysActiveEmpLst")))
+        .Columns(col =>
+        {
+            col.Field("id").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EmpName").HeaderText("Employee Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Designation").HeaderText("Designation").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("UserName").HeaderText("User Name").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("Manager").HeaderText("Manager").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(120).Add();
+            col.HeaderText("Detail")
+                .Template("#edit")
+                .AllowFiltering(false)
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Center)
+            .Width(70)
+            .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-warning  glyphicon glyphicon-dashboard" href="/Admin/GetEmployeeSalaryStructure?EmpId={{:id}}&amp;EmpName={{:EmpName}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/DHLoader/Create")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit") {
+                var tempData = args.text;
+                var grid = $("#grdLoaderList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var LoaderId = result[0]["LoaderId"];
+                var path = '@Url.Content("~/DHLoader/Edit")' + "?LoaderId=" + LoaderId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+
+</script>

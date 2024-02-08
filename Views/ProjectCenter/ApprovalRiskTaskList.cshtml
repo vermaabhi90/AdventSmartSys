@@ -1,0 +1,179 @@
+﻿@model IEnumerable<SmartSys.BL.Project.TaskDetails>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Approval Risk/Case  List
+</div>
+
+@{
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ApproveView")
+        .Title("<a id='Title12'></a>")
+        .Width(1000)
+         .MinWidth(1000)
+        .Height(600)
+         .Position(pos => pos.XValue("250px").YValue("60px"))
+        .ShowOnInit(false)
+
+
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ApproveView").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ApproveView").ejDialog("open");
+        }
+</script>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Project.TaskDetails>("grdEventList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+
+         //    //.CustomContextMenuItems(new List<string> { "View Detail" , "View Detail" })
+         //     .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "View Detail" } })
+         //      .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "View Detail" } });
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("View_Detail", "View Detail");
+                 c.AddItem("Quick_Track", "Quick Track");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ProjectId").Visible(true).AllowEditing(false).HeaderText("Project Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("TaskID").Visible(true).AllowEditing(false).HeaderText("Risk/Case ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("TskType").HeaderText("Type").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("TaskName").HeaderText("Task Name").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(120).Add();
+            col.Field("EndDate").HeaderText("End Date").Width(100).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("Description").HeaderText("Description").Width(140).Add();
+            col.Field("Status").HeaderText("Status").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(100).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.HeaderText("Approve").Commands(command =>
+            {
+                command.Type("Delete")
+                             .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                             {
+
+                                 ContentType = ContentType.TextAndImage,
+                                 Text = "",
+                                
+                                 Click = "onClick1",
+                                 PrefixIcon = "e-icon e-edit",
+                                 Size=ButtonSize.Mini
+                                 
+                             }).Add();
+            })
+.TextAlign(TextAlign.Center)
+.Width(150)
+.Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick");
+                     
+                 })
+    )
+</div>
+
+
+<script type="text/javascript">
+    function onClick1(args) {
+       
+        var grid = $("#grdEventList").ejGrid("instance");
+        var ProjectId = grid.getSelectedRecords()[0].ProjectId;
+        var TaskID = grid.getSelectedRecords()[0].TaskID;
+        var TaskName = grid.getSelectedRecords()[0].TaskName;
+        document.getElementById("Title12").innerHTML = TaskName;
+        var path = '@Url.Content("~/ProjectCenter/ViewRiskCaseDetail")' + "?ProjectId=" + ProjectId + "&Taskid=" + TaskID + "&Modal=" + 0 + "&Type=" + "" + "&ProjectName=" + ""
+        $("#ApproveView").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ApproveView").ejDialog("open");
+      
+
+    };
+
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "View Detail") {
+           
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskID = result[0]["TaskID"];
+            var TaskName = result[0]["TaskName"];
+            var ProjectName = "";
+            var Risk = "Risk";
+            document.getElementById("Title12").innerHTML = TaskName;
+           var path1 = '@Url.Content("~/ProjectCenter/ReViewRiskTask")' + "?ProjectId=" + projectId + "&Taskid=" + TaskID
+            var path = '@Url.Content("~/ProjectCenter/ViewRiskCaseDetail")' + "?ProjectId=" + projectId + "&Taskid=" + TaskID + "&Modal=" + 0 + "&Type=" + "Approve" + "&ProjectName=" + ProjectName
+            $("#ApproveView").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ApproveView").ejDialog("open");
+
+        }
+        if (args.text == "Quick Track") {
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var TaskName = result[0]["TaskName"];
+            $("#Title").val(TaskName);
+            document.getElementById("Title").innerHTML = TaskName;
+            var TaskId = result[0]["TaskID"];
+
+            var path1 = '@Url.Action("casetimeline", "quickview")' + "?TaskID=" + TaskId + "&ProjectId=" + projectId;
+            $("#seconddialog").ejDialog({
+                contentUrl: path1,
+                contentType: "ajax"
+            });
+            $("#seconddialog").ejDialog("open");
+        }
+    }
+</script>

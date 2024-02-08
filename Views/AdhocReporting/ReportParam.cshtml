@@ -1,0 +1,390 @@
+﻿@model SmartSys.BL.Adhoc.AdhocModel
+
+@{
+    ViewBag.Title = "ReportParam";
+}
+@Styles.Render("~/Content/")
+
+
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="~/Scripts/autoComp.js"></script>
+
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+@*<script>
+
+        $(function () {
+
+            $("#DrpDwnLst").combobox();
+            $("#toggle").click(function () {
+                $("#DrpDwnLst").toggle();
+                if ($("#DrpDwnLst").val() != "") {
+                    $("#DrpDwnLst").val("0");
+                }
+            });
+        });
+    </script>*@
+<script type="text/javascript">
+    $(function () {
+        //$('#BrandDrp').multiselect({
+        //    includeSelectAllOption: true,
+        //    enableFiltering: true,
+
+        //});
+        $(".drp").select2({
+            placeholder: "Please Select a Item",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(".drp").val(0).trigger("change")
+        /* we are assigning change event handler for select box */
+        /* it will run when selectbox options are changed */
+        $('#DrpDwnLst').change(function () {
+            /* setting currently changed option value to option variable */
+            var option = $(this).find('option:selected').val();
+            /* setting input box value to selected option value */
+
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.DateTime').datepicker();
+        $('.DateTime').datepicker.dates;
+
+        $("#Form1").submit(function (e) {
+            var selTypeText = $("#DrpDwnUserLst option:selected").text();
+            $("#hidText").val(selTypeText);
+        });
+    });
+</script>
+<style type="text/css">
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+
+    .Tbl1 {
+        border-style: solid;
+        border-color: #c9cad7;
+    }
+
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: hidden;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 450px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+
+<link href="~/Content/CustomStyle.css" rel="stylesheet" />
+<div class="page-header glyphicon glyphicon-list  text-info ">
+    Parameters
+</div>
+
+
+
+@using (Html.BeginForm("ReportParam", "AdhocReporting", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+
+    <body>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        @if (Model.ReportId == "MGMT001")
+                        {
+                            <label>Note-</label> <p>
+                                As Of Date For - AR Plannig <br />          
+                                Financial Year - Get Enquiry list According Financial Year (Its optional, If you required all years enquiry then don't select this option) <br />   
+                                From Date & To Date For- POS, Sample Items, General Ledger Advent , SAJ  & Global            
+                            </p>
+                        }
+                        else if (Model.ReportId == "SALE006"|| Model.ReportId== "MGMT010")
+                        {
+                            <label>Note - All Fields are not mandetory</label> 
+                        }
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" id="hidText" name="hidText" />
+            <table>
+                @foreach (var item in Model.ParamList)
+                {
+                    <tr>
+
+                        <td>
+                            <div class="navbar-text">
+                                @Html.Label(item.DisplayName)
+                                @*@Html.DisplayFor(modelItem => item.ReportId, new { id = item.DataType})*@
+                            </div>
+
+                        </td>
+                        <td>
+                            @if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.GetEmployeeForDropDown.ToString())
+                            { <div class="navbar-text">
+                                @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.EmpList, new { @class = "drp", id = "drp", style = "width:310px" })
+                            </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERTimeSheet.ToString() ||
+                                  item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERAdvent.ToString() ||
+                                  item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERDPK.ToString() ||
+                                  item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERSAJ.ToString())
+                            { <div class="navbar-text">
+                                @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.CLNTUSER, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                            </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTCUSTTimeSheet.ToString() ||
+                                 item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTCUSTAdvent.ToString() ||
+                                 item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTCUSTSAJ.ToString() ||
+                                 item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTCUSTDPK.ToString())
+                            { <div class="navbar-text">
+                                @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.CLNTCUST, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                            </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.BANKUSERAdvent.ToString() ||
+                                 item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.BANKUSERAll.ToString() ||
+                                 item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.BANKUSERDPK.ToString() ||
+                                 item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.BANKUSERSAJ.ToString())
+                            { <div class="navbar-text">
+                                @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.BankLstbyCompCode, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                            </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.RDSGetClientForDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.RDSClientList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.GetRGSReportForDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.ReportNameList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SysUserForDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SysUserList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SysBusinessLineForDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.BussLineList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SysDepartmentDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SysDeptList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.EWCompanyDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.EWComapnyList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SmartSysProjectDropDownByUser.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SmartSysProjectDropDownByUser, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SmartSysCustDropDownByUser.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SmartSysCustDropDownByUser, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SmartSysVendorDropDownByUser.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SmartSysVendorDropDownByUser, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.ItemDropDown.ToString())
+                            {
+                                //<div></div>
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.ItemDropDown, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.RegionDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.RegionDropDown, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CityDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.CityDropDown, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.EmpDropDownByUserId.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.FYDropDown.ToString())
+                            {
+                                <div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.FYDrpDwnLst, new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CurrencyDrpDwn.ToString())
+                            {
+                                    <div class="">
+                                        @Html.DropDownList("TxtParamValue", new List<SelectListItem>
+                           {
+                                //new SelectListItem() {Text = "--- Please Select Currency ---", Value=""},
+                                 new SelectListItem() {Text = "USD", Value="USD"},
+                                 new SelectListItem() {Text = "INR", Value="INR"},
+                                // new SelectListItem() {Text = "SGD", Value="SGD"},
+                                // new SelectListItem() {Text = "EUR", Value="EUR"},
+                           }, new { id = "DrpDwnLst", style = "width:310px; height:28px", @class = "form-control " })
+                                </div>
+                                @*<div class="navbar-text">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.Currency,"Please Select Currency", new { @class = "drp", id = "DrpDwnLst", style = "width:310px" })
+                                </div>*@
+
+
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.YearDrp.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", new List<SelectListItem>
+                                   {
+                                         new SelectListItem() {Text = "2016", Value="2016"},
+                                         new SelectListItem() {Text = "2017", Value="2017"},
+                                         new SelectListItem() {Text = "2018", Value="2018"},
+                                   }, new { id = "DrpDwnLst", style = "width:310px; height:28px", @class = "form-control " })
+                                </div>
+                            }
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.MonthDrp.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", new List<SelectListItem>
+                                   {
+                                         new SelectListItem() {Text = "January", Value="January"},
+                                         new SelectListItem() {Text = "February", Value="February"},
+                                         new SelectListItem() {Text = "March", Value="March"},
+                                         new SelectListItem() {Text = "April", Value="April"},
+                                         new SelectListItem() {Text = "May", Value="May"},
+                                         new SelectListItem() {Text = "June", Value="June"},
+                                         new SelectListItem() {Text = "July", Value="July"},
+                                         new SelectListItem() {Text = "August", Value="August"},
+                                         new SelectListItem() {Text = "September", Value="September"},
+                                         new SelectListItem() {Text = "October", Value="October"},
+                                         new SelectListItem() {Text = "November", Value="November"},
+                                         new SelectListItem() {Text = "December", Value="December"},
+                                   }, new { id = "DrpDwnLst", style = "width:310px; height:28px", @class = "form-control " })
+                                </div>
+                            }
+                            else if (item.DataType == "DateTimeParameter" || item.DataType == "DateParameter")
+                            {
+                                <div class="navbar-text">
+                                    <input type="date" class="date form-control" name="TxtParamValue" id="DateTime" />
+                                </div>
+                            }
+                            else if (item.DataType == "NumberVar")
+                            {
+                                <div class="navbar-text">
+                                    <input type="number" class="form-control" name="TxtParamValue" id="TxtParamValue" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="navbar-text">
+                                    <input class="form-control" id="TxtParamValue" name="TxtParamValue" type="text">
+                                </div>
+
+                            }
+                            <span id=@item.ParamId></span>
+
+
+                        </td>
+                        @Html.Hidden("ParamId", item.ParamId)
+
+                    </tr>
+
+                }
+                @Html.Hidden("ReportId", Model.ReportId)
+                <tr>
+                    <td>
+                        <div class="btn btn-info">
+                            @Html.ActionLink("Back to List", "GetList")
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="btn btn-info" id="submit">RUN</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

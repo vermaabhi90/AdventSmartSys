@@ -1,0 +1,101 @@
+﻿@model IEnumerable<SmartSys.BL.SalaryComponentmodel>
+
+@{
+    ViewBag.Title = "SalaryComponentList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Salary Component  Details
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateSalarycomponent", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</div>
+    <div id="Grid"></div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SalaryComponentmodel>("grdAdhocRunList")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .EnableAltRow(true)
+           .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportSysComponentLst")))
+           .ContextMenuSettings(contextMenu =>
+           {
+               contextMenu.EnableContextMenu();
+               contextMenu.DisableDefaultItems();
+               contextMenu.CustomContextMenuItems(c =>
+               {
+                   c.AddItem("Add_Record", "Add Record");
+                   c.AddItem("Edit_Record", "Edit Record");
+               });
+
+           })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ComponentId").HeaderText("ComponentId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Name").HeaderText("Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("DRCR").HeaderText("Debit/Credit").TextAlign(TextAlign.Center).Width(120).Add();
+            col.Field("Frequency").HeaderText("Type").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Fixed").HeaderText("Fixed").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("VariableRate").HeaderText("Rate").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("CreatedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit")
+            .Template("#edit")
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+        )
+    </div>
+
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditSalaryComponent?ComponentId={{:ComponentId}}"></a>
+    </script>
+
+
+    <script type="text/javascript">
+        function contextclick(args) {
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/Admin/CreateSalarycomponent")'
+                event.preventDefault();
+                window.location.replace(path);
+            }
+
+            else
+                if (args.text == "Edit Record") {
+                    var tempData = args.text;
+                    var grid = $("#grdAdhocRunList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var CompId = result[0]["ComponentId"];
+                    var path = '@Url.Content("~/Admin/EditSalaryComponent")' + "?ComponentId=" + CompId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+        }
+
+
+    </script>
+
+

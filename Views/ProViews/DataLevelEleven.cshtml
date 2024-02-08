@@ -1,0 +1,100 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelEleven
+
+@{
+    ViewBag.Title = "DataLevelEleven";
+}
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table style="padding-bottom:10px">
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Quotation Id:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.QuotationId, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Quotation Number:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.QuotationNumber, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Customer Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.CustomerName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Quot Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("QuotDate").Value(Model.QuotDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Currancy:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Currancy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Terms:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Terms, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Company:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.CompCode, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>TimeTake(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Created By:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Created Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("CreatedDate").Value(Model.CreatedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+    </tr>
+</table>
+<table>
+    <tr class="spaceUnder">
+        <td style="width:125px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Description, new { @style = "width: 480px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+
+@Html.EJ().ScriptManager()

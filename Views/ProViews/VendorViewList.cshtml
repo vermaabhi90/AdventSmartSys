@@ -1,0 +1,59 @@
+﻿@model SmartSys.BL.DW.VendorListModel
+@using SmartSys.Utility;
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Vendor  View List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemList")
+                       .Datasource((IEnumerable<object>)@Model.vendorGedList)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+        .EnableHeaderHover()
+        .AllowResizing()
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu();
+            contextMenu.DisableDefaultItems();
+            contextMenu.CustomContextMenuItems(c =>
+            {
+                c.AddItem("Vendor_Detail", "View Vendor Detail");
+            });
+
+        })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+
+            col.Field("VendorId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("VendorName").HeaderText("Name").Width(280).Add();
+            col.Field("Region").HeaderText("Region").Width(70).Add();
+            col.Field("IsActive").HeaderText("Active").TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("IsManufacturer").HeaderText("IsManufacturer").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(150).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(130).Add();
+        })
+                   .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script type="text/x-jsrender" id="CustomerEdit">
+    <a class="btn-xs btn-info  glyphicon glyphicon-eye-open" href="/ProViews/VendorViewDetails?VendorId={{:VendorId}}&VendorName={{:VendorName}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "View Vendor Detail") {
+                var tempData = args.text;
+                var grid = $("#grdItemList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var VendorId = result[0]["VendorId"];
+                var VendorName = result[0]["VendorName"];
+                var path = '@Url.Content("~/ProViews/VendorViewDetails")' + "?VendorId=" + VendorId + "&VendorName=" + VendorName
+                event.preventDefault();
+                window.location.replace(path);
+            }
+    }
+</script>

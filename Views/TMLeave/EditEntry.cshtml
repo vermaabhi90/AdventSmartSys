@@ -1,0 +1,463 @@
+﻿@model SmartSys.BL.Tmleave.TMGetSelectedModel
+
+@Scripts.Render("~/bundles/jquery")
+<script src="@Url.Content("~/Scripts/jquery.easing.1.3.min.js")"></script>
+<script src="@Url.Content("~/Scripts/ej/ej.web.all.min.js")"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var Project = $('#Project').val();
+            var Task = $('#TaskId').val();
+            var Day = $('#Day').val();
+            var MonFromTime = $('#MonFromTime').val();
+            var MonToTime = $('#MonToTime').val();
+
+            var TusFromTime = $('#TusFromTime').val();
+            var TusToTime = $('#TusToTime').val();
+
+            var WedFromTime = $('#WedFromTime').val();
+            var WedToTime = $('#WedToTime').val();
+
+
+            var ThusFromTime = $('#ThusFromTime').val();
+            var ThusToTime = $('#ThusToTime').val();
+
+            var FriFromTime = $('#FriFromTime').val();
+            var FriToTime = $('#FriToTime').val();
+
+            var SatFromTime = $('#SatFromTime').val();
+            var SatToTime = $('#SatToTime').val();
+
+            var SunFromTime = $('#SunFromTime').val();
+            var SunToTime = $('#SunToTime').val();
+           
+            if (MonFromTime > MonToTime)
+            {
+                alert("Monday  Time is not valid.");
+                return false;
+            }
+            
+            if (TusFromTime > TusToTime) {
+                alert("Tuesday  Time is not valid.");
+                return false;
+            }
+          
+            if (WedFromTime > WedToTime) {
+                alert("Wednesday  Time is not valid.");
+                return false;
+            }
+           
+            if (ThusFromTime > ThusToTime) {
+                alert("Thursday  Time is not valid.");
+                return false;
+            }
+
+            if (FriFromTime > FriToTime) {
+                alert("Friday  Time is not valid.");
+                return false;
+            }                       
+            
+            if (SatFromTime > SatToTime) {
+                alert("Saturday  Time is not valid.");
+                return false;
+            }
+           
+            if (SunFromTime > SunToTime) {
+                alert("Sunday  Time is not valid.");
+                return false;
+            }
+
+            if (MonFromTime == MonToTime && TusFromTime == TusToTime && WedFromTime == WedToTime && ThusFromTime == ThusToTime && FriFromTime == FriToTime && SatFromTime == SatToTime && SunFromTime == SunToTime)
+            {
+              alert("Please Select atleast one day From and To Time.");
+              return false;
+            }
+            
+            if (Project.toString() == "") {
+                alert("Please Select Project.");
+                return false;
+            }
+            
+            if (Task.toString() == "") {
+                alert("Please Select Task.");
+                return false;
+            }
+            $("#TMEntryDetail").unbind('submit').submit();
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {       
+        $("#Project").change(function () {
+            $("#TaskId").empty();
+            var path = "/TMLeave/Tasklist"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ProjectId: $("#Project").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#TaskId").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select Project Name');
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<table>
+    <tr>
+        <td>
+            @if (Model.TimeSheetId == 0)
+            {
+                <div class="page-header glyphicon glyphicon-leaf  text-info ">
+                    Create TimeSheet Entry
+                </div>
+            }
+            else
+            {
+                <div class="page-header glyphicon glyphicon-pencil  text-info ">
+                    Edit TimeSheet Entry
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+
+@using (Html.BeginForm("EditEntry", "TMLeave", FormMethod.Post, new { Id = "TMEntryDetail"}))
+{
+    <html>
+    <head>
+        <title>WebgridSample</title>
+        <style type="text/css">
+            .modal-content {
+                width: 1200px!important;
+                margin: 30px auto !important;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .Tbl1 {
+        border-style: solid;
+        border-color: #c9cad7;
+    }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="modal-body">
+            <table>
+               
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => model.TimeSheetEntryId)
+                        @Html.HiddenFor(model => model.TimeSheetId)
+                    </td>    
+                    <td align="center">
+                        <label for="ProjectId">Project</label>
+
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.TMProjectlist, "Please Select Project", new { style = "width:175px", @class = "form-control", id = "Project" })
+                            @Html.ValidationMessageFor(model => model.ProjectId, "", new { id = "Experties", @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td align="center">
+                        <label for="TaskId">Task</label>
+
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            
+                            @Html.DropDownList("TaskId", (IEnumerable<SelectListItem>)ViewBag.TMTasklist, "Please Select Task", new { style = "width:175px", @class = "form-control", id = "TaskId" })
+                            @Html.ValidationMessageFor(model => model.TaskId, "", new { id = "Qualification", @class = "text-danger" })
+                        </div>
+                    </td>
+                                       
+                    @*<td>
+                        <div class="navbar-text">
+                            @Html.DropDownListFor(model => model.Day, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Monday", Value="Monday"},
+                             new SelectListItem() {Text = "Tuesday", Value="Tuesday"},
+                             new SelectListItem() {Text = "Wednesday", Value="Wednesday"},
+                               new SelectListItem() {Text = "Thursday", Value="Thursday"},
+                                new SelectListItem() {Text = "Friday", Value="Friday"},
+                               new SelectListItem() {Text = "Saturday", Value="Saturday"},
+                                new SelectListItem() {Text = "Sunday", Value="Sunday"}
+
+                       }, new { @type = "dropdown" ,@id="Day"})
+
+                            @Html.ValidationMessageFor(model => model.Day, "", new { id = "Day", @class = "text-danger" })
+                        </div>                           
+</td>*@
+                </tr>
+
+                   </table>
+            <table>
+                <tr>
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align=" center">
+                            <label style="color:green" for="Monday">Monday</label>
+</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.MonFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.MonToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align="center">
+                                    <label style="color:green" for="Tuesday">Tuesday</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.TusFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.TusToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align="center">
+                                    <label style="color:green" for="Wednesday">Wednesday</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.WedFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.WedToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align="center">
+                                    <label style="color:green" for="Thursday">Thursday</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.ThusFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.ThusToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align="center">
+                                    <label style="color:green" for="Friday">Friday</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.FriFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.FriToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align="center">
+                                    <label style="color:green" for="Saturday">Saturday</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.SatFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.SatToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                    <td align="center" style="padding-bottom:80px">
+                        <table style="border:1px solid lightgrey;">
+                            <tr>
+                                <td align="center">
+                                    <label style="color:green" for="Sunday">Sunday</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td align="center">
+                                                From
+                                            </td>
+                                            <td align="center">
+                                                To
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.SunFromTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                            <td>
+                                                @Html.EJ().TimePickerFor(model => model.SunToTime).Width("80").TimeFormat("HH:mm")
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>          
+                                      
+            </table>
+            <table>   
+                <tr>
+
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="save btn btn-success glyphicon glyphicon-save"> Save</button>
+                        </div>
+
+                    </td>
+                    <td>
+                        <button type="button" class="abc btn btn-danger" onclick="window.location.reload()" data-dismiss="modal">Cancel</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+
+
+@Html.EJ().ScriptManager()
+

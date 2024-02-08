@@ -1,0 +1,150 @@
+﻿@model IEnumerable<SmartSys.BL.IssueModel>
+
+<div style="margin-top:15px;margin-left:50px" class="glyphicon glyphicon-list  text-info">
+
+    Issue Details List
+</div>
+<br>
+<br />
+<style>
+    input[type=text] {
+        width: 180px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        background-color: white;
+        background-image: url('searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        padding: 12px 20px 12px 40px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+    }
+        input[type=text]:focus {
+            width: 99%;
+        }
+</style>
+<div id="Grid"></div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.IssueModel>("GrdIssueDetails")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                         .EnableAltRow(true)
+                        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                        {
+                             items.AddTool(ToolBarItems.ExcelExport);
+                        }))
+                        .Mappers(map =>
+                        {
+                             map.ExportToExcelAction("SignoffListExport");
+                        })
+                        .ContextMenuSettings(contextMenu =>
+                        {
+                        contextMenu.EnableContextMenu();
+                        contextMenu.DisableDefaultItems();
+                        contextMenu.CustomContextMenuItems(c =>
+                        {
+                        c.AddItem("Sign_Off", "View Detail");                        
+                        });
+
+                        })
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()                                        
+
+          //  .EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("IssueId").HeaderText("Issue Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Title").HeaderText("Title").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("CreatedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();           
+
+        })
+                  
+    )
+</div>
+
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "View Detail") {
+            var tempData = args.text;
+            var grid = $("#GrdIssueDetails").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var IssueId = result[0]["IssueId"];
+            var Risk = "Risk";
+            var button = document.getElementById('clickButton');
+            button.form.submit();
+            var path = '@Url.Content("~/Admin/CreateIssuewithcompleteStatus")' + "?IssueId=" + IssueId + "&tabIndex=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+
+        if (args.text == "Add Record") {
+            var tempData = args.text;
+            var grid = $("#GrdIssueDetails").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var path = '@Url.Content("~/Admin/CreateIssue")' + "?IssueId=" + 0 + "&tabIndex=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+          }
+    }
+
+    function querycellinfo(args) {
+        if (args.column.field == "Status" && args.data.Status == 'NEW')
+            $($(args.cell).parent()).css("backgroundColor", "blue");/*custom css applied to the row */
+        if (args.column.field == "Status" && args.data.Status == 'Complete')
+            $($(args.cell).parent()).css("backgroundColor", "gray");/*custom css applied to the row */
+
+    }
+</script>
+<script>
+    function contextclick(args) {            
+        if (args.text == "View Detail") {
+            var tempData = args.text;
+            var grid = $("#GrdIssueDetails").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var IssueId = result[0]["IssueId"];
+            var path = '@Url.Content("~/Admin/CreateIssuewithcompleteStatus")' + "?IssueId=" + IssueId + "&tabIndex=0" 
+                $("#SignOffDetail").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#SignOffDetail").ejDialog("open");           
+        }
+    }
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("SignOffDetail")
+        .Title("<a id='Title'></a>")
+        .Width(950)
+        .Height(650)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#SignOffDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#SignOffDetail").ejDialog("open");
+        }
+</script>

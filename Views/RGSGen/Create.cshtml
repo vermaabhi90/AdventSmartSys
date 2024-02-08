@@ -1,0 +1,141 @@
+﻿@model SmartSys.BL.RGSGenModel
+
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create Generator
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var Host = $('#Host').val();
+            var Port = $('#Port').val();
+
+            var PollingInterval = $('#PollingInterval').val();
+            if (Host.toString() == "") {
+                alert("Please Enter Host Name ");
+                return false;
+            }
+            if (Port.toString() == "") {
+                alert("Please Enter Port Number ");
+                return false;
+            }
+
+            if (PollingInterval.toString() == "") {
+                alert("Please Enter PollingInterval");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+@using (Html.BeginForm("Create", "RGSGen", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="Host">Host </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Host, new { @class = "form-control", id = "Host" })
+                        @Html.ValidationMessageFor(model => model.Host)
+                    </div>
+                </td>
+                <td>
+                    <label for="Port">Port</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Port, new { @class = "form-control", id = "Port" })
+                        @Html.ValidationMessageFor(model => model.Port)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="PollingInterval">Polling Interval</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PollingInterval, new { @class = "form-control", id = "PollingInterval" })
+                        @Html.ValidationMessageFor(model => model.PollingInterval)
+                    </div>
+                </td>
+
+
+                <td>
+                    <label for="GenType">GenType</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.GenType, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "CR", Value="CR"},
+                             new SelectListItem() {Text = "EW", Value="EW"}
+
+                       }, new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.GenType)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="isActive">Active</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.isActive)
+                        @Html.ValidationMessageFor(model => model.isActive)
+                    </div>
+                </td>
+                <td>
+                    <label for="BusinessLineId">Business Line Id</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("BusinessLineId", (IEnumerable<SelectListItem>)ViewBag.BussList, new { @class = "form-control", style = "width:310px" })
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+    </body>
+</html>
+}
+
+
+
+
+
+
+

@@ -1,0 +1,352 @@
+﻿@model SmartSys.BL.Project.MoMParticipantModel
+
+@{
+    ViewBag.Title = "AddParticipants";
+}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    ADD Participants
+</div>
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+        $('#Empid').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+        $('#Contact').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+        $('#VendorContact').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<style>
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+<script type="text/javascript">
+    $(document).on("change", "#Type", (function () {
+        var e = $("#Type").val();
+
+        if (e == "Employee") {
+            $('#emp').show();
+        } else {
+            $('#emp').hide();
+        }
+        if (e == "Customer") {
+            $('#Customer').show();
+        } else {
+            $('#Customer').hide();
+        }
+        if (e == "Vendor") {
+            $('#Vendor').show();
+        } else {
+            $('#Vendor').hide();
+        }
+    }));
+    $(document).on("change", "#Type", (function () {
+
+        var e = $("#Type").val();
+        if (e == "Customer") {
+            $('#CCI').show();
+        } else {
+            $('#CCI').hide();
+        }
+        if (e == "Vendor") {
+            $('#VCI').show();
+        } else {
+            $('#VCI').hide();
+        }
+        if (e == "Employee") {
+            $('#VendorContact').hide();
+
+            $('#Contact').hide();
+        }
+    }));
+
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            var FYI = document.getElementById("myCheck").checked
+
+            var Type = $('#Type').val();
+
+            if (Type.toString() == "") {
+                alert("Please Select Participant Type ");
+
+                return false;
+            }
+            //var Employee = $('#Empid').val();
+            var Employee = $("#Empid option:selected");
+
+            var message = "";
+            Employee.each(function () {
+                message += $(this).val() + ",";
+            });
+
+            message = message.substring(0, message.length - 1);
+
+            if (message.toString() == "0") {
+                alert("Please Select Employee");
+                return false;
+            }
+            var Vndrmessage = "";
+            var Vendor = $('#VendorContact option:selected')
+            Vendor.each(function () {
+                Vndrmessage += $(this).val() + ",";
+            });
+            Vndrmessage = Vndrmessage.substring(0, Vndrmessage.length - 1);
+            var Custmessage = "";
+            var Customer = $('#Contact option:selected')
+            Customer.each(function () {
+                Custmessage += $(this).val() + ",";
+            });
+            Custmessage = Custmessage.substring(0, Custmessage.length - 1);
+
+            if (Type.toString() == "Employee")
+            {
+                pid = message;
+            }
+            else if (Type.toString() == "Vendor")
+            {
+                pid = Vndrmessage;
+
+            }
+            else
+            {
+                pid = Custmessage;
+            }
+            var MOMId = $('#MOMId').val();
+
+            var url = '@Url.Action("AddParticipantsDetail", "ProjectCenter")';
+            var data = { PType: Type, PID: pid, MOMID: MOMId, FYI: FYI };
+
+            $.post(url, data, function (result) {
+
+            });
+
+
+
+        });
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Customerid").change(function (e) {
+
+            $("#Contact").empty();
+
+            var selectedId = $("#Customerid").val();
+
+
+            var path = '@Url.Action("GetContactBYCustomerId")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { CustomerId: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, Custcontact) {
+                        $('#Contact').append('<option value="' + Custcontact.Value + '">' + Custcontact.Text + '</option>').multiselect('rebuild');
+
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Contact.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Vendorid").change(function (e) {
+
+            $("#VendorContact").empty();
+           // var newOption = $('<option value="0">Please Select Contact</option>');
+           // $('#VendorContact').append(newOption);
+            var selectedId = $("#Vendorid").val();
+
+
+            var path = '@Url.Action("GetContactBYVendorId")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { VendorId: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, VendorContact) {
+                        $('#VendorContact').append('<option value="' + VendorContact.Value + '">' + VendorContact.Text + '</option>').multiselect('rebuild');
+
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve Contact.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+@using (Html.BeginForm("AddParticipants", "ProjectCenter", FormMethod.Post, new { id = "Participants" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;margin-left:20px">
+
+            <tr>
+                <td>
+                    <label for="ItemName">Participant Type:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.MOMId, new { id = "MOMId" })
+                        @Html.DropDownListFor(model => model.ParticipantType, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Customer", Value="Customer"},
+                             new SelectListItem() {Text = "Vendor", Value="Vendor"},
+                             new SelectListItem() {Text = "Employee", Value="Employee"},
+
+                       }, "Please Select ParticipantsType", new { id = "Type", @required = "required", @class = "form-control" })
+
+                    </div>
+                   
+                </td>
+
+            </tr>
+            <tr id="emp" style="display: none">
+
+                <td>
+                    <label for="ItemName">Employee:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <select id="Empid" multiple="multiple" name="Employee" class="dropdown-menu" size="5">
+                            @foreach (var item in ViewBag.Employee)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+
+                        </select>
+                    </div>
+
+                    
+                </td>
+            </tr>
+            <tr id="Vendor" style="display: none">
+                <td>
+                    <label for="ItemName">Vendor:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ParticipantId", (IEnumerable<SelectListItem>)ViewBag.Vendor, "Please Select Vendor", new { style = "width:300px", id = "Vendorid", @required = "required", @class = "form-control" })
+                    </div>
+                   
+                </td>
+            </tr>
+            <tr id="Customer" style="display: none">
+                <td>
+                    <label for="ItemName">Customer:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ParticipantId", (IEnumerable<SelectListItem>)ViewBag.Customer, "Please Select Customer", new { style = "width:300px", id = "Customerid", @required = "required", @class = "form-control" })
+                    </div>
+                   
+                </td>
+            </tr>
+            <tr id="CCI" style="display: none">
+                <td>
+                    <label for="">Customer Contact:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <select id="Contact" multiple="multiple" name="Employee"  size="5"></select>
+                        @*@Html.DropDownList("CustomerContactId", new SelectList(string.Empty, "Value", "Text"), new { style = "width:300px", @class = "form-control", id = "Contact", @required = "required" })*@
+                    </div>
+                 
+                    
+                </td>
+            </tr>
+            <tr id="VCI" style="display: none">
+                <td>
+                    <label for="">Vendor Contact:</label>
+                </td>
+                <td>
+                    <div class="">
+                        <select id="VendorContact" multiple="multiple" name="Employee"  size="5"></select>
+                        @*@Html.DropDownList("VendorContactId", new SelectList(string.Empty, "Value", "Text"), new { style = "width:300px", @class = "form-control", id = "VendorContact", @required = "required" })*@
+                    </div>
+                   
+                </td>
+            </tr>
+            <tr>
+                <td>
+
+                    <label for="">FYI:</label>
+                </td>
+                <td>
+                    <input type="checkbox" id="myCheck" value="FYA">
+                   
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="button" class="btn-xs btn-info glyphicon glyphicon-save save" , onclick="window.location.reload();"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+

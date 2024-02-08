@@ -1,0 +1,36 @@
+﻿@model IEnumerable<SmartSys.BL.MaterialProcuredVsReductionModel>
+
+@{
+    ViewBag.Title = "ShowMaterialProcuredVsReduction";
+}
+<div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.MaterialProcuredVsReductionModel>("1MaterialProcuredVsReduction")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentNo").HeaderText("Document No").TextAlign(TextAlign.Left).Width(40).Add();
+            //col.Field("VendorNo").HeaderText("Vendor No").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("CreateDate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+        })      
+        )
+    </div>
+
+</div>
+
+@Html.EJ().ScriptManager()

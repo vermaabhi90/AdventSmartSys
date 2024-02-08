@@ -1,0 +1,60 @@
+﻿@model IEnumerable<SmartSys.BL.SysRoleTaskModel>
+@{
+    ViewBag.Title = "Create Edit Role";
+}
+@using (@Html.BeginForm("SaveRoleTask", "Admin", FormMethod.Post, new { id = "formRoleTask" }))
+{
+<div class="page-header glyphicon glyphicon-leaf  text-danger">
+    Create/Edit Role
+</div>
+<div style="width: 250px">
+    @Html.EJ().TreeView("tree").TreeViewFields(s => s.Datasource((IEnumerable<SmartSys.BL.SysRoleTaskModel>)ViewBag.datasource).Id("id").ParentId("pid").Text("name").IsChecked("IsChecked").HasChild("HasChild")).ShowCheckbox(true)
+</div>
+<div class="btn" aria-label="...">
+    <button type="submit" id="btnSave" class="btn btn-info glyphicon glyphicon-save"> Save</button>
+</div>
+}
+<script type="text/javascript">
+    var treeobj,data,source;
+    var JSON1 = [];
+
+    $("#formRoleTask").submit(function (e) {
+        //var treeObj = $("#tree").ejTreeView('instance');
+        treeobj = $("#tree").data("ejTreeView");
+        var checkednodes = treeobj.getCheckedNodes();
+        alert("Submit");
+
+        var array = @Html.Raw(Json.Encode(
+((IEnumerable<SmartSys.BL.SysRoleTaskModel>)ViewBag.datasource).Select(node => new
+{
+    pid = node.pid,
+    name = node.name,
+    hasChild =node.HasChild,
+    id = node.id,
+    IsChecked = node.IsChecked
+})
+));
+        for(data=0;data<checkednodes.length;data++){
+            for(source=0;source<array.length;source++){
+                if(checkednodes[data].id == array[source].id){
+                    JSON1.push(array[source]);
+                }
+            }
+        }
+        var dataToSend = JSON.stringify(JSON1);
+        $.ajax({
+            url: '/Admin/SaveRoleTask',
+            //contentType: 'application/json',
+            type: 'POST',
+            data: {"str":dataToSend},
+            dataType: 'json'
+        }).
+        success(function (result) {
+            console.log(result);
+        }).
+        error(function (xhr, status) {
+            console.log(status);
+        })
+    
+    });
+</script>

@@ -1,0 +1,119 @@
+﻿@model SmartSys.BL.SysUserRoleModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script>
+        $(document).ready(function () {                    
+            $('#lstRoles').removeClass('tb8');
+            $('#lstAssignedRoles').removeClass('tb8');
+        })
+      
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit User roles
+</div>
+@using (Html.BeginForm("EditUser", "Admin", FormMethod.Post, new { id = "UserForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.UserDetails.UserName)</td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.UserDetails.UserName, new { @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.UserDetails.DisplayName)</td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.UserDetails.DisplayName, new { @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.UserDetails.PasswordHint)</td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.UserDetails.PasswordHint, new { @class = "form-control" })
+                </div>
+            </td>
+            <td hidden="hidden">
+            @Html.EditorFor(model => model.UserDetails.UserID)</td>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td align="center">@Html.ListBoxFor(model => model.SelectedRoles, new SelectList(ViewBag.Roles, "Value", "Text"), new { @class = "form-control" , id = "lstRoles", style = "width: 300px;height:200px", size = 15 })</td>
+            <td align="center">
+
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnAdd" class="btn-xs btn-info glyphicon glyphicon-forward"></button>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <small> <button type="button" id="btnAddAll" class="btn-xs btn-info glyphicon glyphicon-fast-forward"></button></small>
+                </div><br />
+
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemove" class="btn-xs btn-info glyphicon glyphicon-backward"></button>
+                </div><br />
+                <div class="btn" aria-label="...">
+                    <button type="button" id="btnRemoveAll" class="btn-xs btn-info glyphicon glyphicon-fast-backward"></button>
+                </div><br />
+            </td>
+            <td align="center">
+                @Html.ListBoxFor(model => model.AssignedRoles, new SelectList(ViewBag.AssignedRoles, "Value", "Text"), new { @class = "form-control" , id = "lstAssignedRoles", style = "width: 300px;height:200px", size = 4 })
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'UserList';" );"> Back</button>
+                <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save"> Save</button>              
+            </td>
+        </tr>
+    </table>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#UserForm").submit(function (e) {
+
+            $("#lstAssignedRoles").prop("selected", true);
+        });
+
+        $("#btnAdd").click(function (e) {
+
+            $("#lstRoles > option:selected").appendTo("#lstAssignedRoles");
+            e.preventDefault();
+        });
+
+        $("#btnAddAll").click(function (e) {
+
+            $("#lstRoles > option").appendTo("#lstAssignedRoles");
+            e.preventDefault();
+        });
+
+        $("#btnRemove").click(function (e) {
+            $("#lstAssignedRoles > option:selected").appendTo("#lstRoles");
+            e.preventDefault();
+        });
+
+        $("#btnRemoveAll").click(function (e) {
+            $("#lstAssignedRoles > option").appendTo("#lstRoles");
+            e.preventDefault();
+        });
+    });
+
+</script>

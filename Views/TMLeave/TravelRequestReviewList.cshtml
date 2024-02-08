@@ -1,0 +1,307 @@
+﻿@model IEnumerable<SmartSys.BL.Tmleave.ProjectTravelRequestModel>
+
+@{
+    ViewBag.Title = "TravelRequestReviewList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Travel Request Review list
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Review').click(function () {
+            var Requestid = $('#Requestid').val();
+            var Remark = $('#Approveremark').val();
+            if (Remark.toString() == "") {
+                alert("Please Enter Approval Remark");
+                return false;
+            }
+           
+            var path = '@Url.Content("~/TMLeave/ApproveRejectTravel")' + "?statusCode=" + 27 + "&ApproverRemark=" + Remark + "&RequestId=" + Requestid + "&Step=" + 'Review'
+            event.preventDefault();
+            window.location.replace(path);
+          
+        });
+        $('#Reject').click(function () {
+            var Requestid = $('#Requestid').val();
+            var Remark = $('#Approveremark').val();
+            if (Remark.toString() == "")
+            {
+                alert("Please Enter Approval Remark");
+                return false;
+            }
+            var path = '@Url.Content("~/TMLeave/ApproveRejectTravel")' + "?statusCode=" + 25 + "&ApproverRemark=" + Remark + "&RequestId=" + Requestid
+            event.preventDefault();
+            window.location.replace(path);
+           
+        });
+       
+    });
+</script>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Tmleave.ProjectCategoryModel>("grdTMLeaveTravelApproval")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+                 .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportTravelRequestReviewList")))
+                  .ContextMenuSettings(contextMenu =>
+                  {
+                      contextMenu.EnableContextMenu();
+                      contextMenu.DisableDefaultItems();
+                      contextMenu.CustomContextMenuItems(c =>
+                      {
+                          c.AddItem("Show_Detail", "Show Detail");
+
+                      });
+
+                  })
+                          .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                        .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+
+        .Columns(col =>
+        {
+            col.Field("RequestId").HeaderText("Request Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Description").HeaderText("Description").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("EmployeeName").HeaderText("Employee Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            //col.Field("ApproverBy").HeaderText("Approver By").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            //col.Field("ApprovedDate").HeaderText("Approved Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            //col.Field("ApproverRemark").HeaderText("Approver Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("StatusName").HeaderText("Status").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(90).Add();
+            col.Field("CreatedBy").AllowEditing(false).HeaderText("Created By").Width(200).Add();
+            col.Field("CreatedDate").AllowEditing(false).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+        })
+
+    )
+</div>
+<script type="text/javascript">
+        $(document).ready(function () {
+
+            function onDialogClose(args) {
+                $("#Approveremark").val(null);
+               
+            };
+        });
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Show Detail") {
+            var tempData = args.text;
+            var grid = $("#grdDWEnquiry").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            $("#Requestid").val(result[0]["RequestId"]);
+            $("#description").val(result[0]["Description"]);
+            $("#Employeeid").val(result[0]["EmployeeName"]);
+            $("#customerid").val(result[0]["CustomerName"]);
+            $("#vendorid").val(result[0]["VendorName"]);
+            //$("#approveid").val(result[0]["ApproverBy"]);
+            //$("#approvedate").val(result[0]["ApprovedDate"]);
+            //$("#Approveremark").val(result[0]["ApproverRemark"]);
+
+            $("#status").val(result[0]["StatusName"]);
+            $("#CreatedBy").val(result[0]["CreatedBy"]);
+            $("#Createddate").val(result[0]["CreatedDate"]);
+            $("#ModifiedBy").val(result[0]["ModifiedBy"]);
+            $("#Modifieddate").val(result[0]["ModifiedDate"]);
+            $("#ModalDialog1").ejDialog("open");
+                return false;
+            }
+
+        }
+  //  });
+</script>
+
+@{Html.EJ().Dialog("ModalDialog1").Title(" Edit Request").ContentTemplate(@<div>
+
+       <div class="page-header glyphicon glyphicon-leaf  text-info">
+                Edit Request
+            </div>
+           <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+
+                <tr>
+                    <td>
+                        <label>Request ID:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="Requestid" name="Requestid" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+
+                    <td>
+                        <label>Status:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="status" name="status" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+                    <td>
+                        <label>Employee:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="Employeeid" name="Employeeid" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Description:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextArea("description", "", new { id = "description", @readonly = "", @class="form-control"})
+                            @*<input type="ar" id="description" name="description" readonly="readonly" class="form-control">*@
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label>Customer:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="customerid" name="customerid" readonly="readonly" class="form-control">
+                        </div>
+                    </td>
+                    <td>
+                        <label>Vendor:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="vendorid" name="vendorid" readonly="readonly" class="form-control">
+                        </div>
+                    </td>
+                </tr>
+
+                @*<tr>
+
+                        <td width="100px">
+                            <label>Approved By:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                <input type="text" id="approveid" name="approveid" readonly="readonly" class="form-control" />
+                            </div>
+                        </td>
+                        <td width="100px">
+                            <label>Approved Date:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                <input type="text" id="approvedate" name="approvedate" readonly="readonly" class="form-control">
+                            </div>
+                        </td>
+
+                    </tr>*@
+                <tr>
+                    <td>
+                        <label>Created By:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="CreatedBy" name="CreatedBy" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+                    <td>
+                        <label>Created Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="Createddate" name="Createddate" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Modified By:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="ModifiedBy" name="ModifiedBy" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+                    <td>
+                        <label>Modified Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="Modifieddate" name="Modifieddate" readonly="readonly" class="form-control" />
+                        </div>
+                    </td>
+
+            </table>
+            <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    @*<td width="100px">
+                            <label>Remark:</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                <textarea id="Remark" name="Remark" required="required" style="width:300px;max-width:500px" readonly="readonly" class="abc form-control e-ejinputtext"></textarea>
+                            </div>
+                        </td>*@
+                    <td>
+                        <label>Remark:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <textarea id="Approveremark" name="Approveremark" style="width:500px;max-width:500px" class="abc form-control e-ejinputtext"></textarea>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+             <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <a class="btn-xs btn-success glyphicon glyphicon-ok-circle text-success Review" id="Review">
+                                <b>Review</b>
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <a class="btn-xs btn-danger glyphicon glyphicon-remove-circle Review" id="Reject">
+                                Reject
+                            </a>
+                        </div>
+                    </td>
+                
+                </tr>
+            </table>
+    </div>)
+         .Width(1200)
+         .Height(550)
+          .Position(pos => pos.XValue("200px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+
+

@@ -1,0 +1,137 @@
+﻿@model SmartSys.BL.SalaryComponentmodel
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            var TotalAmount =0;
+            var ParentId = $('#ParentId').val();
+            var AnnualFixPay = '@ViewBag.AnnualFixPay';
+
+            var Amount =@ViewBag.TotalAmount;
+          
+            var DRCR = $('#DRCR').val()
+            var amt = $('#VariableRate').val();
+            var Tamt = 0;
+            if(DRCR.toString() == "CR")
+            {
+                 Tamt = (+Amount) - (+amt);
+              
+            }
+            else
+            {
+                 Tamt = (+Amount) + (+amt);
+            }
+      
+            if(amt.toString() == "")
+            {
+                alert("Please Enter Amount");
+                return false;
+            }
+            if(Amount==0)
+            {
+                TotalAmount  = $('#VariableRate').val();
+
+            }
+            else
+            {
+                TotalAmount = Tamt;
+
+            }
+              if(+AnnualFixPay < +TotalAmount)
+            {
+                alert("Total Amount  Not Greater Than  AnnualFixPay (AnnualFixPay = '"+AnnualFixPay+"' and  TotalAmount = '"+TotalAmount+"') ");
+                
+            }
+
+
+
+            var VariableRate = $('#VariableRate').val();
+            var path = '@Url.Content("~/Admin/AddSalaryStructure")' + "?ParentId=" + ParentId + "&VariableRate=" + VariableRate + "&EmpId=" + @ViewBag.EmpId
+            event.preventDefault();
+            window.location.replace(path);
+
+        });
+        $('#ParentId').change(function (e) {
+            $('#Label').empty()
+            $('#VariableRate').val("")
+            var path = '@Url.Action("GetComponentDetails")';
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ComponentId: $("#ParentId").val() },
+                success: function (detail) {
+            
+                    if( detail[0].toString!= "")
+                        {
+                        document.getElementById("Label").innerHTML = detail[0];
+                      
+                         }
+                    else
+                    {
+                        document.getElementById("Label").innerHTML = "Fixed Amount";
+                      
+                    }
+                    $('#DRCR').val(detail[1]);
+               
+                    $('#VariableRate').val(detail[2]);
+                    //document.getElementById("Label").innerHTML = detail[1];
+                },
+                error: function (ex) {
+
+                }
+            });
+            return false;
+
+        });
+
+
+    })
+</script>
+<div class="page-header glyphicon glyphicon-leaf  text-info ">
+    
+    Add Employee Salary Structure
+</div>
+<table style="margin-left:10px">
+
+    <tr id="Variable" style="">
+        <td>
+            <label for="Taxable">Component:</label>
+            @Html.Hidden("DRCR","" , new {id= "DRCR" })
+        </td>
+        <td>
+            <div class="navbar-text">
+              
+                @Html.DropDownList("parentId", (IEnumerable<SelectListItem>)ViewBag.ComponentList, new { id = "ParentId", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Fixed, "", new { @class = "text-danger" })
+            </div>
+        </td>
+      
+    </tr>
+    <tr>
+        <td>
+            <label for="Taxable">Amount:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+
+                @Html.TextBoxFor(model => model.VariableRate, new { id = "VariableRate", @class = "form-control" })
+             
+            </div>
+        </td>
+        <td>
+            <label id="Label"></label>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+
+        <td>
+            <div class="btn" aria-label="...">
+                <button type="submit" class="save btn-xs btn-success glyphicon glyphicon-save save"> Save</button>
+            </div>
+         
+        </td>
+      
+    </tr>
+</table>

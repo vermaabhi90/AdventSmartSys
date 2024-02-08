@@ -1,0 +1,59 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelFourteen
+
+@{
+    ViewBag.Title = "DataLevelFourteen";
+}
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Approved By:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ApprovedBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Approved Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("ApprovedDate").Value(Model.ApprovedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Time Taken(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+
+</table>
+<table style="padding-bottom:10px">
+    <tr>
+        <td style="width:150px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextArea("Description", (string)ViewBag.Description, new { @style = "width: 450px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()
+
+
+
+
+
+
+
+
+

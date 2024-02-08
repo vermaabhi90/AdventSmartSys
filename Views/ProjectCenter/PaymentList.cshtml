@@ -1,0 +1,273 @@
+﻿@model IEnumerable<SmartSys.BL.Project.PaymentExpenseStatus>
+
+@using Syncfusion.JavaScript.Models
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Payment List
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink("  Create", "ProjectPayMentStatusDetail", new { Id = 0, Amount = ViewBag.Amount, EmpName = ViewBag.Employee, RefId = ViewBag.RefId, EmpId = ViewBag.EmpId, TotalPaid = ViewBag.TotalPaid }, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-leaf" })
+</div>
+  <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+    <tr>
+        <td>
+            <label> Total Paid: </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.EJ().NumericTextbox("numeric").EnableRTL(true).ReadOnly(true).DecimalPlaces(2).Value(ViewBag.TotalPaid)
+                @*@Html.TextBox("TotalPaid", (Double)ViewBag.TotalPaid, new { @class = "form-control", @readonly = "readonly", @style = "color:red;width:100px;height:20px;background-color:#cae9fb" })*@
+            </div>
+        </td>
+        <td>
+            <label> Balance Amount: </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.EJ().NumericTextbox("numeric2").EnableRTL(true).ReadOnly(true).DecimalPlaces(2).Value(ViewBag.Amount - ViewBag.TotalPaid)
+                @*@Html.TextBox("BalanceAmount","", new { @class = "form-control", @readonly = "readonly", @style = "color:red;width:100px;height:20px;background-color:#cae9fb", id = "BalanceAmount" })*@
+            </div>
+        </td>
+        <td style="">
+            <label> Amount: </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.EJ().NumericTextbox("numeric1").EnableRTL(true).ReadOnly(true).DecimalPlaces(2).Value(ViewBag.Amount)
+                @*@Html.TextBox("Amount", (Double)ViewBag.Amount, new { @class = "form-control", @readonly = "readonly", @style = "color:red;width:100px;height:20px;background-color:#cae9fb" })*@
+            </div>
+        </td>
+    </tr>
+</table>
+<br>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Project.PaymentExpenseStatus>("GRdPayment")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+           //.ContextMenuSettings(contextMenu =>
+           //{
+           //    contextMenu.EnableContextMenu()
+           //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+
+           //     //.CustomContextMenuItems(new List<string> { "View Detail" ,"Delete"})
+           //     .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "View Detail" } })
+           //      .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Delete" } });
+           //})
+           .ContextMenuSettings(contextMenu =>
+           {
+               contextMenu.EnableContextMenu();
+               contextMenu.DisableDefaultItems();
+               contextMenu.CustomContextMenuItems(c =>
+               {
+                   c.AddItem("View_Detail", "View Detail");
+                   c.AddItem("Delete1", "Delete");
+               });
+
+           })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("PaymentId").Visible(true).AllowEditing(false).HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Remark").Visible(true).AllowEditing(false).HeaderText("Remark").IsPrimaryKey(false).TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Amount").Visible(false).AllowEditing(false).HeaderText("Total Paid").IsPrimaryKey(false).TextAlign(TextAlign.Right).Format("{0:n2}").Width(90).Add();
+            col.Field("NewAmount").Visible(true).AllowEditing(false).HeaderText("Amount").IsPrimaryKey(false).TextAlign(TextAlign.Right).Format("{0:n2}").Width(90).Add();
+            col.Field("EmpId").Visible(false).HeaderText("EmpId").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("Employee").HeaderText("Employee").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("RefId").Visible(false).HeaderText("RefId").Width(140).Add();
+            col.Field("TotalPaid").Visible(false).HeaderText("TotalPaid").Width(140).Visible(false).Add();
+            col.Field("Isdeleted").Visible(false).HeaderText("isdeleted").Width(140).Visible(false).Add();
+            col.Field("PaymentType").HeaderText("PaymentType").Width(100).Add();
+            col.Field("CreatedBy").HeaderText("CreatedBy").Width(100).Add();
+            col.Field("CreatedDate").HeaderText("CreatedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(100).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.HeaderText("View Details").Template("#Review").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+            col.HeaderText("Deleted").Template("#Delete").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Click = "Click",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                     eve.QueryCellInfo("querycellinfo");
+                 })
+        )
+    </div>
+
+    <script id="Review" type="text/x-jsrender">
+        {{if Isdeleted == 'False'}}
+        <a class="btn-xs btn-default  glyphicon glyphicon-info-sign black" href='/ProjectCenter/ProjectPayMentStatusDetail?Id={{:PaymentId}}&amp;Amount={{:Amount}}&amp;EmpName={{:Employee}}&amp;RefId={{:RefId}}&amp;EmpId={{:EmpId}}&amp;TotalPaid={{:TotalPaid}}'></a>
+        {{/if}}
+    </script>
+    <script id="Delete" type="text/x-jsrender">
+        {{if Isdeleted == 'False'}}
+        <a class="glyphicon glyphicon-remove text-success"> False</a>
+        @*<a class="btn-xs btn-danger  glyphicon glyphicon-trash black" id="delete" href='/ProjectCenter/DeletePaymentDetails?Id={{:PaymentId}}&amp;RefId={{:RefId}}'> Remove</a>*@
+        {{/if}}
+        {{if Isdeleted == 'True'}}
+        <a class="glyphicon glyphicon-ok text-danger" > True</a>
+        {{/if}}
+
+    </script>
+
+    <script>
+    function querycellinfo(args) {
+        if (args.column.field == "Isdeleted" && args.data.Isdeleted == "False")
+            $($(args.cell).parent()).css("backgroundColor", "#E0F8E0");/*custom css applied to the row */
+        if (args.column.field == "Isdeleted" && args.data.Isdeleted == "True")
+            $($(args.cell).parent()).css("backgroundColor", "#F6D8CE");/*custom css applied to the row */
+    }
+
+    </script>
+    <script>
+    function contextclick(args) {
+        //
+        if (args.text == "View Detail") {
+            var tempData = args.text;
+            var grid = $("#GRdPayment").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var PaymentId = result[0]["PaymentId"];
+            var Amount = result[0]["Amount"];
+            var Employee = result[0]["Employee"];
+            var RefId = result[0]["RefId"];
+            var EmpId = result[0]["EmpId"];
+            var TotalPaid = result[0]["TotalPaid"];
+            var Isdeleted = result[0]["Isdeleted"];
+            if (Isdeleted == "True")
+            {
+                alert("This Payment is Deleted (View Detail Not Allowed)")
+                return false;
+            }
+            var path = '@Url.Content("~/ProjectCenter/ProjectPayMentStatusDetail")' + "?Id=" + PaymentId + "&Amount=" + Amount + "&EmpName=" + Employee + "&RefId=" + RefId + "&EmpId=" + EmpId + "&TotalPaid=" + TotalPaid
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        if (args.text == "Delete") {
+
+            var tempData = args.text;
+            var grid = $("#GRdPayment").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var PaymentId = result[0]["PaymentId"];
+            var RefId = result[0]["RefId"];
+            var Isdeleted = result[0]["Isdeleted"];
+            if (Isdeleted == "False")
+            {
+                $("#dialogIcon").ejDialog("open");
+            }
+            else
+            {
+                alert("This Payment Already Deleted")
+            }
+            $('#PaymentId').val(PaymentId);
+            $('#RefId').val(RefId);
+
+        }
+    }
+
+    </script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var TotalPaid =@ViewBag.TotalPaid;
+        var Amount    = @ViewBag.Amount;
+        var BalanceAmount = (+Amount) - (+TotalPaid);
+        $('#BalanceAmount').val(BalanceAmount);
+           
+        
+    })
+    </script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Save').click(function () {
+            var PaymentId = $('#PaymentId').val();
+             var RefId = $('#RefId').val();
+             var Remark = $('#Remark').val();
+             if (Remark == "")
+             {
+                 alert("Please Enter Remark");
+                 return false;
+             }
+            var path = '@Url.Content("~/ProjectCenter/DeletePaymentDetails")' + "?Id=" + PaymentId + "&RefId=" + RefId + "&Remark=" + Remark
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    })
+    </script>
+    <br />
+    <td>
+        @Html.ActionLink(" Back", "ProjectPaymentStatusList", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-hand-left" })
+
+    </td>
+
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("").ContentTemplate(@<div>
+
+      <div class="page-header glyphicon glyphicon-leaf  text-info">
+                    Add Customer
+                </div>
+                <table style="margin-left:20px">
+                    <tr>
+                        <td>
+                            <label>Remark:</label>
+                        </td>
+                        <td style="width:50px"></td>
+                        <td>
+                            @Html.Hidden("RefId", new { @style = "Width:800px;display:none", @class = "form-control", id = "RefId" })
+                            @Html.Hidden("PaymentId", new { @style = "Width:800px;display:none", @class = "form-control", id = "PaymentId" })
+                            @Html.TextArea("Remark", new { @style = "Width:800px", @class = "form-control", id = "Remark", @required = "" })
+
+                        </td>
+                    </tr>
+
+
+                </table>
+                <br />
+                <table style="margin-left:100px">
+                    <tr>
+                        <td>
+                            <button type="button" class="btn-xs buttonCss btn-info glyphicon glyphicon-save " id="Save"> Save</button>
+                        </td>
+                        
+                    </tr>
+                </table>
+
+    </div>)
+         .Width(1100)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+    }
+</div>
+

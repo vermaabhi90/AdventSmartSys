@@ -1,0 +1,193 @@
+﻿@model SmartSys.BL.Enquiry.CustomerPOModel
+
+@{
+    ViewBag.Title = "CretaePurchaseOrder";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Approve Reject Purchase Order
+</div>
+
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+    <tr>
+        @if (Model.PurchaseOrderId > 0)
+        {
+            <td>
+                <label>Purchase Order ID</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PurchaseOrderId, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+        }
+        <td>
+            <label>Customer</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+        <td>
+            <label>Company</label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.CompCode, new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+
+    </tr>
+    <tr>
+        <td>
+            <div class="">
+                <label>PO Number</label>
+            </div>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+        <td>
+            <label>PO Date</label>
+        </td>
+
+        <td>
+            <div class="">
+                <input type="text" readonly="readonly" value="@Model.PODate.ToShortDateString()" class="form-control" />
+            </div>
+        </td>
+
+        @if (Model.DocumentFile != null)
+        {
+            if (Model.DocumentFile.Length > 5)
+            {
+                <td>
+                    <label>Document File:</label>
+                </td>
+                <td id="upFile4">
+                    <div class="input-group-btn">
+                        @Html.ActionLink(" Open", "Download", new { PurchaseOrderId = Model.PurchaseOrderId, Filename = Model.DocumentFile }, new { @class = "btn btn-info glyphicon glyphicon-open" })
+                    </div>
+                </td>
+            }
+        }
+    </tr>
+    </table>
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+    <tr>
+        <td width="130px">          
+                <label>Remark</label>          
+        </td>
+        <td>
+            <div class="">
+                @Html.TextAreaFor(model => model.Remark, new { style = "width:600px", @class = "form-control", @readonly = "Readonly" })
+            </div>
+        </td>
+    </tr>
+</table>
+<br><br>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.CustomerPOModel>("grdPOList")
+         .Datasource(Model.PODetaillist)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("ItemName").HeaderText("Item Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(160).Add();
+            col.Field("QuotationName").HeaderText("Quotation Name").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Quantity").HeaderText("Quantity").Width(160).Add();
+            col.Field("Rate").HeaderText("Rate").Width(160).Add();
+            col.Field("Remark").HeaderText("Remark").Width(160).Add();
+            col.Field("ExpectedDateStr").HeaderText("ExpectedDateStr").Width(160).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(180).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+           
+
+
+    )
+</div>
+
+
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+
+    @if (Model.PurchaseOrderId > 0)
+    {
+        <tr>
+            <td>
+                <label> Created By</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+                <label>Created Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "Readonly" })
+                </div>
+            </td>
+        </tr>
+                <tr>
+                    <td>
+                        <label>Modified By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                </tr>
+    }
+
+</table>
+
+
+
+<table>
+    <tr>
+        <td>
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'POApprovalList';" );"> Back</button>
+</td> 
+            <td>
+                <div class="btn" aria-label="...">
+                    @Html.ActionLink(" Approved", "SavePOApproveReject", new { PurchaseOrderId = @Model.PurchaseOrderId, StatusId = Convert.ToInt32(SmartSys.Utility.Enums.StatusCode.APPROVED) }, new { @class = "btn-sm btn-success glyphicon glyphicon-check" })                  
+                </div>
+            </td>
+       
+            <td>
+                <div class="btn" aria-label="...">
+                    @Html.ActionLink(" Rejected", "SavePOApproveReject", new { PurchaseOrderId = @Model.PurchaseOrderId, StatusId = Convert.ToInt32(SmartSys.Utility.Enums.StatusCode.REJECTED) }, new { @class = "btn-sm btn-danger glyphicon glyphicon-eye-close" })                 
+                </div>
+            </td>
+        
+    </tr>
+</table> 
+@Html.EJ().ScriptManager()       

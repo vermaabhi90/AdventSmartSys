@@ -1,0 +1,175 @@
+﻿@model SmartSys.BL.ProViews.TimeSheetViewModel
+
+@{
+    ViewBag.Title = "TimeSheetDetails";
+}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    Time Sheet Details
+</div>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("", "", FormMethod.Post, new { Id = "TimeSheetForm" }))
+{
+
+
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label for="UserId">Time Sheet ID:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.TimeSheetId, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.TimeSheetId)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Emp Name</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.EmployeeName)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Week No:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.WeekNo, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.WeekNo)
+                </div>
+            </td>
+
+        </tr>
+
+        <tr>
+            <td>
+                <label for="UserId">Start Date</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.StartDate)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Status</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.StatusShortCode, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.StatusShortCode)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Approver Name</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ApproverName, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.EmployeeName)
+                </div>
+            </td>
+
+        </tr>
+
+        <tr>
+            <td>
+                <label for="UserId">Approver date</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.ApprovedDate, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ApprovedDate)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Approver Remark</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.ApproverRemark, new { @class = "form-control", style = "width:210px;height:30px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ApproverRemark)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="UserName">Project Name</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ProjectName, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ProjectName)
+                </div>
+            </td>
+
+            <td>
+                <label for="UserName"> Task Name</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TaskName, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.TaskName)
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="UserName"> Created By</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CreatedByName)
+                </div>
+            </td>
+            <td>
+                <label for="UserName"> Created Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CreatedDate)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="UserName"> Modified By</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ModifiedByName)
+                </div>
+            </td>
+            <td>
+                <label for="UserName"> Modified Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", style = "width:210px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ModifiedDate)
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

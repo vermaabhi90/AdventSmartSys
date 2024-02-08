@@ -1,0 +1,339 @@
+﻿@model SmartSys.BL.ProViews.ProjectResourceDetailsViewModel
+
+@{
+    ViewBag.Title = "GetProjectResourceDetail";
+}
+<div class="page-header glyphicon glyphicon-leaf  text-info ">
+    Project Resource Detail
+</div>
+
+<style type="text/css">
+    .modal-content {
+        width: 1100px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+        overflow-y: scroll;
+        overflow-x: scroll;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 250%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+        color: #483D8B;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#MOMTd").show();
+        $("#ActionTd").hide();
+        $("#Cmttd").hide();
+        $("#TMtd").hide();
+        $("#Tsktd").hide();
+
+        $('#MOMView').on('click', function (e) {
+            $("#MOMTd").show();
+            $("#ActionTd").hide();
+            $("#Cmttd").hide();
+            $("#TMtd").hide();
+            $("#Tsktd").hide();
+        });
+        $('#ActPnt').on('click', function (e) {
+            $("#MOMTd").hide();
+            $("#ActionTd").show();
+            $("#Cmttd").hide();
+            $("#TMtd").hide();
+            $("#Tsktd").hide();
+        });
+        $('#Cmt').on('click', function (e) {
+            $("#MOMTd").hide();
+            $("#ActionTd").hide();
+            $("#Cmttd").show();
+            $("#TMtd").hide();
+            $("#Tsktd").hide();
+        });
+        $('#TMDtl').on('click', function (e) {
+            $("#MOMTd").hide();
+            $("#ActionTd").hide();
+            $("#Cmttd").hide();
+            $("#TMtd").show();
+            $("#Tsktd").hide();
+        });
+        $('#TslDtl').on('click', function (e) {
+            $("#MOMTd").hide();
+            $("#ActionTd").hide();
+            $("#Cmttd").hide();
+            $("#TMtd").hide();
+            $("#Tsktd").show();
+        });       
+    });
+</script>
+
+<table style="margin-left:20px">
+    <tr>
+        <td>
+            <input type="button" value="MOM View" id="MOMView" class="btn btn-success glyphicon glyphicon-comment" />
+        </td>
+        <td width="10px"></td>
+        <td>
+            <input type="button" value="Action Point" id="ActPnt" class="btn btn-warning glyphicon glyphicon-screenshot" />
+        </td>
+        <td width="10px"></td>      
+            <td>
+                <input type="button" value="Comment" id="Cmt" class="btn btn-primary glyphicon glyphicon-comment" />
+            </td>  
+        <td width="10px"></td>    
+        <td>
+            <input type="button" value="Time Sheet" id="TMDtl" class="btn btn-danger glyphicon glyphicon-user" />
+        </td>
+        <td width="10px"></td>
+        <td>
+            <input type="button" value="Task Detail" id="TslDtl" class="btn btn-success glyphicon glyphicon-paperclip" />
+        </td>       
+    </tr>
+</table>
+<br/>
+<table>
+    <tr>
+        <td id="MOMTd">
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+                                    @(Html.EJ().Grid<SmartSys.BL.ProViews.ProjectResourceDetailsViewModel>("grdtresource1List")
+                        .Datasource(Model.LstMOM)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("MOMId").HeaderText("MOM Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("Title").HeaderText("Title").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("MOMType").HeaderText("MOM Type").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("MOMDate").HeaderText("MOMDate").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("Name").HeaderText("Name").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ParticipantType").HeaderText("Participant Type").TextAlign(TextAlign.Left).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+
+                            eve.RowSelected("onRowSelected3");
+                        })
+                                    )
+
+
+                                </tr>
+                            </thead>
+                           
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+
+        </td>
+
+        <td id="ActionTd">
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+                                    @(Html.EJ().Grid<SmartSys.BL.ProViews.ProjectResourceDetailsViewModel>("grdtresource3List")
+                        .Datasource(Model.LstActionPoint)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("ActionPointId").HeaderText("ActionPoint Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("MOMId").HeaderText("MOM Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ActionDescription").HeaderText("Action Description").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("AssignedBy").HeaderText("Assigned By").TextAlign(TextAlign.Left).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+
+                            eve.RowSelected("onRowSelected3");
+                        })
+                                    )                     
+                                </tr>
+                            </thead>
+                           
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </td>
+
+        <td id="Cmttd">
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+                                    @(Html.EJ().Grid<SmartSys.BL.ProViews.ProjectResourceDetailsViewModel>("grdtresource4List")
+                        .Datasource(Model.LstComment)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("ActionPointId").HeaderText("ActionPoint Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("CommentedBy").HeaderText("Commented By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+
+                            eve.RowSelected("onRowSelected3");
+                        })
+                                    )                            
+                                </tr>
+                            </thead>
+                           
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </td>
+
+        <td id="TMtd">
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+
+                                    @(Html.EJ().Grid<SmartSys.BL.ProViews.TimeSheetViewModel>("grd1List")
+                        .Datasource(Model.LstTimesheet)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("TaskName").HeaderText("Task Name").Width(60).Add();
+                            col.Field("EmployeeName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("DateText").HeaderText("Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("FromTime").HeaderText("From Time").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ToTime").HeaderText("To Time").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Remark").HeaderText("Remark").Width(60).Add();
+
+                           
+
+                        })
+                                    )
+
+
+
+                                </tr>
+                            </thead>
+                           
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </td>
+
+        <td id="Tsktd">
+            <div class="container">
+                <div class="row">
+                    <div class="table-responsive" style="">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr style="background-color:#D6EAF8">
+
+                                    @(Html.EJ().Grid<SmartSys.BL.ProViews.TimeSheetViewModel>("grd2List")
+                        .Datasource(Model.LstTaskResource)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("TaskName").HeaderText("Task Name").Width(60).Add();
+                            col.Field("TaskType").HeaderText("Task Type").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("PlannedMin").HeaderText("Planned Min").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ActualTime").HeaderText("Actual Time").TextAlign(TextAlign.Center).Width(60).Add();
+                          
+                        })
+                                    )
+                                </tr>
+                            </thead>
+                            
+                        </table>
+                    </div>
+                   
+                </div>
+            </div>
+        </td>
+
+    </tr>
+</table>
+
+@Html.EJ().ScriptManager()

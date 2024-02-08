@@ -1,0 +1,159 @@
+﻿@using System.Collections;
+@{
+    ViewBag.Title = "Daily TM Plan";
+    var wkDaylst = new List<string>();
+    wkDaylst.Add(DayOfWeek.Monday.ToString());
+    wkDaylst.Add(DayOfWeek.Tuesday.ToString());
+    wkDaylst.Add(DayOfWeek.Wednesday.ToString());
+    wkDaylst.Add(DayOfWeek.Thursday.ToString());
+    wkDaylst.Add(DayOfWeek.Friday.ToString());
+    wkDaylst.Add(DayOfWeek.Saturday.ToString());
+
+    var Daylst = new List<object>();
+
+    Daylst.Add(new { value = 1, text = "Add New" });
+    Daylst.Add(new { value = 2, text = "Edit" });
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Subdrp").change(function () {
+            var User_Id = $('#Subdrp').val();         
+            var path = "/Calendar/SetUserId"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { User_Id: User_Id },
+                success: function (Result) {
+                        var path = '@Url.Content("/Calendar/IndexPlan")'
+                        event.preventDefault();
+                        window.location.replace(path);
+                    },
+                    error: function (ex) {
+                        alert(ex);
+                    }
+                });
+            return false;
+        })
+    });
+</script>
+<script>       
+        function onClientClick(args) {
+            var obj = $("#Schedule").data("ejSchedule");
+            obj.exportSchedule("ExportAsPDF", null, null);
+        }
+</script>
+
+<div class="page-header glyphicon glyphicon-calendar  text-info ">
+    TM Plan Schedule
+</div>
+<table>
+    <tr>
+        <td>
+            <div>
+                @Html.EJ().Button("submit").Text("Export").Width("80px").Height("30px").ClientSideEvents(cli => cli.Click("onClientClick"))
+            </div>
+        </td>
+        <td>
+            <div class="row" style="padding-bottom:8px;padding-left:20px">
+                @Html.DropDownList("SubOrdinateList", (IEnumerable<SelectListItem>)ViewBag.LstEmp, "Please Select Employee", new { id = "Subdrp", @class = "drp form-control", @style = "width:300px", required = "required" })
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div>
+    @(Html.EJ().Schedule("Schedule")
+        .Width("100%")
+        .Height("600px")
+        .CurrentDate(DateTime.Now)
+        .ScheduleClientSideEvents(eve => eve.Create("onCreate"))
+         .TimeZone("UTC +05:30")
+         .ShowLocationField(true)
+        //.ContextMenuSettings(menu => menu.Enable(true).MenuItems(item => item.Appointment(ViewBag.App)))
+        .Resources(res =>
+        {
+            //res.Field("Owner").AllowMultiple(false).Title("Orginizor ").ResourceSettings(rs => rs.Id("EmpId").Text("EmpName").Datasource("/Calendar/GetOwners")).Add();
+           // res.Field("Participant").AllowMultiple(true).Title("Participant ").ResourceSettings(rs => rs.Id("EmpId").Text("EmpName").Datasource("/Calendar/GetOwners")).Add();
+        })
+        .FirstDayOfWeek(DayOfWeek.Monday)
+                        .WorkWeek(wkDaylst)
+        .AppointmentSettings(fields => fields.Datasource(ds => ds.URL("/Calendar/GetPlanData").Adaptor("UrlAdaptor"))
+            .Id("Id")
+            .Subject(subject => subject.Field("Subject").ValidationRules(v => v.AddRule("required", true)))
+            .Location(location => location.Field("Location").ValidationRules(v => v.AddRule("required", true).AddRule("customRule", "/^[a-zA-Z0-9- ]*$/")))
+            .StartTime("StartTime")
+            .EndTime("EndTime")
+            .Description("Description")
+            .AllDay("AllDay")
+            .Recurrence("Recurrence")
+            .ResourceFields("Participant")
+
+            .RecurrenceRule("RecurrenceRule"))
+             .ScheduleClientSideEvents(evt =>
+            evt.AppointmentRemoved("onAppointmentRemoved")
+            .AppointmentClick("onAppointmentClick")
+            .CellClick("onAppointmentCellClick")
+            .CellDoubleClick("onAppointment")
+            .ActionBegin("actionBegin")
+            .AppointmentDeleted("AppDel")
+            .AppointmentWindowOpen("actionBegin")
+
+                    )
+                            .ScheduleClientSideEvents(eve =>
+                            {
+
+                                eve.MenuItemClick("contextclick");
+                                eve.AppointmentWindowOpen("actionbegin");
+                                //eve.("contextMenuOpen");
+                            })
+    )
+</div>
+
+<script type="text/javascript">
+    function contextclick(args) {
+
+        if (args.events.ID == "EditRecord") {
+
+        }
+        if (args.events.ID == "AddRecord") {
+            var path = '@Url.Content("~/TMPlan/CreatePlan")' + "?EmpID=" + DeptId + "&PlanID=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+    function actionbegin(args)
+    {
+        var id = args.appointment.Id;
+        var Owner = args.appointment.Owner;
+        var Owner = args.appointment.Owner;
+
+        var path = '@Url.Content("/TMPlan/CreatePlan")' + "?EmpID=" + Owner + "&PlanID=" + id
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    function onAppointment(args) {
+        var path = '@Url.Content("/TMPlan/CreateNewPlan")' + "?EmpID=" + 0 + "&PlanID=" + 0
+        event.preventDefault();
+        window.location.replace(path);
+        return false;
+    }
+    function AppDel(args) {
+        var id = args.appointment[0].Id;
+        if (id > 0)
+        {
+            var path = '@Url.Content("/TMPlan/DeletePlan")' + "?PlanId=" + id
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+    function onAppointmentCellClick(args) {
+        return false;
+    }
+</script>

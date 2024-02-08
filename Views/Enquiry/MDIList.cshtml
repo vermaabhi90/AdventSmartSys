@@ -1,0 +1,72 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.MDIModel>
+
+@{
+    ViewBag.Title = "MDIList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Metrial Receipt Intimetion
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateMDI",new { MRIId=0 }, new { @class = "btn-xs  btn-info glyphicon glyphicon-leaf" })
+</div>
+
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.MDIModel>("grdMDIList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu();
+            contextMenu.DisableDefaultItems();
+            contextMenu.CustomContextMenuItems(c =>
+            {
+                c.AddItem("Add_Record", "Add Record");
+                c.AddItem("Edit_Report", "Edit Record");
+            });
+
+        })
+         //.EnablePersistence(true)
+         .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("MRIId").HeaderText("MRI Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MRIDate").HeaderText("MRI Date").Format("{0:MM/dd/yyyy  HH:MM}").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("DocumentNo").HeaderText("Document No").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("VendorName").HeaderText("VendorName").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("CompCode").HeaderText("CompCode").TextAlign(TextAlign.Center).Width(85).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Center).Width(140).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(100).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(100).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+        })
+    )
+</div>
+<script>
+    function contextclick(args) {
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/Enquiry/CreateMDI")' + "?MRIId=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdMDIList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var MRIId = result[0]["MRIId"];
+                var path = '@Url.Content("~/Enquiry/CreateMDI")' + "?MRIId=" + MRIId
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        }
+</script>

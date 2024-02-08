@@ -1,0 +1,50 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelThree
+
+@{
+    ViewBag.Title = "DataLevelThree";
+}
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+  
+    <tr class="spaceUnder">
+        <td>
+            <label>Prepared By:</label>
+        </td>
+        <td>
+            @Html.TextBox("PreparedBy", (string)ViewBag.PreparedBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+        <td>
+            <label>Prepared Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("PreparedDate").Value(Model.PreparedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+    </tr>
+    <tr class="spaceUnder">        
+        <td>
+            <label>Time Taken(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBox("TimeTaken", (string)ViewBag.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+
+</table>
+<table style="padding-bottom:10px">
+    <tr>
+        <td style="width:150px">
+            <label>Description:</label>
+        </td>
+        <td>
+            @Html.TextArea("Description", (string)ViewBag.Description, new { @style = "width: 450px; max-width: 800px;", @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()
+

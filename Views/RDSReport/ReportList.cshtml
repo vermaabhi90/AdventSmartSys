@@ -1,0 +1,41 @@
+﻿@model IEnumerable<SmartSys.BL.RDS.RDSReportModel>
+<div style="margin-top:15px;margin-left:50px" class="glyphicon glyphicon-list  text-info">
+    RDS Report List
+</div>
+<br>
+<br>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "RDSCreate", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.RDS.RDSReportModel>("grdReportList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ReportId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("ReportName").HeaderText("Report Name").ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("BusinessLineName").HeaderText("BusinessLine Name").TextAlign(TextAlign.Left).Width(170).Add();
+            col.Field("ReportType").HeaderText("Report Type").TextAlign(TextAlign.Center).Width(90).Add();
+
+
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Template("#edit").IsUnbound(true).TextAlign(TextAlign.Center).Width(90).AllowFiltering(false).Add();
+
+        })
+        )
+    </div>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/RDSReport/RDSEditReport?ReportId={{:ReportId}}"></a>
+    </script>

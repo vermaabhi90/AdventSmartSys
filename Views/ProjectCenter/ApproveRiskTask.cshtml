@@ -1,0 +1,126 @@
+﻿@model  SmartSys.BL.Project.TaskDetails
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+
+
+
+@if (Model.TaskID > 0)
+{
+    if (Model.TskType == "Risk")
+    {
+        <div class="page-header glyphicon glyphicon-leaf  text-info ">
+            Approve Risk Task
+        </div>
+    }
+    else
+    {
+        <div class="page-header glyphicon glyphicon-leaf  text-info ">
+            Approve Case Task
+        </div>
+    }
+
+}
+
+
+<style type="text/css">
+    .modal-content {
+        width: 1000px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+
+@using (Html.BeginForm("RiskManageMent", "ProjectCenter", FormMethod.Post, new { Id = "Risk" }))
+{
+
+    <table style="margin-left:20px;">
+
+        <tr>
+            <td>
+                <label for="ItemName">Task Name:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.HiddenFor(model => model.ProjectId)
+                    @Html.HiddenFor(model => model.TaskID)
+                    @Html.TextBoxFor(model => model.TaskName, new { id = "TaskName", disabled = "true" })
+                    @Html.ValidationMessageFor(model => model.TaskName)
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">Start Date:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.StartDate, new { disabled = "true" })
+                    @Html.ValidationMessageFor(model => model.StartDate)
+
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">End Date:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.EndDate, new { disabled = "true" })
+                    @Html.ValidationMessageFor(model => model.EndDate)
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">Resources:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+
+                    @Html.DropDownList("Employee", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Select Resource", new { id = "", @Class = "form-control", disabled = "true" })
+                    @Html.ValidationMessageFor(model => model.ResourceID)
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">Description:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextBoxFor(model => model.Description, new { disabled = "true" })
+
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateApproveRiskTask", "ProjectCenter", new { statusCode = 24, ProjectId = Model.ProjectId, TaskId = Model.TaskID })'>
+                        Approve
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="save btn btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("UpdateApproveRiskTask", "ProjectCenter", new { statusCode = 25, ProjectId = Model.ProjectId, TaskId = Model.TaskID })'>
+                        Reject
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+}
+
+
+

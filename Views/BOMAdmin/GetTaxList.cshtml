@@ -1,0 +1,94 @@
+﻿@model IEnumerable<SmartSys.BL.BOMAdmin.TaxModel>
+
+
+@{
+    ViewBag.Title = "GetTaxList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Tax List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateTax", new { Taxid = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+    <div id="Grid"></div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.BOMAdmin.TaxModel>("grdTaxList")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                 .PageSettings(p => { p.PageSize(20); })
+                      .EnableAltRow(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportTaxLst")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("TaxId").HeaderText("TaxId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("TaxName").HeaderText("TaxName").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("TaxType").HeaderText("TaxType").TextAlign(TextAlign.Center).Width(120).Add();
+            col.Field("TaxRate").HeaderText("TaxRate").TextAlign(TextAlign.Center).Width(100).Add();
+
+            col.HeaderText("Edit")
+            .Template("#edit")
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+        )
+    </div>
+
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/BOMAdmin/CreateTax?TaxId={{:TaxId}}"></a>
+
+    </script>
+    <script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/BOMAdmin/CreateTax")' + "?TaxId=0"
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdTaxList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var TaxId = result[0]["TaxId"];
+                var path = '@Url.Content("~/BOMAdmin/CreateTax")' + "?TaxId=" + TaxId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+
+    </script>
+

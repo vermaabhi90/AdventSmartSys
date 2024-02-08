@@ -1,0 +1,206 @@
+﻿@model SmartSys.BL.RDS.RDSClientModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit RDS Client
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var ClientName = $('#ClientName').val();
+            var ClientRefId = $('#ClientRefId').val();
+            if (ClientName.toString() == "") {
+                alert("Please Enter Client Name ");
+                return false;
+            }
+            if (ClientRefId.toString() == "") {
+                alert("Please Enter ClientRefId ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("Edit", "RDSClient", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="ClientId">Client Id </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ClientId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ClientName">Client Name </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ClientName, new { @class = "form-control", id = "ClientName" })
+                        @Html.ValidationMessageFor(model => model.ClientName)
+                    </div>
+                </td>
+                <td>
+                    <label for="ClientType">Client Type</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(model => model.ClientType, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Suppliers", Value="Suppliers"},
+                             new SelectListItem() {Text = "Customer", Value="Customer"},
+                             new SelectListItem() {Text = "manufacturer", Value="manufacturer"}
+
+                       }, new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.ClientType)
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="ClientRefId">Client Ref Id </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ClientRefId, new { @class = "form-control", id = "ClientRefId" })
+                        @Html.ValidationMessageFor(model => model.ClientRefId)
+                    </div>
+                </td>
+                <td>
+                    <label for="email">email</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.email)
+                    </div>
+
+                </td>
+
+            </tr>
+
+            @*<tr>
+                <td>
+                    <label for="FTPDetails">FTP Details </label>
+                </td>
+            </tr>*@
+            <tr>
+                <td>
+                    <label for="Server">Server</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Server, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Server)
+                    </div>
+
+                </td>
+                <td>
+                    <label for="UserName">User Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.UserName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.UserName)
+                    </div>
+
+                </td>
+                <td>
+                    <label for="Password">Password</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.PasswordFor(X => X.Password, new { @class = "form-control", value = Model.Password })
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </div>
+                </td>
+
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="Created By">Created By </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="CreatedDate">Created Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+
+
+
+            <tr>
+                <td>
+                    <label for="Modified By">Modified By </label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="ModifiedDate">Modified Date</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'ClientList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

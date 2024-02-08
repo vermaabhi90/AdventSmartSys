@@ -1,0 +1,178 @@
+﻿@model IEnumerable<SmartSys.BL.Bank.CompanyBankModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "Company Bank Details";
+}
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+   Company Bank Details
+</div>
+<br />
+@{ 
+    Html.EJ()
+        .Dialog("CreateCompBankDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1300)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+</script>
+
+
+<br />
+<button class="btn-xs btn-info glyphicon glyphicon-leaf Create"> Create</button>
+<br />
+<br />
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Bank.BankDetailModel>("grdBankDetailList")
+                 .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+              //.ContextMenuSettings(contextMenu =>
+              //{
+              //    contextMenu.EnableContextMenu()
+              //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+
+              //   //.CustomContextMenuItems(new List<string> { "Create","Edit" })
+              //   .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit" } });
+
+              //})
+
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Update1", "Create");                      
+                      c.AddItem("Edit1", "Edit");
+                  });
+
+              })
+
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("CompBankAcId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("BankName").HeaderText("Bank Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("CompCode").HeaderText("Company").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Active").HeaderText("Active").Width(80).TemplateID("#Active").Add();
+            col.Field("AccountNumber").HeaderText("Acc. Number").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(122).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").TextAlign(TextAlign.Left).Width(122).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Center).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Width(180).TextAlign(TextAlign.Left).Format("{0:MM/dd/yyyy }").Add();
+            col.HeaderText("Edit").Template("#OutputTemplate").Width(90).Add();
+
+        })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script type="text/x-jsrender" id="OutputTemplate">
+    <a class="modal-link btn-xs btn-info  glyphicon glyphicon-pencil" href="/Bank/CreateCompanyBankDetail?CompBankAcId={{:CompBankAcId}}"></a>
+
+</script>
+<script type="text/x-jsrender" id="Active">
+    {{if Active == 'True'}}
+
+    <label class="glyphicon glyphicon-ok text-success "></label>
+    {{else}}
+    <label class="glyphicon glyphicon-remove text-danger "></label>
+    {{/if}}
+
+
+
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Create") {
+          var path = '@Url.Content("~/Bank/CreateCompanyBankDetail")' + "?CompBankAcId=" + 0
+            $("#CreateCompBankDetail").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        else
+            if (args.text == "Edit") {
+                var tempData = args.text;
+                var grid = $("#grdBankDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var CompBankAcId = result[0]["CompBankAcId"];
+                var path = '@Url.Content("~/Bank/CreateCompanyBankDetail")' + "?CompBankAcId=" + CompBankAcId
+            $("#CreateCompBankDetail").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+            }
+            else
+                if (args.text == "Delete") {
+                    var tempData = args.text;
+                    var grid = $("#grdBankDetailList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var BankId = result[0]["BankId"];
+
+                    var agree = confirm("Are you sure you want to delete this Item from the Grid?");
+                    if (agree)
+                    {
+                        var path = '@Url.Content("~/Bank/DeleteBankDetails")' + "?BankId=" + BankId
+                        event.preventDefault();
+                        window.location.replace(path);
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+
+                }
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('.Create').click(function (e) {
+           var path = '@Url.Content("~/Bank/CreateCompanyBankDetail")' + "?CompBankAcId=" + 0
+            $("#CreateCompBankDetail").ejDialog({
+          
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+        });
+    });
+</script>
+<style>
+    .modal-content {
+        width: 1250px !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>

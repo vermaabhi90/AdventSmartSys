@@ -1,0 +1,161 @@
+﻿@model SmartSys.BL.Tmleave.TMLeaveModel
+
+
+@{
+    ViewBag.Title = "CreateTMLeave";
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Create Leave Type
+</div>
+<script>
+    function ValidateForm() {
+        if ($("#LeaveType").val() == "") {
+
+
+            $("#err1").html("LeaveType Required");
+            event.preventDefault();
+        }
+        if ($("#Description").val() == "") {
+
+            $("#err2").html("Description Required");
+
+        }
+        if ($("#YearlyQuota").val() == "") {
+            event.preventDefault();
+            $("#err3").html("YearlyQuota Required");
+            event.preventDefault();
+        }
+        if ($("#MaxLeaveCarryover").val() == "") {
+
+            $("#err4").html("MaxLeaveCarryover Required");
+            event.preventDefault();
+        }
+    }
+</script>
+@using (Html.BeginForm(new { Id = "Form1" }))
+{
+
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            @*<td>
+                    <label for="VendorName">R LeaveTypeId </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.LeaveTypeId)
+                        @Html.ValidationMessageFor(model => model.LeaveTypeId, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                    </div>
+
+                </td>*@
+
+            <td>
+                <label for="VendorName">Leave Type </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.LeaveType, new { @class = "form-control", id = "LeaveType" }) <span id="err1" style="color:red"></span>
+                    @Html.ValidationMessageFor(model => model.LeaveType, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+
+           
+
+            <td>
+                <label for="VendorName">Paid Leave </label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownListFor(model => model.IsPaid, new List<SelectListItem>
+                       {
+                              new SelectListItem() {Text = "YES", Value="true"},
+                             new SelectListItem() {Text = "NO", Value="false"},
+
+                       }, new { @class = "text-danger form-control", style = "width: 150px;" })
+
+                    @Html.ValidationMessageFor(model => model.IsPaid, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Yearly Quota</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.YearlyQuota, new { @class = "form-control", id = "YearlyQuota" })<br /> <span id="err3" style="color:red"></span>
+                    @Html.ValidationMessageFor(model => model.YearlyQuota, "", new { @class = "text-danger"})
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+
+            <td>
+                <label for="VendorName">Can Laps</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.CanLaps, new List<SelectListItem>
+                       {
+                           new SelectListItem() {Text = "YES", Value="true"},
+                             new SelectListItem() {Text = "NO", Value="false"},
+
+                       }, new { @class = "text-danger form-control" })
+                    @Html.ValidationMessageFor(model => model.CanLaps, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="VendorName">Max Leave Carryover</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.MaxLeaveCarryover, new { @class = "form-control", id = "MaxLeaveCarryover" })<br /> <span id="err4" style="color:red"></span>
+                    @Html.ValidationMessageFor(model => model.MaxLeaveCarryover, "", new { @class = "text-danger"})
+                </div>
+            </td>
+            <td>
+                <label for="VendorName">Enable</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.Enable, new List<SelectListItem>
+                       {
+                              new SelectListItem() {Text = "YES", Value="true"},
+                             new SelectListItem() {Text = "NO", Value="false"},
+
+                       }, new { @class = "text-danger form-control" })
+                    @Html.ValidationMessageFor(model => model.Enable, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="VendorName">Description </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "Description" })<br /> <span id="err2" style="color:red"></span>
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'TMLeaveTypeList';" );"> Back</button>
+                <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save" onclick="ValidateForm()"> Save</button>
+            </td>
+
+        </tr>
+    </table>
+
+}
+

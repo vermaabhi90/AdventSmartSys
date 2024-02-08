@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "UploadReport";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-upload  text-info">
+   Upload Report
+</div>
+@using (Html.BeginForm("UploadReport", "Report", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div>
+    <input class="btn btn-warning" type="file" name="file" style="background-color:#c22626;color:white"/>
+    <br>
+    <input class="btn btn-info" type="submit" value="OK" />
+</div>
+}

@@ -1,0 +1,113 @@
+﻿@model IEnumerable<SmartSys.BL.Tmleave.ProjectTravelRequestModel>
+
+@{
+    ViewBag.Title = "GetTravelRequestList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Travel Request List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateTravelRequest", new { RequestId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</div>
+   
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Tmleave.ProjectTravelRequestModel>("LibraryList")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                     
+                      .EnableAltRow(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportTravelRequestList")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("RequestId").HeaderText("Request Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("EmployeeName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("PurposeofVisitDocs").HeaderText("PurposeofVisitDocs").Visible(false).TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("Description").HeaderText("Description").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("ApproverBy").HeaderText("Approver By").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("ApprovedDate").HeaderText("Approved Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("StatusName").HeaderText("Status").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Download").Template("#Download")          
+          .AllowFiltering(false)
+          .TextAlign(TextAlign.Center)
+          .Width(90)
+          .Add();
+
+            col.HeaderText("Edit").Template("#edit")
+      
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+        )
+    </div>
+    <script id="Download" type="text/x-jsrender">
+        {{if  PurposeofVisitDocs ==''  }}
+
+        {{else}}
+        <a class="btn-xs btn-primary" href="/Admin/DownloadEmployeeDocuments?EmpId=00&amp;DocumentPath={{:PurposeofVisitDocs}}">Download </a>
+        {{/if}}
+    </script>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/TMLeave/CreateTravelRequest?RequestId={{:RequestId}}"></a>
+
+    </script>
+
+    <script>
+        function contextclick(args) {
+
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/TMLeave/CreateTravelRequest")' + "?RequestId=" + 0
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            else
+                if (args.text == "Edit Record") {
+                    var tempData = args.text;
+                    var grid = $("#LibraryList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var RequestId = result[0]["RequestId"];
+                    var path = '@Url.Content("~/TMLeave/CreateTravelRequest")' + "?RequestId=" + RequestId
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+
+        }
+
+    </script>

@@ -1,0 +1,286 @@
+﻿@model SmartSys.BL.Enquiry.EnquiryModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Quotation  for Approval
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Approve').click(function () {
+            var StatusId = 24;
+            var QuotationId = $('#QuotationId').val();
+            var Remark = "Approve"; 
+            var path = '@Url.Content("~/Enquiry/UpdateQuotation")' + "?EnqId=" + @Model.EnqId + "&StatusId=" + StatusId+ "&QuotationId=" + QuotationId+ "&Remark=" + Remark
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Reject').click(function () {
+            $("#dialogIcon").ejDialog("open");
+             var QuotationId = $('#QuotationId').val();
+            $('#Quotation').val(QuotationId);
+         });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+          $('#Save').click(function () {
+              var Remark = $('#Remark').val();
+              if(Remark == "")
+              {
+                  alert("Please Enter Remark")
+                  return false;
+              }
+            var QuotationId = $('#Quotation').val();
+            var StatusId = 25;
+            var path = '@Url.Content("~/Enquiry/UpdateQuotation")' + "?EnqId=" + @Model.EnqId + "&StatusId=" + StatusId+ "&QuotationId=" + QuotationId + "&Remark=" + Remark
+              event.preventDefault();
+              window.location.replace(path);
+        });
+    });
+</script>
+
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        var CustId = '@Model.CustomerId';
+                 var Terms = @ViewBag.Terms;
+                 $('#Terms').val(Terms);
+                 $('#CustomerId').val(CustId);
+    });
+</script>*@
+<table style="border-collapse:separate;border-spacing: 0 6px; ">
+    @foreach (var item in @Model.QuotList)
+    {
+        <tr>
+            <td>
+                <label>Enquiry No:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("EnqId", item.EnqId, new { @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Term:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("Terms", item.Terms, new { @readonly = "", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Customer:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("CustomerName", item.CustomerName, new { @Readonly = "", @style = "width:250px", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="display:none">
+                <div class="">
+                    @Html.TextBox("QuitId", item.QuotationId, new { @class = "form-control", id = "QuotationId", @readonly = "" })
+                </div>
+            </td>
+            <td>
+                <label>Quotation Number:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("QuotationNumber", item.QuotationNumber, new { @class = "form-control", id = "QuotationNumber", @readonly = "" })
+                </div>
+            </td>
+            <td>
+                <label>Quot Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("QuotDate", item.QuotDate, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+            </td>
+            <td>
+                <label>Status </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("Status", item.Status, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Modified By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("ModifiedBy", item.ModifiedBy, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+            </td>
+            <td>
+                <label>Modified Date </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBox("ModifiedDate", item.modifyDt, new { @class = "form-control", id = "", @readonly = "" })
+                </div>
+            </td>
+        </tr>
+
+    }
+</table>
+<br />
+
+@Html.HiddenFor(model => model.CustomerId)
+@Html.HiddenFor(model => model.EnqId)
+<div>
+
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryItemVendorResponseDetailModel>("grdVendrespLst")
+                            .Datasource((IEnumerable<object>)@ViewBag.CustItemList)
+                            .AllowFiltering()
+                            .AllowPaging()
+                            .AllowSorting()
+                            .EnableHeaderHover()
+                                    .PageSettings(p => { p.PageSize(20); })
+                            .AllowResizing()
+                            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                            .AllowScrolling()
+                            
+                            .EnableAltRow(true)
+                            .AllowSorting(true)
+                            .Columns(col =>
+                            {
+                                col.Field("ItemId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+                                col.Field("ItemName").HeaderText("Item Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(80).Add();
+                                col.Field("MPN").HeaderText("MPN").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(80).Add();
+                                col.Field("BrandName").HeaderText("Brand Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(80).Add();
+                                col.Field("Rate").HeaderText("Purchase Rate").Format("{0:N4}").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(50).Add();
+                                col.Field("CRate").HeaderText("Sale Rate").Format("{0:N4}").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(50).Add();
+                                col.Field("Margin").HeaderText("Margin %").Format("{0:N4}").TextAlign(TextAlign.Center).Width(70).Add();
+                                col.Field("Currency").HeaderText("Currancy").TextAlign(TextAlign.Center).Width(50).Add();
+                                col.Field("Quantity").HeaderText("Quantity").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(50).Add();
+                                col.Field("SPQ").HeaderText("SPQ").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(50).Visible(true).Add();
+                                col.Field("MOQ").HeaderText("MOQ").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(50).Visible(true).Add();
+                                col.Field("VendorPromiseDate").HeaderText("Lead Time").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+                                col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(80).Add();
+
+                                // col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(120).Add();
+                                //col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+                            })
+
+        //   .ClientSideEvents(eve => eve.DetailsExpand("detailsexpand"))
+        //   .ChildGrid(child =>
+        //  {
+        //         child.Datasource((IEnumerable<object>)ViewBag.ALLResponseList)
+        //         .QueryString("ItemId")
+        //         .AllowPaging()
+        //         .AllowFiltering()
+        //         .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        //.Columns(col =>
+        //      {
+        //          col.Field("ResponseId").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+        //          col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Visible(false).Add();
+        //          col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Left).Width(120).Add();
+        //          col.Field("BrandId").HeaderText("BrandId").Visible(false).Width(100).Add();
+        //          col.Field("BrandName").HeaderText("Brand Name").Width(80).Add();
+        //          col.Field("Rate").HeaderText("Vendor Rate").TextAlign(TextAlign.Left).Width(70).Add();
+        //          col.Field("CRate").HeaderText("Rate").TextAlign(TextAlign.Left).Width(50).Add();
+        //          col.Field("MinimumQty").HeaderText("MinimumQty").Width(70).Add();
+        //          col.Field("Amount").HeaderText("Amount").Width(60).Add();
+        //          col.Field("BatchSize").HeaderText("Batch Size").Width(50).Add();
+        //          col.Field("StrVendorPromiseDate").HeaderText("Vendor Promise Date").Width(70).Add();
+        //      });
+
+        //  })
+        )
+    </div>
+</div>
+<table>
+    <tr>
+        <td>
+          
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'QuotaionListForApproval';" );"> Back</button>
+        </td>
+        <td>
+            <div class="btn" aria-label="...">
+                <button type="submit" id="Approve" class="btn-xs btn-success glyphicon glyphicon-ok"> Approve</button>
+            </div>
+        </td>
+
+        <td>
+            <div class="btn" aria-label="...">
+                <button type="submit" id="Reject" class="btn-xs btn-danger glyphicon glyphicon-remove"> Reject</button>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<!----------------------------------------------------POPUP DIV------------------------------------------------------------------------------>
+
+
+
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("").ContentTemplate(@<div>
+     <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+
+                    <td>
+                        <label>
+                            Quot Id:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <input type="text" id="Quotation" class="form-control" readonly />
+                           
+                        </div>
+                    </td>
+               </table>
+            <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <label>
+                            Remark:
+                        </label>
+                    </td>
+                  
+                    <td>
+                        <div class="">
+                            @Html.TextArea("Remark", new { Id = "Remark", @class = "form-control", @style = "min-width:500px" })
+
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <br />
+           <table  style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " id="Save"> Save</button>
+                    </td>                                
+                </tr>
+            </table>
+    </div>)
+         .Width(800)
+         .Height(500)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+    }
+</div>
+<!---------------------------------------------------------------------------------------------------------------------------------->

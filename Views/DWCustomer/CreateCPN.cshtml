@@ -1,0 +1,165 @@
+﻿@model SmartSys.BL.DW.CPNModel
+
+@{
+    ViewBag.Title = "CreateCPN";
+}
+
+@if (Model.CustomerId > 0 && Model.ItemId > 0)
+{
+    <div class="page-header glyphicon glyphicon-pencil  text-info ">
+        Edit Customer CPN
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Create  Customer CPN
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e)
+        {
+    
+            var CPN = $('#CPNS').val();           
+            if (CPN.toString() == "") {
+                alert("Please Enter CPN ");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+@using (Html.BeginForm("CreateCPN", "DWCustomer", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table>
+
+            <tr>
+                @if (Model.CustomerId > 0 && Model.ItemId > 0)
+                {
+                    <td>
+                        <label for="ItemName">Item Name</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.HiddenFor(model => model.ItemId)
+                            @Html.HiddenFor(model => model.CustomerId)
+                            @Html.TextBoxFor(model => model.ItemName, new { id = "ItemName", @class = "form-control", @readonly = "Readonly" })
+                            @Html.ValidationMessageFor(model => model.ItemName)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="MPN">MPN</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            
+                                @Html.TextBoxFor(model => model.MPN, new { id = "MPN", @class = "form-control", @readonly = "Readonly" })
+                                @Html.ValidationMessageFor(model => model.MPN)
+</div>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <label for="Item">Item</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">                          
+                            @Html.HiddenFor(model => model.CustomerId)                           
+                            @*@Html.DropDownList("ItemId", (IEnumerable<SelectListItem>)ViewBag.LstItem,  new { @class = "form-control", style = "width:400px", id = "ItemList" })*@
+                            
+                            @{
+                                Html.EJ()
+                                    .Autocomplete("ItemId")
+                                    .Width("300px")
+                                    .Datasource((IEnumerable<SmartSys.Controllers.ItemDropdown>)ViewBag.NEwItemList)
+                                    .WatermarkText("Select an Item")
+                                    .AutocompleteFields(f => f.Key("ItemId").Text("ItemName"))
+                                    .Render();
+                            }
+
+                        </div>
+                    </td>
+
+                }
+                                         
+                <td>
+                    <label for="CPN">CPN</label>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.CPN  ,new { id = "CPNS", @class = "form-control"})
+                        @Html.ValidationMessageFor(model => model.CPN)
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            </table>
+        <table>
+            <tr>
+                @if (Model.CustomerId > 0 && Model.ItemId > 0)
+                {
+                    <td>
+                        <label>Modified By</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                        </div>
+                    </td>
+                                <td>
+                                    <label>Modified Date</label>
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "Readonly" })
+                                    </div>
+                                </td>
+                }
+            </tr>
+            <tr>
+                @if (Model.CustomerId > 0 && Model.ItemId > 0)
+                {
+                    <td>
+                        <label>Modified By</label>
+                    </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <label>Modified Date</label>
+                                </td>
+                                <td>
+                                    <div class="navbar-text">
+                                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                                    </div>
+                                </td>
+                }
+            </tr>
+        </table>
+
+        <table>
+            <tr>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+@Html.EJ().ScriptManager()
+
+

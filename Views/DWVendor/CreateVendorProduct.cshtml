@@ -1,0 +1,79 @@
+﻿@model SmartSys.BL.DW.VendorProductModel
+
+@{
+    ViewBag.Title = "CreateProduct";
+}
+
+
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Create Product Detail
+    </div>
+
+
+@{
+
+    var gridProductdetail = new WebGrid(source: Model.ItemList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+}
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#save').click(function (e) {
+            e.preventDefault();
+            var EquipmentId = $('#EquipmentId').val();
+          
+            if (EquipmentId.toString() == "") {
+                alert("Please Select Equipment ");
+                return false;
+            }
+            $("#form").unbind('submit').submit(); 
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreateVendorProduct", "DWVendor", FormMethod.Post, new { id = "form" }))
+{
+    <html>
+    <body>
+        <div id="myModal" style="margin-left:20px">
+            
+            <table>
+                <tr>
+                    <td>
+                        <label>Vendor Id</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.VendorId, new { @readonly = "readonly", @class = "form-control" })
+                            </div>
+</td>
+                    <td>
+                        <label>Vendor Name</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.VendorName, new { @readonly = "readonly", @class = "form-control" })
+                            </div>
+</td>                  
+                </tr>
+          <tr>
+              <td>
+                  <label>Equipment</label>
+              </td>
+              <td>
+                  <div class="navbar-text">
+                      @Html.DropDownList("EquipmentId", (IEnumerable<SelectListItem>)ViewBag.EquipmentLst, "-Select Equipment Name-", new { @class = "form-control", id = "EquipmentId", style = "width:310px" })
+                      </div>
+</td>
+          </tr>
+                <tr>
+                    <td>
+                            <input type="submit" value="Save" class="btn btn-success " id="save">
+                </tr>
+            </table>  
+            </div>     
+    </body>
+</html>
+
+}

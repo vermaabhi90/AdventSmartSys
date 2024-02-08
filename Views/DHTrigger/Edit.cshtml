@@ -1,0 +1,146 @@
+﻿@model SmartSys.BL.DataHub.DHTriggerModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit DH Trigger Details
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var TriggerName = $('#TriggerName').val();
+            var Description = $('#Description').val();
+            if (TriggerName.toString() == "") {
+                alert("Please Enter Trigger Name ");
+                return false;
+            }
+            if (Description.toString() == "") {
+                alert("Please Enter Description ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); 
+        });
+    });
+</script>
+@using (Html.BeginForm("Edit", "DHTrigger", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <div>
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+
+                        <label for="TriggerId">Trigger Id</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.TriggerId, new { @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </td>
+
+
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="TriggerName">Trigger Name</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.TriggerName, new { id = "TriggerName", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.TriggerName)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Description">Description</label>
+                    </td>
+
+
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Description, new { id = "Description", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Description)
+                        </div>
+                    </td>
+
+                </tr>
+
+
+                <tr>
+                    <td>
+
+                        <label for="CreatedBy">Created By</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+
+                            @Html.TextBoxFor(model => model.CreatedByName, new { disabled = "disabled", @readonly = "readonly", @class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+                    <td>
+
+                        <label for="EventId">Created Date</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { disabled = "disabled", @readonly = "readonly", @class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <label for="EventId">Modified By</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedByName, new { disabled = "disabled", @readonly = "readonly", @class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+                    <td>
+
+                        <label for="EventId">Modified Date</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { disabled = "disabled", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetDHTriggerList';" );"> Back</button>
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+
+

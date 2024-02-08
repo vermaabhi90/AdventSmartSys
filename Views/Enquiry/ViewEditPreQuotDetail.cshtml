@@ -1,0 +1,157 @@
+﻿@model SmartSys.BL.Enquiry.PreQuotRateDetailModel
+
+@{
+    ViewBag.Title = "ViewEditPreQuotDetail";
+}
+<link href="~/Content/W3.css" rel="stylesheet" />
+<div class="row">
+    <div style="margin-left:6px;margin-bottom:20px" class="col-md-12 glyphicon glyphicon-list  text-info">
+        Item Rate Detail
+    </div>
+</div>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<body style="padding-left:25px" class="w3-light-grey">   
+  
+   
+       
+        <div class="w3-third" style="max-height:800px;width:700px; background-color:#ABB2B9">
+            <div class="row">
+                <div style="padding-left:25px" class="col-md-4"><h4> Source:</h4></div>
+                <div class="col-md-4"><h4>Description:</h4></div>
+                <div class="col-md-4"><h4>Rate:</h4></div>
+            </div>  
+                                               
+            <div class="w3-white w3-text-grey w3-card-4" style="background-color:#ABB2B9">
+                <div class="row">
+                    <div style="padding-left:25px" class="col-md-4"> <label>Digikey:</label></div>
+                    <div class="col-md-4">
+                        <table style="border-collapse:separate;border-spacing: 0 6px;">
+                            <tr>
+                                <td>
+                                    <label>Zauba Maximum:</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Zauba Avrage:</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Zauba Minimum:</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <table style="border-collapse:separate;border-spacing: 0 6px;">
+                            <tr>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ZaubaMax, new { @readonly = "", @class = "form-control" })
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ZaubaAvg, new { @readonly = "", @class = "form-control" })
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.ZaubaMin, new {@style="width:200px", @readonly = "", @class = "form-control" })
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>  
+
+                <div class="row">
+                    <div style="padding-left:25px" class="col-md-4"> <label>Digikey:</label></div>
+                    <div class="col-md-4"><label>Digikey Rate:</label></div>
+                    <div class="col-md-4">
+                        <div style="padding-top:6px">
+                            @Html.TextBoxFor(model => model.Digikey, new { @style = "width:200px", @readonly = "", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="padding-left:25px" class="col-md-4"> <label>Vendor:</label></div>
+                    <div class="col-md-4"><label>Vendor Price Rate:</label></div>
+                    <div class="col-md-4">
+                        <div style="padding-top:6px">
+                            @Html.TextBoxFor(model => model.VendPriceListRate, new { @style = "width:200px", @readonly = "", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="padding-left:25px" class="col-md-4"> <label>Smart Sys:</label></div>
+                    <div class="col-md-4"><label>Same Customer Last Sale (6 Month) :</label></div>
+                    <div class="col-md-4">
+                        <div style="padding-top:6px">
+                            @Html.TextBoxFor(model => model.LastSaleRate, new { @style = "width:200px", @readonly = "", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="padding-left:25px" class="col-md-4"> <label>Smart Sys:</label></div>
+                    <div class="col-md-4"><label>Last 5 sales Avg (6 Month) :</label></div>
+                    <div class="col-md-4">
+                        <div style="padding-top:6px;padding-bottom:8px">
+                            @Html.TextBoxFor(model => model.AvgSixMonthRate, new { @style = "width:200px", @readonly = "", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div style="padding-left:25px" class="col-md-4"><h4> Correction:</h4></div>
+            </div>
+        </div>
+        </div>   
+        <div class="w3-third" style="height:70px;width:700px;background-color:#EBEDEF;padding-top:20px">           
+                <table style="padding-top:20px">
+                    <tr>                                             
+                        <td style="padding-left:25px">
+                            <div class="navbar-text">
+                                <label>New Rate:</label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                <input type="number" id="TxtRate" class="form-control" id="EnqIDDetail" />
+                            </div>
+                        </td>                        
+                        <td>
+                            <div class="navbar-text">
+                                <button type="button" id="btnSubmit" class="btn-sm btn-primary  glyphicon glyphicon-pencil"> Save</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>           
+         </div>
+
+</body>
+
+<script>
+    $(document).ready(function () {
+        $('#btnSubmit').click(function () {
+            var Rate = $('#TxtRate').val();
+            var path = '@Url.Content("~/Enquiry/UpdateItemRate")' + "?PreQuotId=" + @Model.PreQuotId + "&ItemId=" + @Model.ItemId + "&Rate=" + Rate
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>

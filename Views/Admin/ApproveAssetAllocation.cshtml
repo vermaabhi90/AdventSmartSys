@@ -1,0 +1,178 @@
+﻿@model SmartSys.BL.SysAssetAllocationModel
+
+  <style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+
+    Asset Reject/Approval
+</div>    
+
+@using (Html.BeginForm("ApproveAssetAllocation", "Admin", FormMethod.Post, new { Id = "AssetForm" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td width="120px">
+                <label>
+                    Assignment ID:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AssignmentId, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.AssignmentId, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+            @Html.HiddenFor(model => model.AssignmentId, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+            <td>
+                <label>
+                    Asset Name:
+                </label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownList("AssetId", (IEnumerable<SelectListItem>)ViewBag.assetList, "--select the Asset Types--", new { id = "assetName", style = "width:210px", @class = "form-control", disabled = "disabled" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Assigned To:
+                </label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownList("AssigntoEmpId", (IEnumerable<SelectListItem>)ViewBag.EmpDropDowmn, "--select the Employee--", new { id = "assignTo", style = "width:210px", @class = "form-control", disabled = "disabled" })
+                </div>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>
+                    Assigned Type:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AssignedType, new { @readonly = "readonly", @class = "form-control", id = "assignType" })
+                    @Html.ValidationMessageFor(model => model.AssignedType, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Assigned Date:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.AssignedDate, new { @readonly = "readonly", @class = "form-control" })
+
+                    @Html.ValidationMessageFor(model => model.AssignedDate)
+                </div>
+            </td>
+            <td>
+                <label>
+                    Return Date:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReturnDate, new { @readonly = "readonly", @class = "form-control" })
+
+                    @Html.ValidationMessageFor(model => model.ReturnDate)
+                </div>
+            </td>
+        </tr>
+
+
+
+
+        <tr>
+
+
+            <td>
+                <label>
+                    Created By:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label>
+                    Created Date:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+
+        </tr>
+
+
+        <tr>
+
+            <td>
+                <label>
+                    Modified By:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @readonly = "readonly", @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label>
+                    Modified Date:
+                </label>
+
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+
+
+        </tr>
+
+
+
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                <a class="btn-xs btn-info glyphicon glyphicon-hand-left" href='@Url.Action("ApproveAssetAllocatioList", "Admin")'> Back </a>  
+                 <a class="save btn-xs btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateAssetApproval", "Admin", new { AssignmentId = Model.AssignmentId , Status = 24 })'> Approve</a>               
+                    <a class="save btn-xs btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("UpdateAssetApproval", "Admin", new { AssignmentId = Model.AssignmentId, Status = 25 })'> Reject </a>
+
+              
+            </td>
+        </tr>
+    </table>
+}
+
+
+
+

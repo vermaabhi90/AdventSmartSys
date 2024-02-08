@@ -1,0 +1,122 @@
+﻿@model SmartSys.BL.SysRolesTaskModel
+
+@{
+    ViewBag.Title = "Create Role";
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#formRoleTask").submit(function (e) {
+
+            $("#lstAssignedTasks option").prop("selected", true);
+
+        });
+
+        $("#btnAdd").click(function (e) {
+
+            $("#lstTask > option:selected").appendTo("#lstAssignedTasks");
+            e.preventDefault();
+        });
+
+        $("#btnAddAll").click(function (e) {
+
+            $("#lstTask > option").appendTo("#lstAssignedTasks");
+            e.preventDefault();
+        });
+
+        $("#btnRemove").click(function (e) {
+            $("#lstAssignedTasks > option:selected").appendTo("#lstTask");
+            e.preventDefault();
+        });
+
+        $("#btnRemoveAll").click(function (e) {
+            $("#lstAssignedTasks > option").appendTo("#lstTask");
+            e.preventDefault();
+        });
+    });
+
+</script>
+
+@if (Model.Role.RoleID == null)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Role
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Role
+    </div>
+}
+@using (@Html.BeginForm("SaveRoleTasks", "Admin", FormMethod.Post, new { id = "formRoleTask" }))
+{
+    <br>
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+
+            <td>
+             <label>Role name</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Role.RoleName, new { @class = "form-control" })
+                    @Html.HiddenFor(model => model.Role.RoleID)                  
+                    @Html.ValidationMessageFor(model => model.Role.RoleName)
+                </div>
+
+                @Html.Hidden("RoleID", Model.Role.RoleID)
+                </td>
+        </tr>
+        </table>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td align="center">@Html.ListBoxFor(model => model.lstSysRolesTasks, new SelectList(ViewBag.Tasks, "Value", "Text"), new { id = "lstTask", style = "width: 350px;height:300px", size = 10 })</td>
+                <td align="center">
+
+
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnAdd" class="btn-xs btn-info glyphicon glyphicon-forward"></button>
+                    </div><br />
+
+                    <div class="btn" aria-label="...">
+                        <small> <button type="button" id="btnAddAll" class="btn-xs  btn-info glyphicon glyphicon-fast-forward"></button></small>
+                    </div><br />
+
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnRemove" class="btn-xs btn-info glyphicon glyphicon-backward"></button>
+                    </div><br />
+                    <div class="btn" aria-label="...">
+                        <button type="button" id="btnRemoveAll" class="btn-xs btn-info glyphicon glyphicon-fast-backward"></button>
+                    </div><br />
+
+                </td>
+                <td align="center">
+                    @Html.ListBoxFor(model => model.AssignedTasksToRole, new SelectList(ViewBag.AssignedTask, "Value", "Text"), new { id = "lstAssignedTasks", style = "width: 350px;height:300px", size = 10 })
+                </td>
+            </tr>
+        </table>
+    <table>
+        <tr>
+            <td>
+                @Html.ActionLink(" Back", "SytemRoleList", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-hand-left" })
+
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save"> Save</button>
+                </div>
+            </td>
+
+        </tr>
+
+    </table>
+
+}

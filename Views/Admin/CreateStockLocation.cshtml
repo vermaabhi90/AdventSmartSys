@@ -1,0 +1,167 @@
+﻿@model SmartSys.BL.StockLocation
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('#Save').click(function (e) {
+
+            var Name = $('#Name').val();
+
+            var Description = $('#Description').val();
+        
+            if (Name.toString() == "") {
+                alert("Please Enter Name ");
+                return false;
+            }
+            if (Description.toString() == "") {
+                alert("Please Enter Description ");
+                return false;
+            }
+           
+           $("#StockLocation").unbind('submit').submit();
+        });
+    });
+</script>
+@if (Model.STLocationId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Stock Location
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create New  Stock Location
+    </div>
+}
+
+@using (Html.BeginForm("CreateStockLocation", "Admin", FormMethod.Post, new { Id = "StockLocation" }))
+{
+    <html>
+    <body>
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    @if (Model.STLocationId > 0)
+                    {
+                        <td>
+                            <label for="">Location Id</label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.STLocationId, new { @readonly = "readonly", @class = "form-control", style = "max-width:70px;height:35px" })
+                                @Html.ValidationMessageFor(model => model.STLocationId)
+                            </div>
+                        </td>
+                    }
+
+
+                </tr>
+                <tr>
+                    <td>
+                        <label for="">Location Name</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Name)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="">Parent Location</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.DropDownListFor(model => model.ParentLocationId, (IEnumerable<SelectListItem>)ViewBag.SLDrp, "Please select Stock Location", new { style = "width:220px;height:35px", @class = "form-control", id = "ParentId" })
+                            @Html.ValidationMessageFor(model => model.ParentLocationId)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+                        <label for="">Description</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Description, new { style = "min-width:600px;height:35px", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.STLocationId)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                @if (Model.STLocationId > 0)
+                {
+                    <tr>
+                        <td>
+
+                            <label for="CreatedBy">Created By</label>
+
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                            </div>
+
+
+
+                        </td>
+                        <td>
+
+                            <label for="EventId">Created Date</label>
+
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                            </div>
+
+
+
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                            <label for="EventId">Modified By</label>
+
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedBy, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                            </div>
+
+
+
+                        </td>
+                        <td>
+
+                            <label for="EventId">Modified Date</label>
+
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedDate, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                            </div>
+                        </td>
+
+                    </tr>
+                }
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'StockLocationList';" );"> Back</button>
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save" id="Save"> Save</button>                    
+                    </td>
+                </tr>
+            </table>     
+    </body>
+</html>
+}

@@ -1,0 +1,341 @@
+﻿@model SmartSys.BL.DHFeedActionModel
+
+
+
+@{
+    var grid = new WebGrid(source: Model.ListOfFeedActionParameters, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "gridActionParamContent");
+
+}
+<div class="modal-body">
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+
+        //Hide the all below elements on document load and make them visible on DropDown selection..
+        $('#ChkBox').hide();
+        $('#ChkLab').hide();
+        $('#ColNameL').hide();
+        $('#DataTypeL').hide();
+        $('#ColPosiL').hide();
+        $('#ColName').hide();
+        $('#DataType').hide();
+        $('#ColPosi').hide();
+        $('#ParamValueL').hide();
+        $('#ParamValueText').hide();
+        $('#ParamValueNum').hide();
+
+
+        $('.xyz').click(function (event) {
+
+            if (true) {
+                var ParamName = $('#DrpDwnParam').val();
+                if (ParamName.toString() == "") {
+                    alert("Please Select Param Name")
+                    $('#ColName').val(null);
+                    $('#DataType').val(null);
+                    $('#ColPosi').val(null);
+                    $('ChkBox').val(null);
+                    $('#ParamValueNum').val(null);
+                    $('#ParamValueText').val(null);
+                    return false;
+                }
+            }
+
+            var str = "";
+            var ParamName = $('#DrpDwnParam').val();
+
+            if (ParamName == "NoColInFile" || ParamName == "NoFooterLine" || ParamName == "NoHeaderLine"
+                    || ParamName == "NoOfSheets" || ParamName == "HeaderStartLineNo" || ParamName == "DataStartLineNo"
+                    || ParamName == "NumberOfColumns" || ParamName == "SourceConnId" || ParamName == "DestConnId"
+                    || ParamName == "ExecSPConnId") {
+                str = $('#ParamValueNum').val();
+                $('#ParamValueNum').val(null);
+
+            }
+            else if (ParamName == "ColMapConfig") {
+
+                var ColName = $('#ColName').val();
+                var DataType = $('#DataType').val();
+                if (ColName.toString() == "" || DataType.toString() == "") {
+                    alert("TextBox is Empty")
+                    return false;
+                }
+                str = ColName + ',' + DataType;
+                $('#ColName').val(null);
+                $('#DataType').val(null);
+
+            }
+            else if (ParamName == "ColumnDef") {
+
+                var ColName = $('#ColName').val();
+                var DataType = $('#DataType').val();
+                var Pos = $('#ColPosi').val();
+                if (ColName.toString() == "" || DataType.toString() == "" || Pos.toString() == "") {
+                    alert("TextBox is Empty")
+                    return false;
+                }
+                else if ($("#ChkBox").is(":checked")) {
+                    Chk = 1;
+                }
+                else {
+                    Chk = 0;
+                }
+
+                if (Pos.length < 1 || Pos.length > 3) {
+                    alert("Column Position is Empty or It's Contain More than 3 Character");
+                    return false;
+                }
+                str = ColName + ',' + DataType + ',' + Pos.toUpperCase() + ',' + Chk;
+                $('#ColName').val(null);
+                $('#DataType').val(null);
+                $('#ColPosi').val(null);
+                $('ChkBox').val(null);
+
+            }
+            else {
+                str = $('#ParamValueText').val();
+                $('#ParamValueText').val(null);
+
+            }
+            var path = '@Url.Content("~/DhFeed/AddAtionParam")' + "?ParamName=" + ParamName + "&Value=" + str + "&method=" + "EWSourceInfo"
+            event.href = path;
+            $(this).attr('href', path);
+            event.preventDefault();
+            window.location.replace(path);
+            return true;
+        });
+        $("#DrpDwnParam").change(function (event) {
+
+            var ParamName = $('#DrpDwnParam').val();
+            if (ParamName == "--Select Parameter--") {
+                $('#ChkBox').hide();
+                $('#ChkLab').hide();
+                $('#ColNameL').hide();
+                $('#DataTypeL').hide();
+                $('#ColPosiL').hide();
+                $('#ColName').hide();
+                $('#DataType').hide();
+                $('#ColPosi').hide();
+                $('#ParamValueL').hide();
+                $('#ParamValueText').hide();
+                $('#ParamValueNum').hide();
+            }
+
+
+            if (ParamName == "NoColInFile" || ParamName == "NoFooterLine" || ParamName == "NoHeaderLine"
+                || ParamName == "NoOfSheets" || ParamName == "HeaderStartLineNo" || ParamName == "DataStartLineNo"
+                || ParamName == "NumberOfColumns" || ParamName == "SourceConnId" || ParamName == "DestConnId"
+                    || ParamName == "ExecSPConnId") {
+
+                $('#ColNameL').hide();
+                $('#DataTypeL').hide();
+                $('#ColPosiL').hide();
+                $('#ColName').hide();
+                $('#DataType').hide();
+                $('#ColPosi').hide();
+                $('#ParamValueL').show();
+                $('#ParamValueText').hide();
+                $('#ParamValueNum').show();
+                $('#ChkBox').hide();
+                $('#ChkLab').hide();
+            }
+            else if (ParamName == "ColumnDef") {
+                $('#ColNameL').show();
+                $('#DataTypeL').show();
+                $('#ColPosiL').show();
+                $('#ColName').show();
+                $('#DataType').show();
+                $('#ColPosi').show();
+                $('#ChkBox').show();
+                $('#ChkLab').show();
+                $('#ParamValueL').hide();
+                $('#ParamValueText').hide();
+                $('#ParamValueNum').hide();
+
+            }
+            else if (ParamName == "FileType" || ParamName == "LineSeparator" || ParamName == "Separator"
+                 || ParamName == "FTPServer" || ParamName == "FTPUser" || ParamName == "FTPPwd" || ParamName == "TableName"
+                 || ParamName == "SourceSP" || ParamName == "ExceSPName" || ParamName == "DestSP" || ParamName == "DestinationTbl") {
+
+                $('#ColNameL').hide();
+                $('#DataTypeL').hide();
+                $('#ColPosiL').hide();
+                $('#ColName').hide();
+                $('#DataType').hide();
+                $('#ColPosi').hide();
+                $('#ChkBox').hide();
+                $('#ChkLab').hide();
+                $('#ParamValueNum').hide();
+                $('#ParamValueL').show();
+                $('#ParamValueText').show();
+
+
+            }
+            else if (ParamName == "ColMapConfig") {
+                $('#ColNameL').show();
+                $('#DataTypeL').show();
+                $('#ColPosiL').hide();
+                $('#ColName').show();
+                $('#DataType').show();
+                $('#ColPosi').hide();
+                $('#ChkBox').hide();
+                $('#ChkLab').hide();
+                $('#ParamValueL').hide();
+                $('#ParamValueText').hide();
+                $('#ParamValueNum').hide();
+            }
+        });
+
+    });
+    </script>
+
+
+
+
+    <style>
+        td {
+            padding-right: 15px;
+        }
+    </style>
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+        Action Parameter Details
+    </div>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td><label for="ex3">Param Name:</label></td>
+            <td>
+                <div ng-app="" class="col-4   ">
+                    @Html.DropDownList("ParamName", (IEnumerable<SelectListItem>)ViewBag.ParamNameList, "--Select Parameter--", new { @class = "form-control", id = "DrpDwnParam", style = "width:310px" })
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td><label id="ColNameL" for="ex3">Col Name:</label></td>
+            <td>
+                <div class="">
+                    <input class="form-control" id="ColName" type="text">
+                </div>
+            </td>
+
+            <td><label id="DataTypeL" for="ex3">Data Type:</label></td>
+            <td>
+
+
+                <div class="">
+
+                    @Html.DropDownListFor(x => x.Description, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "System.String", Value="System.String"},
+                             new SelectListItem() {Text = "System.Int32", Value="System.Int32"},
+                             new SelectListItem() {Text = "System.Boolean", Value="System.Boolean"},
+                               new SelectListItem() {Text = "System.DateTime", Value="System.DateTime"},
+                               new SelectListItem() {Text = "System.Decimal", Value="System.Decimal"}
+                       }, "Select Data Type", new { @class = "form-control", id = "DataType" })
+                </div>
+            </td>
+
+            <td><label id="ColPosiL" for="ex3">Col Position:</label></td>
+            <td>
+                <div class="">
+                    <input class="form-control" id="ColPosi" type="text">
+                </div>
+            </td>
+
+            <td><label id="ChkLab">Is Mandatory:</label></td>
+            <td>
+                <div class="">
+                    <input type="checkbox" id="ChkBox">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td><label id="ParamValueL" for="ex3">Param Value:</label></td>
+            <td>
+                <div class="">
+                    <input class="form-control" id="ParamValueText" type="text">
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    <input class="form-control" id="ParamValueNum" type="number">
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                <div class="col-4   ">
+                    @Html.ActionLink(" Add", " ", null, new { @class = "xyz btn-xs btn-info glyphicon glyphicon-plus" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                @if (Model.ListOfFeedActionParameters.Count > 0 || Model.ListOfFeedActionParameters != null)
+                { 
+                    @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdActionparamList")
+                        .Datasource(Model.ListOfFeedActionParameters)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("SequenceNO").HeaderText("Sequence NO").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ActionType").HeaderText("Action Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ParamName").HeaderText("Parameter Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Value").HeaderText("Parameter Value").Width(60).Add();
+                            col.HeaderText("Delete").TemplateID("#DeleteActionFeedParam").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                )
+
+                }
+                else
+                {
+                    <br />
+                    <div style="border:dotted 1px black" class="label label-info">
+                        No Parameters Record Found
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+
+    <br />
+    <table>
+        <tr>
+            <td>
+                <div class="col-4   ">
+                    @Html.ActionLink("Save", "CreateFeed", new { iFeedID = 0 }, new { @class = "btn btn-success" })
+                </div>
+            </td>
+            <td></td>
+            <td>
+                <div class="col-4   ">
+                    @Html.ActionLink("Cancel", "CreateFeed", new { iFeedID = 0 }, new { @class = "btn btn-warning" })
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script id="DeleteActionFeedParam" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DhFeed/DeleteAction?iSequenceNumber={{:SequenceNO}}">  Delete</a>
+</script>

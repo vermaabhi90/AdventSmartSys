@@ -1,0 +1,221 @@
+﻿@model SmartSys.BL.TMPlan.TMPlanModel
+
+@{
+    ViewBag.Title = "CreatePlanForTODO";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Project").change(function ()   {
+            $("#TaskId").empty();
+            var path = "/TMPlan/PlanTasklist"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ProjectId: $("#Project").val(), User_Id: $("#User_Id").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#TaskId").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select Project Name');
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var Project = $('#Project').val();
+            var TaskId = $('#TaskId').val();
+            var StartDate = new Date($('#dtpStartDate').val());
+            var EndDate = new Date($('#dtpEndDate').val());
+
+            if (Project.toString() == "") {
+                alert("Please Select Project Name ");
+                return false;
+            }
+            if (TaskId.toString() == "") {
+                alert("Please Select Task Name ");
+                return false;
+            }
+            if (StartDate.toString() == "") {
+                alert("Please Select Start Date ");
+                return false;
+            }
+            if (EndDate.toString() == "") {
+                alert("Please Select End Date ");
+                return false;
+            }
+            if (StartDate > EndDate) {
+                alert("Start date can not greater than end date");
+                return false;
+            }            
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#GetplanData').click(function (e) {
+            var StartDate = $('#dtpStartDate').val();           
+            var mydate = new Date("MM/dd/yyyy");
+            mydate = StartDate
+            var EmpId = $('#EmpId').val();           
+            if (StartDate.toString() == "") {
+                alert("Please Select Start Date ");
+                return false;
+            }           
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/GetPlanData",  //Update is Server side method
+                data: { EmpId: EmpId, Date: mydate },
+                success: function (result) {
+                    var obj = $("#grdPlandetailList").ejGrid("instance")
+                    obj.dataSource(result);                                    
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        });
+    });
+</script>
+@using (Html.BeginForm("CreatePlanForTODO", "Enquiry", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>                                  
+                        <td>
+                            <div class="">  
+                                @Html.HiddenFor(model => model.PlanId)
+                                @Html.HiddenFor(model => model.DocType)
+                                @Html.HiddenFor(model => model.DocId)
+                                @Html.HiddenFor(model => model.DocRefId)
+                                @Html.HiddenFor(model => model.User_Id, new { id = "User_Id" })                            
+                                @Html.HiddenFor(model => model.EmpId, new { id = "EmpId", @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.EmpId)
+                            </div>
+                        </td>                              
+            </tr>
+            <tr>
+                <td>
+                    <label for="Project">Project</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.TMProjectlist, "Please Select Project", new { style = "width:175px", @class = "form-control", id = "Project" })
+                        @Html.ValidationMessageFor(model => model.ProjectId, "", new { id = "", @class = "text-danger" })
+
+                    </div>
+                </td>
+                <td>
+                    <label for="Task">Task</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.DropDownList("TaskId", (IEnumerable<SelectListItem>)ViewBag.TMTasklist, "Please Select Task", new { style = "width:175px", @class = "form-control", id = "TaskId" })
+                        @Html.ValidationMessageFor(model => model.TaskId, "", new { id = "", @class = "text-danger" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="StartDate">Start Date</label>
+                </td>
+
+                <td>
+                    <div class="">                       
+                        @Html.EJ().DateTimePicker("dtpStartDate").Width("190px").Value(Model.StartDate)                        
+                        @Html.ValidationMessageFor(model => model.StartDate)
+                    </div>
+                </td>
+                <td>
+                    <label for="EndDate">End Date</label>
+                </td>
+
+                <td>
+                    <div class="">                      
+                       @Html.EJ().DateTimePicker("dtpEndDate").Width("190px").Value(Model.EndDate)                      
+                        @Html.ValidationMessageFor(model => model.EndDate)
+                    </div>
+                </td>
+
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <label>Remark</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => Model.Remark, new { style = "width:645px;max-width:900px", @class = "form-control", id = "Remark" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <input type="button" value="Get Plan" id="GetplanData" class="btn-sm btn-primary glyphicon glyphicon-book"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="position:relative">
+                 @(Html.EJ().Grid<SmartSys.BL.TMPlan.TMPlanModel>("grdPlandetailList")
+                .Datasource((IEnumerable<object>)ViewBag.LstPlan)
+                .AllowFiltering()
+                .AllowPaging()
+                .PageSettings(p => { p.PageSize(10); })
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                 .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })        
+                .Columns(col =>
+                {
+                    col.Field("PlanId").HeaderText("Plan Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(40).Add();
+                    col.Field("ProjectName").HeaderText("Project Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+                    col.Field("TaskName").HeaderText("Task Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+                    col.Field("StrStartDate").HeaderText("Start Date").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("StrEndDate").HeaderText("End Date").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Remark").HeaderText("Remark").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(120).Add();                                       
+                })                
+                        )
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="save btn-xs btn-info glyphicon glyphicon-save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+   </html>
+}
+@Html.EJ().ScriptManager()

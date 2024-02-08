@@ -1,0 +1,180 @@
+﻿@model IEnumerable<SmartSys.BL.SystemUser>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "UserList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Application User List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "Register", "Account", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SystemUser>("grdUserList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+              //        .ContextMenuSettings(contextMenu =>
+              //        {
+              //            contextMenu.EnableContextMenu()
+              //           .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+              ////.CustomContextMenuItems(new List<string> { "Edit " ,"DashBoard Map"})
+              //.CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit ", "DashBoard Map" } });
+
+              //        })
+
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit1", "Edit");
+                      c.AddItem("DashBoard_Map", "DashBoard Map");
+                  });
+
+              })
+
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("UserID").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("UserName").HeaderText("User Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("DisplayName").HeaderText("Display Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("UserType").HeaderText("User Type").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("PersonName").HeaderText("Person Name").ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("PasswordHint").HeaderText("Password Hint").TextAlign(TextAlign.Left).Width(80).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           Click = "onClick",
+
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).TemplateID("#edit")
+
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Center)
+            .Width(30)
+            .AllowFiltering(false)
+            .Add();
+
+            col.HeaderText("Dashboard Map").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           Click = "DashBoardMap",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-restore",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).TemplateID("#BtnTemplate")
+
+           .IsUnbound(true)
+           .TextAlign(TextAlign.Center)
+           .Width(60)
+             .AllowFiltering(false)
+           .Add();
+
+        })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+
+        )
+
+    </div>
+    <script id="BtnTemplate" type="text/x-jsrender">
+
+        <a class="btn-xs btn-info  glyphicon glyphicon-transfer" href="/Admin/DashBoardMap?UserId={{:UserID}} &UserName={{:UserName}}"> </a>
+    </script>
+    <script id="edit" type="text/x-jsrender">
+
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditUser?User_ID={{:UserID}} &amp;UserName={{:UserName}} &amp;DispName ={{:DisplayName}}"> </a>
+    </script>
+
+    <script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdUserList").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["UserID"];
+        var UserName = record["UserName"];
+        var DispName = record["DisplayName"];
+        var path = '@Url.Content("~/Admin/EditUser")' + "?User_ID=" + ConId + "&UserName=" + UserName + "&DispName=" + DispName
+        event.preventDefault();
+        window.location.replace(path);
+    }
+
+    function DashBoardMap(args) {
+        var grid = $("#grdUserList").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["UserID"];
+        var UserName = record["UserName"];
+
+        var path = '@Url.Content("~/Admin/DashBoardMap")' + "?UserId=" + ConId + "&UserName=" + UserName
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    </script>
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Account/Register")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit") {
+                var tempData = args.text;
+                var grid = $("#grdUserList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var UserID = result[0]["UserID"];
+                var UserName = result[0]["UserName"];
+                var DisplayName = result[0]["DisplayName"];
+                var path = '@Url.Content("~/Admin/EditUser")' + "?User_ID=" + UserID + "&UserName=" + UserName + "&DispName=" + DisplayName
+                event.preventDefault();
+               window.location.replace(path);
+           }
+            else
+                if (args.text == "DashBoard Map") {
+                    var tempData = args.text;
+                    var grid = $("#grdUserList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var UserID = result[0]["UserID"];
+                    var UserName = result[0]["UserName"];
+                    var path = '@Url.Content("~/Admin/DashBoardMap")' + "?UserId=" + UserID + "&UserName=" + UserName
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+            }
+
+    </script>

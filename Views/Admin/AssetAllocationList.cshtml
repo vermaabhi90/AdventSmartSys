@@ -1,0 +1,129 @@
+﻿@model SmartSys.BL.SysAssetAllocationModel
+
+<style type="text/css">
+    .e-grid .e-excelfilter .e-btncontainer input {
+        padding: .2em .4em .3em;
+    }
+
+    ::-ms-clear {
+        display: none;
+    }
+
+    .EditBtn {
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    New Asset Allocation List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateSysAssetAllocation", null, new { AssignmentId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.AdminBL>("grdSysAssetsAllocationGrid")
+                .Datasource((IEnumerable<object>)@Model.AssetAllocationList)
+        .AllowFiltering()
+        .AllowPaging()
+                .PageSettings(p => { p.PageSize(20); })
+        //.ContextMenuSettings(contextMenu =>
+        //{
+        //    contextMenu.EnableContextMenu()
+        //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+        //   .CustomContextMenuItems(new List<string> { "Allocate Asset", "Edit Asset Allocation Details" });
+
+        //})
+        .ContextMenuSettings(contextMenu =>
+        {
+            contextMenu.EnableContextMenu();
+            contextMenu.DisableDefaultItems();
+            contextMenu.CustomContextMenuItems(c =>
+            {
+                c.AddItem("Allocate_Asset", "Allocate Asset");
+                c.AddItem("Edit_Asset_Allocation_Details", "Edit Asset Allocation Details");
+            });
+
+        })
+
+       .AllowSorting()
+       .EnableHeaderHover()
+       .AllowResizing()
+       .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+       .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+       .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("AssignmentId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("AssetName").HeaderText("Asset Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("AssignedTo").HeaderText("Assigned To").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("AssignedType").HeaderText("Assigned Type").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("AssignedDate").HeaderText("Assigned Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("ReturnDate").HeaderText("ReturnDate").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:mm}").Width(140).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                {
+                    CssClass = "EditBtn",
+                    Text = "Edit",
+                    Click = "onClick",
+                    ContentType = ContentType.ImageTextImage,
+                    PrefixIcon = "e-edit",
+                    Height = "22px",
+                    Size = ButtonSize.Mini
+                }).Add();
+
+            })
+                    .Template("#edit")
+                    
+                    .TextAlign(TextAlign.Left)
+                    .AllowFiltering(false)
+                    .Width(90)
+                    .Add();
+
+        })
+        .ClientSideEvents(eve =>
+        {
+
+            eve.ContextClick("contextclick");
+
+        })
+
+        )
+    </div>
+    <script id="edit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/CreateSysAssetAllocation?AssignmentId={{:AssignmentId}}"></a>
+    </script>
+
+    <script type="text/javascript">
+
+    function contextclick(args) {
+
+        if (args.text == "Allocate Asset") {
+            var path = '@Url.Content("~/Admin/CreateSysAssetAllocation")' + "?AssignmentId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Asset Allocation Details") {
+                var tempData = args.text;
+
+                var grid = $("#grdSysAssetsAllocationGrid").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var AssignmentId = result[0]["AssignmentId"];
+                var path = '@Url.Content("~/Admin/CreateSysAssetAllocation")' + "?AssignmentId=" + AssignmentId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+    </script>
+
+
+

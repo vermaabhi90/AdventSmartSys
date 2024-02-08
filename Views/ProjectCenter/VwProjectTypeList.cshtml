@@ -1,0 +1,151 @@
+﻿@model IEnumerable<SmartSys.BL.Project.ProjectTypeModel>
+@{
+    ViewBag.Title = "VwProjectTypeList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project Type
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProjectType")
+        .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+                .EditSettings(edit => { edit.AllowAdding().AllowEditing().AllowDeleting(false).EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"); })
+        .ToolbarSettings(toolbar =>
+        {
+            toolbar.ShowToolbar().ToolbarItems(items =>
+            {
+                items.AddTool(ToolBarItems.Add);
+                items.AddTool(ToolBarItems.Edit);
+                //items.AddTool(ToolBarItems.ExcelExport);
+            });
+        })
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+          .PageSettings(p => { p.PageSize(20); })
+          //.ContextMenuSettings(contextMenu =>
+          //{
+          //    contextMenu.EnableContextMenu()
+          //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+          //        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+          //})
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add_Record", "Add Record");
+                  c.AddItem("Edit1", "Edit Record");
+              });
+
+          })
+        .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("ProjectTypeId").Visible(false).AllowEditing(false).HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ProjectType").HeaderText("Project Type").Width(160).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("isActive").Template(true).TemplateID("#columnTemplate").Add();
+            col.Field("CreatedByName").AllowEditing(false).HeaderText("Created By").Width(200).Add();
+            col.Field("CreatedDate").AllowEditing(false).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Manage Task").Template("#ManageProjectTemplate").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+        .ClientSideEvents(eve => { eve.ActionComplete("complete"); })
+
+    )
+</div>
+
+<script type="text/template" id="columnTemplate">
+    <input id="isActive" type="checkbox" disabled="disabled" name="isActive" checked="{{:isActive}}">
+</script>
+<script type="text/x-jsrender" id="ManageProjectTemplate">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href='/ProjectCenter/VwProjectType?ProjectTypeId={{:ProjectTypeId}}'></a>
+</script>
+
+<script type="text/template" id="template">
+    <b>Project Type</b>
+    <table cellspacing="10" style="width:700px">
+        <tr id="IDs">
+            <td style="text-align: right; width:100px">
+                Project Type Id
+            </td>
+            <td style="text-align: left">
+                <input id="ProjectTypeId" name="ProjectTypeId" value="{{: ProjectTypeId}}" disabled="disabled" class="e-field e-ejinputtext valid e-disable"
+                       style="text-align: right; width: 116px; height: 28px" />
+            </td>
+
+        </tr>
+        <tr>
+            <td style="width:120px; text-align: right;">
+                Project Type Name
+            </td>
+            <td style="text-align: left">
+                <input width="300" type="text" id="ProjectType" name="ProjectType" class="form-control" value="{{:ProjectType}}" />
+            </td>
+        </tr>
+    </table>
+</script>
+
+
+<script type="text/javascript">
+    function contextopen(sender) {
+        var context = this._conmenu.element;
+        //alert(context);
+    }
+    function contextclick(sender) {
+
+        var grid = $("#grdProjectType").ejGrid("instance");
+        //var index = this.element.closest("tr").index();
+        var index = this._selectedRow();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["ProjectType"];
+    }
+    function onClick(args) {
+        alert("fed");
+        var grid = $("#grdProjectType").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["ProjectTypeId"];
+        var path = '@Url.Content("~/ProjectCenter/VwProjectType")' + "?ProjectTypeId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+    ej.Grid.Locale["en-US"] = {
+        AddFormTitle: "Create New Project Type",
+        
+    };
+    function complete(args) {
+        if (args.requestType == "beginedit" || args.requestType == "add") {
+            $("#ProjectTypeId").attr("disabled", "disabled");
+            $("#grdProjectType").ejGrid("model.locale", "en-US");
+        }
+        if (args.requestType == "save") {
+            var rec = args.data;
+
+            $.ajax({
+                type: "POST",
+                url: "/ProjectCenter/VwProjectTypeNew",  //Update is Server side method
+                data: { projectTypeDetail: rec },
+                complete: function () {
+                },
+                success: function (msg) {
+                    alert("New Project Type Successfully Created.");
+                    var path = '@Url.Content("~/ProjectCenter/VwProjectType")' + "?ProjectTypeId=" + msg
+                    event.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        }
+    }
+</script>

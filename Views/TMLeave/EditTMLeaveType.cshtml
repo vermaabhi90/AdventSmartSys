@@ -1,0 +1,185 @@
+﻿@model SmartSys.BL.Tmleave.TMLeaveModel
+
+@{
+    ViewBag.Title = "CreateTMLeave";
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Leave Type
+</div>
+<br><br>
+
+@using (Html.BeginForm("EditTMLeaveType", "TMLeave", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+
+        <tr>
+            <td>
+                <label for="VendorName">LeaveTypeId </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.LeaveTypeId, new { @class = "form-control", @readonly = "readonly", style = "width:180px;", })
+                    @Html.ValidationMessageFor(model => model.LeaveTypeId, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Leave Type </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.LeaveType, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.LeaveType, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Description </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Paid Leave </label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownListFor(model => model.IsPaid, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "YES", Value="true"},
+                             new SelectListItem() {Text = "NO", Value="false"},
+
+                       }, new { @class = "form-control" })
+                    @*@Html.EditorFor(model => model.IsPaid)*@
+                    @Html.ValidationMessageFor(model => model.IsPaid, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+
+        </tr>
+
+
+        <tr>
+            <td>
+                <label for="VendorName">Yearly Quota</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.YearlyQuota, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.YearlyQuota, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Can Laps</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.CanLaps, new List<SelectListItem>
+                       {
+                                new SelectListItem() {Text = "YES", Value="true"},
+                             new SelectListItem() {Text = "NO", Value="false"},
+
+                       }, new { @class = "form-control", style = "max-width: 500px;" })
+                    @Html.ValidationMessageFor(model => model.CanLaps, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Max Leave Carryover</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.MaxLeaveCarryover, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.MaxLeaveCarryover, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="VendorName">Enable</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.Enable, new List<SelectListItem>
+                       {
+                               new SelectListItem() {Text = "YES", Value="true"},
+                             new SelectListItem() {Text = "NO", Value="false"},
+
+                       }, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Enable, "", new { @class = "text-danger", style = "max-width: 600px;" })
+                </div>
+
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="CreatedBy">Created By </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control", @readonly = "readonly", style = "width:200px;" })
+                    @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+            <td>
+                <label for="CreatedDate">Created Date </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly", style = "width:180px;" })
+                    @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+            <td>
+                <label for="ModifiedBy">Modified By </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly", style = "width:200px;" })
+                    @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="ModifiedDate">Modified Date </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly", style = "width:180px;" })
+                    @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'TMLeaveTypeList';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save" id="myDiv"> Save</button>
+            </td>
+        </tr>
+    </table>
+
+}
+
+

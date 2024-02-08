@@ -1,0 +1,94 @@
+﻿@model IEnumerable<SmartSys.BL.Project.ProjectTaskMoM>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "ProjTaskMOMList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project MOM List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink("  Create", "CreateProjectTAskMOM", new { MOMId = 0, tabIndex = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Project.ProjectTaskMoM>("grdMOMlist")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+         {
+             //items.AddTool(ToolBarItems.ExcelExport);
+             items.AddTool(ToolBarItems.Search);
+         }))
+           //.ContextMenuSettings(contextMenu =>
+           //{
+           //    contextMenu.EnableContextMenu()
+           //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+           //      //.CustomContextMenuItems(new List<string> { "Edit " })
+           //      .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit" } });
+           //})
+           .ContextMenuSettings(contextMenu =>
+           {
+               contextMenu.EnableContextMenu();
+               contextMenu.DisableDefaultItems();
+               contextMenu.CustomContextMenuItems(c =>
+               {
+                   c.AddItem("Add_Record", "Add Record");
+                   c.AddItem("Edit1", "Edit Record");
+               });
+
+           })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("MOMId").HeaderText("MOMId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("MOMTypeKey").HeaderText("Type").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("TaskName").HeaderText("Task Name").ValidationRules(v => v.AddRule("required", true)).TextAlign(TextAlign.Center).Width(120).Add();
+            col.Field("Employee").HeaderText("Employee").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("Title").HeaderText("Title").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("MOMDate").HeaderText("MOMDate").TextAlign(TextAlign.Left).Format("{0:MM/dd/yyyy}").Width(150).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Width(150).TextAlign(TextAlign.Center).Format("{0:MM/dd/yyyy}").Add();
+            col.HeaderText("Edit").IsUnbound(true).TextAlign(TextAlign.Center).Width(90).AllowFiltering(false).Template("#BtnTemplate").Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script id="BtnTemplate" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/ProjectCenter/CreateProjectTAskMOM?MOMId={{:MOMId}}&amp;tabIndex=0"> </a>
+</script>
+
+
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + 0 + "&tabIndex=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdMOMlist").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var MOMId = result[0]["MOMId"];
+                var path = '@Url.Content("~/ProjectCenter/CreateProjectTAskMOM")' + "?MOMId=" + MOMId + "&tabIndex=" +0
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+
+</script>

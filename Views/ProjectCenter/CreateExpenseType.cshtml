@@ -1,0 +1,146 @@
+﻿
+@model  SmartSys.BL.Project.ExpenseTypeModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.ExpTypeId > 0)
+            {
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit  Project Expenses Type
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Project Expenses Type
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var ExpenceType = $('#ExpenceType').val();
+            var Description = $('#Description').val();
+
+            if (ExpenceType.toString() == "") {
+                alert("Please Enter ExpenceType  ");
+                return false;
+            }
+            if (Description.toString() == "") {
+                alert("Please Enter Description  ");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+<link rel="stylesheet" href="~/Content/spaceAndButton.css">
+
+@using (Html.BeginForm("CreateExpenseType", "ProjectCenter", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+    <br>
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+
+        <tr>
+            @if (Model.ExpTypeId > 0)
+            {
+                <td>
+                    <label for="Id">Expense Id:</label>
+                </td>
+                <td>
+                    <div class="">
+
+
+                        @Html.TextBoxFor(model => model.ExpTypeId, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.ExpTypeId)
+            }
+
+            <td>
+                <label for="Type">Expense Type:</label>
+            </td>
+            <td>
+                <div class="">
+
+
+                    @Html.TextBoxFor(model => model.ExpenceType, new { @class = "form-control", id = "ExpenceType" })
+                </div>
+            </td>
+
+
+        </tr>
+    </table>
+    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                <label for="Type">Description:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Description, new { @style = "min-width:500px", @class = "form-control", id = "Description" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    if (Model.ExpTypeId > 0)
+    {
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="Type">Created by:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Type">Created Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Type">Modified by:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label for="Type">Modified Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+    }
+    <table>
+        <tr>
+
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'ExpenseTypeList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+            </td>
+
+        </tr>
+
+    </table>
+
+}

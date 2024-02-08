@@ -1,0 +1,493 @@
+﻿@model IEnumerable<SmartSys.BL.PurchaseMonthwiseModel>
+@{
+    ViewBag.Title = "GetPurchaseRepotMonthWiseList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Purchase Report Monthwise
+</div>
+<div>
+    <table>
+        <tr>
+            <td><label>Company</label></td>
+            <td>
+                <div class="">
+                    <input type="text" value="Advent" name="CompCode" id="CompCode" />                   
+                </div>
+            </td>
+            <td>
+                <label>From Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("FromDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>
+            <td>
+                <label>To Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("ToDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    <input type="button" id="Submit" value="Submit" onclick="SubmitDate()" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<br />
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+                                            top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+                                            opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<div id="GridList">
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.PurchaseMonthwiseModel>("PurchaseMonthwiseMainList")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Add_Comments", "Add Comments");
+                                                c.AddItem("View_History", "View History");
+
+                                            });
+
+                                        })
+                                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentNo").HeaderText("Document No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(40).Add();
+            col.Field("PostingDate").HeaderText("Posting Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(35).Add();
+            col.Field("PayToName").HeaderText("Pay To Name").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("No").HeaderText("Item No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(30).Add(); 
+            col.Field("LineNo").HeaderText("LineNo").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Make").HeaderText("Make").TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("BaseUnitPrice").HeaderText("Base Unit Price").Format("{0:N2}").TextAlign(TextAlign.Right).Width(40).Add();
+            col.Field("Quantity").HeaderText("Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("Total_Value").HeaderText("Total Value").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("SONO").HeaderText("SO No").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Name").HeaderText("Name").TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("SalesQty").HeaderText("Sales Qty").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("OutstandingQuantity").HeaderText("Outstanding Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+@{
+
+    Html.EJ()
+        .Dialog("ShowHistory")
+        .Title("<a id='Title'>View History</a>")
+        .Width(1200)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<div>
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.NNRModel>("PurchMonthwiseShowHistoryGrid")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("ItemNo").HeaderText("Document No").TextAlign(TextAlign.Left).Width(40).Add();
+                    col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    //col.Field("CreateDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+                    //col.Field("CreateDate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                )
+            </div>
+        </div>)
+            .Render();
+}
+<script>
+    function openDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+</script>
+
+@{Html.EJ().Dialog("dialogIcon").Title("Add Comments").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Add Comments
+        </div>
+        <table>
+            <tr>
+                <td width="80px">
+                    <label>
+                        Document No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="DocumentNo" class="form-control" readonly />
+                        @*<input type="text" id="ItemId" class="form-control" readonly style="display:none" />
+                            <input type="text" id="BrandId" class="form-control" readonly style="display:none" />*@
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Item No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="No" class="form-control" readonly />
+                    </div>
+                </td>
+
+                <td>
+                    <label>
+                        Description:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Description" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td width="80px">
+                    <label>SONO</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="SONO" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>Pay To Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="PayToName" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="LineNo" class="form-control" style="visibility:hidden" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr width="80px">
+                <td width="80px">
+                    <label>
+                        Quantity:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Quantity" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Base Unit Price:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="BaseUnitPrice" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Total Value:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Total_Value" class="form-control" readonly />
+                    </div>
+                </td>
+                @*<td>
+                <label>
+                    BasicUnit:
+                </label>
+            </td>
+            <td>
+                <div class="">
+                    <input type="text" id="BasicUnit" class="form-control" readonly />
+                </div>
+            </td>*@
+            </tr>
+        </table>
+        <table style="margin-left:15px">
+            <tr>
+                <td>
+                    <label>
+                        Comments:
+                    </label>
+                </td>
+                <td width="32px"></td>
+                <td>
+                    <div class="">
+                        @Html.TextArea("Comments", new { Id = "Comments", @class = "form-control", @style = "min-width:500px" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table style="margin-left:100px">
+            <tr>
+                <td>
+                    @*<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>*@
+                    <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " data-dismiss="modal" id="Save"> Save</button>
+                </td>
+                <td style="width:50px"></td>
+            </tr>
+        </table>
+        <div>
+            <div>
+                <div style="position:relative">
+                 @(Html.EJ().Grid<SmartSys.BL.PurchaseMonthwiseModel>("PurchMonthwiseCommentlist")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>)
+          .Width(1200)
+          .Height(700)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+
+<script>
+    $(document).ready(function () {
+        $('#GridList').hide();
+    });
+</script>
+<script>
+    function SubmitDate() {
+        var CompCode = $('#CompCode').val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        if (FromDate == null)
+        {
+            alert("Enter Start and End Date");
+            return false;
+        }
+        if (ToDate == null)
+        {
+            alert("Enter Start and End Date");
+            return false;
+        }
+        $("#divLoading").show();
+        $.ajax({
+            url: "/DhFeed/GetPurchaseRepotMonthWiseData",
+            dataType: 'json',
+            type: "POST",
+            data: { CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+            success: function (List) {
+
+                var obj = $("#PurchaseMonthwiseMainList").ejGrid("instance")
+                obj.dataSource(List);
+                $('#GridList').show();
+                $("#divLoading").hide();
+            },
+            error: function (req, status, err) {
+            console.log('something went wrong', status, err);
+        }
+    })
+    }
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "View History") {
+            $("#ShowHistory").ejDialog("open");
+            var tempData = args.text;
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var grid = $("#PurchMonthwiseShowHistoryGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocumentNo = result[0]["DocumentNo"];
+            var MPN = result[0]["MPN"];
+            var ItemNo = result[0]["No"];
+            var LineNo = result[0]["LineNo"];
+            $.ajax({
+                url: "/DhFeed/ShowPurchaseMonthwiseList",
+                dataType: 'json',
+                type: "POST",
+                data: { DocumentNo: DocumentNo, ItemNo: ItemNo,LineNo:LineNo, FromDate: FromDate, ToDate: ToDate, CompCode: CompCode },
+                success: function (List) {
+                    var obj = $("#PurchMonthwiseShowHistoryGrid").ejGrid("instance")
+                    obj.dataSource(List);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+        }
+        else if (args.text == "Add Comments") {
+
+            var tempData = args.text;
+            $("#dialogIcon").ejDialog("open");
+            var grid = $("#PurchMonthwiseShowHistoryGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocumentNo = result[0]["DocumentNo"];
+            var Description = result[0]["Description"];
+            var ItemNo = result[0]["No"];
+            var Make = result[0]["Make"];
+            var SONO = result[0]["SONO"];
+            var PayToName = result[0]["PayToName"];
+            var Quantity = result[0]["Quantity"];
+            var BaseUnitPrice = result[0]["BaseUnitPrice"];
+            var Total_Value = result[0]["Total_Value"];
+            var LineNo = result[0]["LineNo"];
+            $('#DocumentNo').val(DocumentNo);
+            $('#Description').val(Description);
+            $('#No').val(ItemNo);
+            $('#Make').val(Make);
+            $('#SONO').val(SONO);
+            $('#PayToName').val(PayToName);
+            $('#Quantity').val(Quantity);
+            $('#BaseUnitPrice').val(BaseUnitPrice);
+            $('#Total_Value').val(Total_Value);
+            $('#LineNo').val(LineNo);
+            $('#Comments').val("");
+            var DocumentNo = result[0]["DocumentNo"];
+            var ItemNo = result[0]["No"];
+            var LineNo = result[0]["LineNo"];
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            $.ajax({
+                url: "/DhFeed/ShowPurchaseMonthwiseList",
+                dataType: 'json',
+                type: "POST",
+                data: { DocumentNo: DocumentNo, ItemNo: ItemNo, LineNo:LineNo,CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+                success: function (List) {
+
+                    var obj = $("#PurchMonthwiseCommentlist").ejGrid("instance")
+                    obj.dataSource(List);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+            //event.preventDefault();
+            //window.location.replace(path);
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+            $('#Save').click(function () {
+            var DocumentNo = $('#DocumentNo').val();
+            var ItemNo = $('#No').val(); 
+            var LineNo = $('#LineNo').val();           
+            var MPN = $('#MPN').val();
+            var Comments = $('#Comments').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var CompCode = $('#CompCode').val();
+            if(Comments =="")
+            {
+                alert("Please Enter Comments");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/DhFeed/SavePurchMonthwiseAdventData",
+                data: { DocumentNo: DocumentNo, ItemNo:ItemNo,LineNo:LineNo, Comment: Comments },
+                success: function (ErrorCode) {
+                    toastr.success("Saved Successfully!");
+                    $.ajax({
+                        url: "/DhFeed/GetPurchaseRepotMonthWiseData",
+                        dataType: 'json',
+                        type: "POST",
+                        data: { CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+                        success: function (List) {
+                            var obj = $("#PurchaseMonthwiseMainList").ejGrid("instance")
+                            obj.dataSource(List);
+                            $('#GridList').show();
+                            $("#divLoading").hide();
+                            //data-dismiss="modal";
+                            $("#dialogIcon").ejDialog("close");
+                        },
+                        error: function (req, status, err) {
+                            console.log('something went wrong', status, err);
+                        }
+                    })
+                   //alert("Saved Successfully")
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+          //  window.location.reload();
+        });
+    });
+</script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />

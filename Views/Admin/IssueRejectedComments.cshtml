@@ -1,0 +1,67 @@
+﻿
+@model SmartSys.BL.IssueModel
+
+<div class="page-header glyphicon glyphicon-leaf  text-info ">
+    Comments
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#save').click(function (event) {
+            var IssueId = $('#IssueId').val();
+            var Statuscode = $('#Statuscode').val();
+            var Comments = $('#Comments1').val();
+       
+            if (Comments.toString() == "") {
+                alert("Please Enter Comment ");
+                return false;
+            }
+
+            var path = '@Url.Content("~/Admin/UpdateApprovalDetail")' + "?IssueId=" + IssueId + "&statusid=" + Statuscode + "&Comments=" + Comments 
+          event.href = path;
+          $(this).attr('href', path);
+            event.preventDefault();
+            window.location.replace(path);
+        })
+        })
+            </script>
+
+            @using (Html.BeginForm( new { id = "Issue", enctype = "multipart/form-data" }))
+{
+
+    <table style="margin-left:30px">
+                   <tr>
+
+                            <td>
+                            <label for="Status">Status:</label>
+                        </td>
+                       <td>
+                           <div class="navbar-text" style="color:red">
+
+                               Rejected
+                           </div>
+                       </td>
+                   </tr>
+        <br>
+                    <tr>
+                        <td>
+                            <label for="ItemName">Comments:</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.HiddenFor(model => model.IssueId, new { @style = "Width: 300Px", id = "IssueId" })
+                                @Html.HiddenFor(model => model.Statuscode, new { @style = "Width: 300Px", id = "Statuscode" })
+                                @Html.TextAreaFor(model => model.Comments, new { @style = "Width: 300Px", id = "Comments1" })
+                            </div>
+                        </td>
+                   </tr>
+                    <tr>
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save " id="save"> Save</button>
+                            </div>
+                        </td>
+                       
+                    </tr>
+                </table>
+
+}

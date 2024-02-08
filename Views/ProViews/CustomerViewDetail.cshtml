@@ -1,0 +1,1060 @@
+﻿
+@model SmartSys.BL.DW.CustomerListModel
+
+@{
+    ViewBag.Title = "EmployeeViewDetail";
+}
+
+@{
+    Html.EJ()
+        .Dialog("CreateCustomerEnquiryForCust")
+        .Title("<a id='Title'></a>")
+        .Width(1300)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+    function openDialog() {
+        $("#CreateCustomerEnquiryForCust").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#CreateCustomerEnquiryForCust").ejDialog("open");
+    }
+</script>
+
+@{
+    Html.EJ()
+        .Dialog("BudgetDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1300)
+        .Height(500)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+    function openDialog() {
+        $("#BudgetDetail").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#BudgetDetail").ejDialog("open");
+    }
+</script>
+
+<div style="margin-left:30px;margin-bottom:20px">
+    <table>
+        <tr>
+
+            <td>
+                <label class="glyphicon text-info" style="font-size:medium;color:red"> Customer Details of:</label>
+            </td>            
+            <td>
+                <label class="glyphicon  text-info" style="font-size:medium">@ViewBag.CustomerName</label>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+<script src="~/Scripts/tableGrid.js"></script>
+
+<style type="text/css">
+    .modal-content {
+        width: 90% !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .Width {
+        width: 350px;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+<div style="width:100%">
+    @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).ShowCloseButton(true).Items(data =>
+        {
+        data.Add().ID("MOMDetails").Text("MOM Details").ContentTemplate(
+            @<div id="gridEvent1">
+
+                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerMOMDetailGrid")
+              .Datasource((IEnumerable<object>)ViewBag.AllMOMActionPointList)
+              .AllowPaging()
+              .AllowGrouping()
+              .PageSettings(page => { page.PageSize(20); })
+              .GroupSettings(group => { group.GroupedColumns(col => { col.Add("ProjectName"); }).EnableDropAreaAnimation(false); })
+              .AllowResizing()
+              .AllowFiltering()
+              .AllowScrolling()
+              .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("View_MOMdetails", "View MOM Details");
+                  });
+
+              })
+              .ClientSideEvents(eve => { eve.ContextClick("contextclickMOM"); })
+          .Columns(col =>
+          {
+              col.Field("MOMId").HeaderText("MOM Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("ProjectId").HeaderText("Project Id").Visible(false).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("ProjectName").HeaderText("Project Name").Width(90).Add();
+              col.Field("TaskId").HeaderText("Task Id").Visible(false).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("TaskName").HeaderText("Task Name").Width(90).Add();
+              col.Field("MOMDate").HeaderText("MOM Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+              col.Field("EmpId").HeaderText("Emp Id").Visible(false).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("MOMTypeKey").HeaderText("MOM Type Key").Width(80).Add();
+              col.Field("Employee").HeaderText("Employee").Width(80).Add();
+              col.Field("Title").HeaderText("Title").Width(80).Add();
+              col.Field("CreatedByName").HeaderText("Created By").Width(90).Add();
+              col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ModifiedByName").HeaderText("Modified By").Width(90).Add();
+              col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+          })
+                )
+            </div>);
+
+        data.Add().ID("ActionPointList").Text("Action Point Details").ContentTemplate(
+            @<div id="gridEvent2">
+                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerMOMActionPointGrid")
+                      .Datasource((IEnumerable<object>)ViewBag.AtionPointListByCustomer)
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page => { page.PageSize(20); })
+                      .GroupSettings(group => { group.GroupedColumns(col => { col.Add("StatusDescrition"); }).EnableDropAreaAnimation(false); })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .ContextMenuSettings(contextMenu =>
+                      {
+                          contextMenu.EnableContextMenu();
+                          contextMenu.DisableDefaultItems();
+                          contextMenu.CustomContextMenuItems(c =>
+                          {
+                              c.AddItem("View_MOMActionP", "View MOM Actiom Point");
+                          });
+
+                      })
+                      .ClientSideEvents(eve => { eve.ContextClick("contextclickMOMActionP"); })
+                  .Columns(col =>
+                  {
+                      col.Field("ActionPointId").HeaderText("Action Point Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(140).Add();
+                      col.Field("ActionDescription").HeaderText("ActionDescription").Visible(true).TextAlign(TextAlign.Left).Width(250).Add();
+                      col.Field("StatusDescrition").HeaderText("Status").Width(90).Add();
+                      col.Field("AssignedBy").HeaderText("Assigned By").Width(180).Add();
+                      col.Field("DueDate").HeaderText("DueDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+                      col.Field("CreatedByName").HeaderText("Created By").Width(190).Add();
+                      col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+                      col.Field("ModifiedByName").HeaderText("Modified By").Width(190).Add();
+                      col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+                  })
+                )
+            </div>);
+
+            data.Add().ID("EmpList").Text("Employee Details").ContentTemplate(
+                @<div id="gridEvent3">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerMOMEmpDetailGrid")
+                      .Datasource((IEnumerable<object>)ViewBag.GetAllEmplistByCustomer)
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page => { page.PageSize(20); })
+                      .GroupSettings(group => { group.GroupedColumns(col => { col.Add("ManagerName"); }).EnableDropAreaAnimation(false); })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .ContextMenuSettings(contextMenu =>
+                      {
+                          contextMenu.EnableContextMenu();
+                          contextMenu.DisableDefaultItems();
+                          contextMenu.CustomContextMenuItems(c =>
+                          {
+                              c.AddItem("View_EmpDetail", "View Employee Detail");
+                          });
+
+                      })
+                      .ClientSideEvents(eve => { eve.ContextClick("contextclickEmpDetails"); })
+                  .Columns(col =>
+                  {
+                      col.Field("EmpName").HeaderText("Emp Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(180).Add();
+                      col.Field("EmpId").HeaderText("ID").Visible(false).TextAlign(TextAlign.Left).Width(80).Add();
+                      col.Field("Gender").HeaderText("Gender").Width(90).Add();
+                      col.Field("ManagerName").HeaderText("Manager Name").Width(180).Add();
+                      col.Field("emailId").HeaderText("Email ID").Width(190).Add();
+                      col.Field("DateOfJoin").HeaderText("Date Of Join").Width(90).Add();
+                      col.Field("Designation").HeaderText("Designation").Width(120).Add();
+                      col.Field("DeptName").HeaderText("Dept Name").Width(120).Add();
+                      col.Field("Deleted").HeaderText("Deleted").Width(90).Add();
+                      col.Field("Remark").HeaderText("Remark").Width(120).Add();
+                      col.Field("LastDateOfWork").HeaderText("LastDateOfWork").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+                      col.Field("CompRelMapCount").HeaderText("CompRelMapCount").Width(90).Add();
+                  })
+                    )
+                </div>);
+
+        data.Add().ID("EnquiryDetails").Text("Enquiry Details").ContentTemplate(
+            @<div id="gridEvent4">
+
+                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerEnquiryDetailGrid")
+                      .Datasource((IEnumerable<object>)ViewBag.EnquiryListBYCustomer)
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page => { page.PageSize(20); })
+                      .GroupSettings(group => { group.GroupedColumns(col => { col.Add("StatusStr"); }).EnableDropAreaAnimation(false); })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                       .ContextMenuSettings(contextMenu =>
+                       {
+                           contextMenu.EnableContextMenu();
+                           contextMenu.DisableDefaultItems();
+                           contextMenu.CustomContextMenuItems(c =>
+                           {
+                               c.AddItem("View_Enquiry_Details", "View Enquiry Details");
+                           });
+
+                       })
+
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                  .Columns(col =>
+                  {
+                      col.Field("EnqId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+                      col.Field("EnqNumber").HeaderText("Enquiry Number").Visible(true).TextAlign(TextAlign.Left).Width(120).Add();
+                      col.Field("EnqDate").HeaderText("Enquiry Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+                      col.Field("CustomerName").HeaderText("Customer Name").Width(250).Add();
+                      col.Field("StatusStr").HeaderText("Status").Width(120).Add();
+                      col.Field("Priority").HeaderText("Priority").Width(90).Add();
+                      col.Field("ModifiedBy").HeaderText("Modified By").Width(120).Add();
+                      col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(120).Add();
+                      col.HeaderText("Detail").Commands(command =>
+                      {
+                          command.Type(UnboundType.Edit)
+
+                                 .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                 {
+                                     CssClass = "EditBtn",
+                                     Text = "Edit",
+                                     ContentType = ContentType.ImageTextImage,
+                                     PrefixIcon = "e-edit",
+                                     Height = "22px",
+                                     Size = ButtonSize.Mini
+                                 }).Add();
+
+                      }).Template("#EnquiryTemplate")
+           
+            .TextAlign(TextAlign.Left)
+            .AllowFiltering(false)
+            .Width(90)
+            .Add();
+                  })
+                           .ClientSideEvents(eve => { eve.ContextClick("contextclickEnqDet"); })
+                )
+            </div>);
+
+        data.Add().ID("ProjectDetails").Text("Project Details").ContentTemplate(
+            @<div id="gridEvent5">
+                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerProjectDetailGrid")
+                      .Datasource((IEnumerable<object>)ViewBag.ProjectDetailsList)
+
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page => { page.PageSize(20); })
+                      .GroupSettings(group => { group.GroupedColumns(col => { col.Add("ProjectManager"); }).EnableDropAreaAnimation(false); })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+
+          .Columns(col =>
+          {
+              col.Field("ProjectId").HeaderText("Project Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("ProjectName").HeaderText("Project Name").Width(80).Add();
+              col.Field("ProjectType").HeaderText("ProjectType").Width(80).Add();
+              col.Field("Description").HeaderText("Description").Width(90).Add();
+              col.Field("StatusDescription").HeaderText("Status").Width(90).Add();
+              col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ProjectManager").HeaderText("Project Manager").Width(80).Add();
+              col.Field("Region").HeaderText("Region").Width(90).Add();
+              col.Field("StatusName").HeaderText("Status").Width(80).Add();
+              col.Field("VendorName").HeaderText("Vendor").Width(90).Add();
+              col.Field("Resources").HeaderText("Resources").Width(90).Add();
+              col.Field("VendorName").HeaderText("Vendor Name").Width(90).Add();
+              col.Field("CompCode").HeaderText("Comp Code").Width(90).Add();
+              col.Field("ItemPermission").HeaderText("Item Permission").Width(90).Add();
+              col.Field("Remark").HeaderText("Remark").Width(90).Add();
+              col.Field("CreatedByName").HeaderText("Created By").Width(80).Add();
+              col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ModifiedByName").HeaderText("Modified By").Width(90).Add();
+              col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+
+
+              col.HeaderText("Detail").Commands(command =>
+              {
+                  command.Type(UnboundType.Edit)
+
+                         .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                         {
+                             CssClass = "EditBtn1",
+                             Text = "Edit",
+                             ContentType = ContentType.ImageTextImage,
+                             PrefixIcon = "e-edit",
+                             Height = "22px",
+                             Size = ButtonSize.Mini
+                         }).Add();
+
+              }).Template("#ProViewTemplate")
+
+            .TextAlign(TextAlign.Left)
+            .AllowFiltering(false)
+            .Width(90)
+            .Add();
+          })
+                )
+            </div>);
+
+            data.Add().ID("RiskCaseDetails").Text("Risk/Case Details").ContentTemplate(
+                @<div id="gridEvent6">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerCaseRiskDetailGrid")
+                      .Datasource((IEnumerable<object>)ViewBag.RiskCaseList)
+
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page => { page.PageSize(20); })
+                      .GroupSettings(group => { group.GroupedColumns(col => { col.Add("ProjectName"); }).EnableDropAreaAnimation(false); })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .ContextMenuSettings(contextMenu =>
+                      {
+                          contextMenu.EnableContextMenu();
+                          contextMenu.DisableDefaultItems();
+                          contextMenu.CustomContextMenuItems(c =>
+                          {
+                              c.AddItem("View_CASERISK", "View Case Risk");
+                          });
+
+                      })
+                      .ClientSideEvents(eve => { eve.ContextClick("contextclickCaseRisk"); })
+          .Columns(col =>
+          {
+              col.Field("ProjectId").HeaderText("Project Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("ProjectName").HeaderText("Project Name").Width(80).Add();
+              col.Field("TaskId").HeaderText("Task Id").Width(80).Add();
+              col.Field("TaskName").HeaderText("Task Name").Width(90).Add();
+              col.Field("TaskTypeText").HeaderText("Task Type Text").Width(90).Add();
+              col.Field("ProjectManager").HeaderText("Project Manager").Width(80).Add();
+              col.Field("Description").HeaderText("Description").Width(90).Add();
+              col.Field("StatusName").HeaderText("Status").Width(80).Add();
+              col.Field("VendorName").HeaderText("Vendor").Width(90).Add();
+              col.Field("Resources").HeaderText("Resources").Width(90).Add();
+              col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ReviewedByName").HeaderText("Reviewed By").Width(80).Add();
+              col.Field("ReviewedDate").HeaderText("Reviewed Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ApprovedByName").HeaderText("Approved By").Width(90).Add();
+              col.Field("ApprovedDate").HeaderText("Approved Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ModifiedByName").HeaderText("Modified By").Width(90).Add();
+              col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+             
+          })
+                    )
+
+
+                </div>);
+
+            data.Add().ID("TravelRequestDetails").Text("Travel Request Details").ContentTemplate(
+                @<div id="gridEvent7">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("travelRequestDetails")
+                      .Datasource((IEnumerable<object>)ViewBag.TravelRequestByCustomer)
+
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page => { page.PageSize(20); })
+                      .GroupSettings(group => { group.GroupedColumns(col => { col.Add("EmployeeName"); }).EnableDropAreaAnimation(false); })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                       .ContextMenuSettings(contextMenu =>
+                       {
+                           contextMenu.EnableContextMenu();
+                           contextMenu.DisableDefaultItems();
+                           contextMenu.CustomContextMenuItems(c =>
+                           {
+                               c.AddItem("View_Detail", "View Detail");
+                           });
+
+                       })
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopentra"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclicktra"); })
+          .Columns(col =>
+          {
+              col.Field("RequestId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("EmpId").HeaderText("Emp Id").Visible(false).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("EmployeeName").HeaderText("Employee Name").Width(80).Add();
+              col.Field("Status").HeaderText("Status").Width(90).Add();
+              col.Field("ReviewedBy").HeaderText("Reviewed By").Width(90).Add();
+              col.Field("ReviewedDate").HeaderText("Reviewed Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ApproverBy").HeaderText("Approver By").Width(80).Add();
+              col.Field("ApprovedDate").HeaderText("Approved Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+              col.Field("CreatedBy").HeaderText("Created By").Width(90).Add();
+              col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+          })
+                    )
+                </div>);
+
+        data.Add().ID("TimeSheetDetails").Text("Time Sheet Details").ContentTemplate(
+            @<div id="gridEvent8">
+                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerTimesheetDetailGrid")
+                       .Datasource((IEnumerable<object>)ViewBag.TimeSheetByCustomer)
+
+                      .AllowPaging()
+                      .AllowGrouping()
+                      .PageSettings(page =>
+                      {
+                          page.PageSize(20);
+                      })
+                      .GroupSettings(group =>
+                      {
+                          group.GroupedColumns(col => { col.Add("ProjectName"); }).EnableDropAreaAnimation(false);
+                      })
+                      .AllowResizing()
+                      .AllowFiltering()
+                      .AllowScrolling()
+                      .FilterSettings(filter =>
+                      {
+                          filter.FilterType(FilterType.Excel);
+                      })
+                      .ContextMenuSettings(contextMenu =>
+                      {
+                          contextMenu.EnableContextMenu();
+                          contextMenu.DisableDefaultItems();
+                          contextMenu.CustomContextMenuItems(c =>
+                          {
+                              c.AddItem("View_TimeSheet", "View Time Sheet");
+                          });
+
+                      })
+                      .ClientSideEvents(eve => { eve.ContextClick("contextclickTimeSheetDetail"); })
+          .Columns(col =>
+          {
+
+              col.Field("TimeSheetEntryDetailId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("TimeSheetId").HeaderText("TimeSheet Id").Visible(false).TextAlign(TextAlign.Left).Width(80).Add();
+              col.Field("ProjectName").HeaderText("Project Name").Width(180).Add();
+              col.Field("TaskName").HeaderText("Task Name").Width(190).Add();
+              col.Field("DayText").HeaderText("Task Name").Width(90).Add();
+              col.Field("EmployeeName").HeaderText("Employee Name").Width(180).Add();
+              col.Field("StatusShortCode").HeaderText("Status").Width(90).Add();
+              col.Field("ApproverName").HeaderText("Approver Name").Width(80).Add();
+              col.Field("ApprovedDate").HeaderText("Approved Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(90).Add();
+              col.Field("ApproverRemark").HeaderText("Approver Remark").Width(80).Add();
+              col.Field("CreatedByName").HeaderText("Created By").Width(90).Add();
+              col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              col.Field("ModifiedByName").HeaderText("Modified By").Width(90).Add();
+              col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+
+          })
+                )
+            </div>);
+
+            data.Add().ID("KYCDocument").Text("KYC Documents").ContentTemplate(
+                @<div id="gridEvent9">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerListModel>("CustomerKYCdetailGrid")
+              .Datasource((IEnumerable<object>)ViewBag.docList)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+              .AllowPaging()
+                   .AllowResizing()
+              .AllowGrouping()
+              .PageSettings(page =>
+              {
+                  page.PageSize(20);
+              })
+               .ContextMenuSettings(contextMenu =>
+               {
+                   contextMenu.EnableContextMenu();
+                   contextMenu.DisableDefaultItems();
+                   contextMenu.CustomContextMenuItems(c =>
+                   {
+                       c.AddItem("View_Download", "Download KYC");
+                   });
+               })
+                      .ClientSideEvents(eve => { eve.ContextClick("contextclickKYC"); })
+              .Columns(col =>
+              {
+                  col.Field("DocumentTitle").HeaderText("Document Title").Visible(true).TextAlign(TextAlign.Left).Width(80).Add();
+                  col.Field("Description").HeaderText("Description").Width(80).Add();
+                  col.Field("DocumentPath").HeaderText("Document Path").Width(80).Add();
+                  col.Field("CreatedBy").HeaderText("CreatedBy").Width(80).Add();
+                  col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+              })
+                    )
+                </div>);
+
+            data.Add().ID("Budget").Text("Budget Details").ContentTemplate(
+                @<div id="gridEvent10">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.BudgetModel>("CustomerbudgetdetailGrid")
+                .Datasource((IEnumerable<object>)ViewBag.getBudgetList)
+                         .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                       .AllowPaging()
+                              .AllowGrouping()
+                              .PageSettings(page => { page.PageSize(20); })
+                              .AllowResizing()
+                              .AllowFiltering()
+                              .AllowScrolling()
+                              .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                               .ContextMenuSettings(contextMenu =>
+                               {
+                                   contextMenu.EnableContextMenu();
+                                   contextMenu.DisableDefaultItems();
+                                   contextMenu.CustomContextMenuItems(c =>
+                                   {
+                                       c.AddItem("View_detailsBud", "View details");
+                                   });
+
+                               })
+                  .Columns(col =>
+                  {
+                      col.Field("BudgetId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                      col.Field("CustomerName").HeaderText("Customer Name").Visible(true).TextAlign(TextAlign.Left).Width(220).Add();
+                      col.Field("EmployeeName").HeaderText("Employee Name").Width(150).Add();
+                      col.Field("ItemName").HeaderText("Item Name").Width(200).Add();
+                      col.Field("MPN").HeaderText("MPN").Width(200).Add();
+                      col.Field("BrandName").HeaderText("Brand Name").Width(200).Add();
+                      col.Field("City").HeaderText("City").TextAlign(TextAlign.Left).Width(100).Add();
+                      col.Field("Region").HeaderText("Region").TextAlign(TextAlign.Left).Width(130).Add();
+                      col.Field("Application").HeaderText("Application").TextAlign(TextAlign.Left).Width(130).Add();
+                      col.Field("Description").HeaderText("Description").Visible(false).Width(250).Add();
+                      col.Field("Description").HeaderText("Check").Visible(false).Width(250).Add();
+                      col.Field("EndEquipment").HeaderText("End Equipment").Width(140).Add();
+                      col.Field("Finyear").AllowEditing(false).HeaderText("Finyear").Width(100).Add();
+                  })
+                                                  .ClientSideEvents(eve => { eve.ContextClick("contextclickbud"); })
+                    )
+                </div>);
+
+            data.Add().ID("ItemWise").Text("Item Wise").ContentTemplate(
+                @<div id="ItemWise">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.BudgetModel>("CustomerItemWiseGrid")
+                .Datasource((IEnumerable<object>)ViewBag.ItemListByCustomer)
+                       .AllowPaging()
+                              .PageSettings(page => { page.PageSize(20); })
+                              .AllowResizing()
+                              .AllowFiltering()
+                              .AllowScrolling()
+                              .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+
+
+                      .Columns(col =>
+                      {
+                          col.Field("CustomerId").HeaderText("CustomerId").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                          col.Field("CustomerName").HeaderText("Customer Name").Visible(false).TextAlign(TextAlign.Left).Width(20).Add();
+                          col.Field("EnqId").HeaderText("Enq Id").TextAlign(TextAlign.Center).Width(80).Add();
+                          col.Field("ItemId").HeaderText("Item Id").Visible(false).Width(150).Add();
+                          col.Field("ItemName").HeaderText("Item Name").Width(200).Add();
+                          col.Field("MPN").HeaderText("MPN").Width(200).Add();
+                          col.Field("BrandName").HeaderText("Brand Name").Width(200).Add();
+                          col.Field("EnqQuantity").HeaderText("Enquiry Quantity").TextAlign(TextAlign.Right).Width(150).Add();
+                          col.Field("PurchaseQtyAdvent").HeaderText("Purchase Quantity Advent").TextAlign(TextAlign.Right).Width(200).Add();
+                          col.Field("PurchaseQtySAJ").HeaderText("Purchase Quantity SAJ").TextAlign(TextAlign.Right).Width(200).Add();
+                          col.Field("SaleQtyAdvent").HeaderText("Sale Quantity Advent").TextAlign(TextAlign.Right).Width(150).Add();
+                          col.Field("SaleQtySAJ").HeaderText("Sale Quantity SAJ").TextAlign(TextAlign.Right).Width(150).Add();
+
+
+
+                      })
+
+                    )
+                </div>);
+        data.Add().ID("Accountreceivables").Text("Account receivables").ContentTemplate(
+            @<div >
+                @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("Accountreceivables")
+                .Datasource((IEnumerable<object>)ViewBag.CustAccountReceivable)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                 .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+                //.ContextMenuSettings(contextMenu =>
+                //{
+                //    contextMenu.EnableContextMenu()
+                //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+                //    .CustomContextMenuItems(new List<string> { "Ledger Entries" });
+                //})
+                //.ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.RecordDoubleClick("Doubleclick"); })
+
+                .AllowResizing()
+                .FilterSettings(filter =>
+                {
+                    filter.FilterType(FilterType.Excel);
+                })
+                .AllowScrolling()
+                .EnableAltRow(true)
+
+        .Columns(col =>
+        {
+            col.Field("Company").AllowEditing(false).HeaderText("Company").Width(70).Add();
+            col.Field("CustomerId").HeaderText("CustomerId").Visible(false).TextAlign(TextAlign.Center).Width(80).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").Width(100).TextAlign(TextAlign.Left).Add();
+            col.Field("CustomerNo").AllowEditing(false).TextAlign(TextAlign.Center).HeaderText("Customer No").Width(100).Add();
+            col.Field("Currency").AllowEditing(true).HeaderText("Currency").Width(100).Add();
+            col.Field("RemainingAmount").AllowEditing(false).TextAlign(TextAlign.Right).HeaderText("Remaining Amount").Format("{0:N4}").Width(100).Add();
+            col.Field("RemainingAmountLCY").AllowEditing(false).TextAlign(TextAlign.Right).HeaderText("Remaining Amount(LCY)").Format("{0:N4}").Width(100).Add();
+
+        })
+
+                )
+            </div>);
+
+            data.Add().ID("Inventory").Text("Inventory").ContentTemplate(
+                @<div id="Inventory">
+
+                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("Inventory")
+                .Datasource((IEnumerable<object>)ViewBag.ItemInventoryListByCustomer)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .PageSettings(p =>
+                {
+                    p.PageSize(20);
+                })
+                .AllowResizing()
+                .FilterSettings(filter =>
+                {
+                    filter.FilterType(FilterType.Excel);
+                })
+                .AllowScrolling()
+                .EnableAltRow(true)
+
+        .Columns(col =>
+        {
+            col.Field("CompCode").AllowEditing(false).HeaderText("Company").Width(70).Add();
+            //col.Field("CustOrdNo").HeaderText("Customer PO No.").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("VPN").HeaderText("VPN").TextAlign(TextAlign.Left).Width(150).Add();
+            col.Field("MPN").AllowEditing(true).HeaderText("MPN").Width(150).Add();
+            col.Field("ItemName").AllowEditing(true).HeaderText("Item Name").Width(150).Add();
+            col.Field("CPN").AllowEditing(true).HeaderText("CPN").Width(150).Add();
+            col.Field("BrandName").HeaderText("Brand Name").Width(200).Add();
+            col.Field("ItemCurQtyInHand").AllowEditing(false).TextAlign(TextAlign.Right).HeaderText("Item: Current Qty. On Hand").Format("{0:N4}").Width(100).Add();
+            col.Field("UnitPrice").AllowEditing(false).TextAlign(TextAlign.Right).HeaderText("Unit Price").Format("{0:N4}").Width(100).Add();
+            col.Field("BalanceAmount").Visible(false).AllowEditing(false).TextAlign(TextAlign.Right).HeaderText("Balance Amount").Format("{0:N4}").Width(100).Add();
+            col.Field("BalanceQuantity").AllowEditing(false).TextAlign(TextAlign.Right).HeaderText("Balance Quantity").Format("{0:N4}").Width(100).Add();
+            col.Field("Value").AllowEditing(false).TextAlign(TextAlign.Right).Format("{0:N4}").HeaderText("Value").Width(100).Add();
+
+        })
+
+                    )
+                </div>);
+
+            data.Add().ID("OrderBook").Text("Order Book").ContentTemplate(
+                @<div id="OrderBook">
+
+                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("OrderBook")
+                .Datasource((IEnumerable<object>)ViewBag.CustSalesIrderBacklog)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .PageSettings(p =>
+                {
+                    p.PageSize(20);
+                })
+                .AllowResizing()
+                .FilterSettings(filter =>
+                {
+                    filter.FilterType(FilterType.Excel);
+                })
+                .AllowScrolling(true)
+        //.ScrollSettings(col => { col.Width(1270); })
+
+        .Columns(col =>
+        {
+            col.Field("CompCode").AllowEditing(false).HeaderText("Company").Width(70).Add();
+            col.Field("CustomerId").HeaderText("CustomerId").Visible(false).TextAlign(TextAlign.Center).Width(80).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").Visible(false).TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("FullName").AllowEditing(true).HeaderText("Sales Person Name").Width(100).Add();
+            col.Field("DocumentNo").AllowEditing(false).TextAlign(TextAlign.Center).HeaderText("Document No").Width(100).Add();
+            col.Field("Description").AllowEditing(true).TextAlign(TextAlign.Left).HeaderText("Description").Width(120).Add();
+            col.Field("VPN").AllowEditing(true).TextAlign(TextAlign.Left).HeaderText("MPN").Width(120).Add();
+            col.Field("CustOrdNo").AllowEditing(true).HeaderText("Customer Order No").Width(100).Add();
+            col.Field("SalePerCode").Visible(false).AllowEditing(true).HeaderText("Sales Person Code").Width(100).Add();
+            col.Field("Make").AllowEditing(true).HeaderText("Make").Width(100).Add();
+            col.Field("UnitPrice").AllowEditing(true).TextAlign(TextAlign.Right).HeaderText("Unit Price").Format("{0:N4}").Width(100).Add();
+            col.Field("Quantity").AllowEditing(true).TextAlign(TextAlign.Right).HeaderText("Quantity").Width(100).Add();
+            col.Field("LineAmt").AllowEditing(true).TextAlign(TextAlign.Right).HeaderText("Line Amount").Format("{0:N4}").Width(100).Add();
+            col.Field("OutQuantity").AllowEditing(true).TextAlign(TextAlign.Right).HeaderText("Outstanding Quantity").Format("{0:N4}").Width(100).Add();
+            col.Field("OutAmt").AllowEditing(true).TextAlign(TextAlign.Right).HeaderText("Outstanding Amount").Format("{0:N4}").Width(100).Add();
+            col.Field("Cust_PO_Date").AllowEditing(true).TextAlign(TextAlign.Right).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("Customer PO Date").Width(100).Add();
+            col.Field("CRD").AllowEditing(true).TextAlign(TextAlign.Right).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("CRD").Width(100).Add();
+            col.Field("Posting_Date").AllowEditing(true).TextAlign(TextAlign.Right).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("Posting Date").Width(100).Add();
+            col.Field("VPD").AllowEditing(true).TextAlign(TextAlign.Right).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("VPD").Width(100).Add();
+
+
+        })
+
+                    )
+                </div>);
+        if (Model.isPurchase)
+        {
+            data.Add().ID("PurchaseBacklog").Text("Purchase Backlog").ContentTemplate(
+                @<div id="Backlog">
+
+                   @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("LstBacklog")
+     .Datasource((IEnumerable<object>)ViewBag.CustPurchaseBacklog)
+     .AllowFiltering()
+     .AllowPaging()
+     .AllowSorting()
+     .EnableHeaderHover()
+     .PageSettings(p =>
+     {
+         p.PageSize(20);
+     })
+     .AllowResizing()
+     .FilterSettings(filter =>
+     {
+         filter.FilterType(FilterType.Excel);
+     })
+     .AllowScrolling(true)
+
+.Columns(col =>
+{
+    col.Field("SalesOrderNumber").HeaderText("SalesOrderNumber").Width(140).Add();
+    col.Field("PODate").AllowEditing(false).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("PO Date").Width(100).Add();
+    col.Field("VendorName").HeaderText("Customer Name").Visible(true).TextAlign(TextAlign.Left).Width(100).Add();
+    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(100).Add();
+    col.Field("Quantity").HeaderText("Quantity").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+    col.Field("QtyRec").HeaderText("Qty Rec").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+    col.Field("QtyInv").HeaderText("Qty Inv").Format("{0:N0}").Width(80).Add();
+    col.Field("BalanceQty").HeaderText("Balance Qty").Format("{0:N0}").Width(80).Add();
+    col.Field("UnitCost").HeaderText("Unit Cost").Width(80).Add();
+    col.Field("Amount").HeaderText("Amount").Width(80).Add();
+    col.Field("StrCRD").AllowEditing(false).HeaderText("CRD").Width(100).Add();
+    col.Field("StrVPD").AllowEditing(false).HeaderText("VPD").Width(100).Add();
+    col.Field("PONumber").HeaderText("PONumber").TextAlign(TextAlign.Center).Width(100).Add();
+})
+
+                    )
+                </div>);
+        }
+        if (Model.isSales)
+        {
+            data.Add().ID("SalesBacklog").Text("Sales Backlog").ContentTemplate(
+                @<div id="Backlog">
+
+                    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("LstSalesBacklog")
+    .Datasource((IEnumerable<object>)ViewBag.CustSalesBacklog)
+    .AllowFiltering()
+    .AllowPaging()
+    .AllowSorting()
+    .EnableHeaderHover()
+    .PageSettings(p =>
+    {
+        p.PageSize(20);
+    })
+    .AllowResizing()
+    .FilterSettings(filter =>
+    {
+        filter.FilterType(FilterType.Excel);
+    })
+    .AllowScrolling(true)
+
+.Columns(col =>
+{
+    col.Field("SalesOrderNumber").HeaderText("SalesOrderNumber").Width(140).Add();
+    col.Field("PODate").AllowEditing(false).Format("{0:MM/dd/yyyy  HH:MM}").HeaderText("PO Date").Width(100).Add();
+    col.Field("CustomerName").HeaderText("Customer Name").Visible(true).TextAlign(TextAlign.Left).Width(100).Add();
+    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(100).Add();
+    col.Field("Quantity").HeaderText("Quantity").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+    col.Field("QtyRec").HeaderText("Qty Shipped").Format("{0:N0}").TextAlign(TextAlign.Left).Width(80).Add();
+    col.Field("QtyInv").HeaderText("Qty Inv").Format("{0:N0}").Width(80).Add();
+    col.Field("BalanceQty").HeaderText("Balance Qty").Format("{0:N0}").Width(80).Add();
+    col.Field("UnitCost").HeaderText("Unit Cost").Width(80).Add();
+    col.Field("Amount").HeaderText("Amount").Width(80).Add();
+    col.Field("StrCRD").AllowEditing(false).HeaderText("CRD").Width(100).Add();
+    col.Field("StrVPD").AllowEditing(false).HeaderText("VPD").Width(100).Add();
+    col.Field("PONumber").HeaderText("PONumber").TextAlign(TextAlign.Center).Width(100).Add();
+})
+
+                    )
+                </div>);
+        }
+        })
+                .Render();}
+</div>
+
+<script id="EnquiryTemplate" type="text/x-jsrender">
+    <a class="btn-xs btn-primary" href="/ProViews/CustomerEnquiryTracking?EnqId={{:EnqId}}&amp;ItemId=0">Enq Tracking</a>
+</script>
+<script id="EnquiryTemp" type="text/x-jsrender">
+    <a class="modal-link btn-xs btn-info" href="/ProViews/CreateCustomerEnquiryForCust?EnqId={{:EnqId}}&amp;ItemId=0">Enq Details</a>
+</script>
+<script id="ProViewTemplate" type="text/x-jsrender">
+    <a class="btn-xs btn-primary" href="/ProViews/ProjectView?ProjectId={{:ProjectId}}">View</a>
+</script>
+<script id="CaseRiskTemplate" type="text/x-jsrender">
+    <a class="modal-link btn-xs btn-primary" href="/ProViews/PendingTaskDetailView?ProjectName={{:ProjectName}}&amp;ProjectId={{:ProjectId}}&amp;Taskid={{:TaskId}}&amp;Type={{:TaskTypeText}}">View</a>
+</script>
+
+
+<script>
+    function contextclickKYC(args) {
+        var tempData = args.text;
+        var grid = $("#CustomerKYCdetailGrid").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var DocumentPath = result[0]["DocumentPath"];
+        var path = '@Url.Content("~/DWCustomer/Download")' + "?CustomerId=1" + "&DocumentPath=" + DocumentPath
+        event.preventDefault();
+        window.location.replace(path);
+    }
+
+    function contextclickTimeSheetDetail(args) {
+        var tempData = args.text;
+        var grid = $("#contextclickTimeSheetDetail").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var TimeSheetId = result[0]["TimeSheetId"];
+        var path = '@Url.Content("~/ProViews/TimeSheetDetails")' + "?TimeSheetId=" + TimeSheetId
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#LedgerEntries").ejDialog("open");
+    }
+    function contextclickCaseRisk(args)
+    {
+        var tempData = args.text;
+        var grid = $("#CustomerCaseRiskDetailGrid").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var ProjectName = result[0]["ProjectName"];
+        var ProjectId = result[0]["ProjectId"];
+        var TaskId = result[0]["TaskId"];
+        var TaskTypeText = result[0]["TaskTypeText"];
+        var path = '@Url.Content("~/ProViews/PendingTaskDetailView")' + "?ProjectName=" + ProjectName + "&ProjectId=" + ProjectId + "&Taskid=" + TaskId + "&Type=" + TaskTypeText
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#LedgerEntries").ejDialog("open");
+    }
+
+    function contextclickEnqDet(args)
+    {
+        var tempData = args.text;
+        var grid = $("#CustomerEnquiryDetailGrid").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var EnqId = result[0]["EnqId"];
+        var path = '@Url.Content("~/ProViews/CreateCustomerEnquiryForCust")' + "?EnqId=" + EnqId + "&ItemId=0"
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#LedgerEntries").ejDialog("open");
+    }
+
+    function contextclickEmpDetails(args)
+    {
+        var tempData = args.text;
+        var grid = $("#CustomerMOMEmpDetailGrid").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var EmpId = result[0]["EmpId"];
+        var path = '@Url.Content("~/ProViews/EmployeeInforForCustomer")' + "?EmpId=" + EmpId
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#LedgerEntries").ejDialog("open");
+    }
+
+    function contextclickMOM(args)
+    {
+        var tempData = args.text;
+        var grid = $("#CustomerMOMDetailGrid").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var MOMId = result[0]["MOMId"];
+        var path = '@Url.Content("~/ProViews/ProjectMOMViewList")' + "?MOMID=" + MOMId
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#LedgerEntries").ejDialog("open");
+    }
+    function contextclickMOMActionP(args)
+    {
+        var tempData = args.text;
+        var grid = $("#CustomerMOMActionPointGrid").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var ActionPointId = result[0]["ActionPointId"];
+        var path = '@Url.Content("~/ProViews/ProjectMOMActionPointViewList")' + "?ActionPointId=" + ActionPointId
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#LedgerEntries").ejDialog("open");
+    }
+    function Doubleclick(args)
+    {        
+        var tempData = args.text;
+        var grid = $("#Accountreceivables").ejGrid("instance");
+        var result = this.getSelectedRecords();
+        var Company = result[0]["Company"];
+        var CustomerNo = result[0]["CustomerNo"];
+        var path = '@Url.Content("~/ProViews/CustAccReceLedgerEntries")' + "?Company=" + Company + "&CustomerNo=" + CustomerNo;
+        $("#LedgerEntries").ejDialog({
+            contentUrl: path,
+                contentType: "ajax"
+            });
+        $("#LedgerEntries").ejDialog("open");
+    }
+</script>
+@{
+    Html.EJ()
+        .Dialog("requestViewDetail")
+        .Title("<a id='Title'></a>")
+        .Width(1100)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#requestViewDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#requestViewDetail").ejDialog("open");
+        }
+</script>
+<script>
+    function contextclicktra(args) {
+        if (args.text == "View Detail") {
+            var grid = $("#travelRequestDetails").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var RequestId = result[0]["RequestId"];
+            var path = '@Url.Content("~/ProViews/GetTravelrequest")' + "?RequestId=" + RequestId
+            $("#requestViewDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#requestViewDetail").ejDialog("open");
+        }
+    }
+</script>
+
+
+@{
+
+    Html.EJ()
+        .Dialog("LedgerEntries")
+        .Title("<a id='Title'>Details</a>")
+        .Width(1180)
+        .Height(600)
+        .ShowOnInit(false)
+         .ContentTemplate(@<p>Ledger Entries</p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#LedgerEntries").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#LedgerEntries").ejDialog("open");
+        }
+</script>
+
+<script>
+    function contextclick(args) {
+        if (args.text == "View Enquiry Details") {
+                var tempData = args.text;
+                var grid = $("#CustomerEnquiryDetailGrid").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var EnqId = result[0]["EnqId"];
+                var path = '@Url.Content("~/ProViews/CreateCustomerEnquiryForCust")' + "?EnqId=" + EnqId+ "&ItemId=" + 0
+                $("#CreateCustomerEnquiryForCust").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateCustomerEnquiryForCust").ejDialog("open");
+        }
+    }
+</script>
+<script>
+    function contextclickbud(args) {
+        if (args.text == "View details") {
+            var tempData = args.text;
+            var grid = $("#CustomerbudgetdetailGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var BudgetId = result[0]["BudgetId"];
+            var path = '@Url.Content("~/ProViews/BudgetDetail")' + "?BudgetId=" + BudgetId
+            $("#BudgetDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#BudgetDetail").ejDialog("open");
+        }
+    }
+</script>
+
+<table>
+    <tr>
+        <td>
+            &nbsp;
+        </td>
+        <td>
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'CustomerList';" );"> Back</button>
+        </td>
+    </tr>
+</table>
+
+

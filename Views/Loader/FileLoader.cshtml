@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "FileLoader";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#drpFeedType').change(function (e) {
+            e.preventDefault();
+            var ddlValue = $('#drpFeedType').val();
+
+            if (ddlValue.toString() == "--Select Feed --") {
+                alert("Please Enter Valid Feed Name ");
+                return false;
+            }
+
+        });
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+        
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-upload  text-info">
+    Upload File
+</div>
+<br><br>
+@using (Html.BeginForm("FileLoader", "Loader", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+
+        @if (ViewBag.LstFeedMast != null)
+        {
+
+            <tr>
+                <td>
+                    <label>Feed:</label>
+                </td>
+
+                <td style="width:500px">
+                    <div class="" style="width:600px">
+                        @Html.DropDownList("FeedId", (IEnumerable<SelectListItem>)ViewBag.LstFeedMast, new { style = "width:510px", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+        }
+        <tr>
+
+            <td>
+                <label>File:</label>
+            </td>
+            <td style="width:500px">
+                <div class="input-group-btn">
+
+                    <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" />
+                </div>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td></td>
+            <td>
+                <div class="">
+                    <button type="submit" class="submit btn-xs buttonCss btn-primary glyphicon glyphicon-save-file"> Submit</button>
+                </div>
+            </td>
+
+        </tr>
+        @if (TempData["Error"] != null)
+        {
+            <tr>
+                <td colspan="2">
+                    <p style="color:red">Error Message: @TempData["Error"] </p>
+                </td>
+            </tr>
+        }
+    </table>
+
+}

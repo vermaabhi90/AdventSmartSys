@@ -1,0 +1,145 @@
+﻿@model SmartSys.BL.CurrencyModel
+
+@{
+    ViewBag.Title = "Create";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create  Exchange
+</div>
+
+<script>
+    $(document).ready(function () {
+      
+        $('.save').click(function (e) {
+            
+
+            var CurrencyCode = $('#CurrencyCode').val();
+
+            var ExchangeRate = $('#ExchangeRate').val();
+            if (CurrencyCode.toString() == "") {
+                alert("Please Enter Currency Code ");
+                return false;
+            }
+            if (ExchangeRate.toString() == "") {
+                alert("Please Enter Exchange Rate ");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+
+
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+
+
+    <html>
+    <body>
+        <br>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+
+            <tr>
+                <td>
+                    <label for="DeptName"> Currency Code</label>
+                </td>
+                @if (Model.CurrencyCode.Length > 0)
+                {
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CurrencyCode, new { @class = "form-control", id = "CurrencyCode", @readonly = "" })
+                            @Html.ValidationMessageFor(model => model.CurrencyCode)
+
+                        </div>
+                    </td>
+
+                }
+                else
+                {
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CurrencyCode, new { @class = "form-control", id = "CurrencyCode" })
+                            @Html.ValidationMessageFor(model => model.CurrencyCode)
+
+                        </div>
+                    </td>
+                }
+                <td>
+                    <label for="DeptHead">Exchange Rate:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ExchangeRate, new { @class = "form-control", id = "ExchangeRate" })
+                        @Html.ValidationMessageFor(model => model.ExchangeRate)
+
+                    </div>
+
+                </td>
+
+                <td>
+                    <label for="DeptHead">Source:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Source, new { @class = "form-control", @readonly = "" })
+                        @Html.ValidationMessageFor(model => model.ExchangeRate)
+
+                    </div>
+
+                </td>
+
+            </tr>
+            @if (Model.CurrencyCode.Length > 0)
+            {
+                <tr>
+
+
+                    <td>
+                        <label for="DeptHead">Created Date:</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "" })
+                            @Html.ValidationMessageFor(model => model.CreatedDate)
+
+                        </div>
+
+                    </td>
+                    <td>
+                        <label for="DeptHead">Modified Date:</label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+        <table>
+            <tr>
+                <td>                  
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetCurrencyList';" );"> Back</button>
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>        
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>
+}
+
+

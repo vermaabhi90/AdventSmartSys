@@ -1,0 +1,215 @@
+﻿@model IEnumerable<SmartSys.BL.Adhoc.AdhocModel>
+@{
+    ViewBag.Title = "Adhoc Run List";
+}
+
+@*<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />*@
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#DrpDwnLst").select2({
+            placeholder: "Please Select a Report",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+   
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#Selectedvalue').click(function (event) {
+            var ddlValue = $('#DrpDwnLst').val();
+           
+            var path = '@Url.Content("~/AdhocReporting/ReportParam")' + "?ReportId=" + ddlValue
+                     event.preventDefault();
+            window.location.replace(path);
+        });
+
+        $('#DrpDwnLst').change(function (event) {
+            var ddlValue = $('#DrpDwnLst').val();
+            
+        });
+        
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Adhoc Reporting
+</div>
+
+    <html>
+    <body>
+        <br>
+       
+            <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>
+                        <label for="SelectReportName">Report Name:</label>
+                    </td>
+
+                    <td>
+                        @Html.DropDownList("ReportId", (IEnumerable<SelectListItem>)ViewBag.ReportNameList, "Please Select Report", new { @class = "DrpDwnLst form-control", id = "DrpDwnLst", style = "width:310px" })
+                    <td>
+                        &nbsp;
+                        &nbsp; &nbsp;
+                        @Html.ActionLink(" Run Report", "ReportParam", "AdhocReporting", null, new { @id = "Selectedvalue", @class = "Run btn-xs btn-info glyphicon glyphicon-flash" })
+
+                    </td>
+                    <td><br /></td>
+                    <td>
+                        &nbsp;
+                        @Html.ActionLink(" Refresh", "GetList", null, new { @class = "btn-xs btn-info glyphicon glyphicon-refresh" })
+                    </td>
+                </tr>
+            </table>
+       
+     </body>
+     </html>
+ 
+
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.Adhoc.AdhocModel>("grdAdhocRunList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("AdhocRunId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ReportId").HeaderText("Report Id").ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+            col.Field("ReportName").HeaderText("Report Name").TextAlign(TextAlign.Left).Width(250).Add();
+            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("GenId").HeaderText("Generator").Width(110).TextAlign(TextAlign.Center).Add();
+            col.Field("RGSJobId").HeaderText("RGS Job Id").TextAlign(TextAlign.Center).Width(130).Add();
+            col.HeaderText("Report Output").Template("#BtnTemplate").TextAlign(TextAlign.Center).Width(160).AllowFiltering(false).Add();
+
+            col.Field("UserName").HeaderText("User Name").Width(250).Add();
+
+            //col.Field("RunDate").HeaderText("Run Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("RunDate").HeaderText("Run Date").Format("{0:MM/dd/yyyy HH:mm:ss}").Width(150).Add();
+            col.HeaderText("View Detail").Commands(command =>
+            {
+                command.Type("View")
+                             .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                             {
+
+                                 ContentType = ContentType.ImageOnly,
+                                 Text = "View",
+
+                                 Click = "onClick1",
+                                 Size=ButtonSize.Mini,
+                                 PrefixIcon = "e-icon e-restore"
+                             }).Add();
+            })
+ .TextAlign(TextAlign.Center)
+ .Width(100)
+ .Add();
+
+
+        })
+       )
+  </div>
+
+
+<script type="text/x-jsrender" id="BtnTemplate">
+    {{if StatusShortCode == 'GENSU'}}
+
+    <a class="btn-xs btn-success glyphicon glyphicon-thumbs-up" href="/AdhocReporting/Download?FileName={{:OutputLocation}}"> Open</a>
+    {{/if}}
+    {{if StatusShortCode == 'GENER'}}
+    <a onclick="myfuncError({{:AdhocRunId}} )" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</a>
+    {{/if}}
+
+</script>
+<script type="text/javascript">
+    function onClick1(args) {
+        var grid = $("#grdAdhocRunList").ejGrid("instance");
+        var AdhocRunId = grid.getSelectedRecords()[0].AdhocRunId;
+        var ReportName = grid.getSelectedRecords()[0].ReportName;
+        document.getElementById("Title12").innerHTML = ReportName;
+            var path = '@Url.Content("~/AdhocReporting/ViewAdhocParam")' + "?AdhocRunId=" + AdhocRunId
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    };
+
+</script>
+<script>
+
+    function myfuncError(args)
+    {
+        document.getElementById("Title").innerHTML = 'Error';
+        var path = '@Url.Content("~/AdhocReporting/ShowError")' + "?AdhocRunId=" + args
+        $("#ErrorDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ErrorDetails").ejDialog("open");
+    }
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1100)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("ErrorDetails")
+        .Title("<a id='Title'></a>")
+        .Width(900)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ErrorDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ErrorDetails").ejDialog("open");
+        }
+</script>
+
+
+
+     

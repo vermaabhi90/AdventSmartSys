@@ -1,0 +1,73 @@
+﻿@model IEnumerable<SmartSys.BL.Tmleave.TMLeaveDetailModel>
+@{
+    ViewBag.Title = "Leave Details";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Pending Approval Leave Details
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Tmleave.TMLeaveModel>("grdAdhocRunList3")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Approve1", "Approve");
+               
+             });
+
+         })
+       .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportPendingLeaveApprovalList")))
+        .Columns(col =>
+        {
+            col.Field("LeaveId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("LeaveTypeName").HeaderText("Leave Type").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("Employee").HeaderText("Employee").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ManagerName").HeaderText("Manager").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("FromDate").HeaderText("From Date").TextAlign(TextAlign.Left).Format("{0:MM/dd/yyyy }").Width(122).Add();
+            col.Field("ToDate").HeaderText("To Date").TextAlign(TextAlign.Left).Width(122).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("ApprovedDate").HeaderText("Approved Date").TextAlign(TextAlign.Center).Width(152).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("Remark").HeaderText("Remark").Width(180).TextAlign(TextAlign.Left).Add();
+            col.Field("ManagerRemark").HeaderText("Manager Remark").Width(180).TextAlign(TextAlign.Left).Add();
+            col.Field("StatusShortCode").HeaderText("Status").Width(150).TextAlign(TextAlign.Left).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Approval").Template("#edit").IsUnbound(true).AllowFiltering(false).TextAlign(TextAlign.Center).Width(90).Add();
+        })
+             .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/TMLeave/ApproveRejectLeave?LeaveId={{:LeaveId}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Approve") {
+            var tempData = args.text;
+            var grid = $("#grdAdhocRunList3").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var LeaveId = result[0]["LeaveId"];
+            var path = '@Url.Content("~/TMLeave/ApproveRejectLeave")' + "?LeaveId=" + LeaveId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+        </script>

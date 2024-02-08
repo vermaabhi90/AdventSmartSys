@@ -1,0 +1,474 @@
+﻿@model SmartSys.BL.Enquiry.QuotAnalystModel
+
+@{
+    ViewBag.Title = "Quot Analyst";
+}
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<script type="text/javascript">
+
+        // Set the CSS class during initialization.
+    $("#Emptab").ejTab({width:"300px",cssClass: "gradient-lime" });
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Quotation Analyst DashBoard
+</div>
+<script>
+    $(document).ready(function () {       
+        $('#btnSubmit').click(function () {
+            var EnqId = $("#EnqIDDetail").val();
+            if(EnqId.toString() == "")
+            {
+                alert("Please Enter Enquiry Id");
+                return false;
+            }
+            var path = '@Url.Content("~/Enquiry/QuotAnalystDetailList")' + "?EnqId=" + EnqId
+            event.preventDefault();
+            window.location.replace(path);
+        });       
+    });
+</script>
+<div class="w3-row-padding" style="max-width:100%;height:40px;">
+    <table style="padding-bottom:20px">
+        <tr>            
+            <td style="padding-left:2px">
+                <div>
+                    <label>Enquiry Id:</label>
+                </div>
+            </td>
+            <td>
+                <div style="padding-left:45px">
+                    <input type="number" value="@Model.EnqId" class="form-control" id="EnqIDDetail" />
+                </div>
+            </td>            
+            <td>
+                <div>
+                    <button type="button" id="btnSubmit" class="btn-sm btn-primary  glyphicon glyphicon-fire"> Submit</button>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+@if (Model.EnqId > 0)
+{
+   
+    <div>
+        <table>
+           <tr>
+               <td>
+                    <label>Enquiry No</label>
+               </td>
+               <td>
+                   <input type="text" value="@Model.EnqNumber" readonly="readonly" class="form-control"/>
+               </td>
+               <td><label>Enq Date</label></td>
+               <td>
+                   <input type="text" value="@Model.EnqDate.ToShortDateString()" readonly="readonly" class="form-control" />
+               </td>
+               <td><label>Customer Name</label></td>
+               <td>
+                   <input type="text"  value="@Model.CustomerName" readonly="readonly" class="form-control" />
+               </td>
+           </tr>
+           <tr>
+               <td><label>Customer Contact</label></td>
+               <td>
+                   <input type="text" value="@Model.ContactName" readonly="readonly" class="form-control" />
+               </td>
+               <td><label>Company</label></td>
+               <td>
+                   <input type="text" value="@Model.CompCode" readonly="readonly" class="form-control" />
+               </td>
+               <td><label>Categories</label></td>
+               <td>
+                   <input type="text" value="@Model.categories" readonly="readonly" class="form-control" />
+               </td>
+           </tr>
+           <tr>
+               <td><label>Status</label></td>
+               <td>
+                   <input type="text" value="@Model.status" readonly="readonly" class="form-control" />
+               </td>
+               <td><label>Over Process Time</label></td>
+               <td>
+                   <input type="text" value="@Model.TotalHR" readonly="readonly" class="form-control" />
+               </td>
+               @if (Model.MailAttchment != "" && Model.MailAttchment != null)
+               {
+                   <td>
+                       <table>
+                           <tr>
+                               <td>
+                                   @Html.ActionLink(" Mail", "AttchDownload", "Enquiry", new { EnqId = Model.EnqId, DocumentPath = Model.MailAttchment }, new { @class = "btn-xs btn-primary glyphicon glyphicon-paperclip" })
+                               </td>
+                           </tr>
+                       </table>
+                   </td>
+               }
+               @if (Model.QuotationPdfAttach != "" && Model.QuotationPdfAttach != null)
+               {
+                   <td>
+                       <table>
+                           <tr>
+                               <td>
+                                   @Html.ActionLink(" Quotation", "PreviewQuotation", "Enquiry", new { QuotId = 0, QuotNumber = "", EnqId = Model.EnqId, FileName = Model.QuotationPdfAttach }, new { @class = "btn-xs btn-primary glyphicon glyphicon-paperclip" })
+                               </td>
+                           </tr>
+                       </table>
+                   </td>
+               }
+           </tr>
+       </table>
+    
+    </div>
+    <div style="margin-left:5px;margin-top:10px" class="text-info">
+       <label>Quotation Followup Detail</label> 
+    </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdEnqLst")
+                .Datasource((IEnumerable<object>)@Model.QuotFollowupDetailList)               
+                .AllowPaging()
+                .AllowGrouping()
+                .GroupSettings(group => { group.GroupedColumns(col => { col.Add("QuotationId"); }); })               
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("QuotationId").HeaderText("Quotation Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("QuotDate").HeaderText("Quot Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotationNumber").HeaderText("Quotation Number").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("FollowupReason").HeaderText("FollowupReason").Width(160).Add();
+            col.Field("Followupdate").HeaderText("Followup Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("NextFollowUp").HeaderText("Next FollowUp Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(160).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+        })            
+        )
+    </div>
+    <div style="margin-left:5px;margin-top:10px" class="text-info">
+        <label>Last 5 Win Quotation</label>
+    </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdwinQuotLst")
+                .Datasource((IEnumerable<object>)@Model.Last5WinQuot)              
+                .AllowPaging()              
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {           
+            col.Field("EnqId").HeaderText("EnqId").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotDate").HeaderText("Quot Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotationNumber").HeaderText("Quotation Number").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotCost").HeaderText("QuotCost").Format("{0:N4}").Width(160).Add();
+            col.Field("CustomerName").HeaderText("CustomerName").Width(160).Add();
+            col.Field("SalesPersonName").HeaderText("Sales Person Name").Width(160).Add();
+            col.Field("Currency").HeaderText("Currency").Width(160).Add();
+            col.Field("Status").HeaderText("Status").Width(160).Add();
+            col.Field("CompCode").HeaderText("CompCode").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(160).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+        })
+        )
+    </div>
+    <div style="margin-left:5px;margin-top:10px" class="text-info">
+        <label>Last 5 Loss Quotation</label>
+    </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdlossQuotLst")
+                .Datasource((IEnumerable<object>)@Model.Last5lossQuot)               
+                .AllowPaging()                                         
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("QuotationId").HeaderText("Quotation Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EnqId").HeaderText("EnqId").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotDate").HeaderText("Quot Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotationNumber").HeaderText("Quotation Number").TextAlign(TextAlign.Left).Width(160).Add();
+            col.Field("QuotCost").HeaderText("QuotCost").Format("{0:N4}").Width(160).Add();
+            col.Field("CustomerName").HeaderText("CustomerName").Width(160).Add();
+            col.Field("SalesPersonName").HeaderText("Sales Person Name").Width(160).Add();
+            col.Field("Currency").HeaderText("Currency").Width(160).Add();
+            col.Field("Status").HeaderText("Status").Width(160).Add();
+            col.Field("CompCode").HeaderText("CompCode").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(160).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(160).Add();
+        })
+        )
+    </div>
+    <div class="controlframe">
+        @{Html.EJ().Tab("Emptab").CssClass("tab").ShowCloseButton(true).Items(data =>
+            {
+            foreach (var Data in Model.QuotItemList)
+            {
+                data.Add().ID(Data.ItemId.ToString()).Text(Data.MPN).ContentTemplate(
+                    @<div>
+                         <table>
+                             <tr>
+                                 <td>
+                                     <label>MPN</label>
+                                 </td>
+                                 <td><input type="text" value="@Model.ItemDetail.MPN" id="@Data.ItemId.ToString()Txt_MPN" readonly="readonly" class="form-control" /></td>
+                                 <td><label>Item Name</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.ItemName" id="@Data.ItemId.ToString()Txt_ItemName" readonly="readonly" class="form-control" /></td>
+                                 <td><label>Quantity</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.Quantity.ToString()" id="@Data.ItemId.ToString()Txt_Quantity" readonly="readonly" class="form-control" /></td>
+                             </tr>
+                             <tr>
+                                 <td><label>Expected Date</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.ExpectedDate.ToShortDateString()" id="@Data.ItemId.ToString()Txt_ExpectedDate" readonly="readonly" class="form-control" /></td>
+                                 <td><label>Brand Name</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.BrandName.ToString()" id="@Data.ItemId.ToString()Txt_BrandName" readonly="readonly" class="form-control" /></td>
+                                 <td><label>Last Sale Rate</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.LastSalesRate.ToString()" id="@Data.ItemId.ToString()Txt_LastSalesRate" readonly="readonly" class="form-control" /></td>
+                             </tr>
+                             <tr>
+                                 <td><label>Last Purchase Rate</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.LastPurchaseRate.ToString()" id="@Data.ItemId.ToString()Txt_LastPurchaseRate" readonly="readonly" class="form-control" /></td>
+                                 <td><label>Min Sale Rate</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.MINSalesRate.ToString()" id="@Data.ItemId.ToString()Txt_MINSalesRate" readonly="readonly" class="form-control" /></td>
+                                 <td><label>Max Sale Rate</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.MAXSalesRate" id="@Data.ItemId.ToString()Txt_MAXSalesRate" readonly="readonly" class="form-control" /></td>
+                                 <td><label>CPN</label></td>
+                                 <td><input type="text" value="@Model.ItemDetail.CPN" id="@Data.ItemId.ToString()Txt_CPN" readonly="readonly" class="form-control" /></td>
+                             </tr>
+                         </table>
+
+                         <div style="margin-left:5px;margin-top:10px" class="text-info">
+                             <label>Item Vendor Response Detail</label>
+                         </div>
+                         <div style="position:relative">
+                             @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdQuotItemVendResLst" + Data.ItemId.ToString())
+                        .Datasource((IEnumerable<object>)Model.ItemDetail.ItemVendorResList)
+                        .AllowPaging()
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("VendorName").HeaderText("VendorName").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("StrReciptDate").HeaderText("Response Date").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("MinimumQty").HeaderText("MinimumQty").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Rate").HeaderText("Rate").Format("{0:N4}").Width(160).Add();
+                            col.Field("SPQ").HeaderText("SPQ").Width(160).Add();
+                            col.Field("MOQ").HeaderText("MOQ").Width(160).Add();
+                            col.Field("Currency").HeaderText("Currency").Width(160).Add();
+                            col.Field("VendorPromiseDate").HeaderText("Vendor Promise Date").Width(160).Add();
+                        })
+                             )
+                         </div>
+
+                         <div style="margin-left:5px;margin-top:10px" class="text-info">
+                             <label>Quotation Item Detail</label>
+                         </div>
+                         <div style="position:relative">
+                             @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemQuotLst" + Data.ItemId.ToString())
+                        .Datasource((IEnumerable<object>)Model.ItemDetail.ItemQuotList)
+                        .AllowPaging()
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("QuotNumber").HeaderText("QuotNumber").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("CPN").HeaderText("CPN").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("BrandName").HeaderText("BrandName").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("CRate").HeaderText("Customer Rate").Format("{0:N4}").Width(160).Add();
+                            col.Field("Rate").HeaderText("Vendor Rate").Format("{0:N4}").Width(160).Add();
+                            col.Field("Margin").HeaderText("Margin(%)").Format("{0:N2}").Width(160).Add();
+                            col.Field("SPQ").HeaderText("SPQ").Width(160).Add();
+                            col.Field("Quantity").HeaderText("Quantity").Width(160).Add();
+                            col.Field("SPQ").HeaderText("SPQ").Width(160).Add();
+                            col.Field("MOQ").HeaderText("MOQ").Width(160).Add();
+                        })
+                             )
+                         </div>
+
+                         <div style="margin-left:5px;margin-top:10px" class="text-info">
+                             <label>Item Last 5 Sales Detail</label>
+                         </div>
+                         <div style="position:relative">
+                             @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemLast5Lst" + Data.ItemId.ToString())
+                        .Datasource((IEnumerable<object>)Model.ItemDetail.Last5SalesItemList)
+                        .AllowPaging()
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Name").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("DocNo").HeaderText("SO Number").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Qty").HeaderText("Qty").Format("{0:N0}").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Rate").HeaderText("Rate").Format("{0:N4}").Width(160).Add();
+                            col.Field("StrSalesDate").HeaderText("Shipment Date").Width(160).Add();
+                        })
+                             )
+                         </div>
+
+                         <div style="margin-left:5px;margin-top:10px" class="text-info">
+                             <label>Item Last 5 Purchase Detail</label>
+                         </div>
+                         <div style="position:relative">
+                             @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemLastPurchase5Lst" + Data.ItemId.ToString())
+                        .Datasource((IEnumerable<object>)Model.ItemDetail.Last5PurchaseItemList)
+                        .AllowPaging()
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Name").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("DocNo").HeaderText("PO Number").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Qty").HeaderText("Qty").Format("{0:N0}").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Rate").HeaderText("Rate").Format("{0:N4}").Width(160).Add();
+                            col.Field("StrSalesDate").HeaderText("Order Date").Width(160).Add();
+                        })
+                             )
+                         </div>
+
+                         <div style="margin-left:5px;margin-top:10px" class="text-info">
+                             <label>Last Sales to same Customer</label>
+                         </div>
+                         <div style="position:relative">
+                             @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdItemLast5SameCustLst" + Data.ItemId.ToString())
+                        .Datasource((IEnumerable<object>)Model.ItemDetail.LastSalesItemSameCustList)
+                        .AllowPaging()
+                        .EnableAltRow(true)
+                        .AllowSorting(true)
+                        .Columns(col =>
+                        {
+                            col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Name").HeaderText("Customer Name").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("DocNo").HeaderText("SO Number").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Qty").HeaderText("Qty").Format("{0:N0}").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("Rate").HeaderText("Rate").Format("{0:N4}").Width(160).Add();
+                            col.Field("StrSalesDate").HeaderText("Shipment Date").Width(160).Add();
+                        })
+                             )
+                         </div>   
+
+                         <div style="margin-top:10px">
+                            <table>
+                                <tr>
+                                <td>
+                                    <label>
+                                        Analyst Remark
+                                    </label>
+                                </td>
+                                    @if (Data.status == 69)
+                                    {
+                                        <td>
+                                            <textarea style="width:500px" readonly="readonly" id="@Data.ItemId.ToString()Txt_ReviewText" class="form-control"> @ViewBag.Remark </textarea>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <textarea style="width:500px" id="@Data.ItemId.ToString()Txt_ReviewText" class="form-control"> @ViewBag.Remark </textarea>
+                                        </td>
+                                        <td>
+                                            <button value="Save Remark" class="btn-xm btn-primary" onclick="SaveItemRemark(@Data.ItemId)">Save Remark</button>
+                                        </td>
+                                    }
+                                
+                             </tr>
+                             </table>  
+                        </div>                                                
+                    </div>
+            );
+                }
+            }).HeaderPosition(HeaderPosition.Left).Render();}
+    </div>    
+}
+<table>
+    <tr>
+        <td>
+            @Html.ActionLink(" Back", "EnquiryListForQuotAnalyst", "Enquiry", new { @class = "btn-xs btn-warning glyphicon glyphicon-hand-left" })
+        </td>
+
+    </tr>
+</table>
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<script src="@Url.Content("~/Scripts/cultures/ej.culture.en-US.min.js")"></script>
+<script>
+    $(document).ready(function () {
+        $('#Emptab ul li a').click(function (e) {           
+            var id = "";
+            var tab = $(this).attr('href').substr(1);
+            $('#' + '' + tab + ' ' + 'div  div').each(function () {
+                id = $(this).attr('id');
+            });
+            var inner = $(this).text()
+            var str = inner;
+            arr = str.split(' ');
+            if (arr.length > 1) {
+                str = arr[0] + ' ' + arr[1]
+            }
+         
+            $("#divLoading").show();
+            var path = '@Url.Content("~/Enquiry/GetQuotItemDyndata")'
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ItemId: tab,EnqId: @Model.EnqId},
+                success: function (Result) {                  
+                    $('#'+ tab + 'Txt_MPN').val(Result.MPN);
+                    $('#'+ tab + 'Txt_ItemName').val(Result.ItemName);
+                    $('#'+ tab + 'Txt_Quantity').val(Result.Quantity);
+                    $('#'+ tab + 'Txt_ExpectedDate').val(Result.StrExpectedDate);
+                    $('#'+ tab + 'Txt_BrandName').val(Result.BrandName);
+                    $('#'+ tab + 'Txt_LastSalesRate').val(Result.LastSalesRate);
+                    $('#'+ tab + 'Txt_LastPurchaseRate').val(Result.LastPurchaseRate);
+                    $('#'+ tab + 'Txt_MINSalesRate').val(Result.MINSalesRate);
+                    $('#'+ tab + 'Txt_MAXSalesRate').val(Result.MAXSalesRate);
+                    $('#'+ tab + 'Txt_CPN').val(Result.CPN);
+                    $('#'+ tab + 'Txt_ReviewText').val(Result.AnalystRemark);
+                    var obj = $('#grdQuotItemVendResLst' + tab).ejGrid("instance")
+                    obj.dataSource(Result.ItemVendorResList);
+                    
+                    var obj = $('#grdItemQuotLst' + tab).ejGrid("instance")
+                    obj.dataSource(Result.ItemQuotList);
+
+                    var obj = $('#grdItemLast5Lst' + tab).ejGrid("instance")
+                    obj.dataSource(Result.Last5SalesItemList);
+
+                    var obj = $('#grdItemLastPurchase5Lst' + tab).ejGrid("instance")
+                    obj.dataSource(Result.Last5PurchaseItemList);
+
+                    var obj = $('#grdItemLast5SameCustLst' + tab).ejGrid("instance")
+                    obj.dataSource(Result.LastSalesItemSameCustList);
+                  
+                    $("#divLoading").hide();
+                },
+                error: function (ex) {
+                    $("#divLoading").hide();
+                    alert('Please Select item Name');
+                }
+            });
+        });
+        
+    })
+</script>
+<script>
+    function SaveItemRemark(args)
+    {
+        var Remark=$('#'+ args + 'Txt_ReviewText').val();      
+        $.ajax({
+            url: '/Enquiry/SaveAnalystRemark',
+            type: 'POST',
+            data: { EnqId: @Model.EnqId , ItemId:args,Remark:Remark},
+            dataType: 'json',
+          
+            success: function (result) {                                         
+                toastr.success(result)                                
+            }              
+        })
+    }
+</script>

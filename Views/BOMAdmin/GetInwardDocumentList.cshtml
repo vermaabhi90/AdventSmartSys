@@ -1,0 +1,98 @@
+﻿@model IEnumerable<SmartSys.BL.BOMAdmin.InwardDocumentModel>
+
+@{
+    ViewBag.Title = "GetInwardDocumentList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Inward Document List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateInwardDocument", new { DocId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDocLst")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+                    .PageSettings(p => { p.PageSize(20); })
+
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+              .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportInwardDocumentList")))
+              .ContextMenuSettings(contextMenu =>
+              {
+                  contextMenu.EnableContextMenu();
+                  contextMenu.DisableDefaultItems();
+                  contextMenu.CustomContextMenuItems(c =>
+                  {
+                      c.AddItem("Add_Record", "Add Record");
+                      c.AddItem("Edit_Record", "Edit Record");
+                     
+                  });
+
+              })
+                 .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+
+        .Columns(col =>
+        {
+
+            col.Field("DocId").HeaderText("Doc Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("DocName").HeaderText("Doc Name").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("StkLocName").HeaderText("Stock Location ").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("DocToType").HeaderText("Doc TO Type").Width(100).Add();
+            col.Field("DocDateStr").HeaderText("Doc Date").TextAlign(TextAlign.Left).Width(80).Visible(false).Add();
+            col.Field("DocToOther").HeaderText("DocToOther").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("NatureOfDoc").HeaderText("Nature Of Doc").Width(70).Add();
+            col.Field("CompCode").HeaderText("Company").Width(70).Add();
+            col.Field("Amount").HeaderText("Amount").Width(70).Add();
+
+            col.Field("Currency").HeaderText("Currency").Width(70).Add();
+
+            col.Field("CreatedBy").HeaderText("Created By").Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy }").Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy }").Width(70).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+    )
+</div>
+
+<script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+
+            var grid = $("#grdChequeLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var path = '@Url.Content("~/BOMAdmin/CreateInwardDocument")' + "?DocId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        }
+        if (args.text == "Edit Record") {
+
+            var grid = $("#grdDocLst").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocId = result[0]["DocId"];
+            var path = '@Url.Content("~/BOMAdmin/CreateInwardDocument")' + "?DocId=" + DocId
+            event.preventDefault();
+            window.location.replace(path);
+            return false;
+        }
+    }
+</script>

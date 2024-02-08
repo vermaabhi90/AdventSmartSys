@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - SmartSys</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/ej/web/Gradient-Azure/ej.web.all.min.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/Scripts/jquery-2.1.4.min.js")
+    @Scripts.Render("~/Scripts/jsrender.min.js")
+    @Scripts.Render("~/Scripts/ej/ej.web.all.min.js")
+    <link href="~/Content/GridStyle.css" rel="stylesheet" />
+    <link href="~/Content/ej/web/responsive-css/ej.responsive.css" rel="stylesheet" />
+    <link href="~/Content/GlobalStyleSheet.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            $('input[type=text]').addClass('tb8');
+            $('input[type=Number]').addClass('tb8');
+            $('input[type=password]').addClass('tb8');
+
+            if (window.location.href.indexOf("Account/Login") != -1) {
+
+                $('#Email').removeClass('tb8');
+                $('#Password').removeClass('tb8');               
+            }           
+            //$('.select2-selection__rendered').addClass('tb8');
+            //$('select').css('height','30px');
+            //$('select').addClass('tb8');
+        })
+        $('select').addClass('tb8');
+        $('#lstRoles').removeClass('tb8');
+    </script>
+    <style>
+        .e-tab .e-header li a {
+            text-decoration: none;
+            border-bottom-width: 0;
+            padding: .4em .6em .2em .2em;
+            outline: 0 none;
+            font-size: 15px;
+        }
+
+        .e-tab > .e-header .e-icon {
+            float: right;
+            height: 12px;
+            width: 8px;
+            margin-top: 5px;
+            margin-right: 4px;
+            cursor: pointer;
+            background-color: transparent;
+            background-image: none;
+        }
+
+        .e-tab .e-header li {
+            border-right: 0px solid;
+            line-height: normal;
+            list-style: none outside none;
+        }
+    </style>
+</head>
+
+<body style="padding-top:75px;">
+    <div class="navbar navbar-fixed-top" style="background-color:#287e7e">
+        <div style="padding-top:5px; padding-right:10px">
+            @if (Request.IsAuthenticated)
+            {
+                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a class="btn btn-xs btn-warning" style="float:right;" href="javascript:document.getElementById('logoutForm').submit()">Log-off</a>
+                    <span class="nav-text" style="float:right;color:white">@User.Identity.Name &nbsp; </span>
+                }
+            }
+            else
+            {
+                <a class="btn btn-sm btn-warning" style="float:right;" href="@Url.Action("Login", "Account")">Login</a>
+            }
+        </div>
+        @Html.Action("GetMainMenu", "Home")
+
+        @*<div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @html.actionlink("application name", "index", "home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@html.actionlink("home", "index", "home")</li>
+                    <li>@html.actionlink("about", "about", "home")</li>
+                    <li>@html.actionlink("contact", "contact", "home")</li>
+                </ul>
+
+            </div>*@
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+    <footer>
+        <div class="container body-content" style="color:black">
+
+          <br><br><br>
+            <p>&copy; @DateTime.Now.Year -SmartSys (Powered by Supermatic Technologies Pvt. Ltd.)</p>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/toastr")
+
+    @Html.EJ().ScriptManager()
+    @RenderSection("scripts", required: false)
+</body>
+@Html.Action("GetSideBar", "Admin")
+</html>
+

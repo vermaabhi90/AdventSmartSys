@@ -1,0 +1,100 @@
+﻿@model IEnumerable<SmartSys.BL.Tmleave.TMLeaveDetailModel>
+@{
+    ViewBag.Title = "Leave Details";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Leave Details List
+</div>
+<div style="margin-bottom:6px;margin-top:5px">
+    @Html.ActionLink(" Apply Leave", "CreateTMLeaveDetail", null, new { LeaveId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Tmleave.TMLeaveModel>("grdAdhocRunList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+      .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportLeaveDetailList")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+             });
+
+         })
+        .Columns(col =>
+        {
+            col.Field("LeaveId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("LeaveTypeName").HeaderText("Leave Type").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("LeaveCategory").HeaderText("Leave Category").ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("Employee").HeaderText("Employee").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ManagerName").HeaderText("Manager").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("FromDate").HeaderText("From Date").TextAlign(TextAlign.Left).Format("{0:MM/dd/yyyy }").Width(122).Add();
+            col.Field("ToDate").HeaderText("To Date").TextAlign(TextAlign.Left).Width(122).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("ApprovedDate").HeaderText("Approved Date").TextAlign(TextAlign.Center).Width(152).Format("{0:MM/dd/yyyy }").Add();
+            col.Field("Remark").HeaderText("Remark").Width(180).TextAlign(TextAlign.Left).Add();
+            col.Field("ManagerRemark").HeaderText("Manager Remark").Width(180).TextAlign(TextAlign.Left).Add();
+            col.Field("StatusShortCode").HeaderText("Status").Width(150).TextAlign(TextAlign.Left).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("LeaveLevel").HeaderText("Leave Level").Visible(false).Add();
+            col.HeaderText("Edit").Template("#OutputTemplate").Width(90).Add();
+
+
+        })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script type="text/x-jsrender" id="OutputTemplate">
+    {{if LeaveLevel =='Self'}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/TMLeave/CreateTMLeaveDetail?LeaveId={{:LeaveId}}"></a>
+    {{else}}
+    
+    {{/if}}
+
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/TMLeave/CreateTMLeaveDetail")' + "?LeaveId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdAdhocRunList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var LeaveId = result[0]["LeaveId"];
+                var LeaveLevel = result[0]["LeaveLevel"];
+                if (LeaveLevel == "Self") {
+
+                    var path = '@Url.Content("~/TMLeave/CreateTMLeaveDetail")' + "?LeaveId=" + LeaveId
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+                else
+                {
+                    alert("Edit Not Allowed")
+                }
+            }
+
+    }
+
+</script>

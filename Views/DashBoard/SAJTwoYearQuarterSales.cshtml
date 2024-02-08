@@ -1,0 +1,52 @@
+﻿@model IEnumerable<SmartSys.BL.DashBoard.TwoYearsQuarterSalesModel>
+@using Syncfusion.JavaScript.DataVisualization
+<html>
+<body>
+    <div style=" background-color :white;border-color:blue;
+           border-width:2px;
+            border-style:solid;">
+
+        <div id="TwoYearsQuarterSalesModel"></div>
+    </div>
+</body>
+</html>
+<div>
+    @(Html.EJ().Chart("TwoYearsQuarterSalesModel")
+           .Series(ser =>
+                    {
+                        ser.Name("Current Year");
+                        ser.Fill("#EDB04D");
+                        ser.Tooltip(tooltip => tooltip.Format("Current Year : #point.y# <br/>").Visible(true));
+                        ser.DataSource((IEnumerable<object>)@Model);
+                        ser.XName("Month");
+                        ser.YName("TotalSalesCurYear");
+                        ser.Query("ej.Query().from('TotalSalesCurYear').take(10)")
+                        .EnableAnimation(true).Add();
+                    })
+            .Series(ser =>
+                    {
+                        ser.Name("Last Year");
+                        ser.Fill("#3C6C9D");
+                        ser.Tooltip(tooltip => tooltip.Format("Last Year : #point.y# <br/>").Visible(true));
+                        ser.DataSource((IEnumerable<object>)@Model);
+                        ser.XName("Month");
+                        ser.YName("TotalSalesPrvYear");
+                        ser.Query("ej.Query().from('TotalSalesPrvYear').take(10)")
+                        .EnableAnimation(true).Add();
+                    })
+             .Load("loadTheme")
+             .PrimaryXAxis(x => x.LabelRotation(-30))
+             .CommonSeriesOptions(cr => cr.EnableAnimation(true))
+             .CanResize(true)
+                             .Title(title => title.Text("SAJ Two Years Quarter Sales  Chart"))
+             .Size(sz => sz.Height("350"))
+
+             .Legend(lg => { lg.Visible(true).Position(LegendPosition.Top); })
+    )
+    <script>
+        $("#controlarea").css("visibility", "visible");
+    </script>
+
+</div>
+
+

@@ -1,0 +1,91 @@
+﻿@model IEnumerable<SmartSys.BL.IssueModel>
+
+@using Syncfusion.JavaScript.Models
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Issue Approval List
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.IssueModel>("grdApprovalList")
+                .Datasource((IEnumerable<object>)@Model)
+                      .AllowFiltering()
+                       .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                       {
+                           items.AddTool(ToolBarItems.ExcelExport);
+                       }))
+                        .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportToExcelPendingIssueApprovalList")))
+                      .AllowPaging()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .AllowSorting()
+                      .EnableHeaderHover()
+                      .AllowResizing()
+                      .EditSettings(edit => { edit.AllowDeleting().AllowEditing().AllowAdding().EditMode(EditMode.DialogTemplate); })
+                      .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                      .AllowScrolling()
+                      .PageSettings(p => { p.PageSize(20); })
+                      .EnableAltRow(true)
+         //.ContextMenuSettings(contextMenu =>
+         //{
+         //    contextMenu.EnableContextMenu()
+         //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+         //    //.CustomContextMenuItems(new List<string> { "View Detail" })
+         //    .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "View Detail" } });
+
+         //})
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 //c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("View_Detail", "View Detail");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("IssueId").HeaderText("Issue Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Title").HeaderText("Title").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("CreatedBy").HeaderText("CreatedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("CreatedDate").HeaderText("CreatedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("ModifiedBy").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("ModifiedDate").HeaderText("ModifiedDate").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Approve")
+            .Template("#edit")
+           
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+
+        })
+                  .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                    .ClientSideEvents(eve => eve.ActionBegin("beginEdit").ActionComplete("complete"))
+
+    )
+</div>
+
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/ApprovalDetail?IssueId={{:IssueId}}"></a>
+</script>
+
+<div id="template" style="display: none"></div> <!--Dialog Container-->
+<script>
+    function contextclick(args) {
+
+        if (args.text == "View Detail") {
+            var tempData = args.text;
+            var grid = $("#grdApprovalList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var IssueId = result[0]["IssueId"];
+            var path = '@Url.Content("~/Admin/ApprovalDetail")' + "?IssueId=" + IssueId
+            event.preventDefault();
+            window.location.replace(path);
+       
+    }
+
+    }
+ </script>

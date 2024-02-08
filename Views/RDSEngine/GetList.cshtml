@@ -1,0 +1,113 @@
+﻿@model IEnumerable<SmartSys.BL.RDS.RDSEngineModel>
+
+@{
+    ViewBag.Title = "GetEngineList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    RDS Engine List
+</div>
+    
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "Create", null, new { @class = "btn-xs buttonCss btn-info glyphicon glyphicon-leaf" })
+   </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdRDSEngine")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+                .ContextMenuSettings(contextMenu =>
+                {
+                    contextMenu.EnableContextMenu();
+                    contextMenu.DisableDefaultItems();
+                    contextMenu.CustomContextMenuItems(c =>
+                    {
+                        c.AddItem("Add_Record", "Add Record");
+                        c.AddItem("Edit_Record", "Edit Record");
+                    });
+
+                })
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+        //.ToolbarSettings(toolbar =>
+        //    {
+        //        toolbar.ShowToolbar().ToolbarItems(items =>
+        //        {
+        //            items.AddTool(ToolBarItems.Add);
+        //            items.AddTool(ToolBarItems.Edit);
+        //            items.AddTool(ToolBarItems.Update);
+        //            items.AddTool(ToolBarItems.Cancel);
+        //        });
+        //    })
+        .Columns(col =>
+        {
+            col.Field("RDSEngineId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+
+            col.Field("Host").HeaderText("Host").TextAlign(TextAlign.Center).Width(120).Add();
+            col.Field("Port").HeaderText("Port").TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("JobPollingInterval").HeaderText("Job Polling Interval").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("ProcessPollingInterval").HeaderText("Process Polling Interval").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("EventPollingIntterval").HeaderText("Event Polling Intterval").TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("TriggerPollingInterval").HeaderText("Trigger Polling Interval").TextAlign(TextAlign.Center).Width(200).Add();
+
+
+            col.Field("isActive").HeaderText("Active").TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("ProcessId").HeaderText("Process Id").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("StatusName").HeaderText("Status").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            })
+            .AllowFiltering(false)
+            .TemplateID("#BtnEdit")
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Left)
+            .Width(60)
+            .Add();
+
+        })
+         .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        )
+    </div>
+    <script id="BtnEdit" type="text/x-jsrender">
+        <a class="btn-xs btn-info  glyphicon glyphicon-pencil black" href="/RDSEngine/Edit?RDSEngineId={{:RDSEngineId}}"> </a>
+    </script>
+<script>
+        function contextclick(args) {
+            if (args.text == "Add Record") {
+
+                var path = '@Url.Content("~/RDSEngine/Create")'
+                event.preventDefault();
+                window.location.replace(path);
+            }
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdRDSEngine").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var RDSEngineId = result[0]["RDSEngineId"];
+
+                var path = '@Url.Content("~/RDSEngine/Edit")' + "?RDSEngineId=" + RDSEngineId
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        }
+</script>

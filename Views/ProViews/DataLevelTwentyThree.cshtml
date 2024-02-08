@@ -1,0 +1,100 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwentyThree
+
+@{
+    ViewBag.Title = "DataLevelTwentyThree";
+}
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Receipt Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("ReceiptDate").Value(Model.ReceiptDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Company:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.CompCode, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Vendor Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.VendorName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Freight Forwarder:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.FreightForwarder, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Airway Bill No:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.FFRef_No, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Currency:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Currency, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Vendor Inv No:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.VendorInvNo, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Vendor Inv Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("VendorInvDate").Value(Model.VendorInvDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+        <td>
+            <label>Permit Type:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.PermitType, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Receipt File:</label>
+        </td>
+        @if (Model.ReceiptFile != null && Model.ReceiptFile.ToString() != "")
+            {
+            <td>
+                <div class="navbar-text input-group-btn">
+                    @Html.ActionLink(" Open", "InvoiceDownLoad","Enquiry", new { Filename = Model.ReceiptFile }, new { @class = "btn-sm btn-info glyphicon glyphicon-open" })
+                </div>
+            </td>
+        }
+       
+    </tr>
+</table>
+
+@Html.EJ().ScriptManager()
+
+
+
+

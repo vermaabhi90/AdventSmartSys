@@ -1,0 +1,241 @@
+﻿@model SmartSys.BL.DW.VendorAddressModel
+
+@{
+    ViewBag.Title = "CreateAddress";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Country").change(function (e) {
+
+            $("#State").empty();
+            var newOption = $('<option value="0">Please Select State</option>');
+
+            $('#State').append(newOption);
+
+            var selectedId = $("#Country").val();
+
+            var path = '@Url.Action("GetStateList")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { Country: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, state) {
+                        $("#State").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#State").change(function () {
+            $("#City").empty();
+            var newOption = $('<option value="0">Please Select City</option>');
+
+            $('#City').append(newOption);
+                var path = '@Url.Action("GetCityList")';
+                $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { State: $("#State").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#City").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#add').click(function (e) {
+            var url = '@Url.Action("CreateProduct", "DWCustomer")';
+            var AddressId = $('#AddressId').val();
+            var VendorId = $('#VendorId').val();
+            var Line1 = $('#Line1').val();
+            var Line2 = $('#Line2').val();
+            var Pin = $('#Pin').val();
+            var LandMark = $('#LandMark').val();
+            var Country = $('#Country').val();
+            var State = $('#State').val();
+            var City = $('#City').val();
+            var Description = $('#Description').val();
+            var isPrimary = $('#isPrimary').prop('checked')
+
+            if (Line1.toString() == "") {
+                alert("Please Enter Line1");
+                return false;
+            }
+            if (Country.toString() == "") {
+                alert("Please Select Country ");
+                return false;
+            }
+            if (State.toString() == "0") {
+                alert("Please Select State ");
+                return false;
+            }
+            if (City.toString() == "0") {
+                alert("Please Select City ");
+                return false;
+            }
+            if (Pin.toString() == "") {
+                alert("Please Enter Pin ");
+                return false;
+            }
+            
+            var path = '@Url.Content("~/DWVendor/SaveCreateAddress")' + "?AddressId=" + AddressId + "&VendorId=" + VendorId + "&Line1=" + escape(Line1) + "&Line2=" + escape(Line2) + "&Pin=" + Pin + "&LandMark=" + escape(LandMark) + "&Country=" + Country + "&State=" + State + "&City=" + City + "&Description=" + Description + "&isPrimary=" + isPrimary
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });
+</script>
+@if (Model.AddressId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Edit Address Deatils
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info ">
+        Create Address Deatils
+    </div>
+}
+
+@using (Html.BeginForm("CreateAddress", "DWCustomer", FormMethod.Post, new { Id = "frmAddress" }))
+{
+    <html>
+   
+    <body>
+        <div>
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>@Html.HiddenFor(model => model.VendorId, new { @class = "form-control", id = "VendorId" })</td>
+                </tr>
+                <tr>
+                    @Html.HiddenFor(model => model.AddressId, new { @class = "form-control", id = "AddressId" })
+                    <td>
+                        <label>Line 1</label>
+
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Line1, new { @class = "form-control", id = "Line1" })
+                        @Html.ValidationMessageFor(model => model.Line1)
+                    </td>
+                    <td>
+                        <label>Line 2</label>
+                    </td>
+
+                    <td>
+                        @Html.TextBoxFor(model => model.Line2, new { @class = "form-control", id = "Line2" })
+                        @Html.ValidationMessageFor(model => model.Line2)
+                    </td>
+
+                    <td>
+                        <label>LandMark</label>
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.LandMark, new { @class = "form-control", id = "LandMark" })
+                        @Html.ValidationMessageFor(model => model.LandMark)
+
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <label>Country</label>
+                    </td>
+
+                    <td>
+
+                        @Html.DropDownList("Country", (IEnumerable<SelectListItem>)ViewBag.CountryList, "Please select Country", new { @class = "form-control", style = "width:175px", id = "Country" })
+                    </td>
+
+                    <td>
+                        <label> State</label>
+                    </td>
+
+                    <td>
+
+                        @Html.DropDownList("State", new SelectList(string.Empty, "Value", "Text"), "Please select State", new { style = "width:175px", @class = "dropdown1 form-control", id = "State" })
+
+                    </td>
+                    <td>
+                        <label>City</label>
+                    </td>
+
+                    <td>
+                        @Html.DropDownList("City", new SelectList(string.Empty, "Value", "Text"), "Please select City", new { style = "width:175px", @class = "dropdown1 form-control", id = "City" })
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label> Pin</label>
+                    </td>
+
+                    <td>
+                        @Html.TextBoxFor(model => model.Pin, new { @class = "form-control", id = "Pin" })
+                        @Html.ValidationMessageFor(model => model.Pin)
+                    </td>
+
+                    <td>
+                        <label>isPrimary</label>
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.isPrimary, new { @class = "form-control", id = "isPrimary" })
+                    </td>
+                    <td>
+                        <label>Description</label>
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control", id = "Description" })
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save" id="add"> Save</button>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

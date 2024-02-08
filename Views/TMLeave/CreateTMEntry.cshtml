@@ -1,0 +1,1193 @@
+﻿@model SmartSys.BL.Tmleave.TMGetSelectedModel
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+     
+        var Chk = $('#Check').val();
+        if(Chk.toString() =="Hide")
+        {
+            $('#Chk').hide();
+        }
+
+        $('#LblFrom').hide();
+        $('#LblTo').hide();
+        $('#tdMonFromTime').hide();
+        $('#tdMonToTime').hide();
+        $('#tdTusFromTime').hide();
+        $('#tdTusToTime').hide();
+        $('#tdWedFromTime').hide();
+        $('#tdWedToTime').hide();
+        $('#tdThusFromTime').hide();
+        $('#tdThusToTime').hide();
+        $('#tdFriFromTime').hide();
+        $('#tdFriToTime').hide();
+        $('#tdSatFromTime').hide();
+        $('#tdSatToTime').hide();
+        $('#tdSunFromTime').hide();
+        $('#tdSunToTime').hide();
+
+
+        var dempday = $('#Day').val();
+        if (dempday.toString() == "Monday") {
+            $('#tdMonFromTime').show();
+            $('#tdMonToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        if (dempday.toString() == "Tuesday") {
+            $('#tdTusFromTime').show();
+            $('#tdTusToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        if (dempday.toString() == "Wednesday") {
+            $('#tdWedFromTime').show();
+            $('#tdWedToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        if (dempday.toString() == "Thursday") {
+            $('#tdThusFromTime').show();
+            $('#tdThusToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        if (dempday.toString() == "Friday") {
+            $('#tdFriFromTime').show();
+            $('#tdFriToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        if (dempday.toString() == "Saturday") {
+            $('#tdSatFromTime').show();
+            $('#tdSatToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        if (dempday.toString() == "Sunday") {
+            $('#tdSunFromTime').show();
+            $('#tdSunToTime').show();
+            $('#LblFrom').show();
+            $('#LblTo').show();
+        }
+        $("#Day").change(function (event)
+        {
+            var day = $('#Day').val();
+            if (day.toString() == "") {
+                alert("Plaese Select Day")
+                return false;
+            }
+            $("#MoM").empty();
+            var newOption = $('<option value="0">Please Select MoM</option>');
+            $('#MoM').append(newOption);
+            var ProjectId = $("#Project").val();
+            var TaskId = $("#TaskId").val();
+            var day = $('#Day').val();
+            var StartDate = $('#startday').val();
+            var path = '@Url.Action("TmMoMByProject")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: ProjectId, TaskId:TaskId,Day:day,StartDate:StartDate},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        $("#MoM").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                    });
+                },
+
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });
+            if (day.toString() == "Monday") {
+                $('#tdMonFromTime').show();
+                $('#tdMonToTime').show();
+                $('#tdTusFromTime').hide();
+                $('#tdTusToTime').hide();
+                $('#tdWedFromTime').hide();
+                $('#tdWedToTime').hide();
+                $('#tdThusFromTime').hide();
+                $('#tdThusToTime').hide();
+                $('#tdFriFromTime').hide();
+                $('#tdFriToTime').hide();
+                $('#tdSatFromTime').hide();
+                $('#tdSatToTime').hide();
+                $('#tdSunFromTime').hide();
+                $('#tdSunToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            if (day.toString() == "Tuesday") {
+                $('#tdTusFromTime').show();
+                $('#tdTusToTime').show();
+                $('#tdMonFromTime').hide();
+                $('#tdMonToTime').hide();
+                $('#tdWedFromTime').hide();
+                $('#tdWedToTime').hide();
+                $('#tdThusFromTime').hide();
+                $('#tdThusToTime').hide();
+                $('#tdFriFromTime').hide();
+                $('#tdFriToTime').hide();
+                $('#tdSatFromTime').hide();
+                $('#tdSatToTime').hide();
+                $('#tdSunFromTime').hide();
+                $('#tdSunToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            if (day.toString() == "Wednesday") {
+                $('#tdWedFromTime').show();
+                $('#tdWedToTime').show();
+                $('#tdMonFromTime').hide();
+                $('#tdMonToTime').hide();
+                $('#tdTusFromTime').hide();
+                $('#tdTusToTime').hide();
+                $('#tdThusFromTime').hide();
+                $('#tdThusToTime').hide();
+                $('#tdFriFromTime').hide();
+                $('#tdFriToTime').hide();
+                $('#tdSatFromTime').hide();
+                $('#tdSatToTime').hide();
+                $('#tdSunFromTime').hide();
+                $('#tdSunToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            if (day.toString() == "Thursday") {
+                $('#tdThusFromTime').show();
+                $('#tdThusToTime').show();
+                $('#tdMonFromTime').hide();
+                $('#tdMonToTime').hide();
+                $('#tdTusFromTime').hide();
+                $('#tdTusToTime').hide();
+                $('#tdWedFromTime').hide();
+                $('#tdWedToTime').hide();
+                $('#tdFriFromTime').hide();
+                $('#tdFriToTime').hide();
+                $('#tdSatFromTime').hide();
+                $('#tdSatToTime').hide();
+                $('#tdSunFromTime').hide();
+                $('#tdSunToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            if (day.toString() == "Friday") {
+                $('#tdFriFromTime').show();
+                $('#tdFriToTime').show();
+                $('#tdMonFromTime').hide();
+                $('#tdMonToTime').hide();
+                $('#tdTusFromTime').hide();
+                $('#tdTusToTime').hide();
+                $('#tdWedFromTime').hide();
+                $('#tdWedToTime').hide();
+                $('#tdThusFromTime').hide();
+                $('#tdThusToTime').hide();
+                $('#tdSatFromTime').hide();
+                $('#tdSatToTime').hide();
+                $('#tdSunFromTime').hide();
+                $('#tdSunToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            if (day.toString() == "Saturday") {
+                $('#tdSatFromTime').show();
+                $('#tdSatToTime').show();
+                $('#tdMonFromTime').hide();
+                $('#tdMonToTime').hide();
+                $('#tdTusFromTime').hide();
+                $('#tdTusToTime').hide();
+                $('#tdWedFromTime').hide();
+                $('#tdWedToTime').hide();
+                $('#tdThusFromTime').hide();
+                $('#tdThusToTime').hide();
+                $('#tdFriFromTime').hide();
+                $('#tdFriToTime').hide();
+                $('#tdSunFromTime').hide();
+                $('#tdSunToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            if (day.toString() == "Sunday") {
+                $('#tdSunFromTime').show();
+                $('#tdSunToTime').show();
+                $('#tdMonFromTime').hide();
+                $('#tdMonToTime').hide();
+                $('#tdTusFromTime').hide();
+                $('#tdTusToTime').hide();
+                $('#tdWedFromTime').hide();
+                $('#tdWedToTime').hide();
+                $('#tdThusFromTime').hide();
+                $('#tdThusToTime').hide();
+                $('#tdFriFromTime').hide();
+                $('#tdFriToTime').hide();
+                $('#tdSatFromTime').hide();
+                $('#tdSatToTime').hide();
+                $('#LblFrom').show();
+                $('#LblTo').show();
+            }
+            var task= $("#TaskId").val()
+            if (task.toString() == "") {
+                alert("Plaese Select Task")
+                return false;
+            }
+            var path = "/TMLeave/GetTMEntryDetailByDay"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ProjectId: $("#Project").val(), TaskId: $("#TaskId").val(), DayCode: day, TimeSheetId: @Model.TimeSheetId },
+                success: function (result) {
+                    var obj = $("#abc").ejGrid("instance")
+                    obj.dataSource(result);
+                },
+                error: function (ex) {
+                    alert('Please Select Day');
+                }
+            });
+            return false;
+        });
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var Project = $('#Project').val();
+            var Task = $('#TaskId').val();
+            var Day = $('#Day').val();
+            var MonFromTime = $('#MonFromTime').val();
+            var MonToTime = $('#MonToTime').val();
+
+            var TusFromTime = $('#TusFromTime').val();
+            var TusToTime = $('#TusToTime').val();
+
+            var WedFromTime = $('#WedFromTime').val();
+            var WedToTime = $('#WedToTime').val();
+
+
+            var ThusFromTime = $('#ThusFromTime').val();
+            var ThusToTime = $('#ThusToTime').val();
+
+            var FriFromTime = $('#FriFromTime').val();
+            var FriToTime = $('#FriToTime').val();
+
+            var SatFromTime = $('#SatFromTime').val();
+            var SatToTime = $('#SatToTime').val();
+
+            var SunFromTime = $('#SunFromTime').val();
+            var SunToTime = $('#SunToTime').val();
+
+            if (Project.toString() == "") {
+                alert("Please Select Project.");
+                return false;
+            }
+
+            if (Task.toString() == "") {
+                alert("Please Select Task.");
+                return false;
+            }
+            if (Day.toString() == "") {
+                alert("Please Select Day.");
+                return false;
+            }
+            switch (Day) {
+
+                case "Monday":
+
+                    $('#TusFromTime').val("00:00");
+                    $('#TusToTime').val("00:00");
+
+                    $('#WedFromTime').val("00:00");
+                    $('#WedToTime').val("00:00");
+
+
+                    $('#ThusFromTime').val("00:00");
+                    $('#ThusToTime').val("00:00");
+
+                    $('#FriFromTime').val("00:00");
+                    $('#FriToTime').val("00:00");
+
+                    $('#SatFromTime').val("00:00");
+                    $('#SatToTime').val("00:00");
+
+                    $('#SunFromTime').val("00:00");
+                    $('#SunToTime').val("00:00");
+                    break;
+                case "Tuesday":
+                    $('#MonFromTime').val("00:00");
+                    $('#MonToTime').val("00:00");
+
+
+                    $('#WedFromTime').val("00:00");
+                    $('#WedToTime').val("00:00");
+
+
+                    $('#ThusFromTime').val("00:00");
+                    $('#ThusToTime').val("00:00");
+
+                    $('#FriFromTime').val("00:00");
+                    $('#FriToTime').val("00:00");
+
+                    $('#SatFromTime').val("00:00");
+                    $('#SatToTime').val("00:00");
+
+                    $('#SunFromTime').val("00:00");
+                    $('#SunToTime').val("00:00");
+                    break;
+                case "Wednesday":
+
+                    $('#MonFromTime').val("00:00");
+                    $('#MonToTime').val("00:00");
+
+                    $('#TusFromTime').val("00:00");
+                    $('#TusToTime').val("00:00");
+
+
+                    $('#ThusFromTime').val("00:00");
+                    $('#ThusToTime').val("00:00");
+
+                    $('#FriFromTime').val("00:00");
+                    $('#FriToTime').val("00:00");
+
+                    $('#SatFromTime').val("00:00");
+                    $('#SatToTime').val("00:00");
+
+                    $('#SunFromTime').val("00:00");
+                    $('#SunToTime').val("00:00");
+                    break;
+                case "Thursday":
+
+                    $('#MonFromTime').val("00:00");
+                    $('#MonToTime').val("00:00");
+
+                    $('#TusFromTime').val("00:00");
+                    $('#TusToTime').val("00:00");
+
+                    $('#WedFromTime').val("00:00");
+                    $('#WedToTime').val("00:00");
+
+
+                    $('#FriFromTime').val("00:00");
+                    $('#FriToTime').val("00:00");
+
+                    $('#SatFromTime').val("00:00");
+                    $('#SatToTime').val("00:00");
+
+                    $('#SunFromTime').val("00:00");
+                    $('#SunToTime').val("00:00");
+                    break;
+                case "Friday":
+                    $('#MonFromTime').val("00:00");
+                    $('#MonToTime').val("00:00");
+
+                    $('#TusFromTime').val("00:00");
+                    $('#TusToTime').val("00:00");
+
+                    $('#WedFromTime').val("00:00");
+                    $('#WedToTime').val("00:00");
+
+
+                    $('#ThusFromTime').val("00:00");
+                    $('#ThusToTime').val("00:00");
+
+                    $('#SatFromTime').val("00:00");
+                    $('#SatToTime').val("00:00");
+
+                    $('#SunFromTime').val("00:00");
+                    $('#SunToTime').val("00:00");
+                    break;
+                case "Saturday":
+                    $('#MonFromTime').val("00:00");
+                    $('#MonToTime').val("00:00");
+
+                    $('#TusFromTime').val("00:00");
+                    $('#TusToTime').val("00:00");
+
+                    $('#WedFromTime').val("00:00");
+                    $('#WedToTime').val("00:00");
+
+
+                    $('#ThusFromTime').val("00:00");
+                    $('#ThusToTime').val("00:00");
+
+                    $('#FriFromTime').val("00:00");
+                    $('#FriToTime').val("00:00");
+
+
+                    $('#SunFromTime').val("00:00");
+                    $('#SunToTime').val("00:00");
+                    break;
+                case "Sunday":
+
+                    $('#MonFromTime').val("00:00");
+                    $('#MonToTime').val("00:00");
+
+                    $('#TusFromTime').val("00:00");
+                    $('#TusToTime').val("00:00");
+
+                    $('#WedFromTime').val("00:00");
+                    $('#WedToTime').val("00:00");
+
+
+                    $('#ThusFromTime').val("00:00");
+                    $('#ThusToTime').val("00:00");
+
+                    $('#FriFromTime').val("00:00");
+                    $('#FriToTime').val("00:00");
+
+                    $('#SatFromTime').val("00:00");
+                    $('#SatToTime').val("00:00");
+
+
+                    break;
+            }
+            switch (Day) {
+
+                case "Monday":
+                    if (MonFromTime > MonToTime || MonFromTime == MonToTime)
+                    {
+                        alert("Monday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+                case "Tuesday":
+                    if (TusFromTime > TusToTime || TusFromTime == TusToTime) {
+                        alert("Tuesday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+                case "Wednesday":
+
+                    if (WedFromTime > WedToTime || WedFromTime == WedToTime) {
+                        alert("Wednesday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+                case "Thursday":
+
+                    if (ThusFromTime > ThusToTime || ThusFromTime == ThusToTime) {
+                        alert("Thursday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+                case "Friday":
+
+                    if (FriFromTime > FriToTime || FriFromTime == FriToTime) {
+                        alert("Friday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+                case "Saturday":
+                    if (SatFromTime > SatToTime || SatFromTime == SatToTime) {
+                        alert("Saturday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+                case "Sunday":
+
+                    if (SunFromTime > SunToTime || SunFromTime == SunToTime) {
+                        alert("Sunday  Time is not valid.");
+                        return false;
+                    }
+                    break;
+            }            
+            $("#TMEntryDetail").unbind('submit').submit();
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Project").change(function () {
+            $("#TaskId").empty();
+                 var newOption = $('<option value="">Please Select Task</option>');
+
+                 $('#TaskId').append(newOption);
+            var path = "/TMLeave/Tasklist"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ProjectId: $("#Project").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#TaskId").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Please Select Project Name');
+                }
+            });
+
+            var path = "/TMLeave/CheckProjDisp"
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { ProjectId: $("#Project").val() },
+                success: function (citys) {
+                    if(citys.toString() =="Show")
+                    {
+                        $('Chk').show();
+                    }
+                    else
+                    {
+                        $('Chk').hide();
+                    }
+                },
+                error: function (ex) {
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ProjectId = $("#Project").val();
+        var TaskId = $("#TaskId").val();
+        var day = $('#Day').val();
+        var StartDate = $('#startday').val();
+        var path = '@Url.Action("TmMoMByProject")';
+        $.ajax({
+            type: 'POST',
+            url: path, // we are calling json method
+            dataType: 'json',
+            data: { ProjectId: ProjectId, TaskId:TaskId,Day:day,StartDate:StartDate},
+            success: function (lst) {
+                $.each(lst, function (i, state) {
+                    $("#MoM").append('<option value="' + state.Value + '">' +
+                         state.Text + '</option>');
+                });
+            },
+
+            error: function (ex) {
+                // alert('Failed to retrieve MoM.' + ex);
+            }
+        });
+
+
+        $("#TaskId").change(function (e) {
+//--------------------Get Customer List--------------------------------------------
+            $("#CustomerId").empty();
+            var newOption = $('<option value="0">Please Select Customer</option>');
+            $('#CustomerId').append(newOption);
+            var ProjectId = $("#Project").val();
+            var TaskId = $("#TaskId").val();           
+            var path = '@Url.Action("GetTMEntryCustomerList")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: ProjectId, TaskId:TaskId},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        $("#CustomerId").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });         
+//--------------------Get Vendor List--------------------------------------------
+            $("#VendorId").empty();
+            var newOption = $('<option value="0">Please Select Vendor</option>');
+            $('#VendorId').append(newOption);
+            var ProjectId = $("#Project").val();
+            var TaskId = $("#TaskId").val();           
+            var path = '@Url.Action("GetTMEntryVendorList")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: ProjectId, TaskId:TaskId},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        $("#VendorId").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });     
+//--------------------Get MOM List--------------------------------------------
+
+            $("#MoM").empty();
+            var newOption = $('<option value="0">Please Select MoM</option>');
+            $('#MoM').append(newOption);
+            var ProjectId = $("#Project").val();
+            var TaskId = $("#TaskId").val();
+            var day = $('#Day').val();
+            var StartDate = $('#startday').val();
+            var path = '@Url.Action("TmMoMByProject")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: ProjectId, TaskId:TaskId,Day:day,StartDate:StartDate},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        $("#MoM").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                    });
+                },
+
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<table>
+    <tr>
+        <td>
+            @if (Model.TimeSheetId == 0)
+            {
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+                    Create TimeSheet Entry
+                </div>
+                <br><br>
+
+            }
+            else
+            {
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+                    Edit TimeSheet Entry
+                </div>               
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-time  text-info">
+                    <label>Week Number:-@Model.WeekNo</label>  &nbsp;                
+                    <label>From Date:-@Model.StartDate.ToString("dd/MM/yyyy")</label> &nbsp; 
+                    <label>To Date:-@Model.EndDate.ToString("dd/MM/yyyy")</label>
+                </div>
+                <br><br>
+            }
+        </td>        
+    </tr>
+    <tr>
+        
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>
+            @(Html.EJ().Grid<SmartSys.BL.Tmleave.TMGetSelectedModel>("abc")
+                        .Datasource((IEnumerable<object>)ViewBag.DayTimeLst)
+                        .AllowFiltering()
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EditSettings(e => e.AllowEditing(true).EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#PopupWindTemplate"))
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                        .AllowScrolling(true)
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                            //.ContextMenuSettings(contextMenu =>
+                            //{
+                            //    contextMenu.EnableContextMenu()
+                            //.ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+                            //                    .CustomContextMenuItems(new List<string> { "Edit " });
+
+                            //})
+                        .Columns(col =>
+                        {
+
+                            col.Field("TimeSheetEntryDetailId").Visible(false).HeaderText("TimeSheet Entry Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(10).Add();
+                            col.Field("ProjectName").HeaderText("Project Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(160).Add();
+                            col.Field("ProjectId").Visible(false).HeaderText("Project Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(10).Add();
+                            col.Field("TaskId").Visible(false).HeaderText("Project Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(10).Add();
+                            col.Field("TaskName").HeaderText("TaskName").Width(100).Add();
+                            col.Field("Remark").HeaderText("Remark").Width(100).Add();
+                            col.Field("CustomerName").HeaderText("Customer Name").Width(160).Add();
+                            col.Field("VendorName").HeaderText("Vendor Name").Width(100).Add();
+                            col.Field("MOMTitle").HeaderText("MOM Title").Width(100).Add();
+                            col.Field("DayCode").Visible(false).HeaderText("DayCode").TextAlign(TextAlign.Center).Width(10).Add();
+                            col.Field("Day").HeaderText("Day").TextAlign(TextAlign.Center).Width(100).Add();
+                            col.Field("FromTime").Visible(false).AllowEditing(false).HeaderText("From Time").Format("{0: HH:mm}").Width(10).Add();
+                            col.Field("ToTime").Visible(false).AllowEditing(false).HeaderText("To Time").Format("{0: HH:mm}").Width(10).Add();
+                            col.Field("strFromTime").AllowEditing(false).HeaderText("From Time").Width(60).Add();
+                            col.Field("strToTime").AllowEditing(false).HeaderText("To Time").Width(60).Add();
+                            col.Field("CustomerId").Visible(false).HeaderText("CustomerId").Width(10).Add();
+                            col.Field("VendorId").Visible(false).HeaderText("VendorId").Width(10).Add();
+                            col.Field("MOMId").Visible(false).HeaderText("MOMId").Width(10).Add();
+                            col.Field("StartDate").Visible(false).HeaderText("StartDate").Width(10).Add();
+                            col.HeaderText("Delete").Commands(command =>
+                            {
+                                command.Type(UnboundType.Edit)
+
+                                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                       {
+                                           CssClass = "Delete",
+                                           Text = "Delete",
+                                           ContentType = ContentType.ImageTextImage,
+                                           PrefixIcon = "e-edit",
+                                           Height = "22px",
+                                           Size = ButtonSize.Mini
+                                       }).Add();
+                            })
+                            .AllowFiltering(false)
+                            .Template("#BtnEditxyz")
+                            
+                            .TextAlign(TextAlign.Left)
+                            .Width(60)
+                            .Add();
+                        }).ClientSideEvents(eve =>
+            {
+                eve.ActionComplete("complete");
+               // eve.ContextClick("complete");
+            })
+            )
+
+        </td>
+    </tr>
+</table>
+<script id="BtnEditxyz" type="text/x-jsrender">
+    <a class="btn-xs btn-danger glyphicon  glyphicon-trash" href="/TMLeave/DeleteTMEntryDetail?TimeSheetEntryDetailId={{:TimeSheetEntryDetailId}}&TimeSheetEntryId=@Model.TimeSheetEntryId&TimeSheetId=@Model.TimeSheetId"> </a>
+</script>
+
+<script type="text/template" id="PopupWindTemplate">
+    <b>Project Details</b>
+    <table>
+        <tr>
+            <td>
+
+                <table cellspacing="10" style="width:100%">
+                    <tr id="IDs">
+                        <td style="text-align: right; width:100px">
+                            Entry Id
+                        </td>
+                        <td style="text-align: left">
+                            <input id="TimeSheetEntryDetailId" name="TimeSheetEntryDetailId" value="{{: TimeSheetEntryDetailId}}" readonly="readonly" class="e-field e-ejinputtext valid e-disable"
+                                   style="text-align: right; width: 116px; height: 28px" />
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td style="width:120px; text-align: right;">
+                            Day
+                        </td>
+                        <td style="text-align: left">
+                            <input type="text" id="Day" readonly="readonly" name="Day" class="form-control" value="{{:Day}}" />
+                        </td>
+                        <td style="width:100px; text-align: right;">
+                            Project Name
+                        </td>
+                        <td style="text-align: left">
+                            <input type="text" id="ProjectName" readonly="readonly" name="ProjectName" class="form-control" value="{{:ProjectName}}" />
+                        </td>
+                        <td style="width:100px; text-align: right;">
+                            Task Name
+                        </td>
+                        <td style="text-align: left">
+                            <input type="text" id="ProjectName" readonly="readonly" name="ProjectName" class="form-control" value="{{:TaskName}}" />
+                        </td>
+                    </tr>
+
+                    <tr>
+
+                        <td style="width:100px; text-align: right;">
+                            From Time
+                        </td>
+                        <td style="text-align: left">
+                            <input type="text" id="FromTime" readonly="readonly" name="FromTime" class="form-control" value="{{:FromTime}}" />
+                        </td>
+                        <td style="width:100px; text-align: right;">
+                            To Time
+                        </td>
+                        <td style="text-align: left">
+                            <input type="text" id="ToTime" readonly="readonly" name="ToTime" class="form-control" value="{{:ToTime}}" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="width:120px; text-align: right;">
+                            Customer Name
+                        </td>
+                        <td style="text-align: left">
+                            @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Select Customer", new { id = "CustomerIdView", @Class = "form-control" })
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="width:100px; text-align: right;">
+                            Vendor Name
+                        </td>
+                        <td style="text-align: left">
+                            @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Select Vendor", new { id = "VendorIdView", @Class = "form-control" })
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="width:100px; text-align: right;">
+                            MOM Title
+                        </td>
+                        <td style="text-align: left">
+                            @Html.DropDownList("MoMId", new SelectList(string.Empty, "Value", "Text"), "Please select MoM", new { style = "width:300px;max-width:500px", @class = "form-control", id = "MoMView" })
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td style="width:100px; text-align: right;">
+                            Remark
+                        </td>
+                        <td style="text-align: left">
+                            <textarea cols=30 rows=6 id="Remark" style="width:800px;max-width:800px" class="form-control" value="">{{:Remark}}</textarea>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</script>
+<br>
+
+<button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetDailtEntryList?TimeSheetId='+@Model.TimeSheetId;" );"> Back</button>
+
+<button class="btn-xs btn-info glyphicon glyphicon-plus"  id="btnOpen" onclick="onclickbtn() "> Add Entry</button>
+
+
+
+<script type="text/javascript">
+    function complete(args) {
+        if (args.requestType == "beginedit" || args.requestType == "add") {
+
+            //alert(args.row.children().eq(5).text());
+            var rec = args.data;
+
+            var projectId=args.row.children().eq(2).text();
+            var TaskId=args.row.children().eq(3).text();
+            var Day=args.row.children().eq(10).text();
+            var StartDate=new Date(args.row.children().eq(18).text());
+            if (args.requestType == "beginedit") {
+
+                $("#MoMView").val(args.row.children().eq(17).text());
+                $("#VendorIdView").val(args.row.children().eq(16).text());
+                $("#CustomerIdView").val(args.row.children().eq(15).text());
+
+            };
+            //return false;
+            $("#MoMView").empty();
+            var newOption = $('<option value="0">Please Select MoM</option>');
+            $('#MoMView').append(newOption);
+            var path = '@Url.Action("TmMoMByProject")';
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: projectId, TaskId:TaskId, Day:Day, StartDate:StartDate.toLocaleDateString()},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        $("#MoMView").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                    });
+                    $("#MoMView").val(args.row.children().eq(17).text());
+                },
+
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });
+
+        }
+        if (args.requestType == "save") {
+
+            var rec = args.data;
+            var MOMId = $("#MoMView").val();
+            var CustomerId = $("#CustomerIdView").val();
+            var VendorId = $("#VendorIdView").val();
+            if(MOMId == '' || MOMId==null)
+                MOMId=0;
+            if(CustomerId == '' || CustomerId==null)
+                CustomerId=0;
+            if(VendorId == '' || VendorId==null)
+                VendorId=0;
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/TMLeave/UpdateTimeSheetEntry",  //Update is Server side method
+                data: {ObjModel: rec , MOMId : MOMId  },
+                complete: function () {
+                },
+                success: function (msg) {
+                    alert("TimeSheet Entry  Successfully Update. Click ok to Continue with Time Sheet.");
+                    var path = '@Url.Content("~/TMLeave/CreateTMEntry")' + "?TimeSheetEntryId=" + rec.TimeSheetEntryDetailId + '&TimeSheetId=' + @Model.TimeSheetId
+                    event.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+        }
+    }
+</script>
+
+
+<div class="control">
+    @{Html.EJ().Dialog("dialogIcon").Title("Add TM Entry").ContentTemplate(@<div>
+
+   
+    @using (Html.BeginForm("CreateTMEntry", "TMLeave", FormMethod.Post, new { Id = "TMEntryDetail" }))
+    {
+    <html>
+           
+    <body>
+
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td width="100px">
+                        <label>Start Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.StartDate, "{0:MM/dd/yyyy}", new { id = "startday", @readonly = "Readonly", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td width="80px">
+                        <label>End Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.EndDate, "{0:MM/dd/yyyy}", new { @readonly = "Readonly", @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="ProjectId">Project:</label>
+
+                    </td>
+                    <td>
+                        @Html.HiddenFor(model => model.TimeSheetEntryId)
+                        @Html.HiddenFor(model => model.TimeSheetId)
+                        @Html.HiddenFor(model => model.Check)
+                        <div class="">
+                            @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.TMProjectlist, "Please Select Project", new { style = "width:275px", @class = "form-control", id = "Project" })
+                            @Html.ValidationMessageFor(model => model.ProjectId, "", new { id = "Experties", @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td align="center">
+                        <label for="TaskId">Task:</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+
+                            @Html.DropDownList("TaskId", (IEnumerable<SelectListItem>)ViewBag.TMTasklist, "Please Select Task", new { style = "width:275px", @class = "form-control", id = "TaskId" })
+                            @Html.ValidationMessageFor(model => model.TaskId, "", new { id = "Qualification", @class = "text-danger" })
+                        </div>
+                    </td>
+                    <td align="center">
+                        <label for="Day">Day:</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.DropDownListFor(model => model.Day, new List<SelectListItem>
+                {
+                    new SelectListItem() {Text = "Please Select day", Value=""},
+                        new SelectListItem() {Text = "Monday", Value="Monday"},
+                        new SelectListItem() {Text = "Tuesday", Value="Tuesday"},
+                        new SelectListItem() {Text = "Wednesday", Value="Wednesday"},
+                        new SelectListItem() {Text = "Thursday", Value="Thursday"},
+                        new SelectListItem() {Text = "Friday", Value="Friday"},
+                        new SelectListItem() {Text = "Saturday", Value="Saturday"},
+                        new SelectListItem() {Text = "Sunday", Value="Sunday"}
+
+                }, new { @type = "dropdown", @class = "form-control", @id = "Day", style = "width:205px" })
+
+                            @Html.ValidationMessageFor(model => model.Day, "", new { id = "Day", @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" id="LblFrom">
+                        <label for="FromTime">From Time :</label>
+                    </td>
+                    <td id="tdMonFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.MonFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdTusFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.TusFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdWedFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.WedFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdThusFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.ThusFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdFriFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.FriFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdSatFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.SatFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdSunFromTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.SunFromTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+
+                    <td id="LblTo">
+                        <label for="ToTime">To Time :</label>
+                    </td>
+                    <td id="tdMonToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.MonToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdTusToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.TusToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdWedToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.WedToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdThusToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.ThusToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdFriToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.FriToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdSatToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.SatToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+                    <td id="tdSunToTime">
+                        <div class="">
+                            @Html.EJ().TimePickerFor(model => model.SunToTime).Width("80").TimeFormat("HH:mm")
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td align="center" class="Chk">
+                        <label for="Customer">Customer:</label>
+
+                    </td>
+                    <td class="Chk">
+                        <div class="">
+                            @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Select Customer", new { id = "CustomerId", @Class = "form-control" })
+                        </div>
+                    </td>
+                    <td align="center" class="Chk">
+                        <label for="Vendor">Vendor:</label>
+
+                    </td>
+                    <td class="Chk">
+                        <div class="">
+                            @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Select Vendor", new { id = "VendorId", @Class = "form-control" })
+                        </div>
+                    </td>
+                    <td align="center">
+                        <label for="MOMId">MOM :</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.DropDownList("MoMId", new SelectList(string.Empty, "Value", "Text"), "Please select MoM", new { style = "width:250px;max-width:500px", @class = "form-control", id = "MoM" })
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td align="center" width="70px">
+                        <label for="Remark">Remark:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => Model.Remark, new { style = "width:645px;max-width:900px", @class = "form-control", id = "Remark" })
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                                                   
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="save btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                        </div>
+
+                    </td>
+                                                   
+                </tr>
+            </table>
+        </div>
+    </body>
+
+</html>
+    }
+    </div>)
+          .MinWidth("600")
+          .MinHeight("400")
+         .Width(1000)
+         .Height(500)
+         .CssClass("center")
+          //.Position(pos => pos.XValue("500").YValue("150"))
+          .ShowOnInit(false)
+          .EnableResize(true)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+        }
+</div>
+<script>
+    $("#btnOpen").show();
+    
+    function onclickbtn() {
+            $("#dialogIcon").ejDialog("open");
+            $("#btnOpen").show();
+        }
+        function onDialogClose(args) {
+            $("#btnOpen").show();
+            $("#CustomerId").val(null);
+            $("#VendorId").val(null);
+            $("#MoM").val(null);
+            $("#Remark").val(null);
+            
+        }
+</script>
+

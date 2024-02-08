@@ -1,0 +1,43 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwentyNine
+
+@{
+    ViewBag.Title = "DataLevelTwentyNine";
+}
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+    <tr class="spaceUnder">
+        <td>
+            <label>Process By:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ProcessBy, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Process Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("ProcessDate").Value(Model.ProcessDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Purch Inv No:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.PurchInvNo, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Time Taken(HH:MM):</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+</table>
+@Html.EJ().ScriptManager()

@@ -1,0 +1,229 @@
+﻿@model SmartSys.BL.DW.CustomerContactDetailsModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {     
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var ContactName = $('#ContactName').val();
+            var Designation = $('#Designation').val();
+            if (ContactName.toString() == "") {
+                alert("Please Enter Contact Name ");
+                return false;
+            }
+            if (Designation.toString() == "") {
+                alert("Please Enter Designation ");
+                return false;
+            }
+            $("#ContactDetail").unbind('submit').submit(); S
+        });
+    });
+</script>
+<table>
+    <tr>
+        <td>
+            @if (Model.NewContactName == "New Entry")
+            {
+                <div class="page-header glyphicon glyphicon-leaf  text-info ">
+                    Create Contact Information
+                </div>
+            }
+            else
+            {
+                <div class="page-header glyphicon glyphicon-pencil  text-info ">
+                    Edit Contact Information
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+
+
+
+@using (Html.BeginForm("CreateContactDetails", "DWCustomer", FormMethod.Post, new { Id = "ContactDetail" }))
+{
+    <html>
+    <head>
+      
+    </head>
+
+    <body >
+        @Html.HiddenFor(model => model.CustomerId)
+        <div>
+            <table>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ContactName">Contact Name</label>
+
+                    </td>
+                    <td>
+
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.ContactName, new { id = "ContactName", @class = "form-control" })
+                            @Html.HiddenFor(model => model.NewContactName)
+                            @Html.ValidationMessageFor(model => model.ContactName, "", new { id = "", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td align="center">
+                        <label for="Designation">Designation</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Designation, new { id = "Designation", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Designation, "", new { id = "Designation", @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <label for="MobileNo">Email:   </label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.email, new { id = "", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.email, "", new { id = "", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="MobileNo">Mobile Number</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.MobileNo, new { id = "", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MobileNo, "", new { id = "MobileNo", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+                        <label for="MobileNo">Land Line Number</label>
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.PhoneNo, new { id = "", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.PhoneNo, "", new { id = "PhoneNo", @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="Experties">Experties</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Experties, new { id = "", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Experties, "", new { id = "Experties", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td align="center">
+                        <label for="Qualification">Qualification</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Qualification, new { id = "", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Qualification, "", new { id = "Qualification", @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="BirthDate">Birth Date</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+
+
+                           
+                            @if (Model.BirthDate.ToString() == "1/1/0001 12:00:00 AM")
+                            {
+                                <input type="date" id="BirthDate" name="BirthDate" />
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => model.BirthDate, new { id = "BirthDate1" ,@class="form-control"})
+                            }
+                           
+                            @*@Html.TextBoxFor(model => model.BirthDate)*@
+                            @Html.ValidationMessageFor(model => model.BirthDate, "", new { id = "BirthDate", @class = " BirthDate form-control" })
+                        </div>
+                    </td>
+
+                    <td>
+
+                        <label for="Remark">Remark</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Remark, new { id = "", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Remark, "", new { id = "Remark", @class = " BirthDate text-danger" })
+                        </div>
+                    </td>
+                </tr>
+
+                @if (Model.ContactName != null && Model.ContactName != "")
+                {
+                    <tr>
+                        <td align="center">
+                            <label for="CreatedBy">Created By</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { id = "", @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { id = "CreatedBy", @class = "form-control" })
+                            </div>
+                        </td>
+                        <td align="center">
+                            <label for="CreatedDate">Created Date</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { id = "", @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { id = "CreatedDate", @class = "form-control" })
+                            </div>
+                        </td>
+                        <td>
+
+                            <label for="ModifiedBy">Modified By</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.ModifiedBy, new { id = "", @class = "form-control" , @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.ModifiedBy, "", new { id = "ModifiedBy", @class = " BirthDate form-control" })
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <label for="ModifiedDate">Modified Date</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.ModifiedDate, new { id = "", @class = "form-control" , @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { id = "ModifiedDate", @class = " BirthDate form-control" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+
+                    <td>
+                            <button type="submit" class="save btn btn-success glyphicon glyphicon-save"> Save</button>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

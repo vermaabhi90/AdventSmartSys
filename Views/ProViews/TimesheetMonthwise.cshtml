@@ -1,0 +1,121 @@
+﻿@model IEnumerable<SmartSys.BL.ProViews.TimeSheetViewModel>
+
+@{
+    ViewBag.Title = "GetTimeSheetEntryList";
+}
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $(".AutoComp").select2({
+            placeholder: "Please Select Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Time Sheet View List
+</div>
+
+<table>
+    <tr>
+        <td id="CustomerDrp">
+
+            <label for="CustomerId">Customer Name:</label>
+        </td>
+        <td id="CustomerDrpl">
+            <div class="navbar-text">
+
+                @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Please Select Customer", new { id = "CustomerId", style = "width:275px", @class = "cmp AutoComp form-control", @readonly = "readonly" })
+
+                @*@Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })*@
+            </div>
+        </td>       
+        <td> <button type="button" id="Refresh" name="Refresh" class="glyphicon glyphicon-refresh btn btn-primary"> Refresh</button></td>
+    </tr>
+</table>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdProViews")
+                     .Datasource(e => e.URL("/ProViews/GetTMEmpCustData").Offline(true))
+           //.Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+                .PageSettings(p => { p.PageSize(20); })
+        .AllowGrouping()
+                                .GroupSettings(group =>
+                                {                                 
+                                     group.GroupedColumns(col => { col.Add("CustomerName"); }).EnableDropAreaAnimation(true); })
+ 
+                                                 
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .AllowFiltering(true)
+       
+        .EnableAltRow(true)
+                    .SummaryRow(row =>
+                  {
+                      row.ShowTotalSummary(false)
+                         .SummaryColumns(col =>
+                         {
+                             col.SummaryType(SummaryType.Sum)
+                                .DisplayColumn("TotalTime")
+                                .DataMember("TotalTime")
+                                .Prefix("Total = ")
+                                .Suffix(" Mins")
+                                .Add();
+
+                         }).Add();
+                  })
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+        .Columns(col =>
+        {
+
+            col.Field("EmployeeName").HeaderText("Employee Name").TextAlign(TextAlign.Center).Width(160).Add();
+            col.Field("CustomerName").AllowEditing(false).HeaderText("Customer Name").Width(180).Add();
+            col.Field("Year").HeaderText("Year").TextAlign(TextAlign.Left).Width(200).Add();              
+            col.Field("Quarter").HeaderText("Quarter").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("ExactMonth").HeaderText("Month").TextAlign(TextAlign.Left).Width(200).Add();                
+            col.Field("TotalTime").AllowEditing(false).HeaderText("Total Time(MIN)").Width(120).Add();
+
+        })
+                 .ClientSideEvents(eve =>
+                    {
+
+                        eve.ContextClick("contextclick");
+
+                    })
+    )
+
+    </div>
+<script type="text/javascript">
+
+    $(document).ready(function (e) {
+
+        $('#Refresh').click(function () {          
+            var CustomerId = $("#CustomerId").val();
+            var Employee = 0;          
+            $.ajax({
+                url: '/ProViews/GetTimeSheetDetilByCust',
+                type: 'POST',
+                data: { CustomerId: CustomerId, Employee: Employee },
+                dataType: 'json',
+                success: function (result) {
+                    var obj = $("#grdProViews").ejGrid("instance")
+                    obj.dataSource(result);
+                },
+                error: function (err) {
+                    alert(err.statusText);
+                }
+            });
+        });
+    });
+</script>
+
+
+

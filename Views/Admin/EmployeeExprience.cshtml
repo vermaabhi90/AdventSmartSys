@@ -1,0 +1,191 @@
+﻿@model SmartSys.BL.ExperienceModel
+
+@{
+    ViewBag.Title = "EmployeeExprience";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@*<script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#StartDate').datepicker("MM/dd/yy");
+            $('#EndDate').datepicker("MM/dd/yy");
+        });
+    </script>*@
+<script>
+
+    $(document).ready(function () {
+
+        var StartDate = '@Model.StartDate';
+
+        $('#StartDate').append(StartDate);
+
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.save').click(function (e) {
+
+            var CompanyName = $('#CompanyName').val();
+            var Designation = $('#Designation1').val();
+
+            var StartDate = $('#StartDate').val();
+            var EndDate = $('#EndDate').val();
+
+            if (CompanyName.toString() == "") {
+                alert("Please Enter Company Name");
+                return false;
+            }
+            if (Designation.toString() == "") {
+                alert("Please Enter Designation");
+                return false;
+            }
+
+            if (StartDate.toString() == "" || StartDate.toString() == "1/1/0001 12:00:00 AM") {
+                alert("Please Enter Start Date");
+                return false;
+            }
+            if (EndDate.toString() == "" || EndDate.toString() == "1/1/0001 12:00:00 AM") {
+                alert("Please Enter End Date");
+                return false;
+            }
+            if (Date.parse(StartDate) > Date.parse(EndDate)) {
+                alert("End Never be Less than Start Date");
+                return false;
+            }
+            $("#ExprenceDetail").unbind('submit').submit();
+        });
+    });
+</script>
+
+
+            @if (Model.NewCompanyName == "New Entry")
+            {
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+                    Create Exprience Information
+                </div>
+            }
+            else
+            {
+                <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+                    Edit Exprience Information
+                </div>
+            }
+
+
+
+
+@using (Html.BeginForm("EmployeeExprience", "Admin", FormMethod.Post, new { Id = "ExprenceDetail" }))
+{
+    <html>
+    <body>
+        <div class="modal-body">
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td>@Html.HiddenFor(model => model.EmpId)</td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="CompanyName">Company Name</label>
+
+                    </td>
+                    <td>
+
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.CompanyName, new { id = "CompanyName", @class = "form-control" })
+                            @Html.HiddenFor(model => model.NewCompanyName)
+                            @Html.ValidationMessageFor(model => model.CompanyName, "", new { id = "CompanyName", @class = "text-danger" })
+                        </div>
+
+                    </td>
+                    <td align="center">
+                        <label for="Designation">Designation</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextBoxFor(model => model.Designation, new { id = "Designation1", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Designation, "", new { id = "Designation", @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+
+                        <label for="CreatedBy">Start Date</label>
+
+                    </td>
+
+                    <td>
+                        @if (Model.CompanyName != null)
+                        {
+                            @Html.TextBoxFor(model => model.StartDate, new { @type = "date", @class = "form-control", id = "StartDate", @Value = Model.StartDate.ToString("yyyy-MM-dd") })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(model => model.StartDate, new { @type = "date", @class = "form-control", id = "StartDate" })
+                        }
+                        @*<input type="date" id="StartDate" name="StartDate" value="@DateTime.Now" class="form-control" />*@
+                        @*@Html.TextBoxFor(model => model.StartDate, new { id = "StartDate" })*@
+                    </td>
+                    <td align="center">
+                        <label for="CreatedDate">End Date</label>
+
+                    </td>
+
+                    <td>
+                        <div class="editor-field ">
+                            @if (Model.CompanyName != null)
+                            {
+                                @Html.TextBoxFor(model => model.EndDate, new { @type = "date", @class = "form-control", id = "EndDate", @Value = Model.EndDate.ToString("yyyy-MM-dd") })
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => model.EndDate, new { @type = "date", id = "EndDate", @class = "form-control" })
+                            }
+                            @*<input type="date" id="EndDate" name="EndDate" value="@DateTime.Now" class="form-control" />*@
+                            @*@Html.TextBoxFor(model => model.EndDate, new { id = "EndDate" })*@
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <table style="margin-left:20px">
+                <tr>
+                    <td align="center">
+                        <label for="Jobprofile">Job Profile</label>
+
+                    </td>
+                    <td>
+                        <div class="editor-field ">
+                            @Html.TextAreaFor(model => model.JobProfile, new { id = "JobProfile", @class = "form-control", @style = "min-width:800px" })
+                            @Html.ValidationMessageFor(model => model.JobProfile, "", new { id = "Designation", @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="save btn-xs btn-success glyphicon glyphicon-save"> Save</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}
+<script>
+    var Emp= @Model.EmpId;
+</script>

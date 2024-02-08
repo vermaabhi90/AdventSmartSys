@@ -1,0 +1,175 @@
+﻿@model  SmartSys.BL.RegionStateMapping
+
+@{
+    ViewBag.Title = "State Region Mapping Details";
+}
+<script type="text/javascript">
+    $(document).ready(function (e) {
+
+        $("#Form1").submit(function (e) {
+            $("#lstAssignedStateToRegion option").prop("selected", true);;
+        })
+
+
+
+
+        //followin code is for txfering items from one list to another
+        $("#btnAdd").click(function (e) {
+
+            $("#lstState > option:selected").appendTo("#lstAssignedStateToRegion");
+        })
+        $("#btnAddAll").click(function (e) {
+
+            $("#lstState > option").appendTo("#lstAssignedStateToRegion");
+        })
+        $("#btnRemove").click(function (e) {
+            $("#lstAssignedStateToRegion > option:selected").appendTo("#lstState");
+
+        })
+        $("#btnRemoveAll").click(function (e) {
+            $("#lstAssignedStateToRegion > option").appendTo("#lstState");
+        })
+    })
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#region").change(function (e) {
+
+            $("#lstAssignedStateToRegion").empty();
+            var region = $("#region").val();
+
+            var path = '@Url.Action("Getallocatedregion")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { region: region },
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, zone) {
+                        $("#lstAssignedStateToRegion").append('<option value="' + zone.Value + '">' +
+                             zone.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script>
+    function getValue() {
+        var rr = [];
+        var region = $("#region").val();
+
+        if (region.toString() == "") {
+            alert("Please Select Region ");
+            return false;
+        }
+        $("#lstAssignedStateToRegion option").prop("selected", true);
+        $('#lstAssignedStateToRegion :selected').each(function (i, selected) {
+            rr[i] = $(selected).val();
+                   
+        });
+        var xyz = rr.toString();
+     
+        var url = '@Url.Action("AddRegionStateMaplist", "Admin")';
+        var data = { item: rr.toString() , id:region};
+        $.post(url, data, function (result) {
+
+        });
+          
+        
+    }
+</script>
+
+
+      <div style="margin-top:15px;margin-left:50px" class="glyphicon glyphicon-list  text-info">
+    <span style="color:red">State Region Mapping Details</span>
+
+</div>
+<br>
+<br>
+        @using (Html.BeginForm(new { id = "Form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <html>
+            <body>
+
+                <table>
+
+                    <tr>
+                        <td>
+                            <label for="DeptName">Region Name</label>
+                        </td>
+
+                        <td>
+                            <div class="navbar-text">
+                                @Html.DropDownList("RegionId", (IEnumerable<SelectListItem>)ViewBag.region, "Please Select Region", new { id = "region", style = "width:310px", @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.RegionId)
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <table style="margin-left:30px">
+                    <tr>
+                        <td align="center">
+                            @Html.Label("states")<br />
+                            @Html.ListBox("TotalStateList", (IEnumerable<SelectListItem>)ViewBag.TotalList, new { id = "lstState", style = "width:500px;max-width:500px;height:400px", @class = "form-control", size = 4 })
+                        </td>
+                        <td width="30px"></td>
+                        <td align="center">
+                            <div class="btn" aria-label="...">
+                                <button type="button" id="btnAdd" class="btn btn-info glyphicon glyphicon-forward"></button>
+                            </div><br />
+
+                            <div class="btn" aria-label="...">
+                                <small> <button type="button" id="btnAddAll" class="btn btn-info glyphicon glyphicon-fast-forward"></button></small>
+                            </div><br />
+
+                            <div class="btn" aria-label="...">
+                                <button type="button" id="btnRemove" class="btn btn-info glyphicon glyphicon-backward"></button>
+                            </div><br />
+                            <div class="btn" aria-label="...">
+                                <button type="button" id="btnRemoveAll" class="btn btn-info glyphicon glyphicon-fast-backward"></button>
+                            </div><br />
+                        </td>
+                        <td width="30px"></td>
+                        <td align="center">
+                            @Html.Label("Allocated States")<br />
+
+                            @Html.ListBox("AssignedStateList", (IEnumerable<SelectListItem>)ViewBag.Allocated, new { id = "lstAssignedStateToRegion", style = "width:500px;max-width:500px;height:400px", @class = "lstAssignedStateToRegion form-control", size = 4 })
+                        </td>
+                    </tr>
+                </table>
+                <table style="margin-left:270px">
+
+                    <tr>
+
+
+                        @*<td>
+                        @Html.ActionLink(" Back", "SytemRoleList", null, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+
+                    </td>*@
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <input type="button" value="Save" onclick="getValue(); window.location.reload()" id="butt" class="btn-xs  btn-info glyphicon glyphicon-save"  />
+                              
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+}

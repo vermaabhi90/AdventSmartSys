@@ -1,0 +1,300 @@
+﻿@model  SmartSys.BL.Tmleave.TMLeaveDetailModel
+@{
+    ViewBag.Title = "CreateTMLeaveDetail";
+}
+@{
+    ViewBag.Title = "DW Custmer Details";
+}
+@if (Model.LeaveId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Leave Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Apply New Leave
+    </div>
+}
+<script>
+    function func1() {
+        var str = '@(TempData["Message"])'.toString();
+
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    }
+    window.onload = func1;
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var BalanceLeave = $('#BalanceLeave').val();
+            var Category = $('#Category').val();
+            if (Category.toString() == "ST") {
+                if (BalanceLeave.toString() == "0") {
+                    if (confirm("You Dont Have Enough Balance Leave ,Thats Reason  Your Leave Consider as a Half leave") == true) {
+                        x = "You pressed OK!";
+                       
+                    } else {
+                        x = "You pressed Cancel!";
+                        return false;
+                    }
+                                        
+                }
+            }
+    
+            var LeaveType = $('#LeaveType').val();
+            var FromDate = $('#FromDate').val();
+            var Category = $('#Category').val();
+            var ToDate = $('#ToDate').val();
+            var Remark = $('#Remark').val();           
+            var FromDate = Date.parse(FromDate);
+            var ToDate = Date.parse(ToDate);           
+            if (FromDate > ToDate)
+            {
+                alert("Start Date Should be Small Than End Date")
+                return false;
+            }
+          
+            var ApprovedDate = $('#ApprovedDate').val();
+          
+            if (LeaveType.toString() == "") {
+                alert("Please Select LeaveType ");
+                return false;
+            }
+            if (Category.toString() == "") {
+                alert("Please Select Category ");
+                return false;
+            }
+            if (FromDate.toString() == "") {
+                alert("Please Enter FromDate ");
+                return false;
+            }
+            if (ToDate.toString() == "") {
+                alert("Please Enter ToDate ");
+                return false;
+            }
+            
+            if (Remark.toString() == "") {
+                alert("Please Enter Remark ");
+                return false;
+            }
+            //alert("hi")
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+        @using (Html.BeginForm("CreateTMLeaveDetail", "TMLeave", FormMethod.Post, new { Id = "Form1" }))
+        {
+
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+
+                <tr>
+                    @Html.HiddenFor(model => model.LeaveId, new { id = "", @readonly = "readonly" })
+
+                    @Html.HiddenFor(model => model.BalanceLeave, new { id = "BalanceLeave" })
+                    <td>
+                        <label>Leave Type: </label>
+                    </td>
+                    <td>
+                        <div class="">
+
+                            @Html.DropDownList("LeaveTypeId", (IEnumerable<SelectListItem>)ViewBag.LeaveType, "Please Select LeaveType --", new {  @required = "required", id = "LeaveType", @class = "dropdown1 form-control" })
+                            @Html.ValidationMessageFor(model => model.LeaveId, "", new { @class = "text-danger form-control"})
+                        </div>
+
+                    </td>
+
+
+                    @if (Model.LeaveId > 0)
+                    {
+                        <td>
+                            <label for="EmpId">Employee:</label>
+                        </td>
+                        <td>
+                            <div class="">
+
+
+                                @Html.TextBoxFor(model => model.Employee, new { id = "MaxLeaveCarryover", @readonly = "readonly", @class = "text-danger form-control" })
+                                @Html.ValidationMessageFor(model => model.Employee, "", new { @class = "text-danger form-control"})
+                            </div>
+
+                        </td>
+                    }
+                    <td>
+                        <label for="EmpId">Leave Category:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.DropDownListFor(model => model.LeaveCategory, new List<SelectListItem>
+                       {
+                                       new SelectListItem() {Text = "Full Time", Value="FT"},
+                                       new SelectListItem() {Text = "First Half Day", Value="FH"},
+                                       new SelectListItem() {Text = "Second Half Day", Value="SH"},
+                                       new SelectListItem() {Text = "Short Time", Value="ST"},
+
+                       }, "Select Category", new { @class = "text-danger form-control",id = "Category" })
+                        </div>
+                    </td>
+                </tr>
+
+
+                <tr>
+
+
+                    <td>
+                        <label for="">From Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @if (Model.LeaveId > 0)
+                            {
+
+                                @Html.EJ().DatePickerFor(model => model.FromDate)
+                            }
+                            else
+                            {
+                                @Html.EJ().DatePicker("FromDate")
+                            }
+                            @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <label for="VendorName">To Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @if (Model.LeaveId > 0)
+                            {
+                                @Html.EJ().DatePickerFor(model => model.ToDate)
+                            }
+                            else
+                            {
+                                @Html.EJ().DatePicker("ToDate")
+                            }
+
+                            @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="VendorName"> Remark: </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Remark, new { id = "Remark", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger " })
+                        </div>
+
+                    </td>
+                </tr>
+                @if (Model.LeaveId > 0)
+                {
+
+                    <tr>
+                        <td>
+                            <label> Created By: </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedByName, new { id = "MaxLeaveCarryover", @readonly = "readonly", @class = "text-danger form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedByName, "", new { @class = "text-danger" })
+                            </div>
+
+                        </td>
+                        <td>
+                            <label> Created Date </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { id = "MaxLeaveCarryover", @readonly = "readonly", @class = "text-danger form-control" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { @class = "text-danger"})
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label> ModifiedBy: </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedByName, new { id = "MaxLeaveCarryover", @readonly = "readonly", @class = "text-danger form-control" })<br /> <span id="err4" style="color:red"></span>
+                                @Html.ValidationMessageFor(model => model.ModifiedByName, "", new { @class = "text-danger" })
+                            </div>
+
+                        </td>
+                        <td>
+                            <label> Modified Date: </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedDate, new { id = "MaxLeaveCarryover", @readonly = "readonly", @class = "text-danger form-control" })<br /> <span id="err4" style="color:red"></span>
+                                @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+                            </div>
+
+                        </td>
+                    </tr>
+                }
+            </table>
+
+
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.Tmleave.ProjectCategoryModel>("grdTMProjectCategory")
+                .Datasource((IEnumerable<object>)@Model.LstLeaveDescription)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+.PageSettings(p => { p.PageSize(20); })
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         .Columns(col =>
+         {
+             col.Field("LeaveType").HeaderText("Leave Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(120).Add();
+             col.Field("TotalLeave").HeaderText("Total Leave").TextAlign(TextAlign.Center).ValidationRules(v => v.AddRule("required", true)).Width(100).Add();
+             col.Field("YearlyQuota").AllowEditing(false).HeaderText("Yearly Quota").Width(100).Add();
+             col.Field("MaxLeaveCarryover").AllowEditing(false).HeaderText("Max Leave Carryover").Width(130).Add();
+             col.Field("BalanceLeave").AllowEditing(false).HeaderText("Balance Leave").Width(100).Add();
+             col.Field("LastYearCarryover").AllowEditing(false).HeaderText("Last Year Carryover").Width(100).Add();
+         })
+                  .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                    )
+                </div>
+
+                <table>
+
+                    <tr>
+                        <td>
+                            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'TmLeaveDetailList';" );"> Back</button>
+                                <button style="margin:10px" type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                                <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Re-Send Mail</button>
+                        </td>
+
+                    </tr>
+                </table>
+        }
+       
+
+
+

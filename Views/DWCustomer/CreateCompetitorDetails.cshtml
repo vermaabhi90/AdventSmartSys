@@ -1,0 +1,123 @@
+﻿@model SmartSys.BL.DW.CustomerCompetitorModel
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var CompetitorName = $('#DrpDwnLst').val();
+
+            if (CompetitorName.toString() == "") {
+                alert("Please Enter Competitor Name");
+                return false;
+            }
+            $("#CompetitorDetails").unbind('submit').submit(); S
+        });
+    });
+</script>
+<table>
+    <tr>
+        <td>
+            @if (Model.CompetitorId == 0)
+            {
+                <div class="page-header glyphicon glyphicon-leaf  text-info ">
+                    Create Competitor Information
+                </div>
+            }
+            else
+            {
+                <div class="page-header glyphicon glyphicon-pencil  text-info ">
+                    Edit Competitor Information
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("CreateCompetitorDetails", "DWCustomer", FormMethod.Post, new { Id = "CompetitorDetails" }))
+{
+    <html>
+    <body>
+        <div class="modal-body">
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>@Html.HiddenFor(model => model.CustomerId)</td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="TurnoverYear">Competitor Name</label>
+
+                    </td>
+                    <td>
+
+                        <div class="editor-field ">
+                            @Html.DropDownList("CompetitorId", (IEnumerable<SelectListItem>)ViewBag.CompetitorLst, "--- Please Select Competitor ---", new { @class = "dropdown1 form-control", id = "DrpDwnLst" })
+                            @Html.HiddenFor(model => model.NewCompetitorId)
+                        </div>
+
+                    </td>
+                </tr>
+
+                @if (Model.CompetitorId != 0)
+                {
+                    <tr>
+                        <td>
+                            <label for="Region">Region</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.Region, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.Region, "", new { id = "CreatedBy", @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="IsActive">Active</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.EditorFor(model => model.IsActive, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.IsActive, "", new { id = "CreatedDate", @class = "text-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="CreatedBy">Created By</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { id = "CreatedBy", @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="CreatedDate">Created Date</label>
+
+                        </td>
+                        <td>
+                            <div class="editor-field ">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.CreatedDate, "", new { id = "CreatedDate", @class = "text-danger" })
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+
+                    <td>                    
+                        <button type="submit" class="save btn btn-success glyphicon glyphicon-save"> Save</button>                     
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

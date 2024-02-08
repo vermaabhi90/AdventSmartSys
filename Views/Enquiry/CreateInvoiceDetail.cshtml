@@ -1,0 +1,417 @@
+﻿@model SmartSys.BL.Enquiry.InvoiceDetailModel
+@if (Model.InvId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Invoice Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Invoice Detail
+    </div>
+}
+
+ 
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+    
+        $('.save').click(function (e) {
+       
+            var CompCodeDrp = $('#CompCodeDrp').val();
+            var CustomerDrp = $('#CustomerDrp').val();
+            var InvoiceDrp = $('#InvoiceDrp').val();
+            var ExpectedDate = $('#ExpectedDate').val();
+            var Remark = $('#Remarkabc').val();
+
+            if (CompCodeDrp.toString() == "") {
+                alert("Please Select Company ");
+                return false;
+            }
+
+            if (CustomerDrp.toString() == "") {
+                alert("Please Select Customer ");
+                return false;
+            }
+            if (InvoiceDrp.toString() == "") {
+                alert("Please Select  Invoice ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var Status = '@Model.Status';
+
+        if (Status != "New")
+            {
+                $("#CustomerDrpEdit").prop("disabled", true);
+                $("#CompCodeDrp").prop("disabled", true);
+                $("#InvoiceEdit").prop("disabled", true);
+                $(".save").prop("disabled", true);
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var pathL1 = "/Enquiry/CustomerListByInvoiceCompCode"
+
+        $.ajax({
+            type: 'POST',
+            url: pathL1,
+            dataType: 'json',
+            data: { CompCode: '@Model.CompCode' },
+            success: function (Brands) {
+
+                $.each(Brands, function (i, Brand) {
+
+                    $('#CustomerDrpEdit').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                 
+                    if (i == 0) {
+                        $("#CustomerDrp").val(Brand.Value).trigger("change");
+                    }
+                });
+                $("#CustomerDrpEdit").val('@Model.CustomerId');
+                $('#CustomerDrpEdit').select2('rebuild');
+                $('#CustomerDrpEdit').select2('refresh');
+            },
+            error: function (ex) {
+                alert('Err');
+            }
+        });
+        $("#InvoiceEdit").empty()
+        var pathL2 = "/Enquiry/InvoiceListBYCustomer"
+        $.ajax({
+            type: 'POST',
+            url: pathL2,
+            dataType: 'json',
+            data: { CompCode:'@Model.CompCode', CustomerId: '@Model.CustomerId' },
+            success: function (Brands) {
+
+                $.each(Brands, function (i, Brand) {
+
+                    $('#InvoiceEdit').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                    $("#InvoiceEdit").val('@Model.InvRefNo')
+                    if (i == 0) {
+                        $("#InvoiceDrp").val(Brand.Value).trigger("change");
+
+                    }
+                   
+                });
+           
+                $('#InvoiceEdit').select2('rebuild');
+                $('#InvoiceEdit').select2('refresh');
+            },
+            error: function (ex) {
+                alert('Please Select item Name');
+            }
+        });
+
+  $("#InvoiceDrpEdit").val('@Model.InvRefNo')
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+
+        $("#CompCodeDrp").change(function () {
+            $("#CustomerDrp").empty();
+
+          
+            $("#CustomerDrpEdit").empty();
+            var path = "/Enquiry/CustomerListByInvoiceCompCode"
+        
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val() },
+                success: function (Brands) {
+                    i1 = 0;
+                    $.each(Brands, function (i, Brand) {
+                       
+                        i1++;
+                        if (i1 == 1)
+                        {
+                          $('#CustomerDrp').append('<option value="">Please Select Customer</option>');
+                        }
+                        $('#CustomerDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        $('#CustomerDrpEdit').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#CustomerDrp").val(Brand.Value).trigger("change");
+                        }
+                    });
+                 
+                    $('#CustomerDrp').select2('rebuild');
+                    $('#CustomerDrp').select2('refresh');
+                },
+                error: function (ex) {
+                    alert('Err');
+                }
+            });
+            return false;
+        })
+
+        $("#CustomerDrp").change(function () {
+            $("#InvoiceDrp").empty()
+            $("#InvoiceEdit").empty()
+            var path1 = "/Enquiry/InvoiceListBYCustomer"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val(), CustomerId: $("#CustomerDrp").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+                  
+                        $('#InvoiceDrp').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');                  
+                        if (i == 0) {
+                            $("#InvoiceDrp").val(Brand.Value).trigger("change");
+
+                        }
+                     
+                    });
+              
+                  
+                    $('#InvoiceDrp').select2('rebuild');
+                    $('#InvoiceDrp').select2('refresh');
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });
+        
+            return false;
+        })
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("CreateInvoiceDetail", "Enquiry", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            @Html.HiddenFor(model => model.InvFile)
+            @if (Model.InvId > 0)
+            {
+                <td>
+                    <label>Inv Id:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.InvId, new { @class = "form-control", @readonly = "Readonly", @style = "width:100px" })
+                    </div>
+                </td>
+            }
+
+
+            <td>
+                <label>Company</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = "form-control", style = "width:310px", id = "CompCodeDrp" })
+                </div>
+            </td>
+            <td>
+                <label>Customer</label>
+                <input type="hidden" value="@Model.CustomerId" id="custId" />
+                <input type="hidden" value="@Model.CustomerName" id="custName" />
+            </td>
+            @if (Model.InvId > 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CustomerId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Customer ---", new { @class = "drp form-control", style = "width:310px", id = "CustomerDrpEdit" })
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CustomerId", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Customer ---", new { @class = "drp form-control", style = "width:310px", id = "CustomerDrp" })
+                    </div>
+                </td>
+            }
+
+
+
+        </tr>
+        <tr>
+            <td>
+                <label>Invoice </label>
+            </td>
+            @if (Model.InvId > 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("InvRefNo", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Invoice  ---", new { @class = " form-control", style = "width:250px", id = "InvoiceEdit" })
+
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.DropDownList("InvRefNo", new SelectList(string.Empty, "Value", "Text"), "--- Please Select Invoice  ---", new { @class = "drp form-control", style = "width:250px", id = "InvoiceDrp" })
+
+                    </div>
+                </td>
+            }
+
+
+
+            <td>
+                <label>Status </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Status, new { @class = "form-control", @readonly = "Readonly" })
+
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">File:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    <div class=" input-group-btn">
+
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn-xs btn-info" />
+                    </div>
+                </div>
+            </td>
+            <td>
+
+                <input type="button" id="reset" value="Remove" class="btn-xs btn-danger reset" style="width:75px" />
+
+            </td>
+
+        </tr>
+        @if (Model.InvId > 0)
+        {
+            <tr style="width:400px">
+                <td>
+                    <label for="ItemName">Created By:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy)
+                    </div>
+                <td>
+                    <label for="ItemName">Created Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="ItemName">Modified By:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedBy)
+                    </div>
+                </td>
+                <td>
+                    <label for="ItemName">Modified Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ModifiedDate)
+                    </div>
+                </td>
+            </tr>
+
+        }
+    </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'InvoiceDetailList';" );"> Back</button>
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="savetot btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        }
+     
+
+<script>
+    $(document).ready(function () {
+
+        $('#CustomerDrpEdit').append('<option value="' + $("#custId").val() + '">' + $("#custName").val() + '</option>');
+        $("#CustomerDrpEdit").val($("#custId").val()).trigger("change");
+        $("#CustomerDrpEdit").change(function () {
+
+            $("#InvoiceEdit").empty()
+            var path1 = "/Enquiry/InvoiceListBYCustomer"
+            $.ajax({
+                type: 'POST',
+                url: path1,
+                dataType: 'json',
+                data: { CompCode: $("#CompCodeDrp").val(), CustomerId: $("#CustomerDrpEdit").val() },
+                success: function (Brands) {
+
+                    $.each(Brands, function (i, Brand) {
+                        $('#InvoiceEdit').append('<option value="' + Brand.Value + '">' + Brand.Text + '</option>');
+                        if (i == 0) {
+                            $("#InvoiceEdit").val(Brand.Value).trigger("change");
+
+                        }
+                        $("#InvoiceEdit").val('@Model.InvRefNo')
+                    });
+
+
+                    $('#InvoiceDrp').select2('rebuild');
+                    $('#InvoiceDrp').select2('refresh');
+                },
+                error: function (ex) {
+                    alert('Please Select item Name');
+                }
+            });
+
+            return false;
+        })
+    });
+</script>

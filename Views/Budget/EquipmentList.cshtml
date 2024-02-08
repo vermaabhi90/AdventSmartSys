@@ -1,0 +1,139 @@
+﻿@model IEnumerable<SmartSys.BL.TimeManagement.TMEquipmentModel>
+@{
+    ViewBag.Title = "EquipmentList";
+}
+
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Equipment List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateEquipment", new { EquipmentId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</div>
+@(Html.EJ().TreeGrid("TreeGridContainer11")
+            .TreeColumnIndex(1)
+            .AllowColumnResize(true)
+            .ChildMapping("lstEquipment")
+            .TreeColumnIndex(2)
+            .IsResponsive(true)
+            .EnableCollapseAll(true)
+            .AllowSorting(true)
+            .AllowMultiSorting(true)
+            .ShowColumnChooser(true)
+            .AllowPaging(true)
+            .AllowFiltering(true)         
+            .ToolbarSettings(tool =>
+            {
+                tool.ShowToolbar(true);
+                tool.ToolbarItems(new List<TreeGridToolBarItems>()
+                        {                          
+                            TreeGridToolBarItems.ExcelExport,
+                        });
+            })
+           .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportEquipmentLst")))
+          .Columns(co =>
+          {
+              co.Field("EquipmentId").Visible(false).HeaderText("Equipment Id").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("Id").HeaderText("Equipment Id").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("EquipmentName").HeaderText("Equipment Name").EditType(TreeGridEditingType.String).Add();
+              co.Field("Description").HeaderText("Description").EditType(TreeGridEditingType.String).Add();
+              co.Field("TAM").HeaderText("TAM").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("Rate").HeaderText("Rate").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("CurrencyCodes").HeaderText("Currency Code").EditType(TreeGridEditingType.String).Add();
+              //  co.Field("SegmentId").HeaderText("SegmentId").EditType(TreeGridEditingType.Numeric).Add();
+              co.Field("ModifiedByName").HeaderText("Modified By").EditType(TreeGridEditingType.String).Add();
+              co.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").EditType(TreeGridEditingType.Datepicker).Add();
+          }
+          )
+                           .ClientSideEvents(cv => cv.ContextMenuOpen("contextMenuOpen"))
+                           .SizeSettings(ss => ss.Width("100%").Height("450px"))
+                  .ContextMenuSettings(cms => cms.ShowContextMenu(true)
+                                       .ContextMenuItems(new List<TreeGridContextMenuItems>() {
+              TreeGridContextMenuItems.Add
+          }))
+
+
+          .SizeSettings(ss => ss.Width("100%").Height("500px"))
+                  .EnableResize(true)
+                  .EditSettings(e => e.AllowAdding(false))
+                  .Datasource(ViewBag.SelectedEquipmentItems)
+
+)
+<script type="text/javascript">
+
+    function Create(args) {
+        if (args.text == "Add Risk") {
+            var tempData = args.text;
+            var grid = $("#grdProject").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var projectId = result[0]["ProjectId"];
+            var ProjectName = result[0]["ProjectName"];
+            var Risk = "Risk";
+            var path = '@Url.Content("~/ProjectCenter/RiskManageMent")' + "?ProjectId=" + projectId + "&Taskid=" + 0 + "&Modal=" + 1 + "&Type=" + Risk + "&ProjectName=" + ProjectName
+            event.preventDefault();
+            window.location.replace(path);
+
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function contextMenuOpen(args) {
+        var isExpandable = true, isCollapsable = true, data;
+        data = args.item;
+        if (data && data.hasChildRecords) {
+            if (data.expanded)
+                isExpandable = false;
+            else
+                isCollapsable = false;
+        } else {
+            isExpandable = false;
+            isCollapsable = false;
+        }
+
+        var contextMenuItems = [{
+            headerText: "Create New",
+            eventHandler: customMenuAddHandler,
+            menuId: "Create",
+            iconClass: "e-topIcon"
+        }
+        ];
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+        var contextMenuItems = [{
+            headerText: "Edit",
+            eventHandler: customMenuAddHandler,
+            menuId: "EditDetail",
+            iconClass: "e-topIcon"
+        }
+        ];
+        args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+
+    }
+
+    function customMenuAddHandler(args) {
+        var currentMenuId = args.menuId,
+            tempData = args.data && $.extend({}, args.data.item), rowPosition;
+        if (currentMenuId == "Create") {
+            var path = '@Url.Content("~/Budget/CreateEquipment")' + "?EquipmentId=0"
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else if (currentMenuId == "EditDetail") {
+            var path = '@Url.Content("~/Budget/CreateEquipment")' + "?EquipmentId=" + tempData.Id
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else if (currentMenuId == "Expand") {
+            expandCollapseArgs.expanded = true;
+        }
+        else if (currentMenuId == "Collapse") {
+            expandCollapseArgs.expanded = false;
+        }
+        this.addRow(tempData, rowPosition);
+    }
+
+
+</script>
+
+@Html.EJ().ScriptManager()

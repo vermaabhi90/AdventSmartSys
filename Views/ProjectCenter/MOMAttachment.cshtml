@@ -1,0 +1,64 @@
+﻿@model SmartSys.BL.Project.MoMAttachmentModel
+
+@{
+    ViewBag.Title = "MOMAttacment";
+}
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    ADD Attachment
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.reset').click(function (event) {
+          event.preventDefault();
+          $("#fileInput").replaceWith(" <input type='file' name='Attachment' id='fileInput' value='uploadfile' class='btn btn-success' required />");
+        })
+    })
+</script>
+@using (Html.BeginForm("MOMAttachment", "ProjectCenter", FormMethod.Post, new { Id = "frmAddress", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                <label for="ItemName">File:</label>
+            </td>
+            <td>
+                @Html.HiddenFor(model => model.MOMId)
+                <div class="input-group-btn">
+                    <input type="file" name="file" id="fileInput" value="uploadfile" class="btn-xs btn-info" required />
+                </div>
+            </td>
+            <td>
+                <input type="button" id="reset" value="Remove" class="btn-xs btn-danger reset"  />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">Description:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Description, new { @required = "required", @class = "form-control", @style = "min-width:400px" })
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                </div>
+            </td>
+
+        </tr>
+
+    </table>
+
+
+}
+            

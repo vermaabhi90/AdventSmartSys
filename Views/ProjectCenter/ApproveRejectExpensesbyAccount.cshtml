@@ -1,0 +1,238 @@
+﻿@model SmartSys.BL.Project.ProjectExpensesModel
+
+@{
+    ViewBag.Title = "ApproveRejectExpensesByAccount";
+}
+
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project Expenses Approve Reject by Account
+</div>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var ManagerRemark = $('#ManagerRemark').val();
+
+            if (ManagerRemark.toString() == "") {
+                alert("Please Enter Manager Remark ");
+                return false;
+            }
+
+            $("#frmAddress").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+@using (Html.BeginForm("ApproveRejectExpensesbyAccount", "ProjectCenter", FormMethod.Post, new { Id = "frmAddress" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 7px;">
+        <tr>
+            <td>
+                <label for="ItemName">Project:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.ExpenseId)
+                    @Html.TextBoxFor(model => model.ProjectName, new { required = "required", id = "Amount", @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ProjectId)
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">Task:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.TaskName, new { required = "required", id = "Amount", @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.TaskName)
+                </div>
+            </td>
+            <td>
+                <label for="Amount">Amount:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Amount, new { required = "required", id = "Amount", @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Amount)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+
+            <td>
+                <label for="Remark">Remark:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Remark, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Remark)
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">Expense Type:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownList("ExpTypeId", (IEnumerable<SelectListItem>)ViewBag.ExpnsType, "--- Please Select Expense Type ---", new { style = "width:250px", id = "ExpenseType", @class = "form-control", @disabled = "" })
+                    @Html.ValidationMessageFor(model => model.ProjectId)
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">CreatedBy:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CreatedBy)
+                </div>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">CreatedDate:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CreatedDate)
+                </div>
+            </td>
+
+            <td>
+                <label for="ItemName">ModifiedBy:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ModifiedBy)
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">ModifiedBy:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ModifiedDate)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="ApproverName">Approver By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ApproverName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ApproverName)
+                </div>
+            </td>
+
+            <td>
+                <label for="ApproverDate">Approver Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ApproverDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ApproverDate)
+                </div>
+            </td>
+            <td>
+                <label for="ApproverRemark">Approver Remark:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ApproverRemark, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ApproverRemark)
+                </div>
+            </td>
+        </tr>
+
+    </table>
+    <table>
+        <tr>
+            <td>
+                @if (Model.LstExpDoc.Count > 0)
+                {
+                                  <div style="position:relative">
+                                        @(Html.EJ().Grid<SmartSys.BL.Project.ProjectExpensesModel>("grdProjexpensesList")
+                     .Datasource(Model.LstExpDoc)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                     .PageSettings(p => { p.PageSize(20); })
+                    .AllowSorting(true)
+                    .Columns(col =>
+                    {
+                        col.Field("ExpenseId").HeaderText("Expense Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                        col.Field("DocumentPath").HeaderText("Document Path").TextAlign(TextAlign.Center).Width(150).Add();
+                        col.Field("Description").HeaderText("Description").Width(160).Add();
+                        col.HeaderText("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+                    })
+                                        )
+                                    </div>                  
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <label>Sorry! There is No Information about Participants Details !!!</label>
+                    </div>
+                }
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td>
+                <label>Approve / Reject: </label>
+            </td>
+            <td>
+                <div class="">
+                    <select id="Decision" name="Decision" , class="form-control">
+                        <option value="Approve">Approve</option>
+                        <option value="Reject">Reject</option>
+                    </select>
+                </div>
+            </td>
+            <td>
+                <label>Manager Remark: </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ManagerRemark, new { id = "ManagerRemark", required = "required", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                </div>
+
+            </td>         
+        </tr>
+
+    </table>
+
+}
+
+<script type="text/x-jsrender" id="OpenDoc">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/ProjectCenter/DownloadExpenses?ExpenseId=@Model.ExpenseId&amp;Filename={{:DocumentPath}}"> Open</a>
+</script>
+
+
+@Html.EJ().ScriptManager()

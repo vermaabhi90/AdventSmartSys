@@ -1,0 +1,282 @@
+﻿
+@model SmartSys.BL.Enquiry.CustomerPOModel
+
+@{
+    ViewBag.Title = "CretaePurchaseOrder";
+}
+
+
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#ItemDrp").select2({
+            placeholder: "Please Select a Item",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".CustDrp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+
+<style>
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: auto;
+        max-width: 600px;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 500px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+
+@if (Model.PurchaseOrderId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Purchase Order
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Purchase Order
+    </div>
+}
+
+@using (Html.BeginForm("CretaePurchaseOrder", "Enquiry", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            @if (Model.PurchaseOrderId > 0)
+            {
+                <td>
+                    <label>Purchase Order ID</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.PurchaseOrderId, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+            <td>
+                <div class="">
+                    <label>Customer</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.Status, new { id = "StatusId" })
+                    @Html.HiddenFor(model => model.DocumentFile, new { id = "StatusId" })
+                    @Html.HiddenFor(model => model.DocumentFileOld, new { id = "StatusId" })
+                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerLst, "--- Please Select Customer ---", new { @class = " CustDrp form-control", style = "width:310px", id = "Customerdrp", @disabled = "" })
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <div class="">
+                    <label>PO Number</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { @class = "form-control", id = "PurchaseOrderNumber", @readonly = "Readonly" })
+                </div>
+            </td>
+            <td>
+                <label>PO Date</label>
+            </td>
+            @if (Model.Status == 26 || Model.Status == 0)
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePicker("PODate").Value(DateTime.Now).DateFormat("MM/dd/yyyy").ReadOnly()
+                    </div>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <div class="">
+                        @Html.EJ().DatePicker("PODate").Value(Model.PODate).DateFormat("MM/dd/yyyy").ReadOnly(true).ReadOnly()
+                    </div>
+                </td>
+            }
+
+            <td>
+                <label>Document File:</label>
+            </td>
+            <td>
+            <td id="upFile4">
+                <div class=" input-group-btn">
+
+                    <input type="file" name="file" id="file" multiple value="uploadfile" class="btn btn-success" disabled />
+                </div>
+
+            </td>
+
+            <td>
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td width="110px">
+                <div class="">
+                    <label>Remark</label>
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Remark, new { @style = "Width: 800Px; max-width: 540px;", @class = "form-controal", id = "Remarkabc", @readonly = "Readonly" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    if (Model.PurchaseOrderId > 0)
+    {
+        <table>
+            <tr>
+                <td width="80px"></td>
+                <td>
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdPODetailLst")
+                .Datasource((IEnumerable<object>)@Model.PODetaillist)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling()
+               
+    .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                .EnableAltRow(true)
+                .AllowSorting(true)
+           
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("Item Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(30).Add();
+            col.Field("ItemName").HeaderText("Item Name").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("QuotationId").HeaderText("QuotationId").Visible(false).TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("QuotationName").HeaderText("Quotation").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Rate").HeaderText("Rate").Width(70).Add();
+            col.Field("Remark").HeaderText("Remark").Width(100).Add();
+            col.Field("ExpectedDateStr").Visible(true).AllowEditing(true).HeaderText("Expected Date").Width(50).Add();
+            //col.Field("ApprovedBy").HeaderText("Approved By").Width(40).Add();
+            //col.Field("ApprovedDatestr").HeaderText("Approved Date").Width(40).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(40).Add();
+            col.Field("ModifiedDatestr").HeaderText("Modified Date").Width(40).Add();
+            col.Field("PurchaseDetailOrderId").Visible(false).HeaderText("Modified Date").Width(40).Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.ContextClick("contextclick");
+            })
+                        )
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+    }
+    <table>
+        <tr>
+            @if (Model.PurchaseOrderId > 0)
+            {
+                <td>
+                    <label> Created By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Created Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Modified By</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+                <td>
+                    <label>Modified Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "Readonly" })
+                    </div>
+                </td>
+            }
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>
+                @Html.ActionLink(" Back", "ItemViewDetail", new { ItemId = ViewBag.ItemId }, new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left" })
+            </td>
+          
+        </tr>
+    </table>
+}
+
+
+@Html.EJ().ScriptManager()
+
+
+
+

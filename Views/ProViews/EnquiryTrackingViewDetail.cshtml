@@ -1,0 +1,245 @@
+﻿@model  SmartSys.BL.ProViews.EnquiryTrackingViewDetail
+@using SmartSys.Utility;
+@{
+    ViewBag.Title = "Enquiry Tracking";
+}
+<br />
+<br />
+
+<div id="chart-container">
+
+</div>
+@{
+    var jss = new System.Web.Script.Serialization.JavaScriptSerializer();
+    var userInfoJson = jss.Serialize(ViewBag.test);
+}
+@{
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(700)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)//@<p id="Title"></p>)
+        .Render();
+}
+
+<script>
+    function openDialog() {
+        $("#seconddialog").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#seconddialog").ejDialog("open");
+    }
+</script>
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Chart</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/primitives.min.js"></script>
+    <script src="~/Scripts/primitives.latest.js"></script>
+    <link href="~/Content/primitives.latest.css" media="screen" rel="stylesheet" type="text/css" />
+    <script type='text/javascript'>
+
+    $(window).load(function () {
+
+        var options = new primitives.famdiagram.Config();
+        var userInfo = JSON.parse('@Html.Raw(userInfoJson)');
+            var items = userInfo;
+
+            options.items = items;
+            options.cursorItem = 2;
+            options.linesWidth = 1;
+            options.linesColor = "black";
+            options.hasSelectorCheckbox = primitives.common.Enabled.False;
+            options.normalLevelShift = 20;
+            options.dotLevelShift = 20;
+            options.lineLevelShift = 20;
+            options.normalItemsInterval = 10;
+            options.dotItemsInterval = 10;
+            options.lineItemsInterval = 10;
+            options.pageFitMode = 0;
+            options.templates = [getContactTemplate()];
+            options.onItemRender = onTemplateRender;
+            options.defaultTemplateName = "contactTemplate";
+            options.normalLevelShift = 44;
+
+            options.onMouseDblClick= function (e, data) {
+                var message = data.context.description;
+                var id = data.context.id;
+                document.getElementById("Title").innerHTML = message;
+                var path = '@Url.Action("EnqTrackGraph", "ProViews")' + "?iD=" + id;
+                $("#seconddialog").ejDialog({
+                      '<lable id="Title">': message,  //data.context.description,
+
+                   contentUrl: path,
+                   contentType: "ajax"
+
+               });
+                $("#seconddialog").ejDialog("open");
+
+            };
+
+
+            jQuery("#basicdiagram").famDiagram(options);
+
+            function onTemplateRender(event, data) {
+                switch (data.renderingMode) {
+                    case primitives.common.RenderingMode.Create:
+                        /* Initialize widgets here */
+                        break;
+                    case primitives.common.RenderingMode.Update:
+                        /* Update widgets here */
+                        break;
+                }
+
+                var itemConfig = data.context;
+
+                if (data.templateName == "contactTemplate") {
+                    //data.element.find("[name=photo]").attr({ "src": itemConfig.image, "alt": itemConfig.title });
+                    data.element.find("[name=titleBackground]").css({ "background": itemConfig.itemTitleColor });
+
+                    data.element.find("[name=label]").text(itemConfig.percent * 100.0 + '%');
+
+                    var fields = ["title", "description"];
+                    for (var index = 0; index < fields.length; index++) {
+                        var field = fields[index];
+
+                        var element = data.element.find("[name=" + field + "]");
+                        if (element.text() != itemConfig[field]) {
+                            element.text(itemConfig[field]);
+                        }
+                    }
+                }
+            }
+
+            function getContactTemplate() {
+                var result = new primitives.orgdiagram.TemplateConfig();
+                result.name = "contactTemplate";
+                result.itemSize = new primitives.common.Size(220, 120);
+                result.minimizedItemSize = new primitives.common.Size(3, 3);
+                result.highlightPadding = new primitives.common.Thickness(2, 2, 2, 2);
+                var itemTemplate = jQuery(
+                  '<div class="bp-item bp-corner-all bt-item-frame" style="border-width: 4px; ">'
+                    + '<div name="titleBackground" class="bp-item bp-corner-all bp-title-frame" style="top: 2px; left: 2px; width: 216px; height: 20px; overflow: hidden;">'
+                        + '<div name="title" class="bp-item bp-title" style="top: 3px; left: 6px; width: 208px; height: 18px; font-weight: bold; overflow: hidden;">'
+                        + '</div>'
+                    + '</div>'
+
+                    + '<div name="description" class="bp-item" style="top: 22px; left: 16px; width: 182px; height: 100px; font-size: 14px; font-weight: bold;font-family: "Arial" "></div>'
+                      + '</div>'
+                ).css({
+                    width: result.itemSize.width + "px",
+                    height: result.itemSize.height + "px"
+                }).addClass("bp-item bp-corner-all bt-item-frame");
+                result.itemTemplate = itemTemplate.wrap('<div>').parent().html();
+
+                return result;
+            }
+
+        });//]]>
+    </script>
+</head>
+<body>
+    <table style="height:25px">
+        <tr>
+            <td width="400px">
+                <table>
+                    <tr>
+                        <td style="margin-left:20px">
+                            <label> Enquiry Id:</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+
+                                @Html.TextBoxFor(model => model.EnqId, new { style = "width:100px;", @class = "form-control", id = "EnqId" })
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn-xs btn-info  glyphicon glyphicon-search ShowChart "> Show Chart</button>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+            <td>                
+                    <table id="tableabc" style="margin-top:20px">                       
+                        <tr>
+                            <td width="120px">
+                                <label>Customer Name:</label>
+                            </td>
+                            <td>
+                                @Model.CustomerName
+                                @*@Html.TextBoxFor(model => model.CustomerName, new { style = "width:300px;", @class = "form-control", id = "CustName" })*@
+                            </td>
+                            <td style="margin-left:50px" width="130px">
+                                <label>
+                                    Enquiry By :
+                                </label>
+                            </td>
+                            <td>                               
+                                    @Model.EnqiryGetBy
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="80px">
+                                <label>
+                                    Enquiry Date :
+                                </label>
+                            </td>
+                            <td>
+                                <div>
+                                    &nbsp;&nbsp; @Model.EnqiryDate
+
+                                </div>
+                            </td>
+                            <td>
+                                <label>
+                                    Prepration Date:
+                                </label>
+
+                            </td>
+                            <td>
+                                <div>
+                                    &nbsp;&nbsp; @Model.PreprationDate
+
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>              
+            </td>
+
+        </tr>
+
+
+    </table>
+    <div id="basicdiagram" style="width:auto;height:3000px; overflow-x:auto" />
+</body>
+</html>
+<script type='text/javascript'>
+        $(document).ready(function () {
+            var CustName = $('#EnqId').val();
+            if (CustName.toString() == "0")
+            {
+                $('#tableabc').hide();
+            }
+            $('.ShowChart').click(function (e) {
+                $('#basicdiagram').show();
+
+                var EnqId = $('#EnqId').val();
+                var path = '@Url.Content("~/ProViews/EnquiryTrackingViewDetail")' + "?EnqId=" + EnqId
+                window.location.replace(path);
+            })
+
+        });
+
+</script>

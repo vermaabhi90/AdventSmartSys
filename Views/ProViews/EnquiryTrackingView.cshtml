@@ -1,0 +1,168 @@
+﻿@model   SmartSys.BL.ProViews.MailEnquiryTimespan
+@{
+    ViewBag.Title = "Enquiry Tracking";
+}
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Enquiry Tracking
+</div>
+<link href="~/Content/progressBar.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Btn').click(function () {
+            var EnqId = $('#search').val();
+            
+            if (EnqId.toString() == "")
+            {
+                alert("Please Enter EnqId ");
+                return false;
+            }
+            var path = '@Url.Content("~/ProViews/EnquiryTrackingView")' + "?EnqId=" + EnqId
+            event.preventDefault();
+            window.location.replace(path);                     
+
+        });
+    })
+            </script>
+<div id="linearframe" align="left">
+
+    <table>
+        <tr>
+            <td>
+                <label>Enquiry Number</label>
+            </td>
+            <td>
+                <input type="number" class="form-control" id="search" />
+            </td>
+            <td>
+                <input type="button" value="Search" class="btn btn-primary form-control" id="Btn" onclick="window.location.reload()" />
+            </td>
+        </tr>
+        <tr align="center">
+
+
+            @for (int i = 0; i < 15; i++)
+            {
+                <td align="center">
+                    @(Html.EJ().LinearGauge(i.ToString()).LabelColor("#8c8c8c").Width(500)
+                    //@(Html.EJ().LinearGauge().LabelColor("#8c8c8c").Width(500)
+                    .ClientSideEvents(cli => cli.Load("loadGaugeTheme"))
+                    .Width(100)
+                    .Scales(s =>
+                    {
+                        s.Width(10).Minimum(0).Maximum(1000).MajorIntervalValue(100)
+                         .Maximum(Model.MailEnqTimespanLst[i].TimeAxis).MajorIntervalValue((Model.MailEnqTimespanLst[i].TimeAxis) / 20)
+                         
+                         .BackgroundColor("transparent")
+                         .Border(bor => bor.Color("transparent").Width(0))
+                         .ShowRanges(true)
+                         .Type(ScaleType.Rectangle)
+                         .ShowMarkerPointers(false)
+                         .Length(310)
+                         .Position(pos => { pos.X(50).Y(50); })
+                         .Labels(lbl => { lbl.Font(fnt => { fnt.Size("11px").FontFamily("Segoe UI").FontStyle("bold"); }).DistanceFromScale(dfs => dfs.X(-12)).Add(); })
+                            //.BarPointers(barptr => { barptr.BarPointerValue(Convert.ToInt32(Model.MailEnqTimespanLst[i].MinuteDiff)).Width(7).BarPointerBackgroundColor("#6FAAB0").Add(); })
+                         .BarPointers(barptr => { barptr.BarPointerValue(Model.MailEnqTimespanLst[i].MinuteDiff).Width(7).BarPointerBackgroundColor("#22A7F0").Add(); })
+                         .Ticks(tic => { tic.Type(TickType.MajorInterval).Width(1).Color("#8c8c8c").Add(); })
+                            .Ranges(rng =>
+                            {
+                                rng.EndValue(Model.MailEnqTimespanLst[i].OutstandingResponseTime).StartValue(0).DistanceFromScale(5).Placement(RangePlacement.Far).RangeBackgroundColor("#2EFE2E").Border(bor => bor.Color("#2EFE2E")).StartWidth(3).EndWidth(7).Add();
+                                rng.EndValue(Model.MailEnqTimespanLst[i].MinimumTime).StartValue(Model.MailEnqTimespanLst[i].OutstandingResponseTime).DistanceFromScale(5).Placement(RangePlacement.Far).RangeBackgroundColor("#F6B53F").Border(bor => bor.Color("#F6B53F")).StartWidth(7).EndWidth(11).Add();
+                                rng.EndValue(Model.MailEnqTimespanLst[i].MaximumTime).StartValue(Model.MailEnqTimespanLst[i].MinimumTime).DistanceFromScale(5).Placement(RangePlacement.Far).RangeBackgroundColor("#fc7965").Border(bor => bor.Color("#fc7965")).StartWidth(11).EndWidth(15).Add();
+                                rng.EndValue(Model.MailEnqTimespanLst[i].TimeAxis).StartValue(Model.MailEnqTimespanLst[i].MaximumTime).DistanceFromScale(5).Placement(RangePlacement.Far).RangeBackgroundColor("#E94649").Border(bor => bor.Color("#E94649")).StartWidth(15).EndWidth(20).Add();
+                            })
+                         .Add();
+                    }))
+                </td>
+
+            }
+
+        </tr>
+            
+        <tr align="center">
+
+            @*<td align="center" class="">
+                <img src="~/Content/themes/ema.png">
+            </td>*@
+            @for (int i = 1; i < 15; i++)
+            {
+                if (Model.MailEnqTimespanLst[i].MinuteDiff != 0)
+                {
+                    <td align="center" style="text-align:center">
+
+                        @*<td align="center" style="background-color:#01DF01"> @Model.MailEnqTimespanLst[i].StatusDesc *@
+                    
+                        <div class="row bs-wizard" style="border-bottom:0;">
+                            <div class="row bs-wizard-step complete">
+                                <div class="text-center bs-wizard-stepnum">Step @i</div>
+                                <div class="progress"><div class="progress-bar"></div></div>
+                                <a href="#" class="bs-wizard-dot"></a>
+                                <div class="bs-wizard-info text-center">StatusDesc</div>
+                            </div>
+                        </div>
+        
+
+                    </td>
+                }
+                else
+                {
+                    <td align="center" style="background-color:#FE9A2E">
+                        @Model.MailEnqTimespanLst[i].StatusDesc @*Stage @i*@
+                    </td>
+                }
+            }
+        </tr>
+</table>
+   </div>
+    
+
+@*<div class="container">
+
+
+        <div class="row bs-wizard" style="border-bottom:0;">
+
+            <div class="col-xs-3 bs-wizard-step complete">
+                <div class="text-center bs-wizard-stepnum">Step 1</div>
+                <div class="progress"><div class="progress-bar"></div></div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Lets get to know you!</div>
+            </div>
+
+            <div class="col-xs-3 bs-wizard-step complete">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Step 2</div>
+                <div class="progress"><div class="progress-bar"></div></div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Where are you located?</div>
+            </div>
+
+            <div class="col-xs-3 bs-wizard-step active">
+                <!-- complete -->
+                <div class="text-center bs-wizard-stepnum">Step 3</div>
+                <div class="progress"><div class="progress-bar"></div></div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Need help with a logo? We'll design one for you for $200 USD in 72 hours!</div>
+            </div>
+
+            <div class="col-xs-3 bs-wizard-step">
+                <!-- active -->
+                <div class="text-center bs-wizard-stepnum">Step 4</div>
+                <div class="progress"><div class="progress-bar"></div></div>
+                <a href="#" class="bs-wizard-dot"></a>
+                <div class="bs-wizard-info text-center">Finished!</div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>*@
+
+@*</div>*@
+
+@*<style>
+    .image {
+        background-image: url("/Content/themes/ema.png");
+    }
+</style>*@

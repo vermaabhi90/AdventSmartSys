@@ -1,0 +1,40 @@
+﻿@model SmartSys.BL.DashBoard.MonthlySalesDataModel
+@using Syncfusion.JavaScript.DataVisualization
+<html>
+<body>
+    <div style=" background-color :white;border-color:blue;
+           border-width:2px;
+            border-style:solid;">
+
+        <div id="container2"></div>
+    </div>
+</body>
+</html>
+<div>
+    @(Html.EJ().Chart("container2")
+           .Series(ser =>
+                    {
+                        ser.Name("Advent  Sales");
+                        ser.Fill("#69D2E7");
+                        ser.Tooltip(tooltip => tooltip.Format("#point.x# : #point.y# <br/>").Visible(true));
+                        ser.DataSource(@Model.lstSaleChart);
+                        ser.XName("Month");
+                        ser.YName("TotalSales");
+                        ser.Query("ej.Query().from('TotalSales').take(10)")
+                        .EnableAnimation(true).Add();
+                    })
+             .Load("loadTheme")
+             .PrimaryXAxis(x => x.LabelRotation(-30))
+             .CommonSeriesOptions(cr => cr.EnableAnimation(true))
+             .CanResize(true)
+                     .Title(title => title.Text("Advent Sales Chart"))
+             .Size(sz => sz.Height("350"))
+
+             .Legend(lg => { lg.Visible(true).Position(LegendPosition.Top); })
+    )
+    <script>
+            $("#controlarea").css("visibility", "visible");
+    </script>
+
+</div>
+

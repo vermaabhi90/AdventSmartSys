@@ -1,0 +1,180 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.DispatchModel>
+
+@{
+    ViewBag.Title = "DispatchList";
+}
+
+<style>
+    .button {
+        border: none;
+        color: white;
+        padding: 8px 18px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+    }
+</style>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Dispatch List
+</div>
+
+            <table style="color:white">
+                <tr>
+                    <td>
+                      @Html.ActionLink(" Create", "CreateDispatch", new { DispatchId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+                    </td>                                                        
+                    <td>
+                        <div class="navbar-text">
+                            <button type="button" class="btn-sm" style="background-color: #3DB172;" value="">Processed</button>
+                        </div>
+                    </td>
+                    <td>
+                        <a id="link1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                        @Html.EJ().Tooltip("link1").Content("The Rows Who match to Processed Background Color.Those Rows Are Processed")
+
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            <button type="button" class="btn-sm" style="background:#C43A2C" value="">Rejected</button>
+                        </div>
+                    </td>
+                    <td>
+                        <a id="link2" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                        @Html.EJ().Tooltip("link2").Content("The Rows Who match to Rejected Background Color.These Rows are Rejected By Manager")
+                    </td>
+
+                </tr>
+
+            </table>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.DispatchModel>("grdDetailList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+        .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+        .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportDispatchDetailList")))
+         //.ContextMenuSettings(contextMenu =>
+         //                           {
+         //                               contextMenu.EnableContextMenu()
+         //                              .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+         //                              // .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.DeleteRecord))
+         //                                  .CustomContextMenuItems(new List<string> { "Edit" });
+         //                           })      
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+                 //  c.AddItem("Delete_Record", "Delete Record");
+             });
+
+         })
+        .Columns(col =>
+        {
+            col.Field("DispatchId").HeaderText("Dispatch Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("CompanyName").HeaderText("Company Name").ValidationRules(v => v.AddRule("required", true)).Width(110).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            //   col.Field("STLocationName").HeaderText("Location Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("DispatchDate").HeaderText("Dispatch Date").Format("{0:MM/dd/yyyy}").ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("StatusDesc").HeaderText("Status").TextAlign(TextAlign.Left).Width(90).Add();
+            col.Field("AirwayBillNo").HeaderText("Airway Bill No").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("Invoice_No").HeaderText("Invoice No").TextAlign(TextAlign.Left).Width(140).Add();
+            col.Field("ExportPermitNo").HeaderText("Export Permit No").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("FreightForwarderName").HeaderText("FreightForwarder Name").TextAlign(TextAlign.Left).Width(140).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.HeaderText("Edit")
+           .Template("#edit")
+           .AllowFiltering(false)
+       .IsUnbound(true)
+       .TextAlign(TextAlign.Center)
+       .Width(50)
+       .Add();
+        })
+
+         .ClientSideEvents(eve =>
+         {
+             eve.ContextClick("contextclick");
+             eve.QueryCellInfo("querycellinfo");
+         })
+    )
+</div>
+<script>
+    function querycellinfo(args) {
+        if (args.column.field == "StatusDesc" && args.data.StatusDesc == "Approved") {
+            $($(args.cell).parent()).css("backgroundColor", "#479039");/*custom css applied to the row */
+        }
+        if (args.column.field == "StatusDesc" && args.data.StatusDesc == "Rejected") {
+            $($(args.cell).parent()).css("backgroundColor", "#C43A2C");/*custom css applied to the row */
+        }
+        if (args.column.field == "StatusDesc" && args.data.StatusDesc == "Dispatch Send For Approval") {
+            $($(args.cell).parent()).css("backgroundColor", "#3DB172");/*custom css applied to the row */
+        }
+    }
+</script>
+<script id="edit" type="text/x-jsrender">
+    @*{{if Status == 'NEW'}}*@
+
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Enquiry/CreateDispatch?DispatchId={{:DispatchId}}"></a>
+    @*{{else}}*@
+
+
+    @*{{/if}}*@
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Enquiry/CreateDispatch")' + "?DispatchId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var DispatchId = result[0]["DispatchId"];
+                var Status = result[0]["Status"];
+              //  if (Status == "NEW") {
+                    var path = '@Url.Content("~/Enquiry/CreateDispatch")' + "?DispatchId=" + DispatchId
+                    event.preventDefault();
+                    window.location.replace(path);
+              //  }
+            }
+            else
+                if (args.text == "Delete Record") {
+                    var tempData = args.text;
+                    var grid = $("#grdDetailLst").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var DispatchId = result[0]["DispatchId"];
+                    var path = '@Url.Content("~/Enquiry/DeleteDispatch")' + "?DispatchId=" + DispatchId
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+
+    }
+   
+</script>

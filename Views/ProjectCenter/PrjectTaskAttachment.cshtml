@@ -1,0 +1,64 @@
+﻿@model SmartSys.BL.Project.ProcjectTypeDocModel
+
+@{
+    ViewBag.Title = "PrjectTaskAttachment";
+}
+
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    ADD Attachment
+</div>
+
+@using (Html.BeginForm("PrjectTaskAttachment", "ProjectCenter", FormMethod.Post, new { Id = "frmAddress", enctype = "multipart/form-data" }))
+{
+
+
+
+    <table style="margin-left:20px">
+
+        <tr>
+            <td>
+                <label for="ItemName">File:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.HiddenFor(model => model.ProjectTypeId)
+                    @Html.HiddenFor(model => model.ProjectTypeTaskId)
+                    <div class="navbar-text input-group-btn">
+
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" required />                    
+                    </div>
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">Description:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.TextAreaFor(model => model.Description, new {style="width:500px", @required = "required" ,@class="form-control"})
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+
+
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                </div>
+            </td>
+           
+        </tr>
+
+    </table>
+
+
+}
+
+
+
+

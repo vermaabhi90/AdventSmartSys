@@ -1,0 +1,49 @@
+﻿.e-grid .e-rowcell {
+            height: 22px;
+            font-size: 12px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+            color: black;
+            font-family: "Times New Roman", Georgia, Serif;
+        }
+
+        .e-grid .e-alt_row { /* grid alternate row color*/
+            background: #F8F8FF;
+        }
+
+        .e-grid .e-cloneproperties { /* grid grouped drag cloner color*/
+            color: #fff;
+            background: #ffaf4e;
+            border-color: #bbbcbb;
+        }
+
+        .e-grid .e-groupcaption, .e-grid .e-groupcaptionsummary { /* grid summary color*/
+            background-color: #f6f7f7;
+            border-color: #bbbcbb;
+        }
+
+        .e-grid td.e-active { /* grid selection color and styles*/
+            background: #C9EDEF;
+            color: black;
+            font-weight: bold;
+            /* text-align: left !important; grid selection text align*/
+        }
+
+        .e-grid .e-gridcontent { /* grid content color*/
+            /* background-color: #FFF8DC;*/
+            border-color: #bbbcbb;
+            color: black;
+        }
+
+        .e-grid .e-groupdroparea { /* grid grouped area color*/
+            background: #ffaf4e;
+            border-top-color: #bbbcbb;
+            color: #fff;
+        }
+
+        .e-grid td.e-active { /* grid selection color and styles*/
+            background: #C9EDEF;
+            color: black;
+            font-weight: bold;
+            /*  text-align: left !important;*/ /* grid selection text align*/
+        }

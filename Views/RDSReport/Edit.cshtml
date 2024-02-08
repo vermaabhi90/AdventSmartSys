@@ -1,0 +1,304 @@
+﻿@model SmartSys.BL.RDS.RDSReportModel
+
+@{
+    ViewBag.Title = "RDS Report";
+    var gridEvent = new WebGrid(source: Model.lstReportDep, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridEvent");
+    var gridTrigger = new WebGrid(source: Model.lstTriggerDep, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridTrigger");
+}
+o
+<script src="~/Scripts/jquery-2.1.4.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.xyz').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).closest('.xyz').attr('id');
+           var agree=confirm("Are you sure to delete ?")
+               if (agree)
+                {
+                    var path = '@Url.Content("~/RDSReport/DeleteEventAction")' + "?EventId=" + id
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+
+           else
+               {
+                   return false;
+               }
+
+            });
+        $('.abc').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).closest('.abc').attr('id');
+           var agree=confirm("Are you sure delete ?")
+           if (agree)
+                {
+                    var path = '@Url.Content("~/RDSReport/DeleteTriggerAction")' + "?TriggerId=" + id
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+
+                else
+                {
+                    return false;
+                }
+        });
+    });
+</script>
+<style type="text/css">
+    .modal-content {
+        width: 1200px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 800px;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+<div class="page-header glyphicon glyphicon-pencil  text-info ">
+    Edit RDS Trigger/Event Dependency
+</div>
+<div>
+
+</div>
+@using (Html.BeginForm("Edit", "RDSReport", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <table>
+            <tr>
+                <td>
+                    <label for="ReportId">Report Id</label>
+
+                </td>
+                <td>
+
+
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.ReportId, new { disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+
+
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ReportName">Report Name</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.EditorFor(model => model.ReportName)
+                        @Html.ValidationMessageFor(model => model.ReportName)
+                    </div>
+                </td>
+                <td>
+                    <label for="BusinessLineName">Business Line Name</label>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.BusinessLineName, new { disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="ReportType">Report Type</label>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.ReportType, new { disabled = "disabled", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.ReportType)
+                    </div>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+
+                    <label for="EventId">Modified By</label>
+
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+
+
+                </td>
+                <td>
+
+                    <label for="EventId">Modified Date</label>
+
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+
+
+                </td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>
+                        Event Dependency:
+                    </label>
+                </td>
+
+                <td>
+                    <div class="navbar-text">
+                        @Html.ActionLink(" Add Event", "AddEvent", new { ibjecid = "1" }, new { id = "lnkAddAction", @class = "modal-link btn btn-info glyphicon glyphicon-plus" })
+                    </div>
+                  
+                </td>
+               
+            </tr>
+        </table>
+
+        <br />
+        <table>
+            <tr>
+                <td>
+                    @if (Model.lstReportDep.Count > 0)
+                    {
+                        <div id="gridEvent">
+                            @gridEvent.GetHtml(
+                     tableStyle: "webgrid",
+                    alternatingRowStyle: "webgrid-alt",
+                     headerStyle: "webgrid-header",
+                     selectedRowStyle: "webgrid-select",
+                    mode: WebGridPagerModes.All,
+                    firstText: "<<First",
+                    previousText: "<Previous",
+                    nextText: ">Next",
+                    lastText: ">>Last",
+                    columns: new[]{
+                    gridEvent.Column("EventId","Event Id"),
+                    gridEvent.Column("EventName","Event Name"),
+                     gridEvent.Column("ModifiedByName","Created By"),
+                    gridEvent.Column("CreatedDate","Created Date"),
+
+                    @*    *@
+                     gridEvent.Column(header:"Delete",format:(item) => Html.ActionLink("Delete", "DeleteEventAction","RDSReport",new {EventId=item.EventId},new {@id=item.EventId,@class = "xyz"}))
+
+
+                      })
+                        </div>
+                    }
+                </td>
+            </tr>
+        </table>
+
+
+        <table>
+            <tr>
+                <td>
+                    <label>
+                        Event Dependency
+                    </label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+                        @Html.ActionLink(" Add Trigger", "AddTrigger", new { ibjecid = "1" }, new { id = "lnkAddTriggerAction", @class = "modal-link btn btn-info glyphicon glyphicon-plus" })
+                  </div>
+                  </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+
+                <td>
+                    @if (Model.lstTriggerDep.Count > 0)
+                    {
+                        <div id="gridTrigger">
+                            @gridTrigger.GetHtml(
+                     tableStyle: "webgrid",
+                    alternatingRowStyle: "webgrid-alt",
+                     headerStyle: "webgrid-header",
+                     selectedRowStyle: "webgrid-select",
+                    mode: WebGridPagerModes.All,
+                    firstText: "<<First",
+                    previousText: "<Previous",
+                    nextText: ">Next",
+                    lastText: ">>Last",
+                    columns: new[]{
+                    gridTrigger.Column("TriggerId","Trigger Id"),
+                    gridTrigger.Column("TriggerName","Trigger Name "),
+                     gridTrigger.Column("ModifiedByName","Created By"),
+                    gridTrigger.Column("CreatedDate","Created Date"),
+                      gridEvent.Column(header:"Delete",format:(item) => Html.ActionLink("Delete", "DeleteTriggerAction","RDSReport",new {TriggerId=item.TriggerId},new {@id=item.TriggerId,@class = "abc"}))
+
+                    })
+                        </div>
+                    }
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    @Html.ActionLink(" Back", "RDSRepotList", null, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn btn-info glyphicon glyphicon-save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+
+
+    </body>
+</html>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

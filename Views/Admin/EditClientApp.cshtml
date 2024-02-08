@@ -1,0 +1,129 @@
+﻿@model SmartSys.BL.ClientAppModel
+
+@{
+    ViewBag.Title = "EditClientApp";
+}
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var AppName = $('#AppName').val();
+            var LoginName = $('#LoginName').val();
+
+            var Password = $('#Password').val();
+            if (AppName.toString() == "") {
+                alert("Please Enter AppName ");
+                return false;
+            }
+            if (LoginName.toString() == "") {
+                alert("Please Enter LoginName ");
+                return false;
+            }
+            if (Password.toString() == "") {
+                alert("Please Enter Password ");
+                return false;
+            }
+            return true;
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Client Application
+</div>
+@using (Html.BeginForm("EditClientApp", "Admin", FormMethod.Post, new { Id = "Form2" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="ClientAppId">Client App Id</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.EditorFor(model => model.ClientAppId, new { disabled = "disabled", htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.ClientAppId, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="AppName">App Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.AppName, new { htmlAttributes = new { @class = "form-control", id = "AppName" } })
+                        @Html.ValidationMessageFor(model => model.AppName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="LoginName">Login Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.LoginName, new { htmlAttributes = new { @class = "form-control", id = "LoginName" } })
+                        @Html.ValidationMessageFor(model => model.LoginName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Password">Password</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", id = "Password" } })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+
+                    <label for="EventId">ModifiedBy</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="EventId">Modified Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>            
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetClientAppList';" );"> Back</button>
+                    <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>                
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}

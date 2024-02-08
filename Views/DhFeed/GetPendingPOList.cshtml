@@ -1,0 +1,424 @@
+﻿@model IEnumerable<SmartSys.BL.PendingPOModel>
+@{
+    ViewBag.Title = "GetPendingPOList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Pending PO List
+</div>
+<div>
+    <table>
+        <tr>
+            <td><label>Company</label></td>
+            <td>
+                <div class="">
+                    <input type="text" value="Advent" name="CompCode" id="CompCode" />                   
+                </div>
+            </td>            
+        </tr>
+    </table>
+</div>
+<br />
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+                                            top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+                                            opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<div id="GridList">
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.PendingPOModel>("PendingPOMainList")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Add_Comments", "Add Comments");
+                                                c.AddItem("View_History", "View History");
+
+                                            });
+
+                                        })
+                                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentNo").HeaderText("Order No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(40).Add();
+            col.Field("LineNo").HeaderText("LineNo").Visible(false).TextAlign(TextAlign.Left).Width(35).Add();
+            col.Field("OrderDate").HeaderText("Order Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(25).Add();
+            col.Field("VendNo").HeaderText("Vendor No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(25).Add();
+            col.Field("Vendname").HeaderText("Vendor Name").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("ItemNo").HeaderText("Item No").TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(50).Visible(true).Add();            
+            col.Field("QuantityReceived").HeaderText("Quantity Received").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("QuantityInvoiced").HeaderText("Quantity Invoiced").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Balance").HeaderText("Balance").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("Quantity").HeaderText("Quantity").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("DirectUnitCost").HeaderText("Direct Unit Cost").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add(); 
+            col.Field("Amount").HeaderText("Amount").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+@{
+
+    Html.EJ()
+        .Dialog("ShowHistory")
+        .Title("<a id='Title'>View History</a>")
+        .Width(1200)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<div>
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.PendingPOModel>("PendPOShowHistoryGrid")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("DocumentNo").HeaderText("Order No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(40).Add();
+                    //col.Field("ItemNo").HeaderText("Document No").TextAlign(TextAlign.Left).Width(40).Add();
+                    col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                )
+            </div>
+        </div>)
+            .Render();
+}
+<script>
+    function openDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+</script>
+
+@{Html.EJ().Dialog("dialogIcon").Title("Add Comments").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Add Comments
+        </div>
+        <table>
+            <tr>
+                <td width="80px">
+                    <label>
+                        Order No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="DocumentNo" class="form-control" readonly />                       
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Item No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="ItemNo" class="form-control" readonly />
+                    </div>
+                </td>
+                
+                <td>
+                    <label>
+                        Description:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Description" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Order Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="OrderDate" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>Vendor Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Vendname" class="form-control" readonly />                        
+                    </div>
+                </td>
+               
+            </tr>
+            <tr>
+                <td>
+                    <label>
+                        Quantity:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Quantity" class="form-control" readonly />
+                    </div>
+                </td>
+
+                <td>
+                    <label>
+                        Direct Unit Cost:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="DirectUnitCost" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Amount:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="Amount" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table style="margin-left:15px">
+            <tr>
+                <td>
+                    <label>
+                        Comments:
+                    </label>
+                </td>
+                <td width="32px"></td>
+                <td>
+                    <div class="">
+                        @Html.TextArea("Comments", new { Id = "Comments", @class = "form-control", @style = "min-width:500px" })
+                    </div>
+                </td>
+                <td>
+                <div class="">
+                    <input type="text" id="LineNo" style="visibility:hidden" class="form-control"  readonly /> 
+                </div>
+            </td>
+            </tr>
+        </table>
+        <br />
+        <table style="margin-left:100px">
+            <tr>
+                <td>
+                    @*<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>*@
+                    <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " data-dismiss="modal" id="Save"> Save</button>
+                </td>
+                <td style="width:50px"></td>
+            </tr>
+        </table>
+        <div>
+            <div>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.NNRModel>("PendPOCommentlist")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>)
+          .Width(1200)
+          .Height(700)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+
+<script>
+    $(document).ready(function () {
+       // $('#GridList').hide();
+    });
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "View History") {
+            $("#ShowHistory").ejDialog("open");
+            var tempData = args.text;
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var grid = $("#PendingPOMainList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var DocumentNo = result[0]["DocumentNo"];
+            var MPN = result[0]["MPN"];
+            var ItemNo = result[0]["ItemNo"];
+            var LineNo = result[0]["LineNo"];
+            $.ajax({
+                url: "/DhFeed/ShowPendingPOList",
+                dataType: 'json',
+                type: "POST",
+                data: { DocumentNo: DocumentNo, ItemNo: ItemNo,LineNo:LineNo,CompCode: CompCode },
+                success: function (List) {
+                    var obj = $("#PendPOShowHistoryGrid").ejGrid("instance")
+                    obj.dataSource(List);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+        }
+        else if (args.text == "Add Comments") {
+
+            var tempData = args.text;
+            $("#dialogIcon").ejDialog("open");
+            var grid = $("#PendingPOMainList").ejGrid("instance");
+            var result = this.getSelectedRecords();            
+            var DocumentNo = result[0]["DocumentNo"];
+            var ItemNo = result[0]["ItemNo"];
+            var Description = result[0]["Description"];
+            var Quantity = result[0]["Quantity"];
+            var DirectUnitCost = result[0]["DirectUnitCost"];
+            var Amount = result[0]["Amount"];
+            var Vendname = result[0]["Vendname"];
+            var OrderDate = result[0]["OrderDate"];
+            var LineNo = result[0]["LineNo"];
+            $('#DocumentNo').val(DocumentNo);
+            $('#ItemNo').val(ItemNo);
+            $('#Description').val(Description);           
+            $('#Quantity').val(Quantity);
+            $('#DirectUnitCost').val(DirectUnitCost);
+            $('#Vendname').val(Vendname);            
+            $('#Amount').val(Amount);
+            $('#OrderDate').val(OrderDate);
+            $('#LineNo').val(LineNo);
+            $('#Comments').val("");
+            var DocumentNo = result[0]["DocumentNo"];
+            var ItemNo = result[0]["ItemNo"];
+            var CompCode = $('#CompCode').val();           
+            $.ajax({
+                url: "/DhFeed/ShowPendingPOList",
+                dataType: 'json',
+                type: "POST",
+                data: { DocumentNo: DocumentNo, ItemNo: ItemNo, LineNo: LineNo, CompCode: CompCode },
+                success: function (MPRList) {
+
+                    var obj = $("#PendPOCommentlist").ejGrid("instance")
+                    obj.dataSource(MPRList);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+            //event.preventDefault();
+            //window.location.replace(path);
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+            $('#Save').click(function () {
+                var DocumentNo = $('#DocumentNo').val();
+                var ItemNo = $('#ItemNo').val();
+                var LineNo = $('#LineNo').val();
+            var Comments = $('#Comments').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var CompCode = $('#CompCode').val();
+           // var div = $('#GridList').html();
+            if(Comments =="")
+            {
+                alert("Please Enter Comments");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/DhFeed/SavePendingPOAdventData",
+                data: { DocumentNo: DocumentNo, LineNo: LineNo, ItemNo: ItemNo, Comment: Comments },
+                success: function (ErrorCode) {
+                    toastr.success("Saved Successfully!");
+                    $.ajax({
+                        url: "/DhFeed/GetPendingPOData",
+                        dataType: 'json',
+                        type: "POST",
+                        data: { CompCode: CompCode },
+                        success: function (List) {
+                            //alert("hi")
+                            var obj = $("#PendingPOMainList").ejGrid("instance")
+                            obj.dataSource(List);
+                            $("#GridList").load();
+                           // $('#GridList').html(List);
+                            // $('#GridList').show();
+                            // $("#divLoading").hide();    
+
+                            $("#dialogIcon").ejDialog("close");
+                        },
+                        error: function (req, status, err) {
+                            console.log('something went wrong', status, err);
+                        }
+                    })
+                   //alert("Saved Successfully")
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+          //  window.location.reload();
+        });
+    });
+</script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />

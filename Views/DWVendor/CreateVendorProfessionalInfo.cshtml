@@ -1,0 +1,159 @@
+﻿@model SmartSys.BL.DW.VendorModel
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div class="page-header glyphicon glyphicon-pencil  text-info ">
+    Edit Professional Information
+</div>
+@using (Html.BeginForm("CreateVendorProfessionalInfo", "DWVendor", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <head>
+        <title>WebgridSample</title>
+        <style type="text/css">
+            .modal-content {
+                width: 1400px !important;
+                margin: 30px auto !important;
+                left: 50%;
+         transform: translateX(-50%);
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="">
+            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                <tr>
+                    <td align="center">
+                        <label for="emailId">emailId</label>
+
+                    </td>
+                    <td>
+                        <div >
+                            @Html.TextBoxFor(model => model.emailId , new { @class="form-control"})
+                            @Html.HiddenFor(model => model.VendorId)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <label for="VAT">VAT</label>
+
+                    </td>
+                    <td width:40px">
+                        <div class="">
+                            @Html.TextBoxFor(model => model.VAT, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="PAN">PAN</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.PAN, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="CST">CST</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CST, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="TAN">TAN</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.TAN, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        <label for="ExciseNo">Excise No</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ExciseNo, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ExciseRange">Excise Range</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ExciseRange, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ExciseDivision">Excise Division</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ExciseDivision, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="ExciseCommissionRate">Excise Commission Rate</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ExciseCommissionRate, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td align="center">
+                        <label for="Website">Website</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Website, new { @class = "form-control" })
+                        </div>
+                    </td>
+                    <td>
+
+                        <label for="Remark">Remark</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Remark, new { @class = "form-control" })
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="btn btn-success glyphicon glyphicon-save"> Save</button>
+                        </div>
+
+                    </td>
+                   
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+}

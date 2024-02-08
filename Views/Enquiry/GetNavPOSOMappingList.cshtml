@@ -1,0 +1,128 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.NavPOSOMapModel>
+
+@{
+    ViewBag.Title = "GetNavPOSOMappingList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Nav PO So Mapping List
+</div>
+<script>
+    $(document).ready(function (e) {
+        var str = '@(TempData["Message"])'.toString();
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');
+        }
+    });
+</script>
+<div style="margin-bottom:8px;margin-top:5px">
+   <button type="button" value="Add Record" id="Addrec" class="btn-xm btn-primary glyphicon glyphicon-leaf"> Add Record</button>
+    </div>
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.Enquiry.NavPOSOMapModel>("grdNavPOSOList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+                  .ContextMenuSettings(contextMenu =>
+                  {
+                      contextMenu.EnableContextMenu();
+                      contextMenu.DisableDefaultItems();
+                      contextMenu.CustomContextMenuItems(c =>
+                      {
+                          c.AddItem("Add_Record", "Add Record");
+                          c.AddItem("Edit1", "Edit Record");
+                      });
+
+                  })
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+
+        .Columns(col =>
+        {
+            col.Field("NAVPONO").HeaderText("NAV PO NO").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("NAVSONO").HeaderText("NAV SO NO").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("CompCode").HeaderText("Company").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("ModifiedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Modified By").Width(100).Add();
+            col.Field("ModifiedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+        })
+        )
+    </div>
+    <script>
+        function contextclick(args) {          
+            if (args.text == "Add Record") {
+                var path = '@Url.Content("~/Enquiry/CreateNavPOSOMapping")' + "?NAVPONO=" + "&NAVSONO=" + "&CompCode="
+                $("#NavPOSOMapDetail").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#NavPOSOMapDetail").ejDialog("open");
+            }
+            else
+                if (args.text == "Edit Record") {
+                    var tempData = args.text;
+                    var grid = $("#grdNavPOSOList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var NAVPONO = result[0]["NAVPONO"];
+                    var NAVSONO = result[0]["NAVSONO"];
+                    var CompCode = result[0]["CompCode"];
+                    var CreatedBy = result[0]["CreatedBy"];                  
+                    if (CreatedBy != "ajit@abc.in") {
+                        var path = '@Url.Content("~/Enquiry/CreateNavPOSOMapping")' + "?NAVPONO=" + NAVPONO + "&NAVSONO=" + NAVSONO + "&CompCode=" + CompCode
+                        $("#NavPOSOMapDetail").ejDialog({
+                            contentUrl: path,
+                            contentType: "ajax"
+                        });
+                        $("#NavPOSOMapDetail").ejDialog("open");
+                    }
+                    else {
+                        alert("This Record Created by Admin You can not Edit.")
+                        return false;
+                    }
+                }
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#Addrec').click(function () {
+                var path = '@Url.Content("~/Enquiry/CreateNavPOSOMapping")' + "?NAVPONO=" + "&NAVSONO=" + "&CompCode="
+                $("#NavPOSOMapDetail").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#NavPOSOMapDetail").ejDialog("open");
+            });
+        });
+</script>
+    @{
+
+        Html.EJ()
+            .Dialog("NavPOSOMapDetail")
+            .Title("<a id='Title'></a>")
+            .Width(900)
+            .Height(400)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+    <script>
+        function openDialog() {
+            $("#NavPOSOMapDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#NavPOSOMapDetail").ejDialog("open");
+        }
+    </script>

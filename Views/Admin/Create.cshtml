@@ -1,0 +1,80 @@
+﻿@model SmartSys.BL.Departmentmodel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<style>
+    td {
+        padding-right: 10px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+    Create  Department
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+         
+            var DeptName = $('#DeptName').val();
+          
+          
+            if (DeptName.toString() == "") {
+                alert("Please Enter Department Name ");
+                return false;
+            }
+          
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <html>
+    <body>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="DeptName">Department Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DeptName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DeptName)
+
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="DeptHead">Department Head</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("DeptHead", (IEnumerable<SelectListItem>)ViewBag.DepartmentHead, new { @class = "form-control", style = "width:150px" })
+                        @Html.ValidationMessageFor(model => model.DeptHead)
+                    </div>
+                </td>
+                <td>
+                    <a id="link1" style=""><p class="glyphicon glyphicon-info-sign"></p></a>
+                    @Html.EJ().Tooltip("link1").Content("Here You Can Select DepartMent Head ")
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetDepartmentList';" );"> Back</button>
+                   <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+

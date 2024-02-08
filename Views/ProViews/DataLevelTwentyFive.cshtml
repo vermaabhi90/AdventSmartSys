@@ -1,0 +1,131 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelTwentyFive
+
+@{
+    ViewBag.Title = "DataLevelTwentyFive";
+}
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+@if (Model.PermitType == "ImportPermit")
+{
+    <table>
+        <tr class="spaceUnder">
+            <td>
+                <label>Receipt Date:</label>
+            </td>
+            <td>
+                @Html.EJ().DatePicker("ReceiptDate").Value(Model.ReceiptDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+            </td>
+            <td>
+                <label>Company:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.CompCode, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            
+        </tr>
+        <tr class="spaceUnder">
+            <td>
+                <label>Vendor Name:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.VendorName, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            <td>
+                <label>Freight Forwarder:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.FreightForwarder, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+        </tr>
+        <tr class="spaceUnder">
+            <td>
+                <label>Airway Bill No:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.AirwayBillNo, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            <td>
+                <label>Permit Type:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PermitType, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+        </tr>
+        <tr class="spaceUnder">
+            <td>
+                <label>Ref No:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.RefNo, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            <td>
+                <label>Notification Date:</label>
+            </td>
+            <td>
+                @Html.EJ().DatePicker("NotificationDate").Value(Model.NotificationDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+            </td>           
+        </tr>
+        <tr class="spaceUnder">
+            <td>
+                <label>Permit No:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PermitNo, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            <td>
+                <label>GST Amount:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.GSTAmount, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+        </tr>
+        <tr class="spaceUnder">
+            <td>
+                <label>Currency:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.Currency, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            <td>
+                <label>Time Taken(HH:MM):</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.TimeTaken, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+        </tr>
+        <tr class="spaceUnder">
+            <td>
+                <label>CreatedBy:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+            </td>
+            <td>
+                <label>Created Date:</label>
+            </td>
+            <td>
+                @Html.EJ().DatePicker("CreatedDate").Value(Model.CreatedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+            </td>
+            
+        </tr>
+    </table>
+}
+else
+{
+    <table>
+        <tr class="spaceUnder">
+            <td>
+                <label>PermitType:</label>
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PermitType, new { @readonly = "readonly", @class = "form-control" })
+            </td>           
+        </tr>        
+    </table>
+}
+@Html.EJ().ScriptManager()
+

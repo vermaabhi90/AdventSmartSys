@@ -1,0 +1,185 @@
+﻿@model SmartSys.BL.Tmleave.TravelBudgetModel
+
+@{
+    ViewBag.Title = "AddTravelBudget";
+}
+
+@if (Model.RequestId > 0)
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Edit Travel Budget
+    </div>
+}
+else
+{
+    <div class="page-header glyphicon glyphicon-leaf  text-info">
+        Create Travel budget
+    </div>
+}
+
+
+
+<script>
+    $(document).ready(function () {
+        //$('#frmAddress').get(0).reset();
+        //$('#modal-container').removeData('bs.modal');
+        //$('.abc').click(function (e) {
+
+        //    $('#modal-container').removeData('#modal-container');
+
+        //});
+        $('.save').click(function (e) {
+
+            var TravelBudgetTitle = $('#BudgetTitle').val();
+            var Travedget = $('#TravelBudget').val();
+
+
+           if (TravelBudgetTitle.toString() == "") {
+                alert("Please Enter BudgetTitle ");
+                return false;
+           }
+           if (Travedget.toString() == "") {
+               alert("Please Enter Budget");
+               return false;
+           }
+           if (Travedget.toString() == 0) {
+               alert("Please Enter Budget Correctly");
+               return false;
+           }
+
+
+           $("#frmAddress").unbind('submit').submit();
+
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("AddTravelBudget", "TMLeave", FormMethod.Post, new { Id = "frmAddress", enctype = "multipart/form-data" }))
+{
+    <html>
+    <body>
+        <div >
+
+            <table style="margin-left:20px;border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    @Html.HiddenFor(model => model.RequestId)
+                    @Html.HiddenFor(model => model.FileAttachment)
+                    @if (Model.RequestId > 0)
+                    {
+                        <td>
+
+                            <label for="RequestId">RequestId:</label>
+                        </td>
+                        <td>
+                            <div class="">
+
+                                @Html.TextBoxFor(model => model.RequestId, new { @class = "form-control", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.RequestId, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    @if (Model.RequestId > 0 && Model.BudgetTitle != "")
+                    {
+                        <td>
+
+                            <label for="BudgetTitle">BudgetTitle:</label>
+                        </td>
+
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.BudgetTitle, new { @class = "form-control", id = "BudgetTitle", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.BudgetTitle, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+
+                            <label for="BudgetTitle">BudgetTitle:</label>
+                        </td>
+
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.BudgetTitle, new { @class = "form-control", id = "BudgetTitle" })
+                                @Html.ValidationMessageFor(model => model.BudgetTitle, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+
+                    }
+                </tr>
+                <tr>
+
+                    <td>
+
+                        <label for="Budget">Budget:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.Budget, new {@type="number", @class = "form-control", id = "TravelBudget" })
+                            @Html.ValidationMessageFor(model => model.Budget, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+
+                        <label for="Remark">Remark:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Remark, new { @class = "form-control", id = "Remark", @style = "min-width:220px" })
+
+                            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ItemName">File:</label>
+                    </td>
+                    <td>
+                        <div class="">
+
+                            @*<div class=" input-group-btn">*@
+
+                            <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-info" />
+                        </div>
+                        @*</div>*@
+                    </td>
+                    @*<td>
+
+                        <input type="button" id="reset" value="Remove" class="btn btn-danger reset" style="width:75px" />
+
+                    </td>*@
+
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save  save" id="Validation"> Save</button>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </body>
+</html>
+
+
+
+   
+}

@@ -1,0 +1,1160 @@
+﻿@model SmartSys.BL.Project.ProjectMaster
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+    var gridBankDetail = new WebGrid(source: ViewBag.TMList, canSort: false, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+    var GridPendingTasks = new WebGrid(source: ViewBag.PendingTasks, canSort: false, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+}
+@{
+
+    Html.EJ()
+        .Dialog("seconddialog")
+        .Title("<a id='Title'></a>")
+        .Width(800)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#seconddialog").ejDialog("open");
+        }
+</script>
+
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1100)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>
+
+
+<script src="~/Scripts/modernizr.js"></script>
+<script src="~/Scripts/tableGrid.js"></script>
+<link href="~/Content/TLreset.css" rel="stylesheet" />
+<link href="~/Content/TLstyle.css" rel="stylesheet" />
+<script src="~/Scripts/main.js"></script>
+<table style="margin-left:50px;color:blueviolet" border="1">
+    <tr>
+        <td>
+            <div class="page-header glyphicon glyphicon-book  text-info">
+                Project View: <label> @Model.ProjectName</label> &nbsp;
+                <button type="button" name="RunReport" class="btn-xs btn-success glyphicon glyphicon-thumbs-up RunReport"> Run Report</button>
+                @if (Model.StatusId == 9)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-success glyphicon glyphicon-thumbs-up Open"> Open</button>
+                }
+                else if (Model.StatusId == 10)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</button>
+                }
+                else if (Model.StatusId == 2 || Model.StatusId == 3)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-info glyphicon glyphicon-refresh"> Report Running</button>
+                }
+                else
+                {
+                    <label>Please Run The Report</label>
+                }
+                &nbsp;
+                @if (Model.StatusId > 0)
+                {
+                    <label> Run Date: </label>  <label> @Model.RunDate</label>
+                }
+            </div>
+        </td>
+    </tr>
+</table>
+<input type="hidden" id="hidText" name="hidText" />
+<script type="text/javascript">
+    @*$(document).ready(function () {
+        $('.DateTime').datepicker();
+        $('.DateTime').datepicker.dates;
+
+        $("#Form1").submit(function (e) {
+            var selTypeText = '@Model.ProjectName'
+            $("#hidText").val(selTypeText);
+        });
+    });*@
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('.RunReport').click(function (e) {
+
+            var TxtParamValue='@Model.TxtParamValue';
+            var selTypeText = '@Model.ProjectName';
+            var ParamId='@Model.ParamId';
+            var hidText="";
+            var ParamValue=null;
+            var Parmname=null;
+            var ReportId = '@Model.ReportId';
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/AdhocReporting/ReportParam",
+                //data: { ReportId: ReportId, Parmname: Parmname,ParamValue:ParamValue},
+                data:{ hidText :hidText,TxtParamValue:TxtParamValue,ParamId:ParamId,ReportId:ReportId},
+                success: function (data) {
+                    var path = '@Url.Content("~/AdhocReporting/ReportParam")'+ "?ReportId=" + '@Model.ReportId'+ "&Parmname=" +Parmname +"&ParamValue=" +ParamValue ;
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            window.location.reload();
+            return false;
+        });
+    });
+</script>
+<script>
+    @*$(document).ready(function(){
+        $('.RunReport').click(function(e)
+        {
+            var ParamValue=null;
+            var Parmname=null;
+            var path='@Url.Content("~/AdhocReporting/ReportParam")' + "?ReportId=" + '@Model.ReportId'+ "&Parmname=" +Parmname +"&ParamValue=" +ParamValue ;
+            event.preventDefault();
+            window.location.replace(path);
+        });
+    });*@
+</script>
+<script>
+    $(document).ready(function () {
+        $('.Open').click(function (e) {
+            var path = '@Url.Content("~/AdhocReporting/Download")' + "?FileName=" +  '@Model.OutputLocation'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+    });
+</script>
+<script id="OpenDOC" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/ProjectCenter/Download?MOMID=0&amp;Filename={{:FileName}}">  Open</a>
+</script>
+
+@*<script>
+
+    $(document).ready(function () {
+
+        $('.ViewBtn').click(function (e) {
+
+            var gid= $("#EmpValue").val();
+            var gid2= $("#PrjValue").val();
+            alert(gid);
+            alert(gid2);
+            var path = '@Url.Content("~/ProViews/GetProjectTaskTimeSheetDetailList")' + "?ProjectId=" + gid2 + "&EmpId=" + gid + "&TaskId=0"
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+
+        });
+
+    });
+
+</script>*@
+
+<script>
+
+   function myfuncMOM(args)
+    {
+        var path = '@Url.Content("~/ProViews/ProjectMOMViewList")' + "?MOMID=" + args
+        $("#ReadmoreDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+
+<script type="text/javascript">
+    function onRowSelected1(args) {
+        var result = this.getSelectedRecords();
+
+        var ProjectName = result[0].ProjectName;
+        var ProjectId = result[0].ProjectId;
+        var TaskId = result[0].TaskId;
+        var TaskTypeText = result[0].TaskTypeText;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+           
+            var path = '@Url.Content("~/ProViews/PendingTaskDetailView")' + "?ProjectName=" + ProjectName  + "&ProjectId=" + ProjectId + "&Taskid=" + TaskId + "&Type=" + TaskTypeText
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+            
+        });
+    };
+
+</script>
+<script type="text/javascript">
+    function onRowSelected2(args) {
+        var result = this.getSelectedRecords();
+
+        var EmpId = result[0].EmpId;
+        var ProjectId = result[0].ProjectId;
+    
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+            var path = '@Url.Content("~/ProViews/GetProjectTaskTimeSheetDetailList")' + "?ProjectId=" + ProjectId  + "&EmpId=" + EmpId + "&TaskId=" + 0
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+
+        });
+    };
+</script>
+<script type="text/javascript">
+    function onRowSelected3(args) {
+        var result = this.getSelectedRecords();
+       
+        var Id = result[0].Id;        
+        var Type = result[0].Type;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+ 
+            var path = '@Url.Content("~/ProViews/GetProjectResourceDetail")' +  "?ProjectId=" + @Model.ProjectId + "&Id=" + Id + "&Type=" + Type
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+
+        });
+    };
+</script>
+<script type="text/javascript">
+    function onRowSelected4(args) {
+        var result = this.getSelectedRecords();
+
+       
+        var TaskId = result[0].TaskId;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+
+            var path = '@Url.Content("~/ProViews/GetProjectTaskTimeSheetDetailList")' +  "?ProjectId=" + @Model.ProjectId + "&EmpId=" + 0 + "&TaskId=" + TaskId
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+        });
+    };
+</script>
+<script type="text/javascript">
+    function onRowSelected5(args) {
+        var result = this.getSelectedRecords();
+       
+
+        var EquipmentId = result[0].EquipmentId;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+
+            var path = '@Url.Content("~/ProViews/GetProjectEquipmentDetail")' +  "?EquipmentId=" + EquipmentId 
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+        });
+    };
+</script>
+<script type="text/javascript">
+    function onRowSelected6(args) {
+        var result = this.getSelectedRecords();
+        
+        var ActionPointId = result[0].ActionPointId;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+
+            var path = '@Url.Content("~/ProViews/ProjectMOMActionPointViewList")' +  "?ActionPointId=" + ActionPointId
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+        });
+    };
+</script>
+<script type="text/javascript">
+    function onRowSelected7(args) {
+     
+        
+        var result = this.getSelectedRecords();
+
+        var ActionPointId = result[0].ActionPointId;
+        this.element.find(".e-gridcontent").on("click", "a", function (e) {
+
+            var path = '@Url.Content("~/ProViews/ProjectMOMActionPointViewList")' +  "?ActionPointId=" + ActionPointId
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+        });
+    };
+</script>
+<script type="text/x-jsrender" id="columnTemplate">
+    {{if PlannedMin >= ActualTime}}
+    <div class="progress" style="background-color:lightgray;margin-bottom:2px">
+        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+             aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:{{:ActualTimeper}}%">
+            <span class="">{{:ActualTimeper}}%</span>
+        </div>
+    </div>
+    {{else}}
+
+    <div class="progress" style="background-color:lightgray;margin-bottom:2px">
+        <div class="progress-bar progress-bar-danger  progress-bar-striped active" role="progressbar"
+             aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+            <span class="">{{:ActualTimeper}}%</span>
+        </div>
+    </div>
+    {{/if}}
+</script>
+
+
+
+<div style="width:100%">
+
+
+    @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+        {
+
+        data.Add().ID("ProjectDetail").Text("Project Detail").ContentTemplate(
+            @<div>
+                @(Html.EJ().Gantt("ganttsample")
+                    .TaskIdMapping("TaskID")
+                    .TaskNameMapping("TaskName")
+                    .StartDateMapping("StartDate")
+                    .EndDateMapping("EndDate")
+                    .DurationMapping("Duration")
+                    .ProgressMapping("Progress")
+                    .ScheduleStartDate(Model.startdate.ToShortDateString())
+                    .ScheduleEndDate(Model.enddate.ToShortDateString())
+                    .DateFormat("MM/dd/yyyy")
+                    .HighlightWeekends(true)
+                    .TreeColumnIndex(2)
+                    .ShowGridCellTooltip(true)
+                    .ChildMapping("SubTasks")
+                    .AllowSelection(true)
+                    .AllowGanttChartEditing(false)
+                    .PredecessorMapping("Predecessors")
+                    .AllowColumnResize(false)
+                    .AllowSorting(true)
+                    .IncludeWeekend(true)
+                    .ResourceInfoMapping("ResourceID")
+                    .ResourceNameMapping("EmpName")
+                    .ResourceIdMapping("ResourceID")
+                    .ShowResourceNames(true)
+                    .EnableContextMenu(true)
+                        .EditDialogFields(eve =>
+                    {
+                        eve.Field("TaskID").Add();
+                        eve.Field("TaskName").Add();
+                        eve.Field("StartDate").Add();
+                        eve.Field("EndDate").Add();
+                        eve.Field("ResourceID").Add();
+                        eve.Field("Duration").Add();
+                        eve.Field("Progress").Add();
+                        eve.Field("Predecessors").Add();
+                    })
+                    .AddDialogFields(eve =>
+                    {
+                        eve.Field("TaskID").Add();
+                        eve.Field("TaskName").Add();
+                        eve.Field("StartDate").Add();
+                        eve.Field("EndDate").Add();
+                        eve.Field("ResourceID").Add();
+                        eve.Field("Duration").Add();
+                        eve.Field("Progress").Add();
+                        eve.Field("Predecessors").Add();
+                    })
+                    .EditSettings(edit =>
+                    {
+
+
+                    }).
+                    ClientSideEvents(eve =>
+                    {
+                        eve.ActionComplete("ActionComplete");
+                        eve.ActionBegin("actionBegin");
+                        eve.ContextMenuOpen("contextMenuOpen");
+                        eve.Load("Load");
+                        eve.BeginEdit("BeginEdit");
+                    })
+                    .EnableResize(true)
+                    .EnableVirtualization(false)
+
+                    .SizeSettings(ss => ss.Width("100%").Height("500px"))
+                    .Resources(ViewBag.EmpList)
+                    .Datasource(@Model.Tasks)
+                )
+            </div>);
+
+        data.Add().ID("MOMTimeLine").Text("MOM TimeLine").ContentTemplate(
+            @<div style="background-color:#d9d9d9">
+                <section id="cd-timeline" class="cd-container">
+                    @foreach (SmartSys.BL.Project.ProjectTaskMoM TempMoMModel in Model.ViewMoMList)
+                    {
+                        <div class="cd-timeline-block">
+                            @if (TempMoMModel.MOMTypeKey == "In-Person")
+                            {
+                                <div class="cd-timeline-img cd-picture">
+                                    <img src="~/Images/Person.svg" alt="Picture">
+
+                                </div> <!-- cd-timeline-img -->
+                            }
+                            @if (TempMoMModel.MOMTypeKey == "Telephonic")
+                            {
+                                <div class="cd-timeline-img cd-picture">
+                                    <img src="~/Images/Phone.png" alt="Picture">
+                                </div> <!-- cd-timeline-img -->
+                            }
+                            @if (TempMoMModel.MOMTypeKey == "Conference")
+                            {
+                                <div class="cd-timeline-img cd-picture">
+                                    <img src="~/Images/conf.png" alt="Picture">
+                                </div> <!-- cd-timeline-img -->
+                            }
+
+                            <div class="cd-timeline-content" style="background-color:#66d9ff">
+                                <h2><label>Title :&nbsp;</label>  @TempMoMModel.Title</h2>
+                                <p  class="data">MOM Id :&nbsp;@TempMoMModel.MOMId    &nbsp;&nbsp;&nbsp; Date :@TempMoMModel.MOMDate.ToShortDateString()</p>
+                            
+                                <p class="data">Task :&nbsp;@TempMoMModel.TaskName</p>
+                                <p class="data">Employee :&nbsp;@TempMoMModel.Employee</p>
+                                <p class="data">MOM Type :&nbsp;@TempMoMModel.MOMTypeKey</p>
+                                <a onclick="myfuncMOM('@TempMoMModel.MOMId' )" class="btn btn-success glyphicon glyphicon-book"> Read More</a>
+                                <span class="cd-date">@TempMoMModel.MOMDate.ToString("MMM") @TempMoMModel.MOMDate.Day</span>
+                            </div> <!-- cd-timeline-content -->
+                        </div> <!-- cd-timeline-block -->
+                    }
+                </section> <!-- cd-timeline -->
+            </div>);
+
+        data.Add().ID("TMDetail").Text("View TimeSheet").ContentTemplate(
+            @<div>
+                 @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdtmshtList")
+                        .Datasource((IEnumerable<object>)@ViewBag.TMList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("EmpName").HeaderText("Emp Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("TotalTime").HeaderText("Total Time").TextAlign(TextAlign.Center).Width(60).Add();
+                           
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(100).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected2");
+                        })
+                 )
+           
+            </div>);
+
+        data.Add().ID("PendingMOMAction").Text("Action Point").ContentTemplate(
+
+            @<div>
+
+                
+
+
+                <table>
+                    <tr>
+                        <td>
+                            <input type="button" value="Pending" id="PendAction" class="btn btn-warning glyphicon glyphicon-comment" />
+                        </td>
+                        <td width="10px"></td>
+                        <td>
+                            <input type="button" value="Other" id="AllAction" class="btn btn-success glyphicon glyphicon-comment" />
+                        </td>
+                    </tr>
+
+                </table>
+                <br />
+                <table>
+                    <tr>
+                        <td id="Pend">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="table-responsive" style="height:430px;width:100%; overflow-y:scroll; overflow-x:scroll">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr style="background-color:#D6EAF8">
+                                                    @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdactionpointList")
+                        .Datasource((IEnumerable<object>)@ViewBag.MOMActionViewList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("MOMId").HeaderText("MOMId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ActionDescription").HeaderText("Action Description").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("AssignedBy").HeaderText("Assigned By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("AssignedTo").HeaderText("Assigned To").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("DueDate").HeaderText("Due Date").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("CreatedByName").HeaderText("Created By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ModifiedByName").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(60).Add();
+
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected6");
+                        })
+                                                    )
+
+
+                                                   
+                                                </tr>
+                                            </thead>
+                                           
+                                        </table>
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </td>
+                        <td id="All">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="table-responsive" style="width:100%;overflow-y:scroll;overflow-x:scroll">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr style="background-color:#D6EAF8">
+                                                    @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdAllActionList")
+                        .Datasource((IEnumerable<object>)@ViewBag.AllActionList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("MOMId").HeaderText("MOMId").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ActionDescription").HeaderText("Action Description").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("AssignedBy").HeaderText("Assigned By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("AssignedTo").HeaderText("Assigned To").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("DueDate").HeaderText("Due Date").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("CreatedByName").HeaderText("Created By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ModifiedByName").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(60).Add();
+
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected7");
+                        })
+                                                    )
+
+                                                </tr>
+                                            </thead>
+                                           
+                                        </table>
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <ul class="pagination pagination-lg pager" id="myPager3"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>);
+
+        data.Add().ID("PendingTasks").Text("Pending Case/Risk").ContentTemplate(
+            @<div>
+                 @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdActionFeedList")
+                        .Datasource((IEnumerable<object>)@ViewBag.PendingTasks)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("TaskId").HeaderText("Task Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("TaskName").HeaderText("Task Name").Width(60).Add();
+                            col.Field("ProjectManager").HeaderText("Project Manager").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("TaskTypeText").HeaderText("Task Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Resources").HeaderText("Resources").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("CustomerName").HeaderText("Customer Name").Width(60).Add();
+                            col.Field("VendorName").HeaderText("Vendor Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ReviewedByName").HeaderText("Reviewed By").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ReviewedDate").HeaderText("Reviewed Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("ApprovedByName").HeaderText("Approved By").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ApprovedDate").HeaderText("Approved Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+                            col.Field("StatusName").HeaderText("Status").Width(60).Add();
+                            col.Field("ModifiedByName").HeaderText("Modified By").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(60).Add();
+
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(100).Add();
+                            
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected1");
+                        })
+                 )
+               
+            </div>);
+
+        data.Add().ID("ProjectEquipment").Text("Equipment").ContentTemplate(
+            @<div>
+
+                 @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdEquipmentList")
+                        .Datasource((IEnumerable<object>)@ViewBag.EquipmentList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("EquipmentId").HeaderText("EquipmentId").Visible(false).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("EquipmentName").HeaderText("Equipment Name").Width(60).Add();
+                            col.Field("ParentEquipmentName").HeaderText("ParentEquipmentName").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("Quantity").HeaderText("Quantity").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("ETAM").HeaderText("TAM").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("Tier1Tam").HeaderText("Tier 1 Tam").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("OemTam").HeaderText("Oem Tam").Width(60).Add();
+                            
+
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(60).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected5");
+                        })
+                 )
+
+
+                
+
+            </div>);
+
+        data.Add().ID("AllAttachment").Text("All Attachment").ContentTemplate(
+            @<div>
+
+                 @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdAttachList")
+                        .Datasource((IEnumerable<object>)@ViewBag.AttachmentList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("Type").HeaderText("Type").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(40).Add();
+                            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Left).Width(160).Add();
+                            col.Field("FileName").HeaderText("File Name").Width(200).Add();
+                            col.HeaderText("Open").Template("#OpenDOC").TextAlign(TextAlign.Center).Width(60).Add();
+                          
+                        })
+                 )
+
+
+               
+
+            </div>);
+        data.Add().ID("PlanVsActual").Text("Plan Vs Actual").ContentTemplate(
+            @<div>
+                 @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdPlanactualList")
+                        .Datasource((IEnumerable<object>)@ViewBag.PlanActualList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("TaskName").HeaderText("Task Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("StartDate").HeaderText("Start Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("EndDate").HeaderText("End Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("PlannedMin").HeaderText("Planned Min").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ActualTime").HeaderText("Actual Time").Width(60).Add();
+                            col.Field("ActualTimeper").HeaderText("Actual Time").Visible(false).Width(60).Add();
+                            col.HeaderText("Progress").Template("#columnTemplate").TextAlign(TextAlign.Center).Width(60).Add();
+
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(100).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected4");
+
+
+                        })
+                 )
+             
+
+            </div>);
+
+        data.Add().ID("Resource").Text("Resource").ContentTemplate(
+            @<div>
+                 @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdtresourceList")
+                        .Datasource((IEnumerable<object>)@ViewBag.ResourceList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+
+                            col.Field("Id").HeaderText("Id").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(60).Add();
+                           
+                            col.Field("Name").HeaderText("Name").TextAlign(TextAlign.Left).Width(60).Add();
+                            col.Field("Type").HeaderText("Type").TextAlign(TextAlign.Left).Width(60).Add();
+
+                            col.HeaderText("View Detail").Template("<a class='btn-xs btn-info glyphicon  glyphicon-book' href='#'></a>").TextAlign(TextAlign.Center).Width(100).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                           
+                            eve.RowSelected("onRowSelected3");
+                        })
+                 )
+               
+            </div>);
+
+        data.Add().ID("Expenses").Text("Expenses").ContentTemplate(
+            @<div>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.Project.ProjectExpensesModel>("GrdPayment")
+                                .Datasource((IEnumerable<object>)@ViewBag.ProjectExpence)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+
+
+        .EnableAltRow(true)
+
+
+        //.ContextMenuSettings(contextMenu =>
+        //{
+        //    contextMenu.EnableContextMenu();
+        //    contextMenu.DisableDefaultItems();
+        //    contextMenu.CustomContextMenuItems(c =>
+        //    {
+        //        c.AddItem("View_Detail11", "View Detail");
+        //    });
+
+        //})
+        .Columns(col =>
+        {
+            col.Field("ExpenseId").HeaderText("ID").IsPrimaryKey(false).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("PaymentStatus").HeaderText("Payment Status").Visible(true).TextAlign(TextAlign.Left).Width(180).Template("#Status").Add();
+            col.Field("EmpId").HeaderText("EmpId").Width(200).Visible(false).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ExpenseType").HeaderText("Expense Type").TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("Employee").HeaderText("Employee").TextAlign(TextAlign.Left).Width(170).Add();
+            col.Field("PaymentId").HeaderText("PaymentId").Visible(false).TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("TaskName").AllowEditing(false).HeaderText("Task Name").Width(200).Add();
+            col.Field("Amount").AllowEditing(false).HeaderText("Amount").TextAlign(TextAlign.Right).Width(120).Format("{0:n2}").Add();
+            col.Field("TotalPaid").AllowEditing(false).HeaderText("TotalPaid").TextAlign(TextAlign.Right).Width(120).Format("{0:n2}").Add();
+            col.Field("Remark").AllowEditing(false).HeaderText("Remark").Width(200).Add();
+            col.Field("StatusCode").AllowEditing(false).HeaderText("Status").Width(120).Add();
+            col.Field("ExpenseDate").AllowEditing(true).HeaderText("Expense Date").Format("{0:MM/dd/yyyy}").Width(130).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+
+
+        })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+
+                     .ChildGrid(child =>
+                     {
+
+                         child.Datasource((IEnumerable<object>)ViewBag.ExpencePayment)
+                         .QueryString("ExpenseId")
+                         .AllowPaging()
+                         .AllowFiltering()
+                         .AllowScrolling(true)
+                           .AllowResizing(true)
+
+                         .ScrollSettings(scroll => { scroll.Width(1200); })
+
+                         .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                         .ClientSideEvents(eve => { eve.ContextClick("contextclick"); eve.QueryCellInfo("querycellinfo"); })
+                         .Columns(col =>
+                         {
+                             col.Field("ExpenseId").Visible(false).AllowEditing(false).HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).AllowFiltering(true).Add();
+                             col.HeaderText("Deleted").Template("#Delete").Commands(command =>
+                             {
+                                 command.Type(UnboundType.Edit)
+
+                                        .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                                        {
+                                            CssClass = "EditBtn",
+                                            Click = "Click",
+                                            Text = "Edit",
+                                            ContentType = ContentType.ImageTextImage,
+                                            PrefixIcon = "e-edit",
+                                            Height = "22px",
+                                            Size = ButtonSize.Mini
+                                        }).Add();
+
+                             }).AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+                             col.Field("Remark").HeaderText("Remark").Width(150).Add();
+                             col.Field("PaymentId").Visible(true).AllowEditing(false).HeaderText("PaymentId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                             col.Field("PaymentType").HeaderText("Payment Type").Width(80).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+                             col.Field("NewAmount").HeaderText("Amount").Width(170).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).AllowFiltering(true).Width(70).Add();
+                             col.Field("Employee").HeaderText("Employee").Format("{0:MM/dd/yyyy}").Width(150).Add();
+                             col.Field("TotalPaid").HeaderText("Total Paid").Width(100).AllowFiltering(true).Add();
+                             col.Field("Isdeleted").HeaderText("Isdeleted").Width(100).Visible(false).AllowFiltering(true).Add();
+                             col.Field("CreatedBy").HeaderText("Created By").Width(100).Add();
+                             col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(100).Add();
+
+                             col.HeaderText("Detail").Template("#PaymentExpenses").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+
+                         });
+
+                     })
+
+                    )
+                </div>
+
+
+
+            </div>);
+        })
+              .Render();}
+</div>
+<div>
+    @Html.ActionLink(" Back", "IndexView", null, new { @class = "btn-sm btn-info glyphicon glyphicon-hand-left" })
+</div>
+<script id="ViewMOM" type="text/x-jsrender">
+    <a class="modal-link btn-xs btn-info glyphicon  glyphicon-book" href="/ProViews/ProjectMOMViewList?MOMID={{:MOMId}}"> </a>
+</script>
+<script type="text/x-jsrender" id="Status">
+    {{if PaymentStatus == 'FullyPaid'}}
+    <a class="text-info glyphicon glyphicon-thumbs-up" style="color:#427640"> <b> Fully Paid</b></a>
+    {{/if}}
+
+    {{if PaymentStatus == 'PartiallyPaid'}}
+    <a class="text-success glyphicon glyphicon-check" style="color:orange"><b> Partially Paid</b></a>
+    {{/if}}
+
+    {{if PaymentStatus == 'NotPaid'}}
+    <a class="text-danger glyphicon glyphicon-thumbs-down" style="color:red"><b> Not Paid</b></a>
+    {{/if}}
+
+</script>
+<script id="Delete" type="text/x-jsrender">
+    {{if Isdeleted == 'False'}}
+    <a class="glyphicon glyphicon-remove text-success"> False</a>
+    @*<a class="btn-xs btn-danger  glyphicon glyphicon-trash black" id="delete" href='/ProjectCenter/DeletePaymentDetails?Id={{:PaymentId}}&amp;RefId={{:RefId}}'> Remove</a>*@
+    {{/if}}
+    {{if Isdeleted == 'True'}}
+    <a class="glyphicon glyphicon-ok text-danger" style="color:#"> True</a>
+    {{/if}}
+
+</script>
+<script>
+    function querycellinfo(args) {
+        if (args.column.field == "Isdeleted" && args.data.Isdeleted == "False")
+            $($(args.cell).parent()).css("backgroundColor", "#E0F8E0");/*custom css applied to the row */
+        if (args.column.field == "Isdeleted" && args.data.Isdeleted == "True")
+            $($(args.cell).parent()).css("backgroundColor", "#F6D8CE");/*custom css applied to the row */
+    }
+
+</script>
+<script id="PaymentExpenses" type="text/x-jsrender">
+    <a class="modal-link btn-xs btn-warning  glyphicon glyphicon-apple black" href='/ProViews/ProjectExpensesPaymentDetail?Id={{:PaymentId}}'></a>
+
+</script>
+@Html.EJ().Dialog("modalFichaEquipo").Width(1000).Height(300).EnableModal(true).ShowOnInit(false).Title("Project Task MOM").EnableResize(true).Width(1200).Height(800)
+<script type="text/javascript">
+
+
+        function BeginEdit(args)    {
+
+            var tempData = args.data.item;
+            var TaskID = args.data.item.AllowEdit;
+
+        }
+
+        function contextMenuOpen(args) {
+
+            var isExpandable = true, isCollapsable = true, data;
+            data = args.item;
+            if (data && data.hasChildRecords) {
+                if (data.expanded)
+                    isExpandable = false;
+                else
+                    isCollapsable = false;
+            } else {
+                isExpandable = false;
+                isCollapsable = false;
+            }
+
+            var contextMenuItems = [{
+                headerText: "Edit More Details",
+                eventHandler: customMenuAddHandler,
+                menuId: "EditMoreDetails",
+                iconClass: "e-icon e-topIcon"
+            }
+            ];
+            args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+
+           
+            var contextMenuItems = [{
+                headerText: "Quick Track",
+                eventHandler: QuickTrack,
+                menuId: "QuickTrack",
+                iconClass: "e-icon e-topIcon"
+            }
+            ];
+            args.contextMenuItems.push.apply(args.contextMenuItems, contextMenuItems);
+        }
+        function QuickTrack(args) {
+            var tempData = args.data.item;
+            var TaskID = args.data.item.AllowEdit;
+            if(TaskID)
+            {
+                var tempData = args.data.item;
+                var TaskID = args.data.item.TaskID;
+                var Type = args.data.item.TaskType;
+                var TaskName = args.data.item.TaskName;
+
+                if(Type==1)
+                {
+                    alert("Quick Track Available only For Risk or Case Task")
+                }
+                else
+                {
+                    document.getElementById("Title").innerHTML = TaskName;
+
+                    var path1 = '@Url.Action("casetimeline", "quickview")' + "?TaskID=" + TaskID + "&ProjectId=" +'@Model.ProjectId';
+                    $("#seconddialog").ejDialog({
+                        contentUrl: path1,
+                        contentType: "ajax"
+                    });
+                    $("#seconddialog").ejDialog("open");
+                }
+            }
+
+        }
+        function customMenuAddHandler(args) {
+            var tempData = args.data.item;
+            if (args.menuId == "ViewMOM") {
+
+
+                var ProjectId = @Model.ProjectId;
+                var TaskID = args.data.item.TaskID;
+                var url = '@(Url.Action("GetMOMForResponse", "Enquiry"))' + ProjectId;
+                url = url.replace("&amp;", "&");
+                var dialogObj = $("#modalFichaEquipo").ejDialog({
+                    contentType: "ajax",
+                    contentUrl: url
+                });
+
+                var tag = $("<div></div>");
+                var path = '@Url.Action("GetMOMForResponse")' ;
+                $.ajax({
+                    type: 'POST',
+                    url: path, // we are calling json method
+                    dataType: 'json',
+                    data: { ProjectId: ProjectId,TaskID:TaskID },
+                    success: function (lst) {
+
+                        var path1 = '@Url.Action("ProjectMOMViewList")'
+                        var dialogObj = $("#modalFichaEquipo").ejDialog({
+                            contentUrl: path1,
+                            contentType: "ajax"
+                        })
+                    },
+                    error: function (ex) {
+                    }
+                });
+
+                return false;
+            }
+
+            if (args.menuId == "EditMoreDetails") {
+                var TaskID = args.data.item.AllowEdit;
+                if(TaskID)
+                {
+                    var tempData = args.data.item;
+                    var TaskID = args.data.item.TaskID;
+                    var Id = @Model.ProjectId;
+                    var path = '@Url.Content("~/ProjectCenter/ProjectEditMode")' + "?TaskID=" + TaskID + "&ProjectId=" + Id
+                    event.preventDefault();
+                    window.location.replace(path);
+                }
+                else
+                {
+                    alert("You do not have Permission to edit this task.");
+                }
+            }
+
+        }
+
+        function Load(args) {
+            var columns = this.getColumns();
+            columns.splice(6, 0,
+                {
+                    field: "Description",
+                    headerText: "Description",
+                    //isTemplateColumn: true,
+                    //templateID: "customColumnTemplate",
+                    width: "400px",
+                });
+            columns.splice(1, 0,
+        {
+            field: "TaskTypeDesc",
+            headerText: "Type",
+            //isTemplateColumn: true,
+            //templateID: "customColumnTemplate",
+            width: "50px",
+        });
+        }
+        function actionBegin(args) {
+            if (args.requestType === 'delete') {
+                if (confirm("Are you sure, you want to delete the task record?") == false) {
+                    args.cancel = true;
+                };
+            }
+        }
+</script>
+<script>
+        $(document).ready(function () {
+            $("#Pend").show();
+            $("#All").hide();
+            $('#PendAction').on('click', function (e) {
+                $("#Pend").show();
+                $("#All").hide();
+            });
+            $('#AllAction').on('click', function (e) {
+                $("#Pend").hide();
+                $("#All").show();
+            });
+            $('.ViewAllProjMOM').click(function (e) {
+
+                var ProjectId = @Model.ProjectId;
+                var TaskID = 0;
+                var url = '@(Url.Action("GetMOMForResponse", "Enquiry"))' + ProjectId;
+                url = url.replace("&amp;", "&");
+                var dialogObj = $("#modalFichaEquipo").ejDialog({
+                    contentType: "ajax",
+                    contentUrl: url
+                });
+
+                var tag = $("<div></div>");
+                var path = '@Url.Action("GetMOMForResponse")' ;
+                $.ajax({
+                    type: 'POST',
+                    url: path, // we are calling json method
+                    dataType: 'json',
+                    data: { ProjectId: ProjectId,TaskID:TaskID },
+                    success: function (lst) {
+
+                        var path1 = '@Url.Action("ProjectMOMViewList")'
+                        var dialogObj = $("#modalFichaEquipo").ejDialog({
+                            contentUrl: path1,
+                            contentType: "ajax"
+                        })
+                    },
+                    error: function (ex) {
+                    }
+                });
+                return false;
+            });
+        });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $('.ViewMOMTaskRef').click(function (e) {
+
+            var ProjectId = @Model.ProjectId;
+            var TaskID = $("#TaskIdMOM").val();
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/ProViews/GetProjectMomListByTask",  //Update is Server side method
+                data: { ProjectId: ProjectId, TaskID: TaskID},
+                complete: function () {
+                },
+                success: function (msg) {
+                    var obj = $("#grdMOMList").ejGrid("instance")
+                    obj.dataSource(msg);
+                    return false;
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            return false;
+        });
+    });
+</script>

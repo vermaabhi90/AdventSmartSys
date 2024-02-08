@@ -1,0 +1,53 @@
+﻿@model  IEnumerable<SmartSys.BL.EmpChartModel>
+
+
+
+<div class="Chart">
+
+    @(Html.EJ().Chart("container")
+
+            .Series(sr =>
+            {
+
+
+            sr.Points(pt =>
+            {
+                foreach (var i in Model)
+                    {
+                    pt.X(i.ProjectName).Y(i.Timespend).Text(i.Timespend.ToString()).Add();
+                    }
+
+            }).Marker(mr =>
+            {
+                    mr.DataLabel(db =>
+            {
+            db.Visible(true)
+            .Font(fn =>{fn.Color("black").Size("20px").FontWeight(ChartFontWeight.Regular);});
+            });
+            })
+                 .Name("Newyork").Type(SeriesType.Doughnut).Explode(true).LabelPosition(ChartLabelPosition.Inside)
+                 .Add();
+            })
+                .Load("loadTheme")
+                .CommonSeriesOptions(cr => cr.EnableAnimation(true))
+
+                 .Title(title => title.Text("Time Utilization"))
+                 .Size(sz => sz.Height("500"))
+                 .Legend(lg => { lg.Visible(true).Position(LegendPosition.Top).Size(sz => sz.Height("100")); })
+    )
+
+
+</div>
+
+<style>
+    .darktheme .frame, .frame {
+        padding: 21px 0px 10px 146px;
+        width: 380px;
+    }
+
+    #col-md-3 {
+        margin-top: 5px;
+        margin-left: 25px;
+    }
+</style>
+@Html.EJ().ScriptManager()

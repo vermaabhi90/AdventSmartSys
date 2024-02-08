@@ -1,0 +1,108 @@
+﻿@model IEnumerable<SmartSys.BL.PublicHolidayModel>
+
+@{
+    ViewBag.Title = "GetPublicHolidayList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Public Holiday List
+</div>
+<div style="position:relative">
+   @(Html.EJ().Grid<SmartSys.BL.Enquiry.ReceiptModel>("grdPublicHolidayList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+       .PageSettings(p => { p.PageSize(20); })
+         .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+        .EnableAltRow(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportPublicHolidayList")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit_Record", "Edit Record");
+         
+             });
+
+         })
+
+        .Columns(col =>
+        {
+            col.Field("HolidayId").HeaderText("HolidayId").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(90).Add();
+            col.Field("HolidayDate").HeaderText("HolidayDate").Format("{0:MM/dd/yyyy}").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("FinYear").HeaderText("FinYear").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("RegionName").HeaderText("Region").TextAlign(TextAlign.Center).Width(80).Add();
+            col.Field("Title").HeaderText("Title").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("CreatedBy").HeaderText("Modified By").Width(100).Add();
+            col.Field("CreatedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Width(100).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+        })
+          .ClientSideEvents(eve =>
+                 {
+                     eve.ContextClick("contextclick");
+                 })
+)
+</div>
+
+
+@{
+
+    Html.EJ()
+        .Dialog("CreateCompBankDetail")
+        .Title("<a id='Title'></a>")
+        .Width(700)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateCompBankDetail").ejDialog("open");
+        }
+</script>
+
+<script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {          
+            var path = '@Url.Content("~/Admin/CreatePublicHoliday")' + "?HolidayId=" + 0
+            $("#CreateCompBankDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+        }
+        if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdDetailList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var HolidayId = result[0]["HolidayId"];
+                var path = '@Url.Content("~/Admin/CreatePublicHoliday")' + "?HolidayId=" + HolidayId
+            $("#CreateCompBankDetail").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateCompBankDetail").ejDialog("open");
+
+        }
+        return false;
+    }
+</script>
+

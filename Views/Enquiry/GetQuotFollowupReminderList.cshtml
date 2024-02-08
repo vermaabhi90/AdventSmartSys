@@ -1,0 +1,291 @@
+﻿@model SmartSys.BL.Enquiry.QoutFollowupModel
+
+@*@model IEnumerable<SmartSys.BL.Enquiry.QoutFollowupModel>*@
+@{
+    ViewBag.Title = "GetQuotFollowupReminderList";
+}
+<script>
+    $(document).ready(function (e) {
+        var str = '@(TempData["Message"])'.toString();
+        if (str.toString() == "" || str == null)
+        {
+            return false;
+        }
+        else
+        {
+            alert('@(TempData["Message"])');
+        }
+    });
+</script>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Quotation Followup Reminder List
+</div>
+<div class="glyphicon text-info" style="">
+    <table>
+        <tr>           
+            <td>
+                <button type="button" name="RunReport" class="btn-xs btn-success glyphicon glyphicon-thumbs-up RunReport"> Run Report</button>
+                @if (Model.StatusId == 9)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-success glyphicon glyphicon-thumbs-up Open"> Open</button>
+                }
+                else if (Model.StatusId == 10)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-warning glyphicon glyphicon-thumbs-down"> Error</button>
+                }
+                else if (Model.StatusId == 2 || Model.StatusId == 3)
+                {
+                    <button type="button" name="Open" class="btn-xs btn-info glyphicon glyphicon-refresh"> Report Running</button>
+                }
+                else
+                {
+                    <label>Please Run The Report</label>
+                }
+                &nbsp;
+                @if (Model.StatusId > 0)
+                {
+                    <label> Run Date: </label>  <label> @Model.RunDate</label>
+                }
+
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.QoutFollowupModel>("grdQuotReminderList")
+                .Datasource((IEnumerable<object>)Model.QuotReminderList)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+                .PageSettings(p => { p.PageSize(20); })
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+    .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+    {
+        items.AddTool(ToolBarItems.ExcelExport);
+    }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportQuotFollowupReminderList")))
+                  .ContextMenuSettings(contextMenu =>
+                  {
+                      contextMenu.EnableContextMenu();
+                      contextMenu.DisableDefaultItems();
+                      contextMenu.CustomContextMenuItems(c =>
+                      {
+                          c.AddItem("Follow_Up", "FollowUp");
+                          c.AddItem("FollowUp_History", "FollowUp History");
+                          c.AddItem("Quotation_View", "Quotation View");
+                          c.AddItem("Close_Enquiry", "Close Enquiry");
+                          c.AddItem("Quot_Preview", "Quotation Preview");
+                      });
+
+                  })
+                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+        .Columns(col =>
+        {
+            col.Field("QuotationId").HeaderText("ID").Visible(true).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("EnqId").HeaderText("Enq Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("QuotationNumber").HeaderText("Quotation Number").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(150).Add();
+            col.Field("CompCode").HeaderText("Company").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+            col.Field("SalesPersonName").HeaderText("Sales Person").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("QuotCost").HeaderText("Quot Amount").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Term").HeaderText("Term").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("Status").HeaderText("Status").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("StatusId").HeaderText("StatusId").TextAlign(TextAlign.Left).Visible(false).ValidationRules(v => v.AddRule("required", true)).Width(70).Add();
+            col.Field("NextFollowUp").HeaderText("FollowUp").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("CreatedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created By").Width(150).Add();
+            col.Field("CreatedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+            col.Field("FileName").HeaderText("FileName").TextAlign(TextAlign.Left).Width(120).Add();
+        })
+    )
+</div>
+<script>
+    $(document).ready(function () {
+        $('.RunReport').click(function (e) {           
+            var TxtParamValue = '@Model.TxtParamValue';
+            var selTypeText = '@Model.TxtParamValue';
+            var ParamId='@Model.ParamId';
+            var hidText="";
+            var ParamValue = null;
+            var Parmname = null;
+            var ReportId = '@Model.ReportId';
+
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/AdhocReporting/ReportParam",
+                data:{ hidText :hidText,TxtParamValue:TxtParamValue,ParamId:ParamId,ReportId:ReportId},
+                success: function (data) {
+                    var path = '@Url.Content("~/AdhocReporting/ReportParam")'+ "?ReportId=" + '@Model.ReportId'+ "&Parmname=" +Parmname +"&ParamValue=" +ParamValue ;
+                    e.preventDefault();
+                    window.location.replace(path);
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+            window.location.reload();
+            return false;
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.Open').click(function (e)
+        {
+            var path = '@Url.Content("~/AdhocReporting/Download")' + "?FileName=" +  '@Model.OutputLocation'
+            event.preventDefault();
+            window.location.replace(path);
+        });
+
+    });
+</script>
+
+
+
+
+
+@{
+    Html.EJ()
+        .Dialog("CreateFollowUp")
+        .Title("<a id='Title'>Follow Up</a>")
+        .Width(1200)
+        .Height(700)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateFollowUp").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateFollowUp").ejDialog("open");
+        }
+</script>
+@{
+    Html.EJ()
+        .Dialog("CreateFollowUpHistory")
+        .Title("<a id='Title'>FollowUp History</a>")
+        .Width(1100)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateFollowUpHistory").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateFollowUpHistory").ejDialog("open");
+        }
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "FollowUp") {
+            var grid = $("#grdQuotReminderList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var QuotationId = result[0]["QuotationId"];
+            var path = '@Url.Content("~/Enquiry/CreateFollowup")' + "?QuotationId=" + QuotationId
+            $("#CreateFollowUp").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateFollowUp").ejDialog("open");
+        }
+        else if (args.text == "FollowUp History") {
+                var grid = $("#grdQuotReminderList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var QuotationId = result[0]["QuotationId"];
+                var path = '@Url.Content("~/Enquiry/FollowUpHistory")' + "?QuotationId=" + QuotationId
+            $("#CreateFollowUpHistory").ejDialog({
+
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+            $("#CreateFollowUpHistory").ejDialog("open");
+        }
+        else if (args.text == "Quotation View") {
+            var grid = $("#grdQuotReminderList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var QuotationId = result[0]["QuotationId"];
+            var EnqId = result[0]["EnqId"];
+            var path = '@Url.Content("~/Enquiry/QuotationView")' + "?QuotId=" + QuotationId + "&EnqId=" + EnqId
+            $("#CreateQuotView").ejDialog({
+
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateQuotView").ejDialog("open");
+        }
+        else if (args.text == "Close Enquiry") {
+            var tempData = args.text;
+            var grid = $("#grdQuotReminderList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var QuotationId = result[0]["QuotationId"];
+            var EnqId = result[0]["EnqId"];
+            var Status = result[0]["StatusId"];          
+            var path = '@Url.Content("~/Enquiry/CloseEnq")' + "?EnqId=" + EnqId + "&Source=GetQuotFollowupReminderList" + "&Status=" + Status
+            $("#CloseEnquiry").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CloseEnquiry").ejDialog("open");
+        }
+        else if (args.text == "Quotation Preview") {
+            var tempData = args.text;
+            var grid = $("#grdQuotReminderList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var QuotationId = result[0]["QuotationId"];
+            var EnqId = result[0]["EnqId"];
+            var QuotationNumber = result[0]["QuotationNumber"];
+            var FileName = result[0]["FileName"];
+            var path = '@Url.Content("~/Enquiry/PreviewQuotation")' + "?QuotId=" + QuotationId + "&QuotNumber=" + QuotationNumber + "&EnqId=" + EnqId + "&FileName=" + FileName;
+            window.open(path);
+        }
+    }
+</script>
+@{
+    Html.EJ()
+        .Dialog("CreateQuotView")
+        .Title("<a id='Title1'>Quotation View</a>")
+        .Width(1200)
+        .Height(800)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CreateQuotView").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateQuotView").ejDialog("open");
+        }
+</script>
+@{
+    Html.EJ()
+        .Dialog("CloseEnquiry")
+        .Title("<a id='Title'>Close Enquiry</a>")
+        .Width(650)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p>Close Enquiry</p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#CloseEnquiry").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CloseEnquiry").ejDialog("open");
+        }
+</script>

@@ -1,0 +1,135 @@
+﻿@model SmartSys.BL.RDS.RDSEventModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit RDS Event
+</div>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var EventName = $('#EventName').val();
+
+            if (EventName.toString() == "") {
+                alert("Please Enter Event Name ");
+                return false;
+            }
+
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+@using (Html.BeginForm("Edit", "RDSEvent", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+
+                    <label for="EventId">Event Id</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EventId, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+
+                    @Html.ValidationMessageFor(model => model.EventId)
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="EventName">Event Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.EventName, new { @class = "form-control", id = "EventName" })
+                        @Html.ValidationMessageFor(model => model.EventName)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control" , })
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+
+                    <label for="EventId">Created By</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+
+                    <label for="EventId">Created Date</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+
+                    <label for="EventId">ModifiedBy</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+
+                </td>
+                <td>
+                    <label for="EventId">Modified Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetList';" );"> Back</button>
+
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}

@@ -1,0 +1,220 @@
+﻿@model SmartSys.BL.DHFeedActionModel
+
+@{
+    var grid = new WebGrid(source: Model.ListOfFeedActionParameters, canPage: false, rowsPerPage: 10, ajaxUpdateContainerId: "gridActionParamContent");
+
+}
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('.xyz').click(function (event) {
+
+                    var str = "";
+                    var ParamName = $('#DrpDwnParam').val();
+                    var ColName = $('#ColName').val();
+                    var DataType = $('#DataType').val();
+                    if (ParamName.toString() == "" || DataType.toString() == "")
+                    {
+                        alert("Select the all DropDown List");
+                        return false;
+                    }
+
+                    else if (ColName.toString() == "")
+                    {
+                         alert("Text Box Can't be  Empty")
+                        return false;
+                    }
+                    else
+                    {
+                        str = ColName + ',' + DataType;
+                        $('#ColName').val(null);
+                        $('#DataType').val(null);
+                    }
+                    var path = '@Url.Content("~/DhFeed/AddAtionParam")' + "?ParamName=" + ParamName + "&Value=" + str + "&method=" + "XLSDestTable"
+                    event.href = path;
+                    $(this).attr('href', path);
+                    event.preventDefault();
+                    window.location.replace(path);
+                    return true;
+            });
+
+            $('.Del').on('click', function (e) {
+                e.preventDefault();
+                var id = $(this).closest('.Del').attr('Value');
+                var ParamName = $(this).closest('.Del').attr('ParamName');
+
+                var agree = confirm("Are you sure you want to delete?");
+                if (agree) {
+                    var path = '@Url.Content("~/DhFeed/DeleteParam")' + "?Value=" + id + "&strParamName=" + ParamName + "&url=" + "XLSDestTable"
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+                else {
+                    return false;
+                }
+               
+            });
+        });
+</script>
+
+<style type="text/css">
+    .modal-content {
+        width: 600px !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 800px;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Action Parameter Details
+</div>
+
+<table style="border-collapse:separate;border-spacing: 0 5px;">
+    <tr>
+        <td><label for="ex3">Param Name:</label></td>
+        <td>
+            <div ng-app="" class="col-4   ">
+                @Html.DropDownList("ParamName", (IEnumerable<SelectListItem>)ViewBag.ParamNameList, "Please Select Param Name", new { id = "DrpDwnParam", style = "width:310px", @class = "form-control" })
+            </div>
+        </td>
+
+    </tr>
+</table>
+<table style="border-collapse:separate;border-spacing: 0 5px;">
+    <tr>
+        <td><label id="ColNameL" for="ex3">Col Name:</label></td>
+        <td>
+            <div class="">
+                <input class="form-control" id="ColName" type="text">
+            </div>
+        </td>
+
+        <td><label id="DataTypeL" for="ex3">Data Type:</label></td>
+        <td>
+
+
+            <div class="">
+
+                @Html.DropDownListFor(x => x.Description, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "System.String", Value="System.String"},
+                             new SelectListItem() {Text = "System.Int32", Value="System.Int32"},
+                             new SelectListItem() {Text = "System.Boolean", Value="System.Boolean"},
+                               new SelectListItem() {Text = "System.DateTime", Value="System.DateTime"},
+                                 new SelectListItem() {Text = "System.Decimal", Value="System.Decimal"}
+                       }, "Select Data Type", new { id = "DataType", @class = "form-control" })
+            </div>
+        </td>
+    </tr>
+</table>
+<table style="border-collapse:separate;border-spacing: 0 5px;">
+    <tr>
+        <td>
+            <div class="col-4   ">
+                @Html.ActionLink(" Add", " ", null, new { @class = "xyz btn-xs btn-info glyphicon glyphicon-plus" })
+            </div>
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <td>
+            @if (Model.ListOfFeedActionParameters.Count > 0 || Model.ListOfFeedActionParameters != null)
+            {
+                  @(Html.EJ().Grid<SmartSys.BL.DHFeedActionModel>("grdActionparam1List")
+                        .Datasource(Model.ListOfFeedActionParameters)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("ActionType").HeaderText("Action Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ParamName").HeaderText("Parameter Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Value").HeaderText("Parameter Value").Width(60).Add();
+                            col.HeaderText("Delete").TemplateID("#DeleteActionFeedParam").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+            )
+
+               
+            }
+            else
+            {
+                <br />
+                <div style="border:dotted 1px black" class="label label-info">
+                    No Parameters Record Found
+                </div>
+            }
+        </td>
+    </tr>
+</table>
+<br />
+<table>
+    <tr>
+        <td>
+            <div class="col-4   ">
+                @Html.ActionLink("Save", "CreateFeed", new { iFeedID = 0 }, new { @class = "btn btn-success" })
+            </div>
+        </td>
+        <td></td>
+        <td>
+            <div class="col-4   ">
+                @Html.ActionLink("Cancel", "CreateFeed", new { iFeedID = 0 }, new { @class = "btn btn-warning" })
+            </div>
+        </td>
+    </tr>
+</table>
+
+<script id="DeleteActionFeedParam" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" id="xyz" href="/DhFeed/DeleteParam?Value={{:Value}}&amp;strParamName={{:ParamName}}&amp;url=Create">  Delete</a>
+</script>

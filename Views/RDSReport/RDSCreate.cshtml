@@ -1,0 +1,132 @@
+﻿@model SmartSys.BL.Report
+
+<div style="margin-top:15px;margin-left:50px" class="glyphicon glyphicon-leaf  text-info">
+    Create RDS Report
+</div>
+
+<style>
+    .custom-combobox {
+        position: relative;
+        display: inline-block;
+    }
+
+    .ui-autocomplete {
+        max-height: 350px;
+        overflow-y: auto;
+        z-index: 1000;
+        overflow-x: auto;
+        max-width: 600px;
+    }
+
+    .custom-combobox-toggle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin-left: -1px;
+        padding: 0;
+        /* support: IE7 */
+        *height: 1.7em;
+        *top: 0.1em;
+    }
+
+    .ui-autocomplete-input {
+        width: 450px;
+        max-width: 550px;
+    }
+
+    .custom-combobox-input {
+        margin: 0;
+        padding: 0.3em;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var RptName = $('#RptName1').val();
+            var BuisnessLine = $('#BuisnessLine').val();
+          
+            if (RptName.toString() == "") {
+                alert("Please Select Report Name ");
+                return false;
+            }
+            if (BuisnessLine.toString() == "") {
+                alert("Please Select  BuisnessLine ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on("change", "#RptName1", (function () {
+            var data = $("#RptName1 option:selected").text();
+          
+          
+                $("#ReportName").empty();
+                $("#ReportName").val(data);
+                      
+            //var id = $('#CharacterID').val();
+        }));
+    });
+</script>
+
+
+@using (Html.BeginForm("RDSCreate", "RDSReport", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+
+            <td>
+                <label for="VendorName">Report</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("ReportId", (IEnumerable<SelectListItem>)ViewBag.rdsrpt, " Please Select Report", new {  id = "RptName1",  @required = "required", @class = "RptName1 form-control" })
+                    @Html.ValidationMessageFor(model => model.ReportId, " ", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="VendorName">Report Name </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ReportName, new { @class = "form-control",  id = "ReportName" })
+                    @Html.ValidationMessageFor(model => model.ReportName, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="VendorName">Business Line </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("BusinessLineName", (IEnumerable<SelectListItem>)ViewBag.ListOfBL, " Please Select BuisnessLine", new { @class = "form-control", id = "BuisnessLine" }
+                                        )
+                </div>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+              
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'ReportList';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+            
+            </td>
+
+        </tr>
+    </table>
+}
+
+
+

@@ -1,0 +1,108 @@
+﻿@model SmartSys.BL.ClientAppModel
+
+@{
+    ViewBag.Title = "CreateClientApp";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+
+    Create  Client Application
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+            e.preventDefault();
+            var AppName = $('#AppName').val();
+            var LoginName = $('#LoginName').val();
+            var Password = $('#Password').val();
+            if (AppName.toString() == "") {
+                alert("Please Enter AppName ");
+                return false;
+            }
+            if (LoginName.toString() == "") {
+                alert("Please Enter LoginName ");
+                return false;
+            }
+            if (Password.toString() == "") {
+                alert("Please Enter Password ");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit(); S
+        });
+    });
+
+</script>
+
+@using (Html.BeginForm("CreateClientApp", "Admin", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label for="AppName">App Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.AppName, new { htmlAttributes = new { @class = "form-control", @type = "text", id = "AppName" } })
+                        @Html.ValidationMessageFor(model => model.AppName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Description">Description</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="LoginName">Login Name</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.LoginName, new { htmlAttributes = new { @class = "form-control", id = "LoginName" } })
+                        @Html.ValidationMessageFor(model => model.LoginName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Password">Password</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", id = "Password" } })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    @Html.ActionLink(" Back", "GetClientAppList", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-hand-left" })
+
+                </td>
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save save"> Save</button>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+

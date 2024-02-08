@@ -1,0 +1,224 @@
+﻿@model SmartSys.BL.SalaryComponentmodel
+
+@{
+    ViewBag.Title = "EditSalaryComponent";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Edit Salary Component
+</div>
+<script>
+    $(document).ready(function () {
+        
+        $('#ParentId').val(@Model.ParentComponentId);
+        $('.save').click(function (e) {
+
+            var name = $('#Name').val();
+            var drcr = $('#drcr').val();
+            var frequency = $('#frequency').val(); 
+            var drcr = $('#drcr').val();
+            var Parent = $('#ParentId').val();
+
+            if (name.toString() == "") {
+                alert("Please Enter Component Name ");
+                return false;
+            }
+
+            if (frequency.toString() == "") {
+                alert("Please Select Frequency ");
+                return false;
+            }
+            if (drcr.toString() == "") {
+                alert("Please Select credit/debit ");
+                return false;
+            }
+            if (taxable.toString() == "") {
+                alert("Please check taxable ");
+                return false;
+            }
+           
+
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+@using (Html.BeginForm(new { id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr style="height:40px">
+            <td>
+                <label for="ComponentId">Component Id:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ComponentId, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ComponentId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label for="Name">Component Name:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", id = "Name" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+            <td>
+                <label for="Frequency">Frequency:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.Frequency, new List<SelectListItem>
+                    {
+                        new SelectListItem(){Text="Daily",Value="DL"},
+                        new SelectListItem(){Text="Quarterly",Value="QL"},
+                        new SelectListItem(){Text="Monthly",Value="ML"},
+                        new SelectListItem(){Text="Yearly",Value="YL"},
+                    }, "Please Select Frequency", new { @class = "form-control", id = "frequency" })
+                    @Html.ValidationMessageFor(model => model.Frequency, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr style="height:60px">
+
+            <td>
+                <label for="DRCR">Debit/Credit:</label>
+
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.DRCR, new List<SelectListItem>
+                    {
+                        new SelectListItem(){Text="Credit",Value="CR"},
+                        new SelectListItem(){Text="Debit",Value="DR"}
+                    }, "Please Select DRCR", new { @class = "form-control", id = "drcr" })
+                    @Html.ValidationMessageFor(model => model.DRCR, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="Taxable">Taxable:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.Taxable, new { id = "taxable", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Taxable, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="Taxable">Fixed:</label>
+
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.EditorFor(model => model.Fixed, new { id = "Fixed", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Fixed, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+        <tr id="Variable" style="">
+            <td>
+                <label for="Taxable">Parent:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownList("ParentId", (IEnumerable<SelectListItem>)ViewBag.ComponentList, "Select Component", new { id = "ParentId", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Fixed, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label for="Taxable">Amount:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.VariableRate, new { id = "VariableRate", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Fixed, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+
+        <tr style="height:40px">
+            <td>
+                <label for="ComponentId">Created By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedBy, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ComponentId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label for="Name">Created Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", id = "Name", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+
+        <tr style="height:40px">
+            <td>
+                <label for="ComponentId">Modified By:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedBy, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ComponentId, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label for="Name">Modified Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", id = "Name", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+
+            </td>
+        </tr>
+    </table>
+    <tabel>
+        <td>
+            <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'SalaryComponentList';" );"> Back</button>
+                <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save save"> Save</button>
+        </td>
+    </tabel>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+<script>
+    $(document).ready(function () {
+        //set initial state.
+        $('#Fixed').change(function () {
+            if ($(this).is(":checked")) {
+                $('#Variable').hide();
+
+                $(this).attr("checked", returnVal);
+            }
+            else {
+                $('#Variable').show();
+            }
+
+        });
+    });
+</script>

@@ -1,0 +1,441 @@
+﻿@model IEnumerable<SmartSys.BL.FranchiseModel>
+@{
+    ViewBag.Title = "GetFranchiseList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Franchise Review List
+</div>
+<div>
+    <table>
+        <tr>
+            <td><label>Company</label></td>
+            <td>
+                <div class="">
+                    <input type="text" value="Advent" name="CompCode" id="CompCode" />
+                </div>
+            </td>
+            <td>
+                <label>From Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("FromDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>
+            <td>
+                <label>To Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("ToDate").Value(DateTime.Now).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>
+            <td>
+                <div class="">
+                    <input type="button" id="Submit" value="Submit" onclick="SubmitDate()" class="submit btn btn-primary glyphicon glyphicon-save-file" />
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<br />
+<div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+                                            top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+                                            opacity: .8; filter: alpha(opacity=70);display:none">
+    <p style="position: absolute; top: 30%; left: 45%; color: White;">
+        Loading, please wait...<img src="../../Content/themes/ajax-loading.gif">
+    </p>
+</div>
+<div id="GridList">
+    <div style="position:relative">
+        @(Html.EJ().Grid<SmartSys.BL.FranchiseModel>("FranchiseMainList")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                     .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                        .PageSettings(p => { p.PageSize(20); })
+                .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate))
+                                        .ContextMenuSettings(contextMenu =>
+                                        {
+                                            contextMenu.EnableContextMenu();
+                                            contextMenu.DisableDefaultItems();
+                                            contextMenu.CustomContextMenuItems(c =>
+                                            {
+                                                c.AddItem("Add_Comments", "Add Comments");
+                                                c.AddItem("View_History", "View History");
+
+                                            });
+
+                                        })
+                                  .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                                .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("VendorNo").HeaderText("Vendor No").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(20).Add();
+            col.Field("VendorName").HeaderText("Vendor Name").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Left).Width(60).Add();
+            col.Field("CurrencyCode").HeaderText("Currency Code").TextAlign(TextAlign.Left).Width(30).Add();
+            col.Field("TargetForYear").HeaderText("Target For Year").Format("{0:N2}").IsPrimaryKey(true).TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("Achived_Till").HeaderText("Achived Till").Format("{0:N2}").IsPrimaryKey(true).TextAlign(TextAlign.Right).Width(30).Add();
+            col.Field("BacklogTill").HeaderText("Backlog Till").Format("{0:N2}").TextAlign(TextAlign.Right).Width(50).Add();
+            col.Field("Pending_to_be_achieve").HeaderText("Pending To Be Achieve").Format("{0:N2}").TextAlign(TextAlign.Right).Width(30).Add();           
+            col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClick");
+                eve.QueryCellInfo("querycellinfo");
+            })
+        )
+    </div>
+
+</div>
+@{
+
+    Html.EJ()
+        .Dialog("ShowHistory")
+        .Title("<a id='Title'>View History</a>")
+        .Width(1200)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<div>
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.FranchiseModel>("FranchiseShowHistoryGrid")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("VendorNo").HeaderText("Vendor No").TextAlign(TextAlign.Left).Width(40).Add();
+                    col.Field("VendorName").HeaderText("VendorName").TextAlign(TextAlign.Left).Width(60).Visible(true).Add();
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();                
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                )
+            </div>
+        </div>)
+            .Render();
+}
+<script>
+    function openDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+    function openNestedDialog() {
+        $("#ShowHistory").ejDialog("open");
+    }
+</script>
+@{Html.EJ().Dialog("dialogIcon").Title("Add Comments").ContentTemplate(@<div>
+        <div class="page-header glyphicon glyphicon-leaf  text-info">
+            Add Comments
+        </div>
+        <table>
+            <tr>
+                <td width="80px">
+                    <label>
+                        Vendor No:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="VendorNo" class="form-control" readonly />                       
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        Vendor Name:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="VendorName" class="form-control" readonly />
+                    </div>
+                </td>
+
+                <td>
+                    <label>
+                        Currency:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="CurrencyCode" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td width="80px">
+                    <label>Target For Year</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="TargetForYear" class="form-control" readonly />
+                    </div>
+                </td>
+                <td width="80px">
+                    <label>Achived Till</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="AchivedTill" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Backlog Till</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="BacklogTill" class="form-control" readonly />
+                    </div>
+                </td>
+                <td>
+                    <label>Pending To Be Achieve</label>
+                </td>
+                <td>
+                    <div class="">
+                        <input type="text" id="PendingToBeAchieve" class="form-control" readonly />
+                    </div>
+                </td>
+            </tr>           
+        </table>
+        <table style="margin-left:15px">
+            <tr>
+                <td>
+                    <label>
+                        Comments:
+                    </label>
+                </td>
+                <td width="32px"></td>
+                <td>
+                    <div class="">
+                        @Html.TextArea("Comments", new { Id = "Comments", @class = "form-control", @style = "min-width:500px" })
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table style="margin-left:100px">
+            <tr>
+                <td>
+                    @*<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>*@
+                    <button type="button" class="btn-xs btn-info glyphicon glyphicon-save " data-dismiss="modal" id="Save"> Save</button>
+                </td>
+                <td style="width:50px"></td>
+            </tr>
+        </table>
+        <div>
+            <div>
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.FranchiseModel>("FranchiseCommentlist")
+                .Datasource((IEnumerable<object>)@Model)
+                .AllowFiltering()
+                .AllowPaging()
+                .AllowSorting()
+                .EnableHeaderHover()
+                .AllowResizing()
+                .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowScrolling(true)
+                .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+                .PageSettings(p => { p.PageSize(20); })
+                .EnableAltRow(true)
+                .AllowSorting(true)
+                .Columns(col =>
+                {
+                    col.Field("Comment").HeaderText("Comment").TextAlign(TextAlign.Left).Width(50).Add();
+                    col.Field("Createdate").HeaderText("Create Date").Format("{0:MM/dd/yyyy  HH:MM}").TextAlign(TextAlign.Right).Width(50).Add();
+                    col.Field("FullName").HeaderText("Employee Name").TextAlign(TextAlign.Left).Width(30).Add();
+                })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>)
+          .Width(1200)
+          .Height(700)
+          .Position(pos => pos.XValue("300px").YValue("100px"))
+          .ShowOnInit(false)
+          .EnableResize(false)
+          .IsResponsive(true)
+          .ClientSideEvents(evt => evt.Close("onDialogClose"))
+          .Render();
+}
+<script>
+    $(document).ready(function () {
+        $('#GridList').hide();
+    });
+</script>
+<script>
+    function SubmitDate() {
+        var CompCode = $('#CompCode').val();
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        if (FromDate == null)
+        {
+            alert("Enter Start and End Date");
+            return false;
+        }
+        if (ToDate == null)
+        {
+            alert("Enter Start and End Date");
+            return false;
+        }
+        $("#divLoading").show();
+        $.ajax({
+            url: "/DhFeed/GetFranchiseListData",
+            dataType: 'json',
+            type: "POST",
+            data: { CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+            success: function (List) {
+
+                var obj = $("#FranchiseMainList").ejGrid("instance")
+                obj.dataSource(List);
+                $('#GridList').show();
+                $("#divLoading").hide();
+            },
+            error: function (req, status, err) {
+            console.log('something went wrong', status, err);
+        }
+    })
+    }
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "View History") {
+            $("#ShowHistory").ejDialog("open");
+            var tempData = args.text;
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var grid = $("#FranchiseShowHistoryGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var VendorNo = result[0]["VendorNo"];
+            var VendorName = result[0]["VendorName"];
+            $.ajax({
+                url: "/DhFeed/ShowFranchiseList",
+                dataType: 'json',
+                type: "POST",
+                data: { VendorNo: VendorNo,CompCode: CompCode ,FromDate: FromDate, ToDate: ToDate, },
+                success: function (List) {
+                    var obj = $("#FranchiseShowHistoryGrid").ejGrid("instance")
+                    obj.dataSource(List);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+        }
+        else if (args.text == "Add Comments") {
+
+            var tempData = args.text;
+            $("#dialogIcon").ejDialog("open");
+            var grid = $("#FranchiseShowHistoryGrid").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var VendorNo = result[0]["VendorNo"];
+            var VendorName = result[0]["VendorName"];
+            var CurrencyCode = result[0]["CurrencyCode"];
+            var AchivedTill = result[0]["Achived_Till"];
+            var BacklogTill = result[0]["BacklogTill"];
+            var PendingToBeAchieve = result[0]["Pending_to_be_achieve"];
+            var TargetForYear = result[0]["TargetForYear"];
+            $('#VendorNo').val(VendorNo);
+            $('#VendorName').val(VendorName);
+            $('#CurrencyCode').val(CurrencyCode);
+            $('#AchivedTill').val(AchivedTill);
+            $('#BacklogTill').val(BacklogTill);
+            $('#PendingToBeAchieve').val(PendingToBeAchieve);
+            $('#TargetForYear').val(TargetForYear);          
+            $('#Comments').val("");
+            var VendorNo = result[0]["VendorNo"];
+            var VendorName = result[0]["VendorName"];
+            var CurrencyCode = result[0]["CurrencyCode"];
+            var CompCode = $('#CompCode').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            $.ajax({
+                url: "/DhFeed/ShowFranchiseList",
+                dataType: 'json',
+                type: "POST",
+                data: { VendorNo: VendorNo, CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+                success: function (List) {
+
+                    var obj = $("#FranchiseCommentlist").ejGrid("instance")
+                    obj.dataSource(List);
+                },
+                error: function (req, status, err) {
+                    console.log('something went wrong', status, err);
+                }
+            })
+            //event.preventDefault();
+            //window.location.replace(path);
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+            $('#Save').click(function () {
+            var VendorNo = $('#VendorNo').val();
+            var VendorName = $('#VendorName').val();           
+            var Comments = $('#Comments').val();
+            var FromDate = $('#FromDate').val();
+            var ToDate = $('#ToDate').val();
+            var CompCode = $('#CompCode').val();
+            if(Comments =="")
+            {
+                alert("Please Enter Comments");
+                return false;
+            }
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/DhFeed/SaveFranchiseAdventData",
+                data: { VendorName: VendorName, VendorNo: VendorNo, Comment: Comments },
+                success: function (ErrorCode) {
+                    toastr.success("Saved Successfully!");
+                    $.ajax({
+                        url: "/DhFeed/GetFranchiseListData",
+                        dataType: 'json',
+                        type: "POST",
+                        data: { CompCode: CompCode, FromDate: FromDate, ToDate: ToDate },
+                        success: function (List) {
+                            var obj = $("#FranchiseMainList").ejGrid("instance")
+                            obj.dataSource(List);
+                            $('#GridList').show();
+                            $("#divLoading").hide();
+                            //data-dismiss="modal";
+                            $("#dialogIcon").ejDialog("close");
+                        },
+                        error: function (req, status, err) {
+                            console.log('something went wrong', status, err);
+                        }
+                    })
+                   //alert("Saved Successfully")
+                },
+                error: function (msg) {
+                    alert("Error " + msg.d.toString());
+                }
+            });
+          //  window.location.reload();
+        });
+    });
+</script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />

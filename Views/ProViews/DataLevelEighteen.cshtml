@@ -1,0 +1,63 @@
+﻿@model SmartSys.BL.Enquiry.DataLevelEighteen
+
+@{
+    ViewBag.Title = "DataLevelEighteen";
+}
+
+<style>
+    tr.spaceUnder > td {
+        padding-bottom: 5px;
+        padding-left: 5px;
+    }
+</style>
+<table>
+
+    <tr class="spaceUnder">
+        <td>
+            <label>Item Name:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.ItemName, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>MPN:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.MPN, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Rate:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Rate, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+        <td>
+            <label>Quantity:</label>
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Quantity, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+
+    </tr>
+    <tr class="spaceUnder">
+        <td>
+            <label>Expected Date:</label>
+        </td>
+        <td>
+            @Html.EJ().DatePicker("ExpectedDate").Value(Model.ExpectedDate).DateFormat("MM/dd/yyyy").ReadOnly(true)
+        </td>
+        <td>
+            <label>Remark:</label>
+        </td>
+        <td>
+            @Html.TextAreaFor(model => model.Remark, new { @readonly = "readonly", @class = "form-control" })
+        </td>
+    </tr>
+   
+</table>
+
+@Html.EJ().ScriptManager()
+

@@ -1,0 +1,511 @@
+﻿@model SmartSys.BL.BOMAdmin.BankChequeModel
+@{
+    ViewBag.Title = "GetSystemEmailConfigList";
+}
+   <link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp1").select2({
+            placeholder: "Please Select a Vendor",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp2").select2({
+            placeholder: "Please Select a Employee",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp3").select2({
+            placeholder: "Please Select a Freight Forwarder",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.ChequeId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Bank Cheque
+    </div>
+
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Bank Cheque
+    </div>
+
+}
+<script>
+    $(document).ready(function () {
+     
+        var IssuedType = $("#IssType").val();
+        var IssuedTo = $("#IssuedTo").val();
+        $("#Currency").val('@Model.Currency');
+        
+        switch (IssuedType) {
+            case "Employee":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").show();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#LblIssuto").show();
+                    $("#EmployeeId").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "Vendor":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").show();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#LblIssuto").show();                
+                    $("#VendorId").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "Customer":
+                {
+                    $("#CustId").show();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#LblIssuto").show();
+                    $("#CustomerID").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "FF":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").show();
+                    $("#Other").hide();
+                    $("#LblIssuto").show();
+                    $("#FFID").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "Other":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").show();
+                    $("#LblIssuto").show();
+                 
+                    break;
+                }
+            default:
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#LblIssuto").hide();
+                    break;
+                }
+        }
+       
+        $("#IssType").change(function () {
+            var IssuedType = $("#IssType").val();          
+            if (IssuedType == "")
+            {
+                alert("Please Select IssuedTo Type");
+                return false;
+            }
+            switch(IssuedType)
+            {
+                case "Employee":
+                    {
+
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").show();
+                        $("#FredId").hide();
+                        $("#Other").hide();
+                        $("#LblIssuto").show();                       
+                        break;
+                    }
+                case "Vendor":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").show();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#Other").hide();
+                        $("#LblIssuto").show();                    
+                        break;
+                    }
+                case "Customer":
+                    {
+                        $("#CustId").show();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#Other").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "FF":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").show();
+                        $("#Other").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "Other":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#Other").show();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+            }
+           return false;
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#submit").click(function () {
+            
+            var BankId = $("#BankId").val();
+            var BankId = $("#BankId").val();
+            var ChequeNumber = $("#ChequeNumber").val();          
+            if(BankId =="")
+            {
+                alert("Please Select Bank");
+                return false;
+            }
+            if ($("#CompCodeDrp").val() == "") {
+                alert("Please Select Company");
+                return false;
+            }
+            if (ChequeNumber == "") {
+                alert("Please Enter Cheque Number");
+                return false;
+            }
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm("CreateBankCheque", "BOMAdmin", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                @if (Model.ChequeId > 0)
+                {
+                    <td>
+                        <label for="Cheque Id">Cheque Id </label>
+                    </td>
+
+                    <td>
+                        <div class="">
+                            @Html.HiddenFor(model => model.ChequeDocument)
+                            @Html.TextBoxFor(model => model.ChequeId, new { @readonly = "readonly", @class = "form-control", id = "BrandId" })
+                            @Html.ValidationMessageFor(model => model.ChequeId)
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    @Html.HiddenFor(model => model.ChequeDocument)
+                    @Html.HiddenFor(model => model.ChequeId)
+                }
+                <td>
+                    <label for="BankName">Bank Name</label>
+                </td>
+
+                <td>
+                    @Html.HiddenFor(model => model.IssuedToId, new { id = "IssuedTo" })
+                    <div class="">
+                        @Html.DropDownList("BankId", (IEnumerable<SelectListItem>)ViewBag.BankLst, "--please Select Bank--", new { id = "BankId", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label>Company</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.CompList, "--- Please Select Company ---", new { @class = "  form-control", style = "width:310px", id = "CompCodeDrp" })
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="ChequeNumber">Cheque Number</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.ChequeNumber, new { id = "ChequeNumber", @class = "form-control", maxlength = "20" })
+                        @Html.ValidationMessageFor(model => model.ChequeNumber)
+                    </div>
+                </td>
+                <td >
+                    <label for="ChequeNumber">Cheque Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @if (Model.ChequeId > 0 && Model.ChequeDate.ToString() != "1/1/1900 12:00:00 AM")
+                        {
+                            @Html.EJ().DatePickerFor(model => model.ChequeDate).DateFormat("MM/dd/yyyy")
+                        }
+                        else
+                        {
+                            @Html.EJ().DatePickerFor(model => model.ChequeDate).DateFormat("MM/dd/yyyy").Value("")
+                        }
+                    </div>
+               
+                   
+                </td>
+            
+                <td>
+                    <label for="ItemName">File:</label>
+                </td>
+                <td>
+
+                    <div class="input-group-btn">
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-info" />                      
+                    </div>
+                </td>
+                <td>
+                    <input type="button" id="reset" value="Remove" class="btn-xs btn-danger reset" />
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="IssuedToType">IssuedTo Type</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(x => x.IssuedToType, new List<SelectListItem>{
+                        new SelectListItem() {Text = "-- Select Issued Type --", Value=""},
+                        new SelectListItem() {Text = "Employee", Value="Employee"},
+                        new SelectListItem() {Text = "Vendor", Value="Vendor"},
+                        new SelectListItem() {Text = "Customer", Value="Customer"},
+                        new SelectListItem() {Text = "Freight Forwarder", Value="FF"},
+                        new SelectListItem() {Text = "Other", Value="Other"}
+                     }, new { id = "IssType", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="IssuedDate">Issued Date</label>
+                </td>
+                <td>
+                    <div>
+                        @if (Model.ChequeId > 0 && Model.IssuedDate.ToString() != "1/1/1900 12:00:00 AM")
+                        {
+
+                            @Html.EJ().DatePickerFor(model => model.IssuedDate).DateFormat("MM/dd/yyyy")
+                        }
+                        else
+                        {
+                            @Html.EJ().DatePickerFor(model => model.IssuedDate).DateFormat("MM/dd/yyyy").Value("")
+                        }
+ 
+                    </div>
+                </td>
+
+
+                <td id="LblIssuto">
+                    <label for="IssuedTO">Issued To</label>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td id="CustId">
+                                <div class="">
+                                    @Html.DropDownList("IssuedToIdCust", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "--please Select Customer--", new { id = "CustomerID", @class = "drp form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="VendId">
+                                <div class="">
+                                    @Html.DropDownList("IssuedToIdVend", (IEnumerable<SelectListItem>)ViewBag.VendorList, "--please Select Vendor--", new { id = "VendorId", @class = "drp1 form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td id="EmpId">
+                                <div class="">
+                                    @Html.DropDownList("IssuedToIdEmp", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "--please Select Employee--", new { id = "EmployeeId", @class = "drp2 form-control" })
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td id="FredId">
+                                <div class="">
+                                    @Html.DropDownList("IssuedToIdFF", (IEnumerable<SelectListItem>)ViewBag.FFLst, "--please Select Freight Forwarder--", new { id = "FFID", @class = "drp3 form-control" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="Other">
+                                @Html.TextBoxFor(model => model.IssuedToOther, new { id = "IssuedToOther", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ChequeNumber)
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+
+
+            </tr>
+            <tr>
+                <td>
+                    <label for="Amount">Amount</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Amount, new { type = "number", id = "Amount", @class = "form-control", step = "0.001" })
+                        @Html.ValidationMessageFor(model => model.Amount)
+                    </div>
+                </td>
+                <td>
+                    <label for="Currency">Currency</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Currency", (IEnumerable<SelectListItem>)ViewBag.Currency, new { style = "width:100px", id = "Currency", @class = "form-control " })
+                        @*@Html.TextBoxFor(model => model.Currency, new { id = "Currency", @class = "form-control" ,maxlength="3"})*@
+                        @Html.ValidationMessageFor(model => model.Currency)
+                    </div>
+                </td>
+
+                <td>
+                    <label for="ClearingDate">Clearing Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @if (Model.ChequeId > 0 && Model.ClearingDate.ToString() != "1/1/1900 12:00:00 AM")
+                        {
+                            @Html.EJ().DatePickerFor(model => model.ClearingDate).DateFormat("MM/dd/yyyy")
+                        }
+                        else
+                        {
+                            @Html.EJ().DatePickerFor(model => model.ClearingDate).DateFormat("MM/dd/yyyy").Value("")
+                        }
+                    </div>
+
+                 
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td width="110px">
+                    <label for="Remark">Remark</label>
+                </td>
+                <td>
+                    <div class="">
+
+                        @Html.TextAreaFor(model => model.Remark, new { style = "width:500px;max-width:500px",maxlength="200",id="Remark" ,@class="abc form-control e-ejinputtext"})
+                       
+                        </div>
+</td>
+
+            </tr>
+        </table>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.ChequeId > 0)
+            {
+                <tr>
+                    <td width="110px">
+                        <label for="Created By">Created By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", id = "CreatedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CreatedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Created Date">Created Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", id = "CreatedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CreatedDate)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110px">
+                        <label for="ModifiedBy">Modified By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", id = "ModifiedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Modified Date">Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", id = "ModifiedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetBankChequeList';" );"> Back</button>
+                    <button type="submit" id="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save Save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}

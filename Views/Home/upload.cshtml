@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "upload";
+}
+
+<h2>upload Image</h2>
+<p>
+    @using (Html.BeginForm("upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="file" name="files" />
+        <input type="submit" value="Upload" />
+
+    }
+</p>
+<ul>
+    @foreach(var item in Model)
+    {
+        <li>
+            <img src="@item" alt="Image Here" width="100" height="100" />
+
+        </li>
+    }
+</ul>

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<SmartSys.BL.ProViews.BrandListViewModel>
+@{
+    ViewBag.Title = "BrandList";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Brand View List
+</div>
+<br />
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.EmpChartModel>("grdEmpList")
+        .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+                         .ContextMenuSettings(contextMenu =>
+                         {
+                             contextMenu.EnableContextMenu()
+                             .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel));
+                           //  .CustomContextMenuItems(new List<string> { "Employee Detail" });
+
+                         })
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+       
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("BrandId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("BrandName").HeaderText("Brand Name").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("CreatedByEmp").HeaderText("CreatedByEmp").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            // col.Field("CreatedBy").HeaderText("Created By").TextAlign(TextAlign.Left).Width(120).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(120).Add();
+            col.HeaderText("Detail")
+                .Template("#edit")
+                .AllowFiltering(false)
+        
+            .TextAlign(TextAlign.Center)
+            .Width(70)
+            .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-primary  glyphicon glyphicon-dashboard" href="/ProViews/BrandViewDetail?BrandId={{:BrandId}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+        if (args.text == "Brand Detail") {
+            var tempData = args.text;
+            var grid = $("#grdEmpList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var id = result[0]["BrandId"];
+            var path = '@Url.Content("~/ProViews/BrandViewDetail")' + "?BrandId=" + BrandId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+
+</script>

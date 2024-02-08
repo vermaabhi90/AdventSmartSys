@@ -1,0 +1,103 @@
+﻿@model SmartSys.BL.Project.ProjectExpensesModel
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "Project Expenses List";
+}
+
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Project Expenses List
+</div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Project.ProjectExpensesModel>("GrdPayment")
+                        .Datasource((IEnumerable<object>)@ViewBag.PmtStatus)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+           .PageSettings(p => { p.PageSize(20); })
+                .PageSettings(p => { p.PageSize(20); })
+
+        .EnableAltRow(true)
+
+          //.ContextMenuSettings(contextMenu =>
+          //{
+          //    contextMenu.EnableContextMenu()
+          //    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Save))
+          //    //.CustomContextMenuItems(new List<string> { "View Detail" })
+          //    .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "View Detail" } });
+          //})
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                 
+                  c.AddItem("View_Detail", "View Detail");
+              });
+
+          })
+        .Columns(col =>
+        {
+            col.Field("ExpenseId").HeaderText("ID").IsPrimaryKey(false).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("PaymentStatus").HeaderText("Payment Status").Visible(true).TextAlign(TextAlign.Left).Width(180).Template("#Status").Add();
+            col.Field("EmpId").HeaderText("EmpId").Width(200).Visible(false).Add();
+            col.Field("ProjectName").HeaderText("Project Name").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("ExpenseType").HeaderText("Expense Type").TextAlign(TextAlign.Left).Width(180).Add();
+            col.Field("Employee").HeaderText("Employee").TextAlign(TextAlign.Left).Width(170).Add();
+            col.Field("PaymentId").HeaderText("PaymentId").Visible(false).TextAlign(TextAlign.Center).Width(200).Add();
+            col.Field("TaskName").AllowEditing(false).HeaderText("Task Name").Width(200).Add();
+            col.Field("Amount").AllowEditing(false).HeaderText("Amount").TextAlign(TextAlign.Right).Width(120).Format("{0:n2}").Add();
+            col.Field("TotalPaid").AllowEditing(false).HeaderText("TotalPaid").TextAlign(TextAlign.Right).Width(120).Format("{0:n2}").Add();
+            col.Field("Remark").AllowEditing(false).HeaderText("Remark").Width(200).Add();
+            col.Field("StatusCode").AllowEditing(false).HeaderText("Status").Width(120).Add();
+            col.Field("ExpenseDate").AllowEditing(true).HeaderText("Expense Date").Format("{0:MM/dd/yyyy}").Width(130).Add();
+            col.Field("ModifiedBy").AllowEditing(false).HeaderText("Modified By").Width(200).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+            col.HeaderText("View").Template("#EditBtn").AllowFiltering(false).Width(120).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+
+        })
+            .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+<script type="text/x-jsrender" id="EditBtn">
+    @*<a class="btn-xs btn-warning  glyphicon glyphicon-apple black" href='/ProjectCenter/ProjectPayMentStatusDetail?EmpName={{:Employee}}&amp;EmpId={{:EmpId}}&amp;Amount={{:Amount}}&amp;RefId={{:ExpenseId}}&amp;Id={{:PaymentId}}'></a>*@
+    <a class="btn-xs btn-warning  glyphicon glyphicon-info-sign black" href='/ProjectCenter/PaymentList?RefId={{:ExpenseId}}'></a>
+</script>
+<script type="text/x-jsrender" id="Status">
+    {{if PaymentStatus == 'FullyPaid'}}
+    <a class="text-info glyphicon glyphicon-thumbs-up" style="color:#427640"> <b> Fully Paid</b></a>
+    {{/if}}
+
+    {{if PaymentStatus == 'PartiallyPaid'}}
+    <a class="text-success glyphicon glyphicon-check" style="color:orange"><b> Partially Paid</b></a>
+    {{/if}}
+
+    {{if PaymentStatus == 'NotPaid'}}
+    <a class="text-danger glyphicon glyphicon-thumbs-down" style="color:red"><b> Not Paid</b></a>
+    {{/if}}
+
+</script>
+<script>
+    function contextclick(args) {
+               if (args.text == "View Detail") {
+                var tempData = args.text;
+                var grid = $("#GrdPayment").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var Employee = result[0]["Employee"];
+                var EmpId = result[0]["EmpId"];
+                var Amount = result[0]["Amount"];
+                var ExpenseId = result[0]["ExpenseId"];
+                var PaymentId = result[0]["PaymentId"];
+                var path = '@Url.Content("~/ProjectCenter/PaymentList")' +  "?RefId=" + ExpenseId 
+                event.preventDefault();
+                window.location.replace(path);
+            }
+        }
+
+</script>

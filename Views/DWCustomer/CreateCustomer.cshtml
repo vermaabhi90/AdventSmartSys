@@ -1,0 +1,1499 @@
+﻿@model SmartSys.BL.DW.CustomerModel
+
+@{
+    ViewBag.Title = "DW Custmer Details";
+  
+}
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return false;
+        }
+    });
+
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#CustomerName").ejAutocomplete("selectValueByKey",$('#CustomerId').val());
+        $('.SaveAll').click(function (e) {
+            e.preventDefault();
+            var CustomerName = $('#CustomerName').val();
+            var CustomerId = $('#CustomerId').val();
+            if (CustomerName.toString() == "") {
+                alert("Please Enter Customer Name");
+                return false;
+            } 
+            if(CustomerId == 0)
+            {
+                var path = "/DWCustomer/Checkduplicacy"
+                $.ajax({
+                    type: 'POST',
+                    url: path,
+                    dataType: 'json',
+                    data: { CustomerName:CustomerName },
+                    success: function (Result) {
+                        if(Result)
+                        {
+                            alert("This Customer Already Exists.You Can't Create!!")  
+                            return false;
+                        } 
+                        else
+                        {
+                            $("#Form1").unbind('submit').submit();
+                        }
+                    }
+                });
+            }
+            else
+            {
+                $("#Form1").unbind('submit').submit();
+            }            
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.CustomerId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Customer Details
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create New  Customer
+    </div>
+}
+
+
+@using (Html.BeginForm("CreateCustomer", "DWCustomer", FormMethod.Post, new { Id = "Form1" }))
+{
+
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+
+            <td>
+                <label for="CustomerName">Customer Name </label>
+            </td>
+            <td>
+                <div class="">
+                    @*@Html.TextBoxFor(model => model.CustomerName, new {  @class = "form-control" })*@
+                    @*@Html.ValidationMessageFor(model => model.CustomerName, "", new { id = "CustomerName", @class = "text-danger" })*@
+                    <input type="hidden" id="ItemTxtHide" />
+                    @Html.EJ().Autocomplete("CustomerName").AutoFocus(true).ShowPopupButton(true).Datasource((IEnumerable<SmartSys.BL.DW.CustomerListModel>)ViewBag.CustomerList).AutocompleteFields(f => f.Text("CustomerName").Key("CustomerId")).Width("400").ClientSideEvents(e => e.Select("onSelect"))                 
+                    @Html.Hidden("CustomerId", null, new { @id = "CustomerId" })
+                </div>
+
+            </td>
+
+            <td>
+                <label for="Region">Region </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.DropDownListFor(model => model.Region, new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "East", Value="East"},
+                             new SelectListItem() {Text = "West", Value="West"},
+                             new SelectListItem() {Text = "North", Value="North"},
+                             new SelectListItem() {Text = "South", Value="South"}
+
+                       }, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Region)
+                </div>
+            </td>
+
+            <td>
+                <label for="IsActive">IsActive </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.IsActive)
+                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label for="IsActive">Authorized Dealer </label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.AuthorizedDealer)
+                    @Html.ValidationMessageFor(model => model.AuthorizedDealer, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="IsActive">Payment Terms </label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("PTId", (IEnumerable<SelectListItem>)ViewBag.PTList, new { @class = "form-control" })
+                </div>
+
+            </td>
+            <td>
+                <label for="Level">Level</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("LevelId", (IEnumerable<SelectListItem>)ViewBag.LevelList, new { @class = "form-control" })
+                </div>
+
+            </td>
+            <td>
+                <label for="SalesPerson">Sales Person</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("SalesPersonId", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, new { @class = "form-control" })
+                </div>
+
+            </td>
+            <td>
+                <label for="QuatSendCSR">Communicate To CSR</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.CommunicateToCSR)
+                    @Html.ValidationMessageFor(model => model.CommunicateToCSR, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br>
+    if (Model.CustomerId > 0)
+    {
+
+        <div style="width:100%">
+
+            @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("ProfessionalInfo").Text("Professional Info").ContentTemplate(
+                       @<div>
+            <table>
+                <tr>
+                    <td align="left" width="80px">
+                    <button class="btn-xs btn-info glyphicon glyphicon-leaf Editinfo" type="button"> Edit</button>
+               
+                    @*@Html.ActionLink(" Edit", "CreateProfessionalInfo", new { CustomerId = Model.CustomerId }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-pencil black" })*@
+                    </td>
+                </tr>
+            </table>
+                            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                                <tr>
+                                    <td >
+                                        <label for="E-Mail Id">E-Mail Id </label>
+                                    </td>
+                                    <td width="320px">
+                                        
+                                            @Html.TextBoxFor(model => model.emailId, new { @readonly = "readonly", @class = "form-control" })
+                                        
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                                <tr>
+                                    <td width="75px">
+                                        <label for="VAT">VAT</label>
+                                    </td>
+                                    <td width="300px">
+
+                                        @Html.TextBoxFor(model => model.VAT, new { @readonly = "readonly", @class = "form-control" })
+
+                                    </td>
+
+                                    <td>
+                                        <label for="PAN">PAN</label>
+                                    </td>
+                                    <td width="300px">
+                                        @Html.TextBoxFor(model => model.PAN, new { @readonly = "readonly", @class = "form-control" })
+                                    </td>
+                                    <td>
+                                        <label for="CST">CST</label>
+                                    </td>
+                                    <td width="300px">
+                                        @Html.TextBoxFor(model => model.CST, new { @readonly = "readonly", @class = "form-control" })
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <label for="TAN">TAN</label>
+                                    </td>
+                                    <td>
+                                        <div class="" style="color:#38172d">
+                                            @Html.TextBoxFor(model => model.TAN, new { @readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <label for="Excise No">Excise No</label>
+                                    </td>
+                                    <td>
+                                        <div class="" style="color:#38172d">
+                                            @Html.TextBoxFor(model => model.ExciseNo, new { @readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <label for="Excise Range">Excise Range</label>
+                                    </td>
+                                    <td>
+                                        <div class="" style="color:#38172d">
+                                            @Html.TextBoxFor(model => model.ExciseRange, new { @readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                                <tr>
+                                    <td>
+                                        <label for="Excise Division">Excise Division:</label>
+                                    </td>
+                                    <td width="255px">                                       
+                                            @Html.TextBoxFor(model => model.ExciseDivision, new { @readonly = "readonly", @class = "form-control" })                                      
+                                    </td>
+                                    <td>
+                                        <label for="Excise CommissionRate">Exc. Commission Rate:</label>
+                                    </td>
+                                    <td width="220px">
+                                        @Html.TextBoxFor(model => model.ExciseCommissionRate, new { @readonly = "readonly", @class = "form-control" })
+                                    </td>
+
+                                    <td width="100px">
+                                        <label for="Website">Website:</label>
+                                    </td>
+                                    <td width="300px">
+                                        @Html.TextBoxFor(model => model.Website, new { @readonly = "readonly", @class = "form-control" })
+                                    </td>
+                                </tr>
+                            </table>
+                            <table style="border-collapse:separate;border-spacing: 0 5px;">
+                                <tr>
+
+                                    <td>
+                                        <label for="Remark">Remark:</label>
+                                    </td>
+                                    <td>
+                                        @Html.TextAreaFor(model => model.Remark, new {@style="width:600px", @readonly = "readonly", @class = "form-control" })
+                                    </td>
+                                </tr>
+                            </table>
+</div>);
+               data.Add().ID("Contact").Text("Contact").ContentTemplate(
+                       @<div>         
+                <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateContact" type="button"> Create</button>  
+    @if (Model.CustmerContactLst.Count > 0)
+    {
+        <div style="position:relative">
+            @(Html.EJ().Grid<SmartSys.BL.DW.CustomerContactDetailsModel>("grdContList")
+         .Datasource(Model.CustmerContactLst)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+         .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add1", "Add Record");
+                  c.AddItem("Edit1", "Edit Record");
+                  c.AddItem("Select_Usser", "Select User");
+              });
+
+          })
+           .ToolbarSettings(toolbar =>
+           {
+               toolbar.ShowToolbar().ToolbarItems(items =>
+               {
+                   items.AddTool(ToolBarItems.Add);
+                   items.AddTool(ToolBarItems.Edit);
+               });
+           })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("CustomerContactId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ContactName").HeaderText("Contact Name").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Designation").HeaderText("Designation").Width(160).Add();
+            col.Field("email").HeaderText("Email Id").Width(180).Add();
+            col.Field("MobileNo").HeaderText("Mobile No").Width(180).Visible(true).Add();
+            col.Field("Experties").HeaderText("Experties").Width(140).Add();
+            col.Field("Qualification").HeaderText("Qualification").Add();
+            col.Field("BirthDateStr").AllowEditing(false).HeaderText("Birth Date").Width(110).Add();
+            col.Field("UserId").HeaderText("User Id").Add();
+            col.Field("UserName").HeaderText("User Name").Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclick");
+                eve.ActionBegin("toolClickContact");
+            })
+
+
+            )
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <label>Sorry! There is No Information about Contact Details !!!</label>
+        </div>
+    }
+</div>);
+               data.Add().ID("BankDetails").Text("Bank Details").ContentTemplate(
+                       @<div>
+                                    <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateBank" type="button"> Create</button>  
+
+                            @if (Model.BankDetailLst.Count > 0)
+                            {
+                                <div style="position:relative">
+                                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerBankDetailModel>("grdcustBankList")
+         .Datasource(Model.BankDetailLst)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+           .EditSettings(e => e.AllowAdding().AllowEditing())
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("BankName").HeaderText("Bank Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("AccountNo").HeaderText("Account No").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Limit").HeaderText("Limit").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickBank");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickBank");
+            })
+
+
+                                    )
+                                </div>
+
+                                          
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <label>Sorry! There is No Information about Bank Details !!!</label>
+        </div>
+
+    }
+
+</div>);
+               data.Add().ID("Address").Text("Address").ContentTemplate(
+                       @<div>
+                                      <button type="button"class="btn-xs btn-info glyphicon glyphicon-leaf CreateAddress"> Create</button>
+                        @if (Model.AddressList.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.DW.AddressModel>("grdcustAddressList")
+         .Datasource(Model.AddressList)
+        
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+          .EditSettings(e => e.AllowAdding().AllowEditing())
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                          .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("AddressId").HeaderText("Address Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Line1").HeaderText("Line 1").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Line2").HeaderText("Line 2").Width(160).Add();
+            col.Field("LandMark").HeaderText("Land Mark").Width(180).Add();
+            col.Field("City").HeaderText("City").Width(160).Add();
+            col.Field("State").HeaderText("State").Width(160).Add();
+            col.Field("Country").HeaderText("Country").Width(160).Add();
+            col.Field("Pin").HeaderText("Pin").Width(160).Add();
+            col.Field("isPrimary").HeaderText("isPrimary").Width(180).Add();
+            col.Field("Description").HeaderText("Description").Width(180).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickAddress");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickAddress");
+            })
+
+
+                                )
+                            </div>
+                          
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <label>Sorry! There is No Information about Address Details !!!</label>
+        </div>
+
+    }
+</div>);
+               data.Add().ID("Library").Text("Library").ContentTemplate(
+                       @<div>
+                                    
+                                              <button type="button" class="btn-xs btn-info glyphicon glyphicon-leaf CreateLibrary"> Create </button>
+                                 
+                        @if (Model.CustomerLibaryList.Count > 0)
+                        {
+                            <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerLibaryModel>("grdcustLibraryList")
+         .Datasource(Model.CustomerLibaryList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .EditSettings(e => e.AllowAdding().AllowEditing())
+            .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord));
+
+            })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentTitle").HeaderText("Document Title").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("DocumentPath").HeaderText("Document Path").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+            col.HeaderText("Open").Template("#OpenLibrary").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickLibrary");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickLibrary");
+            })
+                                )
+                            </div>                
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <label>Sorry! There is No Information about Address Details !!!</label>
+        </div>
+
+    }
+</div>);
+               data.Add().ID("Product").Text("Product").ContentTemplate(
+                       @<div>                   
+                <a onclick="CreateProduct('@Model.CustomerId,@Model.CustomerName')" class="btn-xs btn-info  glyphicon glyphicon-leaf"> Create</a>
+                @if (Model.ProductList.Count > 0)
+                {
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.DW.CustomerModel>("grdProdctList")
+         .Datasource(Model.ProductList)
+         .AllowPaging()
+         .AllowSorting()
+         .EnableHeaderHover()
+         .AllowResizing()
+         .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add_record12", "Add Record");
+              });
+
+          })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("CustomerId").HeaderText("Customer Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CustomerName").HeaderText("Customer Name").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("TAM").HeaderText("TAM").Width(160).Add();
+            col.Field("EquipmentName").HeaderText("Equipment Name").Width(180).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Add();
+            col.HeaderText("Delete").TemplateID("#DeleteProduct").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickProduct");
+            })
+                        )
+                    </div>          
+                    }
+                    else
+                    {
+            <div class="alert alert-info" role="alert">
+                <label>Note: There are no items under this Customer !!!!</label>
+            </div>
+                    }
+    </div>);
+               data.Add().ID("Others").Text("Others").ContentTemplate(
+                       @<div>
+
+                          <div>
+           
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateTurnover" type="button"> Add Turnover</button>  
+          
+                         @if (Model.CustomerTurnoverList.Count > 0)
+                        {
+                                <div style="position:relative">
+                                @(Html.EJ().Grid<SmartSys.BL.DW.CustomerTurnoverModel>("grdcustTurnOverList")
+         .Datasource(Model.CustomerTurnoverList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu()
+                         .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+          })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("TurnoverYear").HeaderText("Turnover Year").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Turnover").HeaderText("Turn Over").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("ProjectedTurnover").HeaderText("Projected Turnover").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickturnover");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickturnover");
+            })
+
+
+                                )
+                            </div>
+                      
+                        }
+                        else
+                        {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Information about Turnover Details !!!</label>
+                        </div>
+
+                        }
+        </div>
+
+                <div>
+           
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateCertification" type="button"> Add Certification</button>
+     
+                    @if (Model.CustomerCertificationList.Count > 0)
+                    {
+
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerCertificationModel>("grdcustCertificationList")
+         .Datasource(Model.CustomerCertificationList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+           .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu()
+                        .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+          })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("CustomerCertification").HeaderText("Customer Certification").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CertificateDateStr").HeaderText("Certificate Date").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickCertification");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickCertification");
+            })
+
+
+                    )
+                </div>
+                        }
+                        else
+                        {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Information about Customer Certification Details !!!</label>
+                        </div>
+
+                        }
+        </div>
+
+               <div>
+         
+                        <button class="btn-xs btn-info glyphicon glyphicon-leaf CreateCompetitor" type="button"> Add Competitor</button>
+        
+                    @if (Model.CustomerCompetitorList.Count > 0)
+                    {
+
+
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.DW.CustomerCompetitorModel>("grdcustCompetitorList")
+         .Datasource(Model.CustomerCompetitorList)
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+          .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu()
+                         .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+                    .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+          })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                    items.AddTool(ToolBarItems.Edit);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("CompetitorId").HeaderText("Competitor Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("CompetitorName").HeaderText("Competitor Name").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("Region").HeaderText("Region").Width(160).Add();
+            col.Field("IsActive").HeaderText("Active").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionBegin("toolClickCompetitor");
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclickCompetitor");
+            })
+
+
+                    )
+                </div>
+                      
+                        }
+                        else
+                        {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Information about Customer Competitor Details !!!</label>
+                        </div>
+
+                        }
+        </div>
+
+    </div>);
+               data.Add().ID("KYCDOCS").Text("KYC Documents").ContentTemplate(
+                        @<div>
+                    <table>
+                        <tr>
+                            <td >
+                                <button type="button" class="btn-xs btn-info glyphicon glyphicon-leaf CreateDoc"> Create </button>
+                             </td>
+                        </tr>
+                    </table>
+                    @if (Model.CustomerKYCList.Count > 0)
+                    {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.DW.CustomerLibaryModel>("grdcustkycList")
+         .Datasource(Model.CustomerKYCList)
+
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EditSettings(e => e.AllowAdding().AllowEditing())
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu()
+                       .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord));
+          })
+            .ToolbarSettings(toolbar =>
+            {
+                toolbar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.Add);
+                });
+            })
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocumentTitle").HeaderText("DocumentTitle").TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Description").HeaderText("Description").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("DocumentPath").HeaderText("DocumentPath").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+            col.HeaderText("Open").TemplateID("#OpenDoc").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+
+        })
+
+         .ClientSideEvents(eve =>
+         {
+             eve.ActionBegin("toolClickKYC");
+             eve.ActionComplete("complete");
+             eve.ContextClick("contextclickKYC");
+         })
+
+                            )
+                        </div>
+                       
+                    }
+                    else
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <label>Sorry! There is No Information about Address Details !!!</label>
+                        </div>
+
+                    }
+                </div>);
+               data.Add().ID("CPN").Text("CPN").ContentTemplate(
+                        @<div>
+                    <table>
+                        <tr>
+                            <td align="center" width="80px">
+                                <input type="button" value="Add CPN" id="AddCPN" class="btn-xs btn-primary glyphicon-plus-sign" />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.Enquiry.EnquiryModel>("grdDWCPN")
+                    .Datasource((IEnumerable<object>)ViewBag.LstCPN)
+            .AllowFiltering()
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+                    .PageSettings(p => { p.PageSize(20); })
+            .AllowResizing()
+            .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+            .AllowScrolling()           
+            .EnableAltRow(true)
+             .ContextMenuSettings(contextMenu =>
+                  {
+                      contextMenu.EnableContextMenu();
+                      contextMenu.DisableDefaultItems();
+                      contextMenu.CustomContextMenuItems(c =>
+                      {
+                          c.AddItem("Edit_CPN", "Edit CPN");                          
+                      });
+
+                  })
+                    
+                      .ClientSideEvents(eve => { eve.ContextOpen("contextopen"); })
+                    .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+            .Columns(col =>
+            {
+                col.Field("ItemId").HeaderText("ItemId").Visible(false).IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                col.Field("ItemName").HeaderText("ItemName").IsPrimaryKey(true).TextAlign(TextAlign.Left).Width(200).Add();
+                col.Field("MPN").HeaderText("MPN").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+                col.Field("CPN").HeaderText("CPN").TextAlign(TextAlign.Left).ValidationRules(v => v.AddRule("required", true)).Width(200).Add();
+                col.Field("CreatedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created By").Width(120).Add();
+                col.Field("CreatedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Created Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(120).Add();
+                col.Field("ModifiedBy").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Modified By").Width(120).Add();
+                col.Field("ModifiedDate").AllowEditing(false).TextAlign(TextAlign.Left).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(120).Add();
+
+            })
+                        )
+                    </div>
+                </div>);
+           })
+      .EnablePersistence(true)
+    .Render();}
+</div>
+
+<table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+    <tr>
+        <td>
+            <label for="CreatedByName">Created By </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.CreatedByName, new { @readonly = "readonly", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CreatedByName, "", new { @class = "text-danger" })
+            </div>
+        </td>
+        <td>
+            <label for="CreatedDate">Created Date </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="ModifiedByName">Modified By </label>
+        </td>
+        <td>
+            <div class="">
+                @Html.TextBoxFor(model => model.ModifiedByName, new { @readonly = "readonly", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ModifiedByName, "", new { @class = "text-danger" })
+            </div>
+        </td>
+        <td>
+            <label for="ModifiedDate">Modified Date </label>
+        </td>
+        <td>
+            <div class="">
+
+                @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ModifiedDate, "", new { @class = "text-danger" })
+            </div>
+        </td>
+    </tr>
+</table>
+                }
+            <table>
+                <tr>
+                    <td>
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'CustomerList';" );"> Back</button>
+                        <button type="submit" class="SaveAll btn-xs buttonCss btn-info glyphicon glyphicon-save"> Save</button>
+                    </td>
+                </tr>
+            </table>            
+            }
+<script id="OpenLibrary" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/DWCustomer/Download?CustomerId=@Model.CustomerId&amp;DocumentPath={{:DocumentPath}}">  Open</a>
+</script>
+<script id="DeleteProduct" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/DWCustomer/DeleteCustomerEquipment?CustomerId=@Model.CustomerId&amp;EquipmentId={{:EquipmentId}}">  Delete</a>
+</script>
+<script type="text/x-jsrender" id="OpenDoc">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download black" href="/DWCustomer/Download?CustomerId=@Model.CustomerId&amp;DocumentPath={{:DocumentPath}}"> Open</a>
+</script>
+<script>
+    function CreateProduct(args)
+    {
+        var str=args.split(',');
+        var Customerid=str[0];
+        var CustomerName=str[1];
+        var path = '@Url.Content("~/DWCustomer/CreateProduct")' + "?CustomerId=" + Customerid + "&CustomerName=" + CustomerName
+        $("#CreateContactDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#CreateContactDetails").ejDialog("open");
+    }
+</script>
+<div>
+    @{
+
+        Html.EJ()
+            .Dialog("CreateContactDetails")
+            .Title("<a id='Title'></a>")
+            .Width(1200)
+            .Height(500)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+
+
+    <script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+    </script>
+
+    <script>
+    $(document).ready(function () {
+
+        $('.Editinfo').click(function (e) {
+
+             @*@Html.ActionLink(" Create", "CreateContactDetails", new { CustomerId = Model.CustomerId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+            var path = '@Url.Content("~/DWCustomer/CreateProfessionalInfo")' + "?CustomerId=" + @Model.CustomerId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+
+    <script>
+    $(document).ready(function () {
+
+        $('.CreateContact').click(function (e) {
+
+            var path = '@Url.Content("~/DWCustomer/CreateContactDetails")' + "?CustomerId=" + @Model.CustomerId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+    <script>
+        function toolClickContact(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title").innerHTML = 'Add Contact Details';
+              var path = '@Url.Content("~/DWCustomer/CreateContactDetails")' + "?CustomerId=" + @Model.CustomerId + "&ContactName=" + ""
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title").innerHTML = 'Edit Contact Details';
+                    var grid = $("#grdContList").ejGrid("instance");
+                   var result = this.getSelectedRecords();
+                   var ContactName = result[0]["ContactName"];
+                   var path = '@Url.Content("~/DWCustomer/CreateContactDetails")' + "?CustomerId=" + @Model.CustomerId + "&ContactName=" + ContactName
+                   $("#CreateContactDetails").ejDialog({
+                       contentUrl: path,
+                       contentType: "ajax"
+                   });
+                   $("#CreateContactDetails").ejDialog("open");
+
+                }
+            return false;
+        }
+    </script>
+    <script>
+    function contextclick(args) {
+
+       
+                if(args.text == "Select User")
+                { var tempData = args.text;
+                    var grid = $("#grdContList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var CustomerContactId = result[0]["CustomerContactId"];
+                    var UserId = result[0]["UserId"];
+                    var UserName = result[0]["UserName"];
+
+                    var path = '@Url.Content("~/DWCustomer/AssignCustomerUserId")' + "?CustomerId=" + @Model.CustomerId + "&CustomerContactId=" + CustomerContactId + "&userId=" + UserId+ "&UserName=" + UserName
+                    $("#CreateContactDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreateContactDetails").ejDialog("open");
+                    e.preventDefault();
+                    return false;
+                }
+    }
+    
+</script>
+
+    <script>
+    $(document).ready(function () {
+
+        $('.CreateBank').click(function (e) {
+            var CustomerDetail = @Model.CustomerId + ',' + "null"  ;
+            var path = '@Url.Content("~/DWCustomer/CreateBankDetails")' + "?CustomerId=" + @Model.CustomerId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+    <script>
+        function toolClickBank(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title").innerHTML = 'Add Bank Details';
+                  var path = '@Url.Content("~/DWCustomer/CreateBankDetails")'  + "?CustomerId=" + @Model.CustomerId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+               
+            }
+
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title").innerHTML = 'Edit Bank Details';
+                    var grid = $("#grdcustBankList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var AccountNo = result[0]["AccountNo"];
+                     var path = '@Url.Content("~/DWCustomer/CreateBankDetails")'  + "?CustomerId=" + @Model.CustomerId + "&AccountNo=" + AccountNo
+                    $("#CreateContactDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreateContactDetails").ejDialog("open");
+                }
+          
+            return false;
+        }
+       
+    </script>
+
+
+    <script>
+    $(document).ready(function () {
+
+        $('.CreateAddress').click(function (e) {
+            var CustomerId = @Model.CustomerId ;
+            var path = '@Url.Content("~/DWCustomer/CreateNewAddress")' + "?CustomerId=" + CustomerId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+    <script>
+    function toolClickAddress(args) {
+        if(args.requestType == "add")
+        {document.getElementById("Title").innerHTML = 'Add Address Details';
+        var grid = $("#grdcustAddressList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+         var path = '@Url.Content("~/DWCustomer/CreateNewAddress")' + "?CustomerId=" + @Model.CustomerId + "&AddressId=" + 0
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        else
+            if (args.requestType == "beginedit")
+            {document.getElementById("Title").innerHTML = 'Edit Address Details';
+            var grid = $("#grdcustAddressList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+               var AddressId = result[0]["AddressId"];
+                var State = result[0]["State"];
+                var Country = result[0]["Country"];
+               var path = '@Url.Content("~/DWCustomer/CreateAddress")' + "?CustomerId=" + @Model.CustomerId + "&AddressId=" + AddressId 
+                 $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+            }
+        return false;
+    }
+    </script>
+
+    <script>
+        function toolClickLibrary(args) {
+            if(args.requestType == "add")
+            {  document.getElementById("Title").innerHTML = 'Add Library details';
+            var grid = $("#grdcustLibraryList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+            var path = '@Url.Content("~/DWCustomer/CustomerLibary")' + "?CustomerId=" + @Model.CustomerId
+                $("#CreateContactDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#CreateContactDetails").ejDialog("open");
+
+
+            }
+            return false;
+        }
+    </script>
+    <script>
+    $(document).ready(function () {
+
+        $('.CreateLibrary').click(function (e) {
+            document.getElementById("Title").innerHTML = 'Add Library details';
+            var path = '@Url.Content("~/DWCustomer/CustomerLibary")' + "?CustomerId=" + @Model.CustomerId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+   
+    <script>
+    function contextclickProduct(args) {
+
+        if (args.text == "Add Record") {
+            var tempData = args.text;
+            var grid = $("#grdProdctList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var CustomerName = result[0]["CustomerName"];
+
+            var path = '@Url.Content("~/DWCustomer/CreateProduct")' + "?CustomerId=" + @Model.CustomerId + "&CustomerName=" + CustomerName
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+
+    }
+    </script>
+
+    <script>
+        function toolClickturnover(args) {
+            if(args.requestType == "add")
+            { document.getElementById("Title").innerHTML = 'Add TurnOver Details';
+            var grid = $("#grdcustTurnOverList").ejGrid("instance");
+
+               var path = '@Url.Content("~/DWCustomer/CreateTurnoverDetails")' + "?CustomerId=" + @Model.CustomerId + "&TurnoverYear=" + 0
+                $("#CreateContactDetails").ejDialog({
+
+                   contentUrl: path,
+                   contentType: "ajax"
+
+               });
+                $("#CreateContactDetails").ejDialog("open");
+
+
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title").innerHTML = 'Edit TurnOver Details';
+                    var grid = $("#grdcustTurnOverList").ejGrid("instance");
+                   var result = this.getSelectedRecords();
+                   var TurnoverYear = result[0]["TurnoverYear"];
+                   var path = '@Url.Content("~/DWCustomer/CreateTurnoverDetails")' + "?CustomerId=" + @Model.CustomerId + "&TurnoverYear=" +  TurnoverYear
+                   $("#CreateContactDetails").ejDialog({
+                       contentUrl: path,
+                       contentType: "ajax"
+                   });
+                   $("#CreateContactDetails").ejDialog("open");
+                }
+            return false;
+        }
+    </script>
+    <script>
+    $(document).ready(function () {
+        $('.CreateTurnover').click(function (e) {
+
+            document.getElementById("Title").innerHTML = 'Add TurnOver Details';
+           var path = '@Url.Content("~/DWCustomer/CreateTurnoverDetails")' + "?CustomerId=" + @Model.CustomerId + "&TurnoverYear=" + 0
+        $("#CreateContactDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#CreateContactDetails").ejDialog("open");
+        e.preventDefault();
+        return false;
+    });
+    });
+    </script>
+
+    <script>
+        function toolClickCertification(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title").innerHTML = 'Add Certification Details';
+                var grid = $("#grdcustCertificationList").ejGrid("instance");
+
+                var path = '@Url.Content("~/DWCustomer/CreateCertificationDetails")' + "?CustomerId=" + @Model.CustomerId 
+                $("#CreateContactDetails").ejDialog({
+                   contentUrl: path,
+                   contentType: "ajax"
+               });
+                $("#CreateContactDetails").ejDialog("open");
+
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title").innerHTML = 'Edit Certification Details';
+                    var grid = $("#grdcustCertificationList").ejGrid("instance");
+                   var result = this.getSelectedRecords();
+                   var CustomerCertification = result[0]["CustomerCertification"];
+                    var path = '@Url.Content("~/DWCustomer/CreateCertificationDetails")' + "?CustomerId=" + @Model.CustomerId + "&Certification=" + CustomerCertification
+                    $("#CreateContactDetails").ejDialog({
+                       contentUrl: path,
+                       contentType: "ajax"
+                   });
+                    $("#CreateContactDetails").ejDialog("open");
+
+                }
+            return false;
+        }
+    </script>
+    <script>
+    $(document).ready(function () {
+        $('.CreateCertification').click(function (e) {
+
+            document.getElementById("Title").innerHTML = 'Add Certification Details';
+           var path = '@Url.Content("~/DWCustomer/CreateCertificationDetails")' + "?CustomerId=" + @Model.CustomerId 
+        $("#CreateContactDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#CreateContactDetails").ejDialog("open");
+        e.preventDefault();
+        return false;
+    });
+    });
+    </script>
+
+    <script>
+        function toolClickCompetitor(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title").innerHTML = 'Add Competitor Details';
+                var grid = $("#grdcustCompetitorList").ejGrid("instance");
+
+                var path = '@Url.Content("~/DWCustomer/CreateCompetitorDetails")' + "?CustomerId=" + @Model.CustomerId + "&CompetitorId=" + 0
+               $("#CreateContactDetails").ejDialog({
+                   contentUrl: path,
+                   contentType: "ajax"
+               });
+               $("#CreateContactDetails").ejDialog("open");
+
+
+            }
+            else
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title").innerHTML = 'Edit Competitor Details';
+                    var grid = $("#grdcustCompetitorList").ejGrid("instance");
+                    var result = this.getSelectedRecords();
+                    var CompetitorId = result[0]["CompetitorId"];
+                    var path = '@Url.Content("~/DWCustomer/CreateCompetitorDetails")' + "?CustomerId=" + @Model.CustomerId + "&CompetitorId=" + CompetitorId
+                    $("#CreateContactDetails").ejDialog({
+                        contentUrl: path,
+                        contentType: "ajax"
+                    });
+                    $("#CreateContactDetails").ejDialog("open");
+                }
+            return false;
+        }
+    </script>
+    <script>
+    $(document).ready(function () {
+        $('.CreateCompetitor').click(function (e) {
+
+            document.getElementById("Title").innerHTML = 'Add Competitor Details';
+              var path = '@Url.Content("~/DWCustomer/CreateCompetitorDetails")' + "?CustomerId=" + @Model.CustomerId + "&CompetitorId=" + 0
+        $("#CreateContactDetails").ejDialog({
+            contentUrl: path,
+            contentType: "ajax"
+        });
+        $("#CreateContactDetails").ejDialog("open");
+        e.preventDefault();
+        return false;
+    });
+    });
+    </script>
+
+    <script>
+        function toolClickKYC(args) {
+            if(args.requestType == "add")
+            {
+                document.getElementById("Title").innerHTML = 'Add KYC DOcument';
+                var grid = $("#grdcustkycList").ejGrid("instance");
+               var result = this.getSelectedRecords();
+              var path = '@Url.Content("~/DWCustomer/CustomerLibary")' + "?CustomerId=" + @Model.CustomerId +"&IsKyc=" + "KYC"
+               $("#CreateContactDetails").ejDialog({
+                   contentUrl: path,
+                   contentType: "ajax"
+               });
+               $("#CreateContactDetails").ejDialog("open");
+
+            }
+            return false;
+
+        }
+    </script>
+    <script>
+    $(document).ready(function () {
+
+        $('.CreateDoc').click(function (e) {
+            document.getElementById("Title").innerHTML = 'Add KYC ';
+            var path = '@Url.Content("~/DWCustomer/CustomerLibary")' + "?CustomerId=" + @Model.CustomerId +"&IsKyc=" + "KYC"
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+    </script>
+
+    <script>
+    function contextclick(args) {
+
+        if (args.text == "Edit CPN") {
+            var tempData = args.text;
+            var grid = $("#grdDWCPN").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var ItemId = result[0]["ItemId"];
+            var path = '@Url.Content("~/DWCustomer/CreateCPN")' + "?CustomerId=" +  @Model.CustomerId + "&ItemId=" + ItemId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+    }
+    </script>
+    <script>
+    $(document).ready(function () {
+        $("#AddCPN").click(function (e) {
+            var path = '@Url.Content("~/DWCustomer/CreateCPN")' + "?CustomerId=" +  @Model.CustomerId + "&ItemId=0"
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+        });
+    });
+    </script>
+
+</div>

@@ -1,0 +1,108 @@
+﻿@model IEnumerable<SmartSys.BL.ClientAppModel>
+
+@{
+    ViewBag.Title = "GetClientAppList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Client Application List
+</div>
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "CreateClientApp", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.ClientAppModel>("grdClientAppList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+          //.ContextMenuSettings(contextMenu =>
+          //       {
+          //           contextMenu.EnableContextMenu()
+          //               .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+          //               .CustomContextMenuItems(new List<string> { "Edit ClientApp" });
+
+          //       })
+          .ContextMenuSettings(contextMenu =>
+          {
+              contextMenu.EnableContextMenu();
+              contextMenu.DisableDefaultItems();
+              contextMenu.CustomContextMenuItems(c =>
+              {
+                  c.AddItem("Add_Record", "Add Record");
+                  c.AddItem("Edit_Client_App", "Edit Client App");
+              });
+
+          })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("ClientAppId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("AppName").HeaderText("App Name").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("Description").HeaderText("Description").ValidationRules(v => v.AddRule("required", true)).Width(180).Add();
+            col.Field("LoginName").HeaderText("Login Name").TextAlign(TextAlign.Left).Width(100).Add();
+            col.Field("Password").HeaderText("Password").Width(150).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Width(180).Add();
+
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(150).Add();
+
+            col.HeaderText("Edit")
+            .Template("#edit")
+            .IsUnbound(true)
+            .AllowFiltering(false)
+            .TextAlign(TextAlign.Center)
+            .Width(90)
+            .Add();
+        })
+                 .ClientSideEvents(eve =>
+                 {
+
+                     eve.ContextClick("contextclick");
+                     //eve.("contextMenuOpen");
+                 })
+    )
+</div>
+<script type="text/javascript">
+    function onClick(args) {
+        var grid = $("#grdClientAppList").ejGrid("instance");
+        var index = this.element.closest("tr").index();
+        var record = grid.getCurrentViewData()[index];
+        var ConId = record["ClientAppId"];
+        var path = '@Url.Content("~/Admin/EditClientApp")' + "?ClientAppId=" + ConId
+        event.preventDefault();
+        window.location.replace(path);
+    }
+</script>
+<script id="edit" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/Admin/EditClientApp?ClientAppId={{:ClientAppId}}"></a>
+</script>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/Admin/CreateClientApp")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Client App") {
+                var tempData = args.text;
+
+                var grid = $("#grdClientAppList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var ClientAppId = result[0]["ClientAppId"];
+                var path = '@Url.Content("~/Admin/EditClientApp")' + "?ClientAppId=" + ClientAppId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+    }
+
+</script>

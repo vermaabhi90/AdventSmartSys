@@ -1,0 +1,488 @@
+﻿@model SmartSys.BL.IssueModel
+
+@if (Model.IssueId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Issue Detail
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Issue Detail
+    </div>
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var IssueId = $("#IssueIdtemp").val();
+        if (@Model.Status != 0) {
+            $("#TicketforIssue").attr("disabled", "disabled");
+        }      
+        if(@Model.isAllow.ToString() ==true)
+        {
+            document.getElementById("TicketforIssue").disabled = false;
+        }
+        $('.reset').click(function (event) {
+            event.preventDefault();
+            $("#fileInput").replaceWith(" <input type='file' name='Attachment' id='fileInput' value='uploadfile' class='btn btn-success' required />");
+        })
+    })
+</script>
+<script>
+
+    $(document).ready(function (e) {
+
+        var str = '@(ViewBag.Isadmin)'.toString();
+        var Status = '@(ViewBag.Status)'.toString();
+       
+        if (str.toString() == "Admin" &&  Status.toString()!="24") {
+            var newOption = $('<option value="46">Estimation Done</option>');
+
+            //$('#TicketforIssue').append(newOption);
+        }
+        else{
+            $('#EstimatedHours').attr('readonly', true);
+        }
+       
+        if (Status.toString() == "24" ) {
+            $('#EstimatedHours').attr('readonly', true);
+        }
+    });
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+           
+            var ids = $('#IssueIdtemp').val();
+            var TicketType=$('#TicketforIssue').val();
+            var StatusDetail = $('#StatusDetail').val();
+            var Comments = $('#Comments').val();
+            var TickettypeDetail = $("#TicketforIssue").val();
+            if (ids.toString() == "0") {
+                if (TickettypeDetail.toString() == "") {                   
+                    alert("Please Select Ticket Type ");
+                    return false;
+                }
+            }
+            if (StatusDetail.toString() == "") {
+                alert("Please Select Status ");
+                return false;
+            }
+            document.getElementById("TicketforIssue").disabled = false;
+           // $("#TicketforIssue").attr("disabled ",false);
+            //if (Comments.toString() == "") {
+            //    alert("Please Enter Comments ");
+            //    return false;
+            //}        
+
+          //  $("#Issue").unbind('submit').submit();
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreateIssue", "Admin", FormMethod.Post, new { id = "Issue", enctype = "multipart/form-data" }))
+{
+
+    <table>
+
+        <tr style="height:20px">
+            <td>
+                <label for="ItemName">Title:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.HiddenFor(model => model.IssueId, new { id = "IssueIdtemp" })
+                    @Html.HiddenFor(model => model.IsDevloper, new { id = "IsDevloper" })
+                    @if (Model.IssueId > 0)
+                    {
+                        @Html.TextBoxFor(model => model.Title, new { required = "required", @style = "min-width:500px", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Title)
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.Title, new { required = "required", @style = "min-width:500px", @class = "form-control" })
+                    }
+                </div>
+            </td>
+      
+            <td>
+                <label for="TicketType">Ticket Type:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownListFor(model => model.TicketType, new List<SelectListItem>
+                    {new SelectListItem(){Text="New Request",Value="New Request"},
+                        new SelectListItem(){Text="Error",Value="Error"},
+                        new SelectListItem(){Text="EnhanceMent",Value="EnhanceMent"},
+                        }, "Please select Ticket Type", new { @class = "form-control", style = "width:250px;height:30px", id = "TicketforIssue" })
+                    @Html.ValidationMessageFor(model => model.TicketType, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.TicketType, new { id = "TicketforIssue" })
+                </div>
+            </td>
+        </tr>
+
+
+
+    </table>
+
+    <div style="width:100%">
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("Description").Text("Description").ContentTemplate(
+                @<div>
+                    <table style="width:100%">
+                        @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                        List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                        List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                        List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                        List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                        List<String> indenting = new List<string> { "outdent", "indent" };
+                        List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                        List<String> doAction = new List<string>() { "undo", "redo" };
+                        List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                        List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                        List<String> links = new List<string>() { "createLink", "removeLink" };
+                        List<String> images = new List<string>() { "image" };
+                        List<String> media = new List<string>() { "video" };
+                        List<String> effects = new List<string>() { "superscript", "subscript" };
+                        List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                        List<String> formatStyle = new List<string>() { "format" };
+                        List<String> view = new List<string>() { "fullScreen" };
+                        }
+                        <tr>
+
+                            <td>
+                                <div>
+                                    @if (Model.Status.ToString() == "26" || Model.Status.ToString() == "0")
+                                    {
+                                        @Html.EJ().RTEFor(model => model.Description, new { id = "hello" }).Width("100%").Height("50%").EnableResize(true).AllowEditing(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                        @Html.ValidationMessageFor(model => model.Description)
+                                    }
+                                    else
+                                    {
+                                        @Html.EJ().RTEFor(model => model.Description, new { id = "hello" }).Width("100%").Height("50%").EnableResize(true).AllowEditing(false).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                    }
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </div>);
+            data.Add().ID("DevloperDescription").Text("Devloper Description").ContentTemplate(
+                @<div id="Dvid">
+                    <table style="width:100%">
+                        @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                            List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                            List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                            List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                            List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                            List<String> indenting = new List<string> { "outdent", "indent" };
+                            List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                            List<String> doAction = new List<string>() { "undo", "redo" };
+                            List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                            List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                            List<String> links = new List<string>() { "createLink", "removeLink" };
+                            List<String> images = new List<string>() { "image" };
+                            List<String> media = new List<string>() { "video" };
+                            List<String> effects = new List<string>() { "superscript", "subscript" };
+                            List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                            List<String> formatStyle = new List<string>() { "format" };
+                            List<String> view = new List<string>() { "fullScreen" };
+                        }
+                        <tr>
+                            <td>
+                                <div>                                   
+                                        @Html.EJ().RTEFor(model => model.DevDescription, new { id = "DevDescrip" }).Width("100%").Height("50%").EnableResize(true).AllowEditing(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+                                        @Html.ValidationMessageFor(model => model.DevDescription)                                        
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>);
+           })
+        .SelectedItemIndex(Model.TabIndex)
+        .Render();}
+    </div>
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        @if (Model.Status != "31" && Model.Status != "32" && Model.Status != "30")
+        {
+            <tr>
+
+                @if (Model.IssueId > 0)
+                {
+
+                    if (Model.Status.ToString() == "26" || Model.Status.ToString() == "0")
+                    {
+
+                    }
+                    else
+                    {
+                        <td>
+                            <label for="ItemName">Status:</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.DropDownListFor(model => model.Status, new List<SelectListItem>
+                         {
+                             new SelectListItem() {Text = "In Progress", Value="29"},
+                             new SelectListItem() {Text = "Complete", Value="30"},
+                             new SelectListItem() {Text = "Closed", Value="31"},
+                             new SelectListItem() {Text = "Cancelled", Value="32"},
+                             new SelectListItem() {Text = "OnHold", Value="33"},
+                        }, "Please Select Status", new { @class = "text-danger form-control", style = "width: 200px;", id = "StatusDetail" })
+
+                                @Html.ValidationMessageFor(model => model.Status)
+                            </div>
+                        </td>
+                    }
+                }
+                <td>
+                    <label for="ItemName">File:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+
+                        <div class="navbar-text input-group-btn">
+                            <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-info" />
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <input type="button" id="reset" value="Remove" class="btn-xs  btn-danger reset" />
+                </td>
+            </tr>
+        }
+    </table>
+    <table>
+        @if (Model.Status != "31" && Model.Status != "32" && Model.Status != "30")
+        {
+            if (Model.IssueId > 0)
+            {
+
+                <tr>
+                    <td>
+                        <label for="ItemName">Comments:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextAreaFor(model => model.Comments, new { @style = "min-width: 670px;max-width: 1000px;", id = "Comments", @class = "form-control" })
+
+                            @Html.ValidationMessageFor(model => model.Comments)
+                        </div>
+                    </td>
+                    @if(Model.IssueId >0)
+                    { 
+                    <td>
+                        <label for="ItemName">Estimated Hours:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextBoxFor(model => model.EstimatedHours, new { @style = "", id = "EstimatedHours", @class = "form-control" })
+
+                            @Html.ValidationMessageFor(model => model.EstimatedHours)
+                        </div>
+                    </td>
+                    }
+                </tr>
+
+
+            }
+        }
+
+    </table>
+    <br>
+    <div>
+
+        @if (Model.LstCommentList.Count > 0)
+        {
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Project.TaskDetails>("grdEventList")
+                        .Datasource((IEnumerable<object>)ViewBag.comments)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EditSettings(e => e.AllowAdding().AllowEditing().EditMode(EditMode.DialogTemplate).DialogEditorTemplateID("#template"))
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+
+                //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("IssueId").Visible(false).AllowEditing(false).HeaderText("Issue Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Comments").Visible(true).AllowEditing(false).HeaderText("Comments").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(130).Add();
+            col.Field("Status").HeaderText("Status").Width(140).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("Attachment").HeaderText("Attachment").Width(100).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("CommentedBy").HeaderText("Commented By").Width(140).Add();
+            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(100).Add();
+            col.HeaderText("Open").Template("#Review").AllowFiltering(false).Width(70).TextAlign(TextAlign.Center).HeaderTextAlign(TextAlign.Center).Add();
+        })
+
+                )
+            </div>
+        }
+        else if (Model.IssueId > 0)
+        {
+
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is no Comment Detail!!!</label>
+            </div>
+        }
+    </div>
+
+    <table>
+        <tr>
+
+            <td>
+                @Html.ActionLink(" Back", "GetIssueList", null, new { @class = "btn-xs  btn-info glyphicon glyphicon-hand-left" })
+            </td>
+            @if (Model.Status != "31" && Model.Status != "32" && Model.Status != "30" && Model.Status!= "25")
+            {
+                <td>
+                    <div class="btn" aria-label="...">
+                        <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save"> Save</button>
+                    </div>
+                </td>
+            }
+            @if (Model.LstCommentList.Count > 0)
+            {
+                <td>
+                    <div class="btn" aria-label="...">
+                        @Html.ActionLink(" Send Mail", "Sendissue", new { IssueId = Model.IssueId }, new { @class = "btn-xs  btn-info glyphicon glyphicon-send" })
+                    </div>
+                </td>
+            }
+            @if (ViewBag.Isadmin == "Admin" && Model.StatusShortCode == "NEW")
+            { 
+            <td>
+                <div class="btn" aria-label="...">
+                    <a class="btn-xs  btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateApprovalDetail", "Admin", new { IssueId = Model.IssueId, statusid = 47, Comments="Need More discussion" })'>
+                        Need Discussion
+                    </a>
+                </div>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    
+                    <a class="btn-xs btn-danger glyphicon glyphicon-remove-circle" id="Reject">
+                        Reject
+                    </a>
+                </div>
+            </td>
+    <td>
+        <div class="btn" aria-label="...">
+            <button type="button" class="btn-xs  btn-warning glyphicon glyphicon-bell Estmation" onclick="window.location.reload();"> Estimation Done </button>
+        </div>
+    </td>
+            }
+        </tr>
+
+    </table>
+}
+<script id="Review" type="text/x-jsrender">
+    {{if Attachment =='0' || Attachment ==''  }}
+
+    {{else}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-eye-open" href="/Admin/Download?IssueId={{:IssueId}}&amp;Filename={{:Attachment}}"> OPEN </a>
+    {{/if}}
+</script>
+
+<script type="text/template" id="template">
+    <b>Issue Comment</b>
+    <table cellspacing="10" style="width:600px">
+        <tr>
+            <td>
+                Status:
+            </td>
+            <td style="color:red">
+                <b>{{:Status}}</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Comment:
+            </td>
+            <td>
+                <textarea id="Comments" name="Comments" readonly="readonly" style="Width: 800Px; max-width: 800px;" class="abc form-control e-ejinputtext">{{:Comments}}</textarea>
+            </td>
+        </tr>
+
+    </table>
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        tabObj = $("#defaultTabs").data("ejTab");
+        var isdev=$('#IsDevloper').val();       
+        if(isdev == 0)
+        {
+            $('#DevDescrip').hide()
+        }
+        $('.Estmation').click(function () {
+            var EstimatedHours = $('#EstimatedHours').val();
+          
+            var  IssueId = @Model.IssueId;
+            var url = '@Url.Action("EstimationDone", "Admin")';
+            var data = { IssueId: IssueId, EstimationHours: EstimatedHours };
+            alert("Estimation SuccessFul");
+            $.post(url, data, function (result) {
+                
+            });
+
+        });
+    });
+ </script>
+<script>
+    $(document).ready(function (e) {
+
+        $('#Reject').click(function (e) {
+            var path = '@Url.Content("~/Admin/IssueRejectedComments")' + "?IssueId=" + @Model.IssueId + "&statusid=" + 25 + "&View=" + "CreateIssues"
+            $("#RejectView").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#RejectView").ejDialog("open");
+
+        });
+
+    });
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("RejectView")
+        .Title("<a id='Title'></a>")
+        .Width(600)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+
+<script>
+        function openDialog() {
+            $("#RejectView").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#RejectView").ejDialog("open");
+
+        }
+
+</script>

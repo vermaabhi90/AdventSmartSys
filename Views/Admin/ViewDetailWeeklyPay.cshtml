@@ -1,0 +1,187 @@
+﻿@model SmartSys.BL.WeekLySalaryModel
+
+@{
+    ViewBag.Title = "ViewDetailWeeklyPay";
+}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+   Weekly Payment Deatil
+</div>
+
+<table>
+    <tr>
+        <td>
+            <label>Employee Name:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.EmployeeName</span>
+            </div>
+        </td>
+        <td>
+            <label>Company Name :</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.CompanyName</span>
+            </div>
+        </td>
+        <td>
+            <label>Company Daily Working Hour:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.CompanyWorkHour</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Working Start Session:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.WorkStartsession.ToShortDateString()</span>
+            </div>
+        </td>
+        <td>
+            <label>Working End Session:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.WorkEndsession.ToShortDateString()</span>
+            </div>
+        </td>
+        
+        <td>
+            <label>Annual Fix Pay:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.AnnualPay</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Year Total Days:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.TotalYearDays</span>
+            </div>
+        </td>
+        <td>
+            <label>Public Holidays:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.PublicHoliday</span>
+            </div>
+        </td>
+        <td>
+            <label>Total Sunday:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.TotalSunday</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Week Number:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.WeekNo</span>
+            </div>
+        </td>
+        <td>
+            <label>Week Start Date:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.StartDate.ToShortDateString()</span>
+            </div>
+        </td>
+        <td>
+            <label>Week End Date:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.EndDate.ToShortDateString()</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <label>Weekly Booked Time:</label>
+                    </td>
+                </tr>
+            </table>           
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.WeeklyWorkHour</span>
+            </div>
+        </td>       
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>
+            <label>Total Working Days = (TotalYearDays - TotalSunday - PublicHoliday)=</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <span style="color:crimson">@Model.WorkingDays</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Total Working Hour = (Total Working Days * Company Daily Working Hour)=</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                @{                   
+                    Double xy1 = Model.WorkingDays * Model.CompanyWorkHour;
+                    System.Math.Round(xy1, 2);
+                }                
+                <span style="color:crimson">@xy1</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Hour Working Payment= (Annual Fix Pay / Total Working Hour)=</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                @{
+                    Double xy2 = Model.AnnualPay / xy1;
+                    xy2= System.Math.Round(xy2, 2);
+                }
+                <span style="color:crimson">@xy2</span>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Weekly Working Payment= Weekly Booked Time * Hour Working Payment)=</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                @{
+                    Double xy3 = Model.WeeklyWorkHour * xy2;
+                    xy3 = System.Math.Round(xy3, 2);
+                }
+                <span style="color:crimson">@xy3</span>
+            </div>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,260 @@
+﻿@model SmartSys.BL.Tmleave.ProjectTravelRequestModel
+
+@{
+    ViewBag.Title = "AddParticipantsCustomer";
+}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    ADD Participants
+</div>
+<style>
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+<script src="~/Scripts/MultiSelectLocal.js"></script>
+<link href="~/Content/MultiSelectLocal.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+        $('#Empid').multiselect({
+            includeSelectAllOption: true,
+            enableFiltering: true,
+            numberDisplayed: 3,
+
+        });
+
+
+    });
+
+</script>
+<script>
+    function func1() {
+        var str = '@(TempData["msg"])'.toString();
+
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["msg"])');
+            return false;
+        }
+    }
+    window.onload = func1;
+</script>
+
+<script type="text/javascript">
+
+    $(document).on("change", "#TypeTmleave", (function () {
+
+        var e = $("#TypeTmleave").val();
+
+
+        if (e == "Employee") {
+            $('#emptmleave').show();
+        } else {
+            $('#emptmleave').hide();
+        }
+
+    }));
+
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/TMLeave/SelectedParticipantsCustomer",  //Update is Server side method
+            data: { RequestId: $("#RequestId").val() },
+            success: function (result) {
+                $.each(result, function (i, SelBrand) {
+                    $('#Empid').multiselect('select', SelBrand.Value)
+
+                });
+
+                $('#Empid').multiselect('refresh')
+            },
+        });
+
+
+        $('.save').click(function (e) {
+           
+            var Type = $('#TypeTmleave').val();       
+
+            if (Type.toString() == "") {
+                alert("Please Select Participant Type ");
+
+                return false;
+            }
+
+            var Employee = $("#Empid option:selected");
+
+            var message = "";
+            Employee.each(function () {
+                message += $(this).val() + ",";
+            });
+
+            message = message.substring(0, message.length - 1);
+
+            if (message.toString() == "0") {
+                alert("Please Select Employee");
+                return false;
+            }
+            if (message.toString() == "") {
+                alert("Please Select Employee");
+                return false;
+            }
+            var Vndrmessage = "";
+
+
+            if (Type.toString() == "Employee") {
+                pid = message;
+            }
+
+            var RequestId = $('#RequestId').val();
+            var url = '@Url.Action("AddTravelRquestParticipantsDetail", "TMLeave")';
+            var data = { PType: Type, PID: pid, RequestId: RequestId };
+
+            $.post(url, data, function (result) {
+
+            });
+
+
+
+        });
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('.abc').click(function (e) {
+            $('#modal-container').on('hidden.bs.modal', function () {
+                $(this).removeData('bs.modal');
+            });
+            $('#modal-container').reset();
+            alert("hii")
+        });
+        $('.cancel').click(function () {
+            $("#TypeTmleave").val(null);
+
+
+
+            $("#Empid").multiselect("clearSelection");
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/TMLeave/SelectedParticipantsCustomer",  //Update is Server side method
+                data: { RequestId: $("#RequestId").val() },
+                success: function (result) {
+                    $.each(result, function (i, SelBrand) {
+                        $('#Empid').multiselect('select', SelBrand.Value)
+
+                    });
+                    $('#Empid').multiselect('rebuild');
+                    $('#Empid').multiselect('refresh');
+                },
+            });
+            $('#Empid').hide();
+            $('#emptmleave').hide();
+
+
+
+        });
+
+    });
+
+</script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@using (Html.BeginForm("AddParticipantsCustomer", "TMLeave", FormMethod.Post, new { id = "Participants" }))
+{
+    <html>
+    <body>
+        <div class="modal-body">
+             <table  style="border-collapse:separate;border-spacing: 0 5px;margin-left:20px">
+
+                <tr>
+                    <td>
+                        <label for="ItemName">Participant Type:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.HiddenFor(model => model.RequestId, new { id = "RequestId" })
+                            @Html.DropDownListFor(model => model.ParticipantType, new List<SelectListItem>
+                       {
+                         new SelectListItem() {Text = "Employee", Value="Employee"},
+
+                       }, "Please Select ParticipantsType", new { id = "TypeTmleave", @required = "required", @class = "form-control" })
+
+                        </div>
+                    </td>
+
+                </tr>
+                <tr id="emptmleave" style="display: none">
+
+                    <td>
+                        <label for="ItemName">Employee:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            <select id="Empid" multiple="multiple" name="Employee" class="dropdown-menu" size="5">
+                                @foreach (var item in ViewBag.Employee)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+
+
+                <tr id="CCI" style="display: none">
+                    <td>
+                        <label for="">Customer Contact:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <select id="Contact"  name="Employee" class="form-control" ></select>
+                            @*@Html.EJ().DropDownList("Employee").TargetID("Contact").Width("100%").WatermarkText("Select a Contact")*@
+                            @*@Html.DropDownList("CustomerContactId", new SelectList(string.Empty, "Value", "Text"), new { style = "width:300px", @class = "form-control", id = "Contact", @required = "required" })*@
+                        </div>
+                    </td>
+                </tr>
+                <tr id="VCI" style="display: none">
+                    <td>
+                        <label for="">Vendor Contact:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            <select id="VendorContact"  name="Employee" class="form-control" ></select>
+                            @*@Html.DropDownList("VendorContactId", new SelectList(string.Empty, "Value", "Text"), new { style = "width:300px", @class = "form-control", id = "VendorContact", @required = "required" })*@
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="button" class="btn btn-info glyphicon glyphicon-save save" , onclick="window.location.reload();"> Save</button>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </body>
+</html>
+}
+

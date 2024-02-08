@@ -1,0 +1,834 @@
+﻿@model SmartSys.BL.Project.ProjectTaskMoM
+
+@{
+    ViewBag.Title = "CreateProjectTAskMOM";
+    
+}
+
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+        $(".Autodrp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+
+
+<script>
+    function func1() {
+        var str = '@(TempData["msg"])'.toString();
+
+   
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["msg"])');
+            return false;
+        }
+    }
+    window.onload = func1;
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.xyz').on('click', function (e) {
+            e.preventDefault();
+            var ParticipantId = $(this).closest('.xyz').attr('ParticipantId');
+
+            var MOMId = $(this).closest('.xyz').attr('MOMId');
+
+            var ParticipantsType = $(this).closest('.xyz').attr('ParticipantsType');
+
+            var agree = confirm("Are you sure to delete ?");
+            if (agree) {
+
+                    var path = '@Url.Content("~/ProjectCenter/DeleteParticipants")' + "?MOMId=" + MOMId + "&ParticipantId=" + ParticipantId + "&ParticipantsType=" + ParticipantsType
+                    event.preventDefault();
+                    window.location.replace(path);
+
+                }
+            else{
+                return false;
+            }
+         
+
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Project").change(function (e) {
+           
+            $("#TaskId").empty();
+            var newOption = $('<option value="0">Please Select Task</option>');
+            $('#TaskId').append(newOption);
+            var selectedId = $("#Project").val();
+
+            var path = '@Url.Action("GettaskByProject")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { ProjectId: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, state) {
+                        $("#TaskId").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Invalid Project Name.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var Project = $('#Project').val();
+            var MOMDate = $('#MOMDate').val();
+            var Title = $('#Title').val();
+            var TaskId = $('#TaskId').val();           
+            if (Project.toString() == "") {
+                alert("Please Select Project Name ");
+                return false;
+            }
+            if (TaskId.toString() == "0" || TaskId.toString() == "") {
+                alert("Please Select Task ");
+                return false;
+            }
+            if (MOMDate.toString() == "") {
+                alert("Please Enter MOMDate ");
+                return false;
+            }
+            if (Title.toString() == "") {
+                alert("Please Enter Title ");
+                return false;
+            }         
+            $("#MOM").unbind('submit').submit(); S
+        });
+    });
+</script>
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@if (Model.MOMId > 0)
+{
+    
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Project Task MOM Details
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create New  Project Task MOM Details
+    </div>
+}
+@using (Html.BeginForm("CreateProjectTAskMOM", "ProjectCenter", FormMethod.Post, new { Id = "MOM" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 7px;">
+        <tr>
+            <td>
+                <label for="ItemName">Project:</label>
+            </td>
+            <td>
+
+                @Html.HiddenFor(model => model.MOMId)
+                @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.project, "--- Please Select Project ---", new { id = "Project", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProjectId)
+
+            </td>
+
+
+            <td>
+                <label for="ItemName">Task:</label>
+            </td>
+            <td>
+
+                @if (Model.MOMId > 0)
+                {
+                    @Html.DropDownList("TaskId", (IEnumerable<SelectListItem>)ViewBag.ProjectTask, "--- Please Select Task ---", new { id = "TaskId", @class = "AuotDrp form-control" })
+                }
+                else
+                {
+                    @Html.DropDownList("TaskId", new SelectList(string.Empty, "Value", "Text"), "Please select Task", new { @class = "AuotDrp form-control", id = "TaskId" })
+                }
+
+
+
+                @Html.ValidationMessageFor(model => model.TaskId)
+
+            </td>
+            <td>
+                <a id="link1"><i class="glyphicon glyphicon-info-sign"></i> </a>
+                @Html.EJ().Tooltip("link1").Content("This DropDown contain Task List associated with Seleted project")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">MOM Date:</label>
+            </td>
+            <td>
+                <div class="">
+                    @if (Model.MOMId > 0)
+                    {
+                        @Html.EJ().DatePicker("MOMDate").DateFormat("MM/dd/yyyy").Value(Model.MOMDate)
+                    }
+                    else
+                    {
+                        @Html.EJ().DatePicker("MOMDate").DateFormat("MM/dd/yyyy").Value(DateTime.Now)
+                    }
+                    @Html.ValidationMessageFor(model => model.MOMDate)
+                </div>
+            </td>
+
+            @if (Model.MOMId > 0)
+            {
+                <td>
+                    <label for="ItemName">Employee:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @*@Html.DropDownList("EmpId", (IEnumerable<SelectListItem>)ViewBag.Employee, "--- Please Select Employee ---", new { style = "width:200px", id = "manager", @class = "dropdown1" })*@
+                        @Html.TextBoxFor(model => model.Employee, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.EmpId)
+                    </div>
+                </td>
+            }
+        </tr>
+        <tr>
+            <td>
+                <label for="ItemName">Title:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Title, new { required = "required", id = "Title", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">MOM Type:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.DropDownList("MOMTypeKey", (IEnumerable<SelectListItem>)ViewBag.MOMTypeList, new { id = "MOMType", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            </td>
+            <td>
+                <a id="link2"><i class="glyphicon glyphicon-info-sign"></i> </a>
+                @Html.EJ().Tooltip("link2").Content("This DropDown Contain MOM Type.")
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <label for="CustomerName">Customer Name:</label>
+            </td>
+            <td>
+                @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Select Customer", new { id = "CustomerIdView", @Class = "Autodrp form-control" })
+            </td>        
+            <td>
+                <label for="VendorName">Vendor Name:</label>
+            </td>
+            <td>
+                @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Select Vendor", new { id = "VendorIdView", @Class = "Autodrp form-control" })
+            </td>
+        </tr>
+    </table>
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+
+        @if (Model.MOMId > 0)
+        {
+            <tr style="width:400px">
+                <td>
+                    <label for="ItemName">Created By:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedByName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedByName)
+                    </div>
+                <td>
+                    <label for="ItemName">Created Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+            </tr>
+                <tr>
+                    <td>
+                        <label for="ItemName">Modified By:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedByName, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedByName)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="ItemName">Modified Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+                </tr>
+
+        }
+    </table>
+    <br>
+        <div style="width:100%">
+        @{Html.EJ().Tab("defaultTabs").ShowCloseButton(true).Items(data =>
+           {
+               data.Add().ID("Description").Text("Description").ContentTemplate(
+                @<div>
+                    <table style="width:100%">
+                        @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                        List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                        List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                        List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                        List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                        List<String> indenting = new List<string> { "outdent", "indent" };
+                        List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                        List<String> doAction = new List<string>() { "undo", "redo" };
+                        List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                        List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                        List<String> links = new List<string>() { "createLink", "removeLink" };
+                        List<String> images = new List<string>() { "image" };
+                        List<String> media = new List<string>() { "video" };
+                        List<String> effects = new List<string>() { "superscript", "subscript" };
+                        List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                        List<String> formatStyle = new List<string>() { "format" };
+                        List<String> view = new List<string>() { "fullScreen" };
+
+                        }
+                        <tr>
+
+                             <td>
+                                <div>
+                                    @Html.EJ().RTEFor(model => model.Description, new { id = "hello" }).Width("100%").Height("50%").EnableResize(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                    @Html.ValidationMessageFor(model => model.Description)
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </div>);
+               data.Add().ID("Local").Text("Internal Description").ContentTemplate(
+                @<div>
+                    <table style="width:100%">
+                        @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                        List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                        List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                        List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                        List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                        List<String> indenting = new List<string> { "outdent", "indent" };
+                        List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                        List<String> doAction = new List<string>() { "undo", "redo" };
+                        List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                        List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                        List<String> links = new List<string>() { "createLink", "removeLink" };
+                        List<String> images = new List<string>() { "image" };
+                        List<String> media = new List<string>() { "video" };
+                        List<String> effects = new List<string>() { "superscript", "subscript" };
+                        List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                        List<String> formatStyle = new List<string>() { "format" };
+                        List<String> view = new List<string>() { "fullScreen" };
+
+                        }
+                        <tr>
+
+                            <td>
+                                <div>
+                                    @Html.EJ().RTEFor(model => model.LocalDescription, new { id = "local" }).Width("100%").Height("50%").EnableResize(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                    @Html.ValidationMessageFor(model => model.LocalDescription)
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </table>
+
+                </div>);
+               if (@ViewBag.findflag == 1)
+               {
+                   data.Add().ID("ManagementView").Text("Management View").ContentTemplate(
+                    @<div>
+                        <table style="width:100%">
+                            @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                            List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                            List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                            List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                            List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                            List<String> indenting = new List<string> { "outdent", "indent" };
+                            List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                            List<String> doAction = new List<string>() { "undo", "redo" };
+                            List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                            List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                            List<String> links = new List<string>() { "createLink", "removeLink" };
+                            List<String> images = new List<string>() { "image" };
+                            List<String> media = new List<string>() { "video" };
+                            List<String> effects = new List<string>() { "superscript", "subscript" };
+                            List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                            List<String> formatStyle = new List<string>() { "format" };
+                            List<String> view = new List<string>() { "fullScreen" };
+
+                            }
+                            <tr>
+
+                                <td>
+                                    <div>
+                                        @Html.EJ().RTEFor(model => model.ManageMentView, new { id = "ManageMentView" }).Width("100%").Height("50%").EnableResize(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                        @Html.ValidationMessageFor(model => model.ManageMentView)
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        </table>
+
+                    </div>);
+               }
+             else
+               {
+                    data.Add().ID("ManagementView").Text("Management View").ContentTemplate(
+                        @<div>
+                            <table style="width:100%">
+                                @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                                    List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                                    List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                                    List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                                    List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                                    List<String> indenting = new List<string> { "outdent", "indent" };
+                                    List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                                    List<String> doAction = new List<string>() { "undo", "redo" };
+                                    List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                                    List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                                    List<String> links = new List<string>() { "createLink", "removeLink" };
+                                    List<String> images = new List<string>() { "image" };
+                                    List<String> media = new List<string>() { "video" };
+                                    List<String> effects = new List<string>() { "superscript", "subscript" };
+                                    List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                                    List<String> formatStyle = new List<string>() { "format" };
+                                    List<String> view = new List<string>() { "fullScreen" };
+
+                                }
+                                <tr>
+
+                                    <td>
+                                        <div>
+                                            @Html.EJ().RTEFor(model => model.ManageMentView, new { id = "ManageMentView" }).Width("100%").Height("50%").EnableResize(true).ToolsList(toolsList).ShowFooter(true).Tools(tool => tool.Clear(clear).FormatStyle(formatStyle).Tables(tables).Links(links).Images(images).Effects(effects).Casing(casing).Font(font).Styles(style).Media(media).Alignment(alignment).Lists(lists).Clipboard(clipboard).DoAction(doAction).Indenting(indenting).View(view))
+
+                                            @Html.ValidationMessageFor(model => model.ManageMentView)
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            </table>
+
+                        </div>);
+               }
+
+               if (Model.MOMId > 0)
+               {
+                   data.Add().ID("Participants").Text("Participants").ContentTemplate(
+                    @<div>
+
+                        <table>
+                            <tr>
+                                <td align="center" width="80px">
+                                    <button class="btn-xs btn-info glyphicon glyphicon-leaf AddParticipant" type="button" style="width:150px"> Add Participants</button>
+                                  </td>
+                            </tr>
+                        </table>
+
+                        @if (Model.LstMoMParticipant.Count > 0)
+                        {
+                            @(Html.EJ().Grid<SmartSys.BL.Project.MoMParticipantModel>("grdTaskMomList")
+                        .Datasource(Model.LstMoMParticipant)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("ParticipantId").HeaderText("ParticipantId").Visible(false).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Name").HeaderText("Name").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ParticipantType").HeaderText("Participant Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("FYI").HeaderText("FYI").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.HeaderText("Delete").TemplateID("#DeleteTaskMom").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                            )
+
+                           
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Participants Details !!!</label>
+                            </div>
+                        }
+                    </div>);
+
+                   data.Add().ID("AttachMent").Text("Attachment").ContentTemplate(
+                    @<div>
+
+                        <table>
+                            <tr>
+                                <td align="center" width="80px">
+                                    <button class="btn-xs btn-info glyphicon glyphicon-leaf UploadBtn" type="button" style="width:120px"> Upload</button>
+                                 </td>
+                            </tr>
+                        </table>
+
+                        @if (Model.LstMOMAttachment.Count > 0)
+                        {
+                            @(Html.EJ().Grid<SmartSys.BL.Project.ProjectTaskMoM>("grdAttachmentList")
+                        .Datasource(Model.LstMOMAttachment)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("FileName").HeaderText("FileName").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Description").HeaderText("Description").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.HeaderText("Open").TemplateID("#OpenAttach").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                            )                          
+                        }
+                        else
+                        {
+                            <div class="alert alert-info" role="alert">
+                                <label>Sorry! There is No Information about Attachment Details !!!</label>
+                            </div>
+                        }
+                    </div>);
+               
+               data.Add().ID("ActionPoint").Text("Action Point").ContentTemplate(
+                @<div>
+                     <table>
+                         <tr>
+                             <td align="center" width="80px">
+                                 <button class="btn-xs btn-info glyphicon glyphicon-leaf AddActionPoint" type="button" style="width:170px"> Add Action Point</button>
+
+                             </td>
+                         </tr>
+                     </table>
+            <br />
+                     @if (Model.ActionPointList.Count > 0)
+                     {
+                        <div style="position:relative">
+                            @(Html.EJ().Grid<SmartSys.BL.Project.ProjectTaskMoM>("grdProject11")
+         .Datasource(Model.ActionPointList)
+        .AllowFiltering()
+         .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .EditSettings(e => e.AllowAdding().AllowEditing())
+           .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+           {
+               items.AddTool(ToolBarItems.ExcelExport);
+               items.AddTool(ToolBarItems.Edit);
+           }))
+           .Mappers(map =>
+           {
+               map.ExportToExcelAction("ActionPointExport");
+
+           })
+           .ContextMenuSettings(contextMenu =>
+            {
+                contextMenu.EnableContextMenu()
+                      
+                      .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.EditRecord));
+
+            })
+       
+        .AllowScrolling()
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("ActionPointId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ActionDescription").ValidationRules(v => v.AddRule("required", true)).HeaderText("Action Description").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("StatusShortCode").HeaderText("Status").Width(160).ValidationRules(v => v.AddRule("required", true).AddRule("minlength", 3)).Add();
+            col.Field("AssignedBy").HeaderText("Assigned By").Width(180).Add();
+            col.Field("Resource").HeaderText("Resource").Width(180).Visible(true).Add();
+            col.Field("DueDate").HeaderText("Due Date").Format("{0:MM/dd/yyyy}").Width(140).Add();
+            col.Field("ModifiedByName").HeaderText("Modified By").Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").Width(110).Add();
+
+        })
+            .ClientSideEvents(eve =>
+            {
+                eve.ActionComplete("complete");
+                eve.ContextClick("contextclick");
+                eve.ActionBegin("toolClick");
+            })
+
+
+                            )
+                        </div>
+                         @*<div id="gridEvent">
+                             @ActionPointList.GetHtml(
+                                             tableStyle: "webgrid",
+                                            alternatingRowStyle: "webgrid-alt",
+                                             headerStyle: "webgrid-header",
+                                             selectedRowStyle: "webgrid-select",
+                                            mode: WebGridPagerModes.All,
+                                            firstText: "<<First",
+                                            previousText: "<Previous",
+                                            nextText: ">Next",
+                                            lastText: ">>Last",
+                                            columns: new[]{
+                                                 ActionPointList.Column("ActionPointId","Id"),
+                                            ActionPointList.Column("ActionDescription","Description" ,canSort: true,style: "Width"),
+                                             ActionPointList.Column("StatusShortCode","Status"),
+                                             ActionPointList.Column("AssignedBy","Assigned By"),
+                                             ActionPointList.Column("Resource","Resource"),
+                                             ActionPointList.Column("DueDate","DueDate"),
+                                             ActionPointList.Column("ModifiedByName","Modified By"),
+                                             ActionPointList.Column("ModifiedDate","Modified Date"),
+                                             ActionPointList.Column(header:"Edit",format:(itemLib) => Html.ActionLink(" Edit","MOMActionPoint","ProjectCenter",new {MOMID =Model.MOMId, ActionPointId =itemLib.ActionPointId,ProjectId = Model.ProjectId},new{ @class="modal-link btn-xs btn-info  glyphicon glyphicon-pencil "}))
+
+
+                                              })
+                         </div>*@
+                     }
+                     else
+                     {
+                         <div class="alert alert-info" role="alert">
+                             <label>Sorry! There is No Information about MOM Action Point Details !!!</label>
+                         </div>
+                     }
+                </div>);
+               }
+           })
+        .EnablePersistence(true)
+        .Render();}
+    </div>
+
+    <table>
+        <tr>
+
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'ProjTaskMOMList';" );"> Back</button>
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn-xs  btn-info glyphicon glyphicon-save save "> Save</button>
+                </div>
+            </td>
+            @if (Model.LstMoMParticipant.Count > 0)
+            {
+                <td>
+                    @Html.ActionLink(" Send Mail", "SendMom", new { MomId = Model.MOMId }, new { @class = "btn-sm btn-info glyphicon glyphicon-send" })
+               </td>
+            }
+        </tr>
+
+    </table>
+
+
+}
+<script>
+        function toolClick(args) {
+
+                if (args.requestType == "beginedit")
+                {
+                    document.getElementById("Title1").innerHTML = 'Edit Action Point';
+               var grid = $("#grdProject11").ejGrid("instance");
+               var result = this.getSelectedRecords();
+               var ActionPointId = result[0]["ActionPointId"];
+               var path = '@Url.Content("~/ProjectCenter/MOMActionPoint")' + "?MOMID=" + @Model.MOMId + "&ActionPointId=" + ActionPointId + "&ProjectId=" + 0
+               $("#AddParticipantDetails").ejDialog({
+                   contentUrl: path,
+                   contentType: "ajax"
+               });
+               $("#AddParticipantDetails").ejDialog("open");
+               return false;
+                }
+           
+        }
+</script>
+
+
+<script type="text/x-jsrender" id="EditRiskTask">
+    <a class="abc btn-xs btn-danger glyphicon glyphicon-trash" href='/ProjectCenter/DeleteMomActionPointParticipants?ActionPointId={{:ActionPointId}} &amp;MOMID=@Model.MOMId&amp;ParticipantsType={{:ParticipantType}} &amp;UserId={{:UserId}}'> Remove</a>
+</script>
+
+
+<div>
+    @{
+
+        Html.EJ()
+            .Dialog("AddParticipantDetails")
+            .Title("<a id='Title1'></a>")
+            .Width(1000)
+            .Height(600)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+    <script>
+        function openDialog() {
+            $("#AddParticipantDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#AddParticipantDetails").ejDialog("open");
+
+        }
+
+    </script>
+    @{
+
+        Html.EJ()
+            .Dialog("AddDocument")
+            .Title("<a id='Title12'></a>")
+            .Width(700)
+            .Height(400)
+            .ShowOnInit(false)
+            .ContentTemplate(@<p></p>)
+            .Render();
+    }
+    <script>
+        function openDialog() {
+            $("#AddDocument").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#AddDocument").ejDialog("open");
+
+        }
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('.AddParticipant').click(function (e) {
+                @*@Html.ActionLink(" Create", "CreateVendorContactDetails", new { VendorId = Model.VendorId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+                var MOMId =  @Model.MOMId;
+                var ProjectId =@Model.ProjectId;
+
+
+
+                var path = '@Url.Content("~/ProjectCenter/AddParticipants")' + "?MOMId=" + MOMId + "&ProjectId=" + ProjectId
+                $("#AddParticipantDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#AddParticipantDetails").ejDialog("open");
+
+            });
+
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            $('.AddActionPoint').click(function (e) {
+                document.getElementById("Title1").innerHTML = 'Add Action Point';
+                @*@Html.ActionLink(" Create", "CreateVendorContactDetails", new { VendorId = Model.VendorId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+                var MOMId =  @Model.MOMId;
+                var ProjectId =@Model.ProjectId;
+
+                var path = '@Url.Content("~/ProjectCenter/MOMActionPoint")' + "?MOMId=" + MOMId + "&ActionPointId=" +  0 + "&ProjectId=" + ProjectId 
+                $("#AddParticipantDetails").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#AddParticipantDetails").ejDialog("open");
+
+            });
+
+        });
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+
+            $('.UploadBtn').click(function (e) {
+                document.getElementById("Title12").innerHTML = 'Upload File';
+                @*@Html.ActionLink(" Create", "CreateVendorContactDetails", new { VendorId = Model.VendorId, ContactName = "" }, new { @class = "modal-link btn-xs btn-info  glyphicon glyphicon-leaf black" })*@
+                var MOMId =  @Model.MOMId;
+
+                var path = '@Url.Content("~/ProjectCenter/MOMAttachment")' + "?MOMId=" + MOMId 
+                $("#AddDocument").ejDialog({
+                    contentUrl: path,
+                    contentType: "ajax"
+                });
+                $("#AddDocument").ejDialog("open");
+
+            });
+
+        });
+    </script>
+
+
+</div>
+<script id="DeleteTaskMom" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" id="xyz" href="/ProjectCenter/DeleteParticipants?MOMId=@Model.MOMId&amp;ParticipantId={{:ParticipantId}}&amp;ParticipantsType={{:ParticipantType}}">  Delete</a>
+</script>
+<script id="OpenAttach" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download"  href="/ProjectCenter/Download?MOMID=@Model.MOMId&amp;Filename={{:FileName}}">  Open</a>
+</script>

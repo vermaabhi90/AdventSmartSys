@@ -1,0 +1,98 @@
+﻿@model  SmartSys.BL.Tmleave.TMLeaveDetailModel
+@{
+    ViewBag.Title = "Approve/Reject Leave";
+}
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+    Approve/Reject Leave
+</div>
+
+@using (Html.BeginForm("ApproveRejectLeave", "TMLeave", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+      <body>
+          <table style="border-collapse:separate;border-spacing: 0 5px;">
+              <tr>
+                  @Html.HiddenFor(model => model.LeaveId, new { @class = "form-control", id = "", @readonly = "readonly" })
+                  <td style="padding-left:20px;">
+                      <label>Leave Type: </label>
+                  </td>
+                  <td>
+                      <div class="">
+                          @Html.TextBoxFor(model => model.LeaveTypeName, new { @class = "form-control", id = "LeaveTypeName", @readonly = "readonly" })
+                      </div>
+                  </td>
+                  <td>
+                      <label>Employee:</label>
+                  </td>
+                  <td>
+                      <div class="">
+                          @Html.TextBoxFor(model => model.Employee, new { @class = "form-control", id = "EmployeeName", @readonly = "readonly" })
+                      </div>
+                  </td>
+              </tr>
+              <tr>
+                  <td style="padding-left:20px;">
+                      <label>From Date:</label>
+                  </td>
+                  <td>
+                      <div class="">
+                          @Html.TextBoxFor(model => model.FromDate, "{0:MM/dd/yyyy}", new { @class = "form-control", id = "FromDate", @readonly = "readonly" })
+                      </div>
+                  </td>
+                  <td>
+                      <label>To Date:</label>
+                  </td>
+                  <td>
+                      <div class="">
+                          @Html.TextBoxFor(model => model.ToDate, "{0:MM/dd/yyyy}", new { @class = "form-control", id = "ToDate", @readonly = "readonly" })
+                      </div>
+                  </td>
+              </tr>
+              <tr>
+                  <td style="padding-left:20px;">
+                      <label>Employee Remark: </label>
+                  </td>
+                  <td>
+                      <div class="">
+                          @Html.TextBoxFor(model => model.Remark, new { @class = "form-control", id = "Remark", @readonly = "readonly" })
+                      </div>
+                  </td>
+              </tr>
+              <tr>
+                  <td style="padding-left:20px;">
+                      <label>Approve / Reject: </label>
+                  </td>
+                  <td>
+                      <select id="Decision" name="Decision" class = "form-control">
+                          <option value="Approve">Approve</option>
+                          <option value="Reject">Reject</option>
+                      </select>
+                  </td>
+
+                  <td>
+                      <label>Manager Remark: </label>
+                  </td>
+                  <td>
+                      <div class="">
+                          @Html.TextBoxFor(model => model.ManagerRemark, new { @class = "form-control", id = "ManagerRemark" })
+                      </div>
+                  </td>
+              </tr>
+              <tr>
+                 
+                     <td>
+                          <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'TMPendingLeaveApprovalList';" );"> Back</button>
+                          <button type="submit" name="submit" id="submit" class="btn-xs btn-info">Submit</button>
+                    </td>
+              </tr>
+          </table>
+          
+</body>
+</html>
+        }
+

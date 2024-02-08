@@ -1,0 +1,202 @@
+﻿@model SmartSys.BL.Adhoc.AdhocModel
+
+@{
+    ViewBag.Title = "ReportParam";
+}
+
+
+
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Parameters
+</div>
+
+
+
+@using (Html.BeginForm("ReportParam", "SingleRptSubscription", FormMethod.Post, new { Id = "Form1" }))
+{
+    <html>
+
+    <body>
+        <br>
+        <div>
+            <div>
+                <input type="hidden" id="hidText" name="hidText" />
+                <table  style="border-collapse:separate;border-spacing: 0 5px;">
+                    <tr>
+                        <td>
+                            Report Name :
+                        </td>
+                        <td>
+                            <h5>@Model.ReportName</h5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Client Name :
+                        </td>
+                        <td>
+                            <h5>@Model.ClientName</h5>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+            <table  style="border-collapse:separate;border-spacing: 0 5px;">
+
+
+                @foreach (var item in Model.ParamList)
+                {
+                    <tr>
+                        <td>
+                            <div class="">
+                                @Html.DisplayFor(modelItem => item.ParamName, new { id = item.DataType })
+                            </div>
+
+                        </td>
+                        <td>
+                            @if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.GetEmployeeForDropDown.ToString())
+                            { <div class="">
+                                @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.EmpList, new {@class="form-control", id = "DrpDwnLst", style = "width:310px" })
+                            </div>
+                            }
+
+                            @if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERTimeSheet.ToString() ||
+                             item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERAdvent.ToString() ||
+                             item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERDPK.ToString() ||
+                             item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.CLNTUSERSAJ.ToString())
+                            { <div class="">
+                                @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.CLNTUSER, new { @class = "form-control", id = "DrpDwnUserLst", style = "width:310px" })
+                            </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.RDSGetClientForDropDown.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.RDSClientList, new { @class = "form-control", id = "DrpDwnLstRDSClient", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.GetRGSReportForDropDown.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.ReportNameList, new { @class = "form-control", id = "DrpDwnLstRDSReport", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SysUserForDropDown.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SysUserList, new { @class = "form-control", id = "DrpDwnLstSysUser", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SysBusinessLineForDropDown.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.BussLineList, new { @class = "form-control", id = "DrpDwnLstBussLine", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.SysDepartmentDropDown.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.SysDeptList, new { @class = "form-control", id = "DrpDwnLstDepartment", style = "width:310px" })
+                                </div>
+                            }
+
+                            else if (item.FunctionRef == SmartSys.Utility.Enums.FunctionRef.EWCompanyDropDown.ToString())
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", (IEnumerable<SelectListItem>)ViewBag.EWComapnyList, new { @class = "form-control", id = "DrpDwnLstDepartment", style = "width:310px" })
+                                </div>
+                            }
+
+
+                            else if (item.DataType == "NumberParameter" && item.ParamName == "WeekNo")
+                            {
+                                <div class="">
+                                    @Html.DropDownList("TxtParamValue", new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Current Week", Value="Current Week"},
+                              new SelectListItem() {Text = "First Week of the Month", Value="First Week of the Month"},
+                             new SelectListItem() {Text = "Previous Week", Value="Previous Week"}
+                       }, new { @class = "form-control" })
+                                </div>
+                            }
+                            else if (item.DataType == "NumberVar")
+                            {
+                                <div class="">
+                                    <input type="number" class="form-control" name="TxtParamValue" id="TxtParamValue" />
+                                </div>
+                            }
+                            else if ((item.ParamName == "@FromDate" || item.ParamName == "@ToDate" || item.ParamName == "@AsOfDate") && (item.DataType == "DateTimeParameter" || item.DataType == "DateParameter"))
+                            {
+                                <div class="">
+
+                                    @Html.DropDownList("TxtParamValue", new List<SelectListItem>
+                       {
+                             new SelectListItem() {Text = "Current Date", Value="Current Date"},
+                             new SelectListItem() {Text = "First Day of the Month", Value="First Day of the Month"},
+                             new SelectListItem() {Text = "First Day of the Previous Month", Value="First Day of the Previous Month"},
+                             new SelectListItem() {Text ="First Day of the Previous Week", Value="First Day of the Previous Week"},
+                             new SelectListItem() {Text ="First Day of the Week", Value="First Day of the Week"},
+                             new SelectListItem() {Text = "Last Day of the Month", Value="Last Day of the Month"},
+                             new SelectListItem() {Text = "Last Day of the Previous Month", Value="Last Day of the Previous Month"},
+                             new SelectListItem() {Text = "Last Day of the Previous Week", Value="Last Day of the Previous Week"},
+                             new SelectListItem() {Text = "Last Day of the Week", Value="Last Day of the Week"},
+                             new SelectListItem() {Text = "Next Day", Value="Next Day"},
+                             new SelectListItem() {Text = "Previous Day", Value="Previous Day"}
+                       },new { @class="form-control"})
+                                </div>
+                            }
+                            else if (item.DataType == "DateTimeParameter" || item.DataType == "DateParameter")
+                            {
+                                <div class="">
+                                    <input type="datetime" class="DateTime form-control" name="TxtParamValue" id="DateTime" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="">
+                                    <input class="form-control" id="TxtParamValue" name="TxtParamValue" type="text">
+                                </div>
+
+                            }
+                            <span id=@item.ParamId></span>
+
+
+                        </td>
+                        @Html.Hidden("ParamId", item.ParamId)
+
+                    </tr>
+
+                }
+                @Html.Hidden("ReportId", Model.ReportId)
+                <tr>
+                    <td>
+                    
+                            @*@Html.ActionLink("Cancel", "Create", new { @class = "btn-xs btn-info glyphicon glyphicon-hand-left buttonCss" })*@
+                        <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'Create';" );"> Cancel</button>
+
+                    </td>
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="submit" class="btn-xs  btn-info" id="submit">Submit</button>
+                        </div>
+                    </td>
+
+                </tr>
+            </table>
+
+        </div>
+    </body>
+</html>
+}
+
+

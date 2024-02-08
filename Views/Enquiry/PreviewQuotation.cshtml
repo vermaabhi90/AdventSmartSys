@@ -1,0 +1,53 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.PreViewQuotModel>
+
+@{
+    ViewBag.Title = "DispatchList";
+}
+
+
+<div class="page-header glyphicon glyphicon-list  text-info">
+    Preview List
+</div>
+
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.DispatchModel>("grdDetailList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        //.ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+        //{
+        //    items.AddTool(ToolBarItems.ExcelExport);
+        //}))
+        //.Mappers(map =>
+        //{
+        //    map.ExportToExcelAction("QuotPreviewExport" + "?Enqid=ViewBag.Enqid");
+
+        //})
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .Width("100%")
+        .EnableAltRow(true)
+        .Columns(col =>
+        {
+            col.Field("ItemId").HeaderText("ItemId").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("MPN").HeaderText("MPN").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("ItemName").HeaderText("Item Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("BrandName").HeaderText("Brand Name").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("Quantity").HeaderText("Quantity").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Rate").HeaderText("Rate").Format("{0:N4}").TextAlign(TextAlign.Left).Width(50).Add();
+            col.Field("Currency").HeaderText("Currency").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("VendorPromiseDate").HeaderText("Lead Time").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("SPQ").HeaderText("SPQ").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("MOQ").HeaderText("MOQ").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("Remark").HeaderText("Remark").TextAlign(TextAlign.Left).Width(70).Add();
+
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+    )
+</div>
+@Html.EJ().ScriptManager()
+

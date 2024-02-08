@@ -1,0 +1,96 @@
+﻿@model IEnumerable<SmartSys.BL.DataHub.DHLoaderModel>
+@using Syncfusion.JavaScript.Models
+@{
+    ViewBag.Title = "Data Hub Loader";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Data Hub Loader List
+</div>   
+    <div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "Create", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf buttonCss" })
+</div>
+        <div style="position:relative">
+            @(Html.EJ().Grid<SmartSys.BL.DataHub.DHLoaderModel>("grdLoaderList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+         //                  .ContextMenuSettings(contextMenu =>
+         //                  {
+         //                      contextMenu.EnableContextMenu()
+         //                     .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.AddRecord))
+
+         //                           //.CustomContextMenuItems(new List<string> { "Edit" })
+         //                           .CustomContextMenuItems(new List<CustomContexMenuItems>() { new CustomContexMenuItems() { Id = "Edit1", Text = "Edit" } })
+         //;
+         //                  })
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Record");
+                 c.AddItem("Edit1", "Edit Record");
+             });
+
+         })
+        //.EnablePersistence(true)
+        .Columns(col =>
+        {
+            col.Field("LoaderId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("LoaderType").HeaderText("Loader Type").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(120).Add();
+            col.Field("Host").HeaderText("Host").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("Port").HeaderText("Port").ValidationRules(v => v.AddRule("required", true)).Width(80).Add();
+            col.Field("JobPollingInterval").HeaderText("Job PollingInterval").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("EventPollingInterval").HeaderText("Event PollingInterval").TextAlign(TextAlign.Center).Width(160).Add();
+            col.Field("TriggerPollingInterval").HeaderText("Trigger PollingInterval").TextAlign(TextAlign.Center).Width(180).Add();
+            col.Field("StatusShortCode").HeaderText("Status").Width(95).TextAlign(TextAlign.Center).Add();
+            col.Field("isActive").HeaderText("Active").Width(90).TextAlign(TextAlign.Center).Add();
+            col.Field("BusinessLineName").HeaderText("BusinessLine Name").Width(160).Add();
+
+
+            col.HeaderText("Edit")
+                .Template("#edit")
+                .AllowFiltering(false)
+            .IsUnbound(true)
+            .TextAlign(TextAlign.Center)
+            .Width(70)
+            .Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+            )
+        </div>
+
+        <script id="edit" type="text/x-jsrender">
+            <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/DHLoader/Edit?LoaderId={{:LoaderId}}"></a>
+        </script>
+        <script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+            var path = '@Url.Content("~/DHLoader/Create")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else
+            if (args.text == "Edit Record") {
+                var tempData = args.text;
+                var grid = $("#grdLoaderList").ejGrid("instance");
+                var result = this.getSelectedRecords();
+                var LoaderId = result[0]["LoaderId"];
+                var path = '@Url.Content("~/DHLoader/Edit")' + "?LoaderId=" + LoaderId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+    }
+
+        </script>

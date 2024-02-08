@@ -1,0 +1,80 @@
+﻿@model IEnumerable<SmartSys.BL.Enquiry.ItemStockAuditModel>
+
+@{
+    ViewBag.Title = "GetItemStockAuditList";
+}
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Item Stock Audit List
+</div>
+
+<div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create Audit", "CreateAudit", new { AuditId = 0 }, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf" })
+</div>
+<div style="position:relative">
+    @(Html.EJ().Grid<SmartSys.BL.Enquiry.DispatchModel>("grdstockList")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .ToolbarSettings(toolbar => { toolbar.ShowToolbar().ToolbarItems(items => { items.AddTool(ToolBarItems.Search); }); })
+        .EnableAltRow(true)
+         .ToolbarSettings(toolBar => toolBar.ShowToolbar().ToolbarItems(items =>
+                {
+                    items.AddTool(ToolBarItems.ExcelExport);
+                }))
+             .Mappers(map => map.ExportToExcelAction(@Url.Action("ExportItemStockList")))
+         .ContextMenuSettings(contextMenu =>
+         {
+             contextMenu.EnableContextMenu();
+             contextMenu.DisableDefaultItems();
+             contextMenu.CustomContextMenuItems(c =>
+             {
+                 c.AddItem("Add_Record", "Add Stock Audit");
+                 c.AddItem("Edit1", "Edit Stock Audit");
+             });
+
+         })
+
+        .Columns(col =>
+        {
+            col.Field("AuditId").HeaderText("Audit Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("CompCode").HeaderText("CompCode").ValidationRules(v => v.AddRule("required", true)).Width(110).Add();
+            col.Field("AuditBy").HeaderText("Audit By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("AuditDate").HeaderText("Audit Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedBy").HeaderText("Modified By").TextAlign(TextAlign.Left).Width(70).Add();
+            col.Field("ModifiedDate").HeaderText("Modified Date").Format("{0:MM/dd/yyyy}").TextAlign(TextAlign.Left).Width(70).Add();
+
+        })
+
+         .ClientSideEvents(eve =>
+         {
+             eve.ContextClick("contextclick");
+         })
+    )
+</div>
+<script>
+    function contextclick(args) {
+
+        if (args.text == "Add Stock Audit")
+        {
+            var path = '@Url.Content("~/Enquiry/CreateAudit")' + "?AuditId=" + 0
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        else if (args.text == "Edit Stock Audit") {
+            var tempData = args.text;
+            var grid = $("#grdstockList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var AuditId = result[0]["AuditId"];
+            var path = '@Url.Content("~/Enquiry/CreateAudit")' + "?AuditId=" + AuditId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+    }
+</script>
+

@@ -1,0 +1,306 @@
+﻿@model SmartSys.BL.Bank.BankDetailModel
+
+@{
+    ViewBag.Title = "CreateBankDetails";
+}
+    <style>
+        td {
+            padding-right: 15px;
+        }
+    </style>
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Create Bank Details
+    </div>
+<script>
+    $(document).ready(function (e) {
+
+        var str = '@(TempData["Message"])'.toString();
+
+
+        if (str.toString() == "" || str == null) {
+            return false;
+        }
+        else {
+            alert('@(TempData["Message"])');
+            return true;
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#adddd').click(function () {
+            var BankName = $("#BankName").val();
+
+            var IFSCCode = $('#IFSCCode').val();
+
+            var Line1 = $("#Line1").val();
+
+            var Country = $("#Country").val();
+
+
+            var State = $("#State").val();
+
+            var City = $("#City").val();
+
+            var Pin = $("#Pin").val();
+
+
+            if (BankName.toString() == "") {
+                alert("Please Enter a Bank Name")
+                return false;
+            }
+
+            if (IFSCCode.toString() == "") {
+                alert("Please Enter IFSC Code");
+                return false;
+            }
+            if (Line1.toString() == "") {
+                alert("Please Enter line 1 of your Address")
+                return false;
+            }
+
+            if (Country.toString() == "") {
+                alert("Please Select the Country Name");
+                return false;
+            }
+            if (State.toString() == "0") {
+                alert("Please Select the State Name")
+                return false;
+            }
+
+            if (City.toString() == "0") {
+                alert("Please Select the City Name");
+                return false;
+            }
+            if (Pin.toString() =="") {
+                alert("Please enter the PIN number")
+                return false;
+            }
+            var regex = /^\d{6}$/;
+            if (regex.test(Pin) == false) {
+                alert("Enter correct Pin Number")
+                return false;
+            }
+
+
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Country").change(function (e) {
+            $("#State").empty();
+            var newOption = $('<option value="0">Please Select State</option>');
+
+            $('#State').append(newOption);
+            var selectedId = $("#Country").val();
+            var path = '@Url.Action("GetStateList")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { Country: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, state) {
+                        $("#State").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#State").change(function () {
+            $("#City").empty();
+            var newOption = $('<option value="0">Please Select City</option>');
+            $('#City').append(newOption);
+            var path = '@Url.Action("GetCityList")';
+            $.ajax({
+                type: 'POST',
+                url: path,
+                dataType: 'json',
+                data: { State: $("#State").val() },
+                success: function (citys) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+                    $.each(citys, function (i, city) {
+                        $("#City").append('<option value="'
+                   + city.Value + '">'
+                   + city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    <html>
+    <body>
+        <br>
+        <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                <td>
+                    <label>
+                        Bank Name:
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.BankName, new { id = "BankName", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BankName, "", new { @class = "text-danger" })
+                    </div>
+                </td>
+                <td>
+                    <label>
+                        IFSC/SWIFT Code:
+
+                    </label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.IFSCCode, new { id = "IFSCCode", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+        </table>    
+        <table  style="border-collapse:separate;border-spacing: 0 7px;">
+            <tr>
+                <td>
+                    <label style="color:#0E6AA9">
+                        Add Address
+                    </label>
+                </td>
+            </tr>
+    
+        </table>
+        <table  style="border-collapse:separate;border-spacing: 0 7px;">
+            <tr>
+                <td>
+                    <label>Line 1:</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Line1, new { id = "Line1", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Line1)
+                    
+                    </div>
+                </td>
+
+                <td>
+                    <label>Line 2:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Line2, new { id = "Line2", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Line2)
+               
+                    </div>
+                </td>
+
+                <td>
+                    <label>LandMark:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.LandMark, new { id = "LandMark", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.LandMark)
+                    </div>
+
+                </td>
+            </tr>
+            <tr style="height:40px" id="countryLabel">
+
+                <td>
+                    <label>Country:</label>
+                </td>
+
+                <td >
+                    <div class="">
+                        @Html.DropDownList("Country", (IEnumerable<SelectListItem>)ViewBag.CountryList, "Please select Country", new { style = "width:175px", id = "Country", @class = "form-control" })
+
+                    </div>
+                </td>
+
+                <td>
+                    <label> State:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("State", new SelectList(string.Empty, "Value", "Text"), "Please select State", new { style = "width:175px", @class = "dropdown1 form-control ", id = "State", })
+
+                    </div>
+
+                </td>
+                <td>
+                    <label>City:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.DropDownList("City", new SelectList(string.Empty, "Value", "Text"), "Please select City", new { style = "width:175px", @class = "dropdown1 form-control ", id = "City" })
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label> Pin:</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Pin, new { id = "Pin", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Pin)
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table>
+            <tr>
+                <td>               
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'BankListDetails';" );"> Back</button>
+                    <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save" id="adddd"> Save</button>                
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+
+
+
+
+

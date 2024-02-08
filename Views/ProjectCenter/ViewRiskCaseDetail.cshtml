@@ -1,0 +1,293 @@
+﻿@model  SmartSys.BL.Project.TaskDetails
+@{
+    ViewBag.Title = "Supermatic : Project Tracker";
+}
+
+
+
+
+@if (Model.TaskID > 0)
+{
+    if (Model.TskType == "Risk")
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+            Edit Risk Task
+        </div>
+    }
+    else
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+            Edit Case Task
+        </div>
+    }
+
+}
+else
+{
+    if (Model.Type == "Risk")
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Create Risk Task
+        </div>
+    }
+    else
+    {
+        <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+            Create Case Task
+        </div>
+    }
+}
+
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+@{
+
+    var gridCommentDetail = new WebGrid(source: Model.LstCommentList, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+}
+@using (Html.BeginForm("RiskManageMent", "ProjectCenter", FormMethod.Post, new { Id = "Risk" }))
+{
+    <html>
+    <body>
+        <div class="modal-body">
+            <table style="border-collapse:separate;border-spacing: 0 6px; ">
+                <tr>
+                    <td>
+                        <label style="color:red" class="glyphicon glyphicon-book  text-info">&nbsp;Project Name:</label>
+
+                    </td>
+                    <td>
+                        <label class="glyphicon  text-info">&nbsp; @Model.ProjectName</label>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+
+                        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+
+                            <tr>
+                                <td>
+                                    @if (Model.TskType == "Risk")
+                                    {
+                                        <label for="ItemName">Risk Title:</label>
+                                    }
+                                    else
+                                    {
+                                        <label for="ItemName">Case Title:</label>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.HiddenFor(model => model.Type)
+                                        @Html.HiddenFor(model => model.ProjectId)
+                                        @Html.HiddenFor(model => model.CommentId)
+                                        @Html.HiddenFor(model => model.TaskID)
+                                        @Html.TextBoxFor(model => model.TaskName, new { @class = "form-control", id = "TaskName", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(model => model.TaskName)
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="ItemName">Start Date:</label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @readonly = "" })
+                                        @*@Html.EJ().DatePicker("StartDate").DateFormat("MM/dd/yyyy").Value(Model.StartDate).Enabled(false)*@
+
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <label for="ItemName">End Date:</label>
+                                </td>
+                                <td>
+                                    <div class="">
+                                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @readonly = "" })
+                                        @*@Html.EJ().DatePicker("EndDate").DateFormat("MM/dd/yyyy").Value(Model.EndDate).Enabled(false)*@
+                                    </div>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label for="ItemName">Resources:</label>
+                                </td>
+                                <td>
+                                    <div class="">
+
+                                        @Html.TextAreaFor(model => model.Resources, new { @class = "form-control", @style = "width:200px" })
+                                        @*@Html.EJ().DropDownList("Employee").Datasource((IEnumerable<object>)ViewBag.Employee).DropDownListFields(f => f.ID("EmpId").Value("EmpId").Text("EmpName").Selected("selected")).ShowCheckbox(true).Width("350").WatermarkText("Select a Resources").Enabled(false)*@
+                                        @*@Html.DropDownList("Employee", (IEnumerable<SelectListItem>)ViewBag.EmpList, "Select Resource", new { id = "Employee", @Class = "form-control" })*@
+                                        @Html.ValidationMessageFor(model => model.ResourceID)
+                                    </div>
+                                </td>
+
+
+                                @if (Model.TaskID > 0)
+                                {
+                                    <td>
+                                        <label for="ItemName">Status:</label>
+                                    </td>
+                                    <td>
+                                        <div class="">
+                                            @Html.DropDownListFor(model => model.Statuscode, new List<SelectListItem>
+                         {
+                                         new SelectListItem() {Text = "In Progress", Value="29"},
+                                         new SelectListItem() {Text = "Complete", Value="30"},
+                                         new SelectListItem() {Text = "Closed", Value="31"},
+                                         new SelectListItem() {Text = "Cancelled", Value="32"},
+                                         new SelectListItem() {Text = "OnHold", Value="33"},
+
+                         },
+                    "Please Select Status", new { @class = "form-control", style = "width: 200px;", id = "StatusDetail", disabled = "disabled" })
+                                            @Html.ValidationMessageFor(model => model.Statuscode)
+                                        </div>
+                                    </td>
+                                }
+
+                            </tr>
+
+
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+            <table style="margin-left:20px;">
+                <tr>
+                    <td>
+                        <label for="ItemName">Description:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextAreaFor(model => model.Description, new { style = "width: 800px;", @class = "form-control", @readonly = "readonly" })
+
+                            @Html.ValidationMessageFor(model => model.Description)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <table style="margin-left:20px;">
+                <tr>
+                    @if (Model.TaskID > 0)
+                    {
+
+                        <td>
+                            <table>
+                                <tr>
+
+
+                                    <td>
+                                        <label for="ItemName">Comments:</label>
+                                    </td>
+                                    <td>
+                                        <div class="">
+                                            @Html.TextArea("Comments", new { style = "width: 800px;", @class = "form-control", id = "Comments", @readonly = "readonly" })
+
+                                            @Html.ValidationMessageFor(model => model.Comments)
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+
+                    }
+                </tr>
+
+            </table>
+            <div>
+
+                @if (Model.LstCommentList.Count > 0)
+                {
+                    <div style="position:relative">
+                        @(Html.EJ().Grid<SmartSys.BL.Project.Commentmodel>("grdcommentList")
+                .Datasource(Model.LstCommentList)
+        .AllowFiltering()
+        .AllowPaging()
+        .PageSettings(p => { p.PageSize(20); })
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+        .EnableAltRow(true)
+        
+        .Columns(col =>
+        {
+            col.Field("Comments").HeaderText("Comments").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("Status").HeaderText("Status").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(130).Add();
+          
+            col.Field("CommentedBy").HeaderText("Commented By").Width(100).Add();
+            col.Field("CommentDate").HeaderText("Comment Date").Format("{0:MM/dd/yyyy}").Width(100).Add();
+        })
+                 .ClientSideEvents(eve => { eve.ContextClick("contextclick"); })
+                        )
+                    </div>
+
+
+                 
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <label>Sorry! There is no Comment Detail!!!</label>
+                    </div>
+
+                }
+            </div>
+            <table>
+                <tr>
+                    @if (Model.Type.ToString() == "Approve")
+                    {
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <a class="save btn-xs btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("UpdateApproveRiskTask", "ProjectCenter", new { statusCode = 24, ProjectId = Model.ProjectId, TaskId = Model.TaskID })'>
+                                    Approve
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <a class="save btn-xs btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("UpdateApproveRiskTask", "ProjectCenter", new { statusCode = 25, ProjectId = Model.ProjectId, TaskId = Model.TaskID })'>
+                                    Reject
+                                </a>
+                            </div>
+                        </td>
+                       
+                    }
+                    else
+                    {
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <a class="save btn-xs btn-success glyphicon glyphicon-ok-circle text-success Review" href='@Url.Action("SaveReViewRiskTask", "ProjectCenter", new { statusCode = 27, ProjectId = Model.ProjectId, TaskId = Model.TaskID })'>
+                                    Review
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn" aria-label="...">
+                                <a class="save btn-xs btn-danger glyphicon glyphicon-remove-circle Review" href='@Url.Action("SaveReViewRiskTask", "ProjectCenter", new { statusCode = 25, ProjectId = Model.ProjectId, TaskId = Model.TaskID })'>
+                                    Reject
+                                </a>
+                            </div>
+                        </td>
+                       
+                    }
+                </tr>
+            </table>
+
+        </div>
+    </body>
+</html>
+}
+
+
+@Html.EJ().ScriptManager()

@@ -1,0 +1,433 @@
+﻿@model SmartSys.BL.DW.BudgetModel
+
+@{
+    ViewBag.Title = "CreateBudget";}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    Budget Details
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@using (Html.BeginForm("EditBudget", "Budget", FormMethod.Post, new { Id = "Form1" }))
+{
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td style="width:78px">
+                <label>Item</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => Model.ItemName, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                    @Html.HiddenFor(model => model.BudgetId)
+                </div>
+            </td>
+
+            <td width="150px">
+                <label>End Equipment</label>
+            </td>
+
+            <td width="200px">
+                <div class="">
+                    @Html.EditorFor(model => Model.EndEquipment, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:78px">
+                <label>Employee</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => Model.EmpName, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                </div>
+            </td>
+            <td>
+                <label>Customer</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => Model.CustomerName, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly", style = "width:407px" } })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Application</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.Application, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.Application, "", new { @class = "text-danger" })
+                </div>
+            </td>
+            <td>
+                <label>CCY</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.CCY, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                </div>
+            </td>
+
+
+        </tr>
+        <tr>
+            <td style="width:78px">
+                <label>Unit Price</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", onkeyup = "checkPass(); return false;", id = "UnitPrice", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                </div>
+            </td>
+
+            <td>
+                <label>Financial Year</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.EditorFor(model => model.Finyear, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:78px">
+                <label>Region</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.RegionId, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                </div>
+            </td>
+
+
+            <td>
+                <label>City</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.EditorFor(model => model.CityId, new { htmlAttributes = new { @class = "form-control", id = "", @readonly = "readonly" } })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr align="center">
+            <td>
+                <div class=" text-danger">
+                    <h4><label class="text-danger">Quantity</label></h4>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="Tbl1">
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label>April</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AprQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "AprQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.AprQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>May</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MayQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "MayQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.MayQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>June</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JunQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "JunQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.JunQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>July</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JulQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "JulQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.JulQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>August</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AugQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "AugQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.AugQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>September</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.SepQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control data-fv-integer-message", id = "SepQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.SepQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>October</label>
+                </td>
+
+                <td>
+
+                    @Html.EditorFor(model => model.OctQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "OctQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.OctQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>November</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.NovQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "NovQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.NovQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>December</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.DecQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "DecQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.DecQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>January</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JanQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "JanQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.JanQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>February</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.FebQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "FebQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.FebQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>March</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MarQty, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "MarQty", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.MarQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr align="center">
+            <td>
+                <div class=" text-danger">
+                    <h4><label class="text-danger">Amount</label></h4>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="Tbl1">
+        <table style="border-collapse:separate;border-spacing: 0 6px; ">
+            <tr>
+                <td>
+                    <label>April</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AprUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "AprUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.AprQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>May</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MayUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "MayUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.MayQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>June</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JunUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "JunUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.JunQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>July</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JulUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "JulUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.JulQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>August</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.AugUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "AugUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.AugQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>September</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.SepUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control data-fv-integer-message", id = "SepUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.SepQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>October</label>
+                </td>
+
+                <td>
+
+                    @Html.EditorFor(model => model.OctUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "OctUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.OctQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>November</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.NovUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "NovUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.NovQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>December</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.DecUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "DecUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.DecQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>January</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.JanUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "JanUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.JanQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>February</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.FebUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "FebUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.FebQty, "", new { @class = "text-danger" })
+
+                </td>
+
+                <td>
+                    <label>March</label>
+                </td>
+                <td>
+
+                    @Html.EditorFor(model => model.MarUSD, new { htmlAttributes = new { @placeholder = "Enter Integer Only", @Type = "number", step = "any", @class = "form-control", id = "MarUSD", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.MarQty, "", new { @class = "text-danger" })
+
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label>Created By</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Created Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>Modified By</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+            <td>
+                <label>Modified Date</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+    </table>
+}
+@Html.EJ().ScriptManager()

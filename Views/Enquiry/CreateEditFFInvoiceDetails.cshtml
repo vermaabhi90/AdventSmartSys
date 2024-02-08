@@ -1,0 +1,376 @@
+﻿@model SmartSys.BL.Enquiry.FreightFwdInvoiceDetailModel
+
+@{
+    ViewBag.Title = "CreateEditFFInvoiceDetails";
+}
+<link href="~/Content/toastr.css" rel="stylesheet" />
+<script src="~/Scripts/toastr.js"></script>
+<script src="~/Scripts/toastr.min.js"></script>
+<link href="~/Content/toastr.min.css" rel="stylesheet" />
+<div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Edit / Create Item Enquiry
+</div>
+<table>
+    <tr>
+        <td width="100px">
+            <label>Detail Id:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                
+                @Html.TextBoxFor(model => model.FreightInvDetailId,new { id = "FreightInvDetailId", name = "FreightInvDetailId", @readonly= "readonly", @class="DetailId form-control"})               
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td width="100px">
+            <label>Air Way Bill:</label>
+
+        </td>
+        @if (Model.FreightInvDetailId == 0)
+        {
+            <td id="Recedrp">
+                <div class="navbar-text">
+                    @Html.DropDownList("FFRef_No", (IEnumerable<SelectListItem>)ViewBag.LstAirwayBil, "--- Please Select Air Way Bill No ---", new { @class = "AirBill form-control", style = "width:250px", id = "FFRef_No" })
+                </div>
+                <a style=""><span class="glyphicon glyphicon-info-sign"></span><i> This Receipt Come from Purchase Receipt who do not have Ref_Number<br /></i></a>
+            </td>
+        }
+        else
+        {
+            <td id="Recedrp">
+                <div class="navbar-text">
+                    
+                    <input type="text" id="FFRef_No" name="FFRef_No" value="@Model.FFRef_No" readonly="readonly" class="AirBill  form-control" /> 
+                </div>               
+            </td>
+        }        
+
+        <td width="100px">
+            <label>Ref Date:</label>
+        </td>
+        @if (Model.FreightInvDetailId > 0)
+        {
+        <td>
+            <div class="navbar-text">
+                <input type="text" id="RefDate" name="RefDate"  value="@Model.RefDate" class="RefCls   form-control" />              
+            </div>
+        </td>
+        }
+        else
+        {
+            <td>
+                <div class="navbar-text">
+                    <input type="text" id="RefDate" name="RefDate" value="@DateTime.Now" class="RefCls  form-control" />
+                </div>
+            </td>
+        }
+    </tr>
+    <tr>       
+        <td width="100px">
+            <label>Invoice Amount:</label>
+        </td>
+        <td>
+            <div class="navbar-text">
+                <input type="number" step="any" id="InvoiceAmount" name="InvoiceAmount" value="@Model.Amount" class="InvoiceAmt form-control" />
+            </div>
+        </td>
+    </tr>
+
+</table>
+
+<br />
+<div class="container">
+    <div class="row">
+        <div class="table-responsive" style="height:200px;width:90%">
+            <table>
+                <tr>
+                    <td>
+                        <label>
+                            Tax:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.DropDownList("TaxId", (IEnumerable<SelectListItem>)ViewBag.TaxListDrp, "--- Please Select Tax ---", new { @class = "txdp form-control", style = "width:310px", id = "TaxIdDrp" })
+                            @Html.Hidden("SaveTypetds", new { id = "SaveTypetds" })
+                        </div>
+                    </td>
+                    <td>
+                        <label>
+                            Amount:
+                        </label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            <input type="number" id="TaxAmount" name="TaxAmount" onkeyup="checkPassAmount(); return false;" class="TxAmt form-control" />
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="btn" aria-label="...">
+                            <button type="button" id="AddTax" class="abc btn-sm btn-warning glyphicon glyphicon-pl"> Add</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>            
+            <div style="position:relative">
+                @(Html.EJ().Grid<SmartSys.BL.Enquiry.FreightFwdInvoiceTaxesModel>("grdTaxList")
+                .Datasource((IEnumerable<object>)ViewBag.LstTaxParse)
+                .AllowFiltering()
+                 .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+                .AllowPaging()
+                .PageSettings(p => { p.PageSize(20); })
+                .AllowSorting()
+                .AllowResizing()
+                .AllowScrolling()
+    //.ContextMenuSettings(contextMenu =>
+    //{
+    //    contextMenu.EnableContextMenu()
+    //   .ContextMenuItems(Item => Item.AddTool(ContextMenuItems.Cancel))
+    //   .CustomContextMenuItems(new List<string> { "Delete" });
+    //})
+    .ContextMenuSettings(contextMenu =>
+    {
+        contextMenu.EnableContextMenu();
+        contextMenu.DisableDefaultItems();
+        contextMenu.CustomContextMenuItems(c =>
+        {
+           
+            c.AddItem("Delete1", "Delete");
+        });
+
+    })
+
+        .Columns(col =>
+        {
+            col.Field("TaxId").HeaderText("Tax Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(70).Add();
+            col.Field("TaxName").HeaderText("Tax Name").ValidationRules(v => v.AddRule("required", true)).Width(110).Add();
+            col.Field("Amount").HeaderText("Amount").ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+            col.Field("FreightInvDetailId").HeaderText("FreightInvDetailId").Visible(false).ValidationRules(v => v.AddRule("required", true)).Width(130).Add();
+        })
+         .ClientSideEvents(eve =>
+         {
+             eve.ContextClick("contextcl");
+             eve.QueryCellInfo("querycellinfo");
+         })
+                )
+            </div>
+
+        </div>
+        <div class="col-md-12 text-center">
+            <ul class="pagination pagination-lg pager" id="myPager1"></ul>
+        </div>
+    </div>
+</div>
+<table align="left">
+    <tr>
+        <td>
+            <div class="btn" aria-label="...">
+                <button type="button" id="SaveItemEnq" class="SaveItem btn btn-success glyphicon glyphicon-save"> Save</button>
+            </div>
+
+        </td>        
+    </tr>
+</table>   
+
+<script>
+    $('.SaveItem').click(function () {
+        var FreightInvDetailId=$(".DetailId").val();
+        var RefDate = $(".RefCls").val();
+        if(FreightInvDetailId  > 0)
+        {
+            var ReceiptId=$(".ReceiptId").val();
+            var FFRef_No = $(".AirBill").val();
+        }
+        else
+        {           
+            var FFRef_No = $(".AirBill").val();
+        }       
+        var InvoiceAmount = $(".InvoiceAmt").val();        
+        //alert(FreightInvDetailId + ' ' + RefDate + ' ' + ReceiptId + ' ' + FFRef_No + ' ' + InvoiceAmount)
+        if (RefDate.toString() == "") {
+            alert("Please Select Ref Date");
+            return false;
+        }      
+       
+        if (FFRef_No.toString() == "")
+        {
+            alert("Please Select  Airway Bill No");
+            return false;
+        }
+
+        if (InvoiceAmount == "") {
+            alert("Please Enter Invoice Amount");
+            return false;
+        }
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/SaveFFInvoiceDetails",  //Update is Server side method
+            data: { FreightInvDetailId: FreightInvDetailId, FFRef_No: FFRef_No, RefDate: RefDate, InvoiceAmount: InvoiceAmount, FreightInvId:  @Model.FreightInvId},
+            success: function (result) {
+                var obj = $("#grdFFInvDetailLst").ejGrid("instance")
+                obj.dataSource(result);
+                $('#divLoading').hide();
+                toastr.success("Item Add Successfully!");
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(errorThrown);
+                toastr.error(errorThrown);
+            }
+        });
+        $(".RefCls").val(null);
+        $(".AirBill").val(null);
+        $(".InvoiceAmt").val(null);           
+        $(".txdp").val(0);
+        location.reload(true);
+        $("#CreateCompBankDetail").ejDialog("close");
+    });
+</script>
+
+<script>
+    $(".RefCls").ejDatePicker({ dateFormat: "MM/dd/yyyy" });
+    $(document).ready(function () {
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/FFInvoiceGetTaxDropDwn",  //Update is Server side method
+            data: { FreightInvDetailId:  @Model.FreightInvDetailId },
+            success: function (result) {
+                $(".txdp").empty();
+                $('.txdp').append('<option value="">Please Select Tax</option>');
+                $.each(result, function (i, data) {
+                    $('.txdp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                });
+            },
+            error: {
+            }
+        });
+          
+        $.ajax({
+            dataType: 'json',
+            type: "POST",
+            url: "/Enquiry/FFInvoiceGetItemTaxDetail",  //Update is Server side method
+            data: { FreightInvDetailId: @Model.FreightInvDetailId },
+            success: function (result) {
+                var obj = $("#grdTaxList").ejGrid("instance")
+                obj.dataSource(result);                        
+            },
+            error: {
+
+            }
+        });
+
+
+        $('.abc').click(function () {           
+            var TaxId=$(".txdp").val();
+            var TaxName = $(".txdp :selected").text();
+            var TaxAmount = $(".TxAmt").val();
+            var FreightInvDetailId = $(".DetailId").val();                
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/FFInvoiceSaveItemTax",  //Update is Server side method
+                data: { TaxId: TaxId, TaxName: TaxName, TaxAmount: TaxAmount, FreightInvDetailId: FreightInvDetailId, FreightInvId: @Model.FreightInvId },
+                success: function (result) {
+                    $.ajax({
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Enquiry/FFInvoiceGetTaxDropDwn",  //Update is Server side method
+                        data: { FreightInvDetailId: FreightInvDetailId },
+                        success: function (result) {
+                            $(".txdp").empty();
+                            $('.txdp').append('<option value="">Please Select Tax</option>');
+                            $.each(result, function (i, data) {
+                                $('.txdp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                            });
+                        },
+                        error: {
+                        }
+                    });    
+                    $.ajax({
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Enquiry/FFInvoiceGetItemTaxDetail",  //Update is Server side method
+                        data: { FreightInvDetailId: @Model.FreightInvDetailId },
+                        success: function (result) {
+                            var obj = $("#grdTaxList").ejGrid("instance")
+                            obj.dataSource(result);                        
+                        },
+                        error: {
+
+                        }
+                    });
+
+                    return false;
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    toastr.error(errorThrown);
+                }
+            });
+
+        });       
+    });
+
+</script>     
+
+<script>
+    function contextcl(args)
+    {
+        if (args.text == "Delete")
+        {           
+            var tempData = args.text;
+            var grid = $("#grdTaxList").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var TaxId = result[0]["TaxId"];
+            var FreightInvDetailId = result[0]["FreightInvDetailId"];
+            $.ajax({
+                dataType: 'json',
+                type: "POST",
+                url: "/Enquiry/DeleteFFInvTax",  //Update is Server side method
+                data: {FreightInvDetailId:FreightInvDetailId,TaxId:TaxId},
+                success: function (result)
+                {
+                    $.ajax({
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Enquiry/FFInvoiceGetTaxDropDwn",  //Update is Server side method
+                        data: { FreightInvDetailId:  FreightInvDetailId },
+                        success: function (result) {
+                            $(".txdp").empty();
+                            $('.txdp').append('<option value="">Please Select Tax</option>');
+                            $.each(result, function (i, data) {
+                                $('.txdp').append('<option value="' + data.Value + '">' + data.Text + '</option>');
+                            });
+                        },
+                        error: {
+                        }
+                    });
+
+                    $.ajax({
+                        dataType: 'json',
+                        type: "POST",
+                        url: "/Enquiry/FFInvoiceGetItemTaxDetail",  //Update is Server side method
+                        data: { FreightInvDetailId:FreightInvDetailId},
+                        success: function (result) {
+                            var obj = $("#grdTaxList").ejGrid("instance")
+                            obj.dataSource(result);
+                        },
+                        error: {
+
+                        }
+                    });
+
+                    toastr.success("Tax Delete Successfully!");
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(errorThrown);
+                    toastr.error(errorThrown);
+                }
+            });
+        }
+    }
+</script>                                    
+@Html.EJ().ScriptManager()

@@ -1,0 +1,337 @@
+﻿@model SmartSys.BL.IssueModel
+
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    Issue Details
+</div>
+
+
+<style>
+    .modal-content {
+        width: 150% !important;
+        margin: 30px auto !important;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.save').on('click', function (e) {
+            e.preventDefault();
+
+            var IssueId = $('#issueId').val();
+            var path = '@Url.Content("~/Admin/UpdateIssueDetails")' + "?IssueId=" + IssueId
+            event.preventDefault();
+            window.location.replace(path);          
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        $("#TicketforIssue").attr("disabled", "disabled");
+
+    });
+</script>
+
+
+@{
+    ViewBag.Title = "Issue Detail";
+    var gridCommentDetail = new WebGrid(source: Model.LstCommentList, canSort: true, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridBankDetail");
+}
+<style type="text/css">
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 99%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center;
+    }
+
+    .webgrid th {
+        color: #1E90FF;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+
+@using (Html.BeginForm("CreateIssuewithcompleteStatus", "Admin", FormMethod.Post, new { id = "Issue", enctype = "multipart/form-data" }))
+{
+
+    <table style="margin-left:35px">
+
+        <tr style="height:20px">
+            <td>
+                <label for="ItemName">Title:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.HiddenFor(model => model.IssueId, new { id = "issueId" })
+                    @if (Model.IssueId > 0)
+                    {
+                        @Html.TextBoxFor(model => model.Title, new { required = "required", @style = "min-width:500px", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Title)
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.Title, new { required = "required", @style = "min-width:500px", @class = "form-control" })
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="TicketType">Ticket Type:</label>
+            </td>
+            <td>
+                <div class="navbar-text">
+                    @Html.DropDownListFor(model => model.TicketType, new List<SelectListItem>
+                    {new SelectListItem(){Text="New Request",Value="New Request"},
+                        new SelectListItem(){Text="Error",Value="Error"},
+                        new SelectListItem(){Text="EnhanceMent",Value="EnhanceMent"},
+                        }, "Please select Ticket Type", new { @class = "form-control", style = "width:250px;height:30px", id = "TicketforIssue" })
+                    @Html.ValidationMessageFor(model => model.TicketType, "", new { @class = "text-danger" })
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="Description">Description:</label>
+            </td>
+            <td>
+
+            <td>
+                @{List<String> toolsList = new List<string>() { "formatStyle", "font", "style", "effects", "alignment", "lists", "indenting", "", "doAction", "view", "links", "", "casing", "", "customTool", "" };
+                List<String> font = new List<string>() { "fontName", "fontSize", "fontColor", "backgroundColor" };
+                List<String> style = new List<string>() { "bold", "italic", "underline", "strikethrough" };
+                List<String> alignment = new List<string>() { "justifyLeft", "justifyCenter", "justifyRight", "justifyFull" };
+                List<String> lists = new List<string>() { "unorderedList", "orderedList" };
+                List<String> indenting = new List<string> { "outdent", "indent" };
+                List<String> clipboard = new List<string>() { "cut", "copy", "paste" };
+                List<String> doAction = new List<string>() { "undo", "redo" };
+                List<String> clear = new List<string>() { "clearFormat", "clearAll" };
+                List<String> tables = new List<string>() { "createTable", "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "deleteTable" };
+                List<String> links = new List<string>() { "createLink", "removeLink" };
+                List<String> images = new List<string>() { "image" };
+                List<String> media = new List<string>() { "video" };
+                List<String> effects = new List<string>() { "superscript", "subscript" };
+                List<String> casing = new List<string>() { "upperCase", "lowerCase" };
+                List<String> formatStyle = new List<string>() { "format" };
+                List<String> view = new List<string>() { "fullScreen" };
+
+                }
+
+
+            </td>
+
+            <td>
+        </tr>
+    </table>
+    <table style="margin-left:50px">
+        <tr>
+
+            <td>
+                <div style="background-color:#F8FBEF;min-width:500px;max-width:800px; min-height:300px;max-height:800px; border:1px solid black;overflow-y:scroll;overflow-x:scroll; align-content:space-around" class="form-control">       
+                    @Html.Raw(HttpUtility.HtmlDecode(Model.Description))           
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-left:35px">
+        @if (Model.Status != "31" && Model.Status != "32" && Model.Status != "30")
+        {
+            <tr>
+
+                @if (Model.IssueId > 0)
+                {
+
+                    if (Model.Status.ToString() == "26" || Model.Status.ToString() == "0")
+                    {
+
+                    }
+                    else
+                    {
+                        <td>
+                            <label for="ItemName">Status:</label>
+                        </td>
+                        <td>
+                            <div class="navbar-text">
+                                @Html.DropDownListFor(model => model.Status, new List<SelectListItem>
+                         {
+                             new SelectListItem() {Text = "In Progress", Value="29"},
+                             new SelectListItem() {Text = "Complete", Value="30"},
+                             new SelectListItem() {Text = "Closed", Value="31"},
+                             new SelectListItem() {Text = "Cancelled", Value="32"},
+                             new SelectListItem() {Text = "OnHold", Value="33"},
+                        }, "Please Select Status", new { @class = "text-danger form-control", style = "width: 200px;", id = "StatusDetail" })
+
+                                @Html.ValidationMessageFor(model => model.Status)
+                            </div>
+                        </td>
+                    }
+                }
+                <td>
+                    <label for="ItemName">File:</label>
+                </td>
+                <td>
+                    <div class="navbar-text">
+
+                        <div class="navbar-text input-group-btn">
+
+                            <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-info" />
+
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <input type="button" id="reset" value="Remove" class="btn btn-danger reset" />
+                </td>
+
+            </tr>
+        }
+    </table>
+    <table>
+        @if (Model.Status != "31" && Model.Status != "32" && Model.Status != "30")
+        {
+            if (Model.IssueId > 0)
+            {
+
+                <tr>
+                    <td>
+                        <label for="ItemName">Comments:</label>
+                    </td>
+                    <td>
+                        <div class="navbar-text">
+                            @Html.TextAreaFor(model => model.Comments, new { @style = "min-width: 670px;max-width: 1000px;", id = "Comments", @class = "form-control" })
+
+                            @Html.ValidationMessageFor(model => model.Comments)
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+
+    </table>
+    <div>
+        @if (Model.LstCommentList.Count > 0)
+        {
+            <div id="gridEvent">
+                @gridCommentDetail.GetHtml(
+                                             tableStyle: "webgrid",
+                                            alternatingRowStyle: "webgrid-alt",
+                                             headerStyle: "webgrid-header",
+                                             selectedRowStyle: "webgrid-select",
+                                            mode: WebGridPagerModes.All,
+                                            firstText: "<<First",
+                                            previousText: "<Previous",
+                                            nextText: ">Next",
+                                            lastText: ">>Last",
+                                            columns: new[]{
+                                            gridCommentDetail.Column("IssueId","IssueId"),
+                                            gridCommentDetail.Column("Comments","Comments"),
+                                            gridCommentDetail.Column("Status","Status"),
+                                            gridCommentDetail.Column("Attachment","Attachment"),
+                                            gridCommentDetail.Column("CommentedBy","CommentedBy"),
+                                            gridCommentDetail.Column("CommentDate","CommentDate"),                                          
+                                              })
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <label>Sorry! There is No Information about Participants Details !!!</label>
+            </div>
+        }
+
+    </div>
+    <table>
+
+        <tr>
+            <td>
+                <div class="btn" aria-label="...">
+                    @Html.ActionLink(" Back", "GetIssueListWithCompleteStatus", null, new { @class = "btn btn-info glyphicon glyphicon-hand-left" })
+                </div>
+            </td>
+
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="submit" class="btn btn-info glyphicon glyphicon-off  save"> Sign Off</button>
+                </div>
+
+            </td>
+            <td>
+                <div class="btn" aria-label="...">
+                    <button type="button" data-dismiss="modal" class=" btn btn-warning glyphicon glyphicon-eye-close"> Cancel</button>
+                </div>
+
+            </td>
+        </tr>
+
+    </table>
+}
+
+<script id="Review" type="text/x-jsrender">
+    {{if Attachment =='0' || Attachment ==''&& Status!='Complete'}}
+
+    {{else}}
+    <a class="btn-xs btn-info  glyphicon glyphicon-eye-open" href="/Admin/Download?IssueId={{:IssueId}}&amp;Filename={{:Attachment}}"> OPEN </a>
+    {{/if}}
+</script>
+
+<script type="text/template" id="template">
+    <b>Issue Comment</b>
+    <table cellspacing="10" style="width:600px">
+        <tr>
+            <td>
+                Status:
+            </td>
+            <td style="color:red">
+                <b>{{:Status}}</b>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Comment:
+            </td>
+            <td>
+                <textarea id="Comments" name="Comments" readonly="readonly" style="Width: 800Px; max-width: 800px;" class="abc form-control e-ejinputtext">{{:Comments}}</textarea>
+            </td>
+        </tr>
+
+    </table>
+</script>
+
+
+

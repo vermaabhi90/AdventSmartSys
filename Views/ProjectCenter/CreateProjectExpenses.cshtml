@@ -1,0 +1,416 @@
+﻿@model SmartSys.BL.Project.ProjectExpensesModel
+
+@{
+    ViewBag.Title = "CreateProjectExpenses";
+}
+<script src="~/Scripts/select2.full.min.js"></script>
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script type="text/javascript">
+
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp1").select2({
+            placeholder: "Please Select a Vendor",
+            allowClear: true,
+            tags: true,
+            selectOnClose: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.ExpenseId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Project Expenses Details
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create  Project Expenses Details
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {        
+        $("#TaskId").change(function (e) {
+            //--------------------Get Customer List--------------------------------------------
+            $("#CustomerId").empty();
+            $("#CustomerId").val('').trigger('change')
+            var newOption = $('<option value="0">Please Select Customer</option>');
+            $('#CustomerId').append(newOption);
+            var ProjectId = $("#Project").val();
+            var TaskId = $("#TaskId").val();
+            var path ="/TMLeave/GetTMEntryCustomerList" 
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: ProjectId, TaskId:TaskId},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        if (state.Value != 0)
+                        $("#CustomerId").append('<option value="' + state.Value + '">' +state.Text + '</option>');
+                    });
+                    $('#CustomerId').select2('rebuild');
+                    $('#CustomerId').select2('refresh');
+                },
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });
+//--------------------Get Vendor List--------------------------------------------
+            $("#VendorId").empty();
+            $("#VendorId").val('').trigger('change')
+            var newOption = $('<option value="0">Please Select Vendor</option>');
+            $('#VendorId').append(newOption);
+            var ProjectId = $("#Project").val();
+            var TaskId = $("#TaskId").val();
+            var path ="/TMLeave/GetTMEntryVendorList"
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+                dataType: 'json',
+                data: { ProjectId: ProjectId, TaskId:TaskId},
+                success: function (lst) {
+                    $.each(lst, function (i, state) {
+                        $("#VendorId").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                    });
+                    $('#VendorId').select2('rebuild');
+                    $('#VendorId').select2('refresh');
+                },
+                error: function (ex) {
+                    //                    alert('Failed to retrieve MoM.' + ex);
+                }
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Project").change(function (e) {
+
+            $("#TaskId").empty();
+            var newOption = $('<option value="0">Please Select Task</option>');
+            $('#TaskId').append(newOption);
+            var selectedId = $("#Project").val();
+
+            var path = '@Url.Action("GettaskByProject")';
+
+            $.ajax({
+                type: 'POST',
+                url: path, // we are calling json method
+
+
+                dataType: 'json',
+
+                data: { ProjectId: selectedId },
+
+                success: function (lst) {
+                    // states contains the JSON formatted list
+                    // of states passed from the controller
+
+                    $.each(lst, function (i, state) {
+                        $("#TaskId").append('<option value="' + state.Value + '">' +
+                             state.Text + '</option>');
+                        // here we are adding option for States
+
+                    });
+                },
+
+                error: function (ex) {
+                  
+                }
+            });
+            return false;
+        })
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.save').click(function (e) {
+
+            var Project = $('#Project').val();
+            var fileInput = $('#fileInput').val();
+            var Description = $('#Description').val();
+            var TaskId = $('#TaskId').val();
+            var Amount = $('#Amount').val();
+            var Expence = $('#ExpenseType').val();
+            if (Project.toString() == "") {
+                alert("Please Select Project Name ");
+                return false;
+            }
+            if (TaskId.toString() == "0" || TaskId.toString() == "") {
+                alert("Please Select Task ");
+                return false;
+            }          
+            if (fileInput.toString() != "") {
+                if (Description.toString() == "")
+                {
+                    alert("Please Enter Description ");
+                    return false;
+                }                
+            }
+            if (Expence.toString() == "") {
+                alert("Please Select Expense ");
+                return false;
+            }
+            if (Amount.toString() == "0") {
+                alert("Please Enter Amount ");
+                return false;
+            }          
+            $("#ProExpe").unbind('submit').submit(); S
+        });
+    });
+</script>
+  
+@using (Html.BeginForm("CreateProjectExpenses", "ProjectCenter", FormMethod.Post, new { Id = "frmAddress", enctype = "multipart/form-data" }))
+{
+    <br>
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+        <tr>
+            <td>
+                <label for="ItemName">Project:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.HiddenFor(model => model.ExpenseId)
+                    @Html.DropDownList("ProjectId", (IEnumerable<SelectListItem>)ViewBag.project, "--- Please Select Project ---", new { style = "width:200px", id = "Project", @class = "form-control dropdown1" })
+                    @Html.ValidationMessageFor(model => model.ProjectId)
+                </div>
+            </td>
+
+            <td>
+                <label for="Task">Task:</label>
+            </td>
+            <td>
+                <div class="">
+                    @if (Model.ExpenseId > 0)
+                    {
+                        @Html.DropDownList("TaskId", (IEnumerable<SelectListItem>)ViewBag.ProjectTask, "--- Please Select Task ---", new { style = "width:200px", id = "TaskId", @class = "form-control dropdown1" })
+                    }
+                    else
+                    {
+                        @Html.DropDownList("TaskId", new SelectList(string.Empty, "Value", "Text"), "Please select Task", new { style = "width:175px", @class = "form-control dropdown1", id = "TaskId" })
+                    }
+                    @Html.ValidationMessageFor(model => model.TaskId)
+                </div>
+            </td>
+
+            <td>
+                <label>Date:</label>
+            </td>
+
+            <td>
+                <div class="">
+                    @Html.EJ().DatePicker("ExpenseDate").Value(Model.ExpenseDate).DateFormat("MM/dd/yyyy")
+                </div>
+            </td>           
+        </tr>
+        <tr>
+            <td>
+                <label for="File">File:</label>
+            </td>
+            <td>
+                <div class="">
+                    <div class="input-group-btn">
+
+                        <input type="file" name="file" id="fileInput" value="uploadfile" class="btn btn-success" />
+                    </div>
+                </div>
+            </td>
+            <td>
+                <label for="ItemName">Expense Type:</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.DropDownList("ExpTypeId", (IEnumerable<SelectListItem>)ViewBag.ExpnsType, "--- Please Select Expense Type ---", new { style = "width:300px", id = "ExpenseType", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ProjectId)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" class="Chk">
+                <label for="Customer">Customer:</label>
+
+            </td>
+            <td class="Chk">
+                <div class="">
+                    @Html.DropDownList("CustomerId", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "Select Customer", new { id = "CustomerId", @Class = "drp form-control" })
+                </div>
+            </td>
+            <td align="center" class="Chk">
+                <label for="Vendor">Vendor:</label>
+
+            </td>
+            <td class="Chk">
+                <div class="">
+                    @Html.DropDownList("VendorId", (IEnumerable<SelectListItem>)ViewBag.VendorList, "Select Vendor", new { id = "VendorId", @Class = "drp1 form-control" })
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="Description">Description:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Description, new { id = "Description", @class = "form-control" })
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+
+        <tr>
+            <td>
+                <label for="Amount">Amount:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Amount, new { required = "required", id = "Amount", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Amount)
+                </div>
+            </td>
+            <td>
+                <label for="Remark">Remark:</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Remark, new { @class = "form-control", @style = "min-width:600px;max-width:1000px" })
+                    @Html.ValidationMessageFor(model => model.Remark)
+                </div>
+            </td>
+        </tr>
+
+    </table>
+    <table  style="border-collapse:separate;border-spacing: 0 5px;">
+        @if (Model.ExpenseId > 0)
+        {
+            <tr>
+                <td>
+                    <label for="ItemName">Created By:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedBy)
+                    </div>
+                <td>
+                    <label for="ItemName">Created Date:</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CreatedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CreatedDate)
+                    </div>
+                </td>
+            </tr>
+                <tr>
+                    <td>
+                        <label for="ItemName">Modified By:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="ItemName">Modified Date:</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { required = "required", @readonly = "readonly", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+                </tr>
+
+        }
+    </table>
+    <table>
+        <tr>
+            <td>
+                @if (Model.LstExpDoc.Count > 0)
+                {
+                    @(Html.EJ().Grid<SmartSys.BL.Project.ProjectExpensesModel>("grdAttachmentList")
+                        .Datasource(Model.LstExpDoc)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                           // col.Field("ExpenseId").HeaderText("Expense Id").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("DocumentPath").HeaderText("Document Path").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("Description").HeaderText("Description").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                            col.HeaderText("Open").Template("#OpenAttachmnt").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                    )
+                   
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <label>Sorry! There are no documents attached !!!</label>
+                    </div>
+                }               
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+
+            <td>
+                <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'ProjectExpensesList';" );"> Back</button>
+            </td>
+            <td>
+                @if (Model.StatusCode == "NEW" || Model.StatusCode == "REJECTED" || Model.StatusCode == null)
+                {
+                <button type="submit" class="btn-xs btn-info glyphicon glyphicon-save save"> Save</button>
+                }   
+            </td>
+            <td>
+                @if (Model.StatusCode == "NEW" || Model.StatusCode == "REJECTED")
+                {
+                    @Html.ActionLink(" Send For Approval", "ExpenseSendForApprove", new { ExpenseId = Model.ExpenseId, statusCode = 42 }, new { @class = "btn-xs btn-success glyphicon glyphicon-Ok" })
+                }
+            </td>
+
+        </tr>
+
+    </table>
+
+}
+
+<script id="OpenAttachmnt" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/ProjectCenter/DownloadExpenses?ExpenseId=@Model.ExpenseId&amp;Filename={{:DocumentPath}}">  Open</a>
+</script>

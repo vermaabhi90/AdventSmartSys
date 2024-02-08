@@ -1,0 +1,95 @@
+﻿@model SmartSys.BL.DHActionModel
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#FormSaveActions").submit(function (e) {
+            var sequencenumber = $("#txtSequenceNO").val();
+            $.ajax({
+                url: "/DhFeed/CheckForDuplicateSequenceNo",
+                data: { strSeqNumber: sequencenumber },
+                dataType: "json",
+                type: "POST",
+                error: function () {
+                    return;
+                },
+                success: function (data) {
+                    if (data) {
+                        alert("Sequence Number : " + sequencenumber + " already assigned please enter another sequence number..");
+                        $("#txtSequenceNO").focus();
+                        return false;
+                    }
+                    else {
+                        ValidatePage();
+                    }
+                }
+            });
+
+            function ValidatePage() {
+                var value = $("#drpActionType option:selected").text();
+                if (value === "--Select Action Type--") {
+                    alert("Please select action type from DropDownList..");
+                    $("#drpActionType").focus();
+                    return false;
+                }
+                else {
+                    $("#FormSaveActions").unbind('submit').submit();
+                }
+            };
+
+            e.preventDefault();
+        });
+    });
+
+</script>
+
+
+
+@using (Html.BeginForm("AddActionsToFeed", "DhFeed", FormMethod.Post, new { id = "FormSaveActions" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="modal-body">
+
+        <fieldset>
+            <legend>DHActionModel</legend>
+
+            <div class="editor-label">
+                @Html.Label("Action Type")
+            </div>
+            <div class="editor-field">
+                @Html.DropDownList("ActionTypeCode", (IEnumerable<SelectListItem>)ViewBag.ActionTypeList, "--Select Action Type--", new { @id = "drpActionType" })
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.Description)
+            </div>
+            <div class="editor-field">
+                @Html.EditorFor(model => model.Description, new { id = "txtDescription" })
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(model => model.SequenceNO)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(model => model.SequenceNO, new { @id = "txtSequenceNO" })
+                @Html.ValidationMessageFor(model => model.SequenceNO)
+            </div>
+
+            <p>
+
+                <div>
+                    <button type="submit" value="Add Action" name="Submit" class="btn btn-info glyphicon glyphicon-plus-sign"> Save</button>
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                </div>
+            </p>
+        </fieldset>
+    </div>
+}
+

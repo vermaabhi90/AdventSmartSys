@@ -1,0 +1,211 @@
+﻿@model IEnumerable<SmartSys.BL.RDS.RDSRptGenSubscription>
+
+@{
+    ViewBag.Title = "SubscriptionList";
+}
+
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-list  text-info">
+    Subscription List
+</div>
+    
+    <div style="margin-bottom:8px;margin-top:5px">
+    @Html.ActionLink(" Create", "Create", null, new { @class = "btn-xs btn-info glyphicon glyphicon-leaf " })
+</div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.xyz').on('click', function (e) {
+                    e.preventDefault();
+                    var id = $(this).closest('tr').attr('id');
+
+                    var agree = confirm("Are you sure to delete ?");
+                        if (agree) {
+
+                            var path = '@Url.Content("~/SingleRptSubscription/Delete")' + "?RptSubId=" + id
+                            event.preventDefault();
+                            window.location.replace(path);
+
+                        }
+                        else {
+                            return false;
+                        }
+
+                   
+
+                });
+            });
+        </script>
+
+@{
+
+    Html.EJ()
+        .Dialog("ReadmoreDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(1100)
+        .Height(600)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+<script>
+        function openDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#ReadmoreDetails").ejDialog("open");
+        }
+</script>
+<script>
+
+    function myfuncView(args)
+    {
+        document.getElementById("Title12").innerHTML = "View Details";
+        var path = '@Url.Content("~/SingleRptSubscription/ViewSubscriptionDetail")' + "?RptSubID=" + args + "&DlyGenSubId=" + 0
+            $("#ReadmoreDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#ReadmoreDetails").ejDialog("open");
+    }
+</script>
+
+        <div style="position:relative">
+            @(Html.EJ().Grid<SmartSys.BL.SysDBCon.SysDBConModel>("grdDBConnection")
+                .Datasource((IEnumerable<object>)@Model)
+        .AllowFiltering()
+        .AllowPaging()
+        .AllowSorting()
+        .EnableHeaderHover()
+        .AllowResizing()
+        .FilterSettings(filter => { filter.FilterType(FilterType.Excel); })
+        .AllowScrolling()
+         .PageSettings(p => { p.PageSize(20); })
+        .EnableAltRow(true)
+                 .ContextMenuSettings(contextMenu =>
+                 {
+                     contextMenu.EnableContextMenu();
+                     contextMenu.DisableDefaultItems();
+                     contextMenu.CustomContextMenuItems(c =>
+                     {
+                         c.AddItem("Add_Record", "Add Record");
+                         c.AddItem("Edit_Report", "Edit Record");
+                         c.AddItem("Delete_Record", "Delete Record");
+                     });
+
+                 })
+        //.ShowColumnChooser()
+        //.EditSettings(edit => { edit.AllowAdding().AllowDeleting().AllowEditing().EditMode(EditMode.Dialog); })
+        //.ToolbarSettings(toolbar =>
+        //    {
+        //        toolbar.ShowToolbar().ToolbarItems(items =>
+        //        {
+        //            items.AddTool(ToolBarItems.Add);
+        //            items.AddTool(ToolBarItems.Edit);
+        //            items.AddTool(ToolBarItems.Update);
+        //            items.AddTool(ToolBarItems.Cancel);
+        //        });
+        //    })
+        .Columns(col =>
+        {
+            col.Field("RptSubId").HeaderText("Rpt Sub Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("ClientName").HeaderText("Client Name").ValidationRules(v => v.AddRule("required", true)).Width(120).Add();
+            col.Field("ReportId").HeaderText("Report Id").TextAlign(TextAlign.Left).Width(80).Add();
+            col.Field("ReportName").HeaderText("Report Name").Width(100).Add();
+            col.HeaderText("View Detail").Template("#BtnView").TextAlign(TextAlign.Center).Width(100).Add();
+            col.Field("ClientEmail").HeaderText("Client Email").Width(160).Add();
+            col.Field("ModifiedByName").AllowEditing(false).HeaderText("Modified By").Width(120).Add();
+            col.Field("ModifiedDate").AllowEditing(false).HeaderText("Modified Date").Format("{0:MM/dd/yyyy  HH:MM}").Width(80).Add();
+            col.HeaderText("Edit").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Edit",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#BtnTemplate")
+
+            .TextAlign(TextAlign.Left)
+            .AllowFiltering(false)
+            .Width(60)
+            .Add();
+            col.HeaderText("Delete").Commands(command =>
+            {
+                command.Type(UnboundType.Edit)
+
+                       .ButtonOptions(new Syncfusion.JavaScript.Models.ButtonProperties()
+                       {
+                           CssClass = "EditBtn",
+                           Text = "Delete",
+                           ContentType = ContentType.ImageTextImage,
+                           PrefixIcon = "e-edit",
+                           Height = "22px",
+                           Size = ButtonSize.Mini
+                       }).Add();
+
+            }).Template("#BtnDelete")
+
+           .TextAlign(TextAlign.Left)
+           .AllowFiltering(false)
+           .Width(60)
+           .Add();
+        })
+
+                .ClientSideEvents(eve => {
+                    eve.ContextClick("contextclick");
+              
+                })
+            )
+            <script id="BtnTemplate" type="text/x-jsrender">
+                <a class="btn-xs btn-info  glyphicon glyphicon-pencil" href="/SingleRptSubscription/Edit?RptSubID={{:RptSubId}}&amp;DlyGenSubId=0"></a>
+            </script>
+           
+            <script id="BtnDelete" type="text/x-jsrender">
+                <a class="xyz btn-xs btn-danger  glyphicon glyphicon-trash " href="/SingleRptSubscription/Delete?RptSubId={{:RptSubId}}"></a>
+            </script>
+            <script id="BtnView" type="text/x-jsrender">
+                <a onclick="myfuncView({{:RptSubId}} )" class="btn-xs btn-info  glyphicon glyphicon-book"></a>
+            </script>
+        </div>
+
+<script>
+    function contextclick(args) {
+        if (args.text == "Add Record") {
+
+            var path = '@Url.Content("~/SingleRptSubscription/Create")'
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        if (args.text == "Edit Record") {
+            var tempData = args.text;
+            var grid = $("#grdDBConnection").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var RptSubId = result[0]["RptSubId"];
+
+            var path = '@Url.Content("~/SingleRptSubscription/Edit")' + "?RptSubID=" + RptSubId
+            event.preventDefault();
+            window.location.replace(path);
+        }
+        if (args.text == "Delete Record") {
+            var tempData = args.text;
+            var grid = $("#grdDBConnection").ejGrid("instance");
+            var result = this.getSelectedRecords();
+            var RptSubId = result[0]["RptSubId"];
+
+            var agree = confirm("Are you sure to delete ?");
+            if (agree) {
+
+                var path = '@Url.Content("~/SingleRptSubscription/Delete")' + "?RptSubId=" + RptSubId
+                event.preventDefault();
+                window.location.replace(path);
+
+            }
+
+        }
+    }
+</script>

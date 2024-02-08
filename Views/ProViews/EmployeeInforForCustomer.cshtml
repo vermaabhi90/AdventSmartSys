@@ -1,0 +1,415 @@
+﻿@model SmartSys.BL.EmployeeModel
+
+@{
+    ViewBag.Title = "EmployeeInfoForCustomer";
+}
+
+<div class="page-header glyphicon glyphicon-leaf  text-info">
+    Employee Details
+</div>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { Id = "EmployeeForm" }))
+{
+
+
+    <table style="border-collapse:separate;border-spacing: 0 6px; ">
+        <tr>
+            <td>
+                <label for="UserId">Employee Name</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.EmpName, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.EmpName)
+                </div>
+            </td>
+           
+            <td>
+                <label for="UserName">Manager name</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.ManagerName, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.ManagerName)
+                </div>
+            </td>
+
+        </tr>
+
+        <tr>
+            <td>
+                <label for="UserId">Email ID</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.emailId, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.emailId)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Designation</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Designation, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Designation)
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="UserName">Gender</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Gender, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Gender)
+                </div>
+            </td>
+            <td>
+                <label for="UserName"> Date of joining</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.DateOfJoin, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.DateOfJoin)
+                </div>
+            </td>
+
+        </tr>
+
+        <tr>
+            <td>
+                <label for="UserId">Dept. Name</label>
+            </td>
+            <td>
+                <div class="">
+
+                    @Html.TextBoxFor(model => model.DeptName, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.DeptName)
+                </div>
+            </td>
+            <td>
+                <label for="UserName">Deleted</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextBoxFor(model => model.Deleted, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Deleted)
+                </div>
+            </td>
+            @*<td>
+                    <label for="UserName">CompRelMapCount</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CompRelMapCount, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(model => model.CompRelMapCount)
+                    </div>
+                </td>*@
+        </tr>
+        <tr>
+            <td>
+                <label for="UserName">Remark</label>
+            </td>
+            <td>
+                <div class="">
+                    @Html.TextAreaFor(model => model.Remark, new { @class = "form-control", style = "width:310px", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Remark)
+                </div>
+            </td>
+
+        </tr>
+    </table>
+    
+
+    @*<tr>
+                            <td></td>
+                            <td>
+                                <div class="">
+                                    @Html.ActionLink(" Select User", "SysUesrList", new { EmpId = Model.EmpId }, new { @class = "modal-link btn btn-info glyphicon glyphicon-screenshot", id = "lnkAdd" })
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="">
+                                    @Html.ActionLink(" Remove User", " ", null, new { Empid = Model.EmpId, @id = "xyz", @class = "xyz btn btn-info glyphicon glyphicon-trash" })
+                                </div>
+
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+
+
+                <table style="border:1px solid lightgrey;border-collapse: collapse">
+                    <tr>
+                        <td>
+                            <label for="EmpId">Employee Id </label>
+                        </td>
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.EmpId, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </td>
+
+                        <td>
+                            <label for="isClient">is Client</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.EditorFor(model => model.isClient)
+                                @Html.ValidationMessageFor(model => model.isClient)
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="FirstName">First Name </label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", @maxlength = "15", id = "FirstName" })
+                                @Html.ValidationMessageFor(model => model.FirstName)
+                            </div>
+                        </td>
+                        <td>
+                            <label for="MiddleName">Middle Name</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.MiddleName, new { @class = "form-control", @maxlength = "20", id = "MiddleName" })
+                                @Html.ValidationMessageFor(model => model.MiddleName)
+                            </div>
+                        </td>
+
+                        <td>
+                            <label for="LastName">Last Name</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", @maxlength = "15", id = "LastName" })
+                                @Html.ValidationMessageFor(model => model.LastName)
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="Gender">Gender </label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.DropDownListFor(model => model.Gender, new List<SelectListItem>
+                               {
+                                     new SelectListItem() {Text = "Male", Value="Male"},
+                                     new SelectListItem() {Text = "Female", Value="Female"},
+
+                               }, new { @class = "form-control" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="emailId">email Id </label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.emailId, new { @class = "form-control", @maxlength = "40", id = "emailId" })
+                                @Html.ValidationMessageFor(model => model.emailId)
+                            </div>
+                        </td>
+                        <td>
+                            <label for="DateOfJoin">Date Of Join</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+
+
+                                @Html.EJ().DatePicker("DateOfJoin").Value(Model.DateOfJoin).DateFormat("MM/dd/yyyy")
+                                @Html.EditorFor(model => model.DateOfJoin, new { id = "DateOfJoin" })
+                                @Html.ValidationMessageFor(model => model.DateOfJoin)
+                            </div>
+                        </td>
+
+
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="ManagerName">Manager Name</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.DropDownList("ManagerId", (IEnumerable<SelectListItem>)ViewBag.EmpList, new { @class = "form-control", id = "DrpDwnLstMag", style = "width:310px" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="Designation">Designation </label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.Designation, new { @class = "form-control", @maxlength = "30", id = "Designation" })
+                                @Html.ValidationMessageFor(model => model.Designation)
+                            </div>
+                        </td>
+                        <td>
+                            <label for="Qualification">Qualification</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.Qualification, new { @class = "form-control", @maxlength = "30", id = "Qualification" })
+                                @Html.ValidationMessageFor(model => model.Qualification)
+                            </div>
+                        </td>
+
+
+
+
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="DeptId">Department Name</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.DropDownList("DeptId", (IEnumerable<SelectListItem>)ViewBag.SysDeptList, new { @class = "form-control", id = "DrpDwnLstDept", style = "width:310px" })
+                            </div>
+                        </td>
+                        <td>
+                            <label for="">Phone Number:</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", @maxlength = "20" })
+                            </div>
+                        </td>
+
+                        <td>
+                            <label for="">Mobile:</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.Mobile, new { @class = "form-control", @maxlength = "15" })
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="CreatedByName">Created By </label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedByName, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+
+                        </td>
+                        <td>
+                            <label for="CreatedDate">Created Date</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.CreatedDate, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </td>
+
+
+                        <td>
+                            <label for="ModifiedByName">Modified By </label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedByName, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            <label for="ModifiedDate">Modified Date</label>
+                        </td>
+
+                        <td>
+                            <div class="">
+                                @Html.TextBoxFor(model => model.ModifiedDate, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </td>
+
+                        @if (Model.Photo != null)
+                        {
+                            <td>
+                                <label for="Photo">Photo</label>
+                            </td>
+                            <td>
+                                <div class="">
+                                    @{
+                            var base64 = Convert.ToBase64String(Model.Photo);
+                            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                                    }
+                                    <img width="80" height="80" src="@imgSrc" />
+                                </div>
+                            </td>
+                            <td>
+                                <label for="Photo">New Photo</label>
+                            </td>
+                            <td>
+                                <div class="">
+                                    <input type="file" class="file form-control" name="uploadFile" />
+
+                                </div>
+
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <label for="Photo">Photo</label>
+                            </td>
+                            <td>
+                                <div class="">
+                                    <input type="file" class="file form-control" name="uploadFile" />
+
+                                </div>
+                            </td>
+
+                        }
+                    </tr>
+                    <tr>
+                </table>
+
+
+            </body>
+        </html>*@
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,255 @@
+﻿@model SmartSys.BL.Tmleave.ProjectCategoryModel
+
+@{
+    ViewBag.Title = "Create Project Category";
+}
+@{
+    ViewBag.Title = "DW Customer Pendding Approver  ";
+    var gridProject = new WebGrid(source: Model.ProjectList, canPage: true, rowsPerPage: 10, ajaxUpdateContainerId: "gridSelectApprover");
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       
+        $('#Addproject').on('click', function (e) {
+            e.preventDefault();            
+            var ProjectCategoryId = $("#ProjCategoryId").val();
+            var ProjectCategoryName = $("#CategoryName").val();
+            var ProjectId = $("#ProjectList").val();
+            var ProjectName =$("#ProjectList option:selected").text();            
+            if (ProjectName.toString() == "") {
+                alert("Please Select  Project.");
+                return false;
+            }
+            var path = '@Url.Content("~/TMLeave/AddToProjceList")' + "?ProCotegoryId=" + ProjectCategoryId + "&CategoryName=" + ProjectCategoryName + "&ProjectId=" + ProjectId + "&ProjectName=" + ProjectName
+                    event.preventDefault();
+                    window.location.replace(path);                           
+        });
+       
+        $('.save').click(function (e) {           
+                e.preventDefault();
+                var ProjectCate = $('#CategoryName').val();                
+                if(ProjectCate.toString().trim() == "") {
+                    alert("Please Enter Project Category Name.");
+                    return false;
+                }
+                $("#ProjectCate").unbind('submit').submit();
+        });       
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+<style type="text/css">
+    .modal-content {
+        width: 100% !important;
+        margin: 30px auto !important;
+    }
+
+    .webgrid {
+        margin: 4px;
+        border-collapse: collapse;
+        width: 100%;
+        background-color: #B4CFC3;
+    }
+
+    .webgrid-header {
+        background-color: #C1D4E6;
+        font-weight: bold;
+        color: #fff;       
+    }
+
+    .webgrid th, .webgrid td {
+        border: 1px solid #C0C0C0;
+        padding: 5px;
+        align-content: center; width:200px;
+    }
+
+    .webgrid-alt {
+        background-color: #E4E9F5;
+        color: #000;
+    }
+
+    .gridhead a:hover {
+        text-decoration: underline;
+    }
+
+    .webgrid-description {
+        width: auto;
+    }
+
+    .webgrid-select {
+        background-color: #71857C;
+    }
+</style>
+@if (Model.ProjCategoryId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Project Category
+    </div>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Project Category
+    </div>
+}
+@using (Html.BeginForm("CreateProjectCategory", "TMLeave", FormMethod.Post, new { Id = "ProjectCate" }))
+{
+    <br>
+    <html>
+    <body>
+        <table  style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+               <td>
+                    <div class="">
+                        @Html.HiddenFor(model => model.ProjCategoryId, new { id = "ProjCategoryId" })
+                        @Html.ValidationMessageFor(model => model.ProjCategoryId)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="CategoryName">Category Name</label>
+                </td>
+
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.CategoryName, new { id = "CategoryName", @Class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.CategoryName)
+                    </div>
+                </td>
+
+            </tr>
+            @if (Model.ProjCategoryId > 0)
+            {
+                <tr>
+                    <td>
+
+                        <label for="CreatedBy">Created By</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+                    <td>
+
+                        <label for="EventId">Created Date</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+
+                        <label for="EventId">Modified By</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+                    <td>
+
+                        <label for="EventId">Modified Date</label>
+
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { disabled = "disabled", @readonly = "readonly", @Class = "form-control" })
+                        </div>
+
+
+
+                    </td>
+
+                </tr>
+            }
+            <tr>
+                <td>
+                    <label for="Project">Project</label>
+                </td>
+                <td>
+                    @Html.DropDownList("Project", (IEnumerable<SelectListItem>)ViewBag.TMPrjectlist, new { id = "ProjectList", style = "width:310px", @class = "form-control" })
+                </td>
+                <td style="padding-left:10px;">
+                    <input type="button" id="Addproject" value="Add" class="btn-xs  btn-success  " />
+                </td>
+            </tr>
+        </table>
+        <table >
+            <tr>
+                <td >
+                    @if (Model.ProjectList != null)
+                    {
+                        @(Html.EJ().Grid<SmartSys.BL.Tmleave.ProjectCategoryModel>("grdProjist")
+                        .Datasource(Model.ProjectList)
+                        .AllowPaging()
+                        .AllowSorting()
+                        .EnableHeaderHover()
+                        .AllowResizing()
+                        .AllowScrolling()
+                        .PageSettings(p => { p.PageSize(20); })
+                        .EnableAltRow(true)
+                        .Columns(col =>
+                        {
+                            col.Field("ProjectId").HeaderText("Project Id").TextAlign(TextAlign.Center).Width(60).Add();
+                            col.Field("ProjectName").HeaderText("Project Name").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+                           
+                            col.HeaderText("Remove").TemplateID("#DeleteProj").IsUnbound(true).TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+                        }).ClientSideEvents(eve =>
+                        {
+                            eve.ActionComplete("complete");
+                            eve.ContextClick("complete");
+                        })
+                        )
+
+                       
+
+                    }
+                    else
+                    {
+
+                    }
+                </td>
+            </tr>
+
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'ProjectCategoryList';" );"> Back</button>
+                        <button type="submit" class="btn-xs buttonCss btn-info glyphicon glyphicon-save save"> Save</button>
+                </td>
+
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+
+<script id="DeleteProj" type="text/x-jsrender">
+    <a class="btn-xs btn-danger  glyphicon glyphicon-trash" href="/TMLeave/RemoveToProjectList?ProCotegoryId=@Model.ProjCategoryId&amp;CategoryName=@Model.CategoryName&amp;ProjectId={{:ProjectId}}&amp;ProjectName={{:ProjectName}}">  Remove</a>
+</script>

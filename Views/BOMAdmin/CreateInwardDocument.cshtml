@@ -1,0 +1,635 @@
+﻿@model SmartSys.BL.BOMAdmin.InwardDocumentModel
+
+@{
+    ViewBag.Title = "CreateInwardDocument";
+   
+}
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $(".drp").select2({
+            placeholder: "Please Select a Customer",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp1").select2({
+            placeholder: "Please Select a Vendor",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp2").select2({
+            placeholder: "Please Select a Employee",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp3").select2({
+            placeholder: "Please Select a Freight Forwarder",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+    $(function () {
+
+        $(".drp4").select2({
+            placeholder: "Please Select ",
+            allowClear: true,
+            maximumSelectionLength: 2
+
+        });
+    });
+</script>
+<style>
+    td {
+        padding-right: 15px;
+    }
+</style>
+@if (Model.DocId > 0)
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-pencil  text-info">
+        Edit Inward Document
+    </div>
+    <br><br>
+}
+else
+{
+    <div style="margin-left:30px;margin-bottom:20px" class="glyphicon glyphicon-leaf  text-info">
+        Create Inward Document
+    </div>
+
+}
+
+<script>
+    $(document).ready(function () {
+        $("#Currency").val('@Model.Currency');
+        $("#NOFOther").hide();       
+        var NatureOfDoc = $("#NatureOfDochid").val();    
+        if (NatureOfDoc != "Deposit Slip" && NatureOfDoc.toString() != "Tax inv" && NatureOfDoc.toString() != "Credit Note" && NatureOfDoc.toString() != "Paid GST") {
+            $("#NatureOfDoc").val("Other");
+            $("#NOFOther").show();
+            $("#NatureOfDocOther").val(NatureOfDoc);
+        }
+        else
+        {
+            $("#NatureOfDoc").val(NatureOfDoc);
+            $("#NatureOfDocOther").val("");
+
+        }
+        var IssuedType = $("#IssType").val();
+        var IssuedTo = $("#DocToI").val();     
+        switch (IssuedType) {
+            case "Employee":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").show();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#BankId").hide();
+                    $("#LblIssuto").show();
+                    $("#EmployeeId").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "Vendor":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").show();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#BankId").hide();
+                    $("#LblIssuto").show();
+                    $("#VendorId").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "Customer":
+                {
+                    $("#CustId").show();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#BankId").hide();
+                    $("#LblIssuto").show();
+                    $("#CustomerID").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "FF":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").show();
+                    $("#BankId").hide();
+                    $("#Other").hide();
+                    $("#LblIssuto").show();
+                    $("#FFID").val(IssuedTo).trigger("change");
+                    break;
+                }
+            case "Other":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#BankId").hide();
+                    $("#Other").show();
+                    $("#LblIssuto").show();
+
+                    break;
+                }
+            case "Bank":
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#BankId").show();
+                    $("#Other").hide();
+                    $("#BankIDD").val(IssuedTo).trigger("change");
+                    $("#LblIssuto").show();
+                    break;
+                }
+            default:
+                {
+                    $("#CustId").hide();
+                    $("#VendId").hide();
+                    $("#EmpId").hide();
+                    $("#FredId").hide();
+                    $("#Other").hide();
+                    $("#BankId").hide();
+                    $("#NOFOther").hide();
+                    $("#LblIssuto").hide();
+                    break;
+                }
+        }
+       
+        $("#IssType").change(function () {
+            var IssuedType = $("#IssType").val();
+            if (IssuedType == "") {
+                alert("Please Select Doc To  Type");
+                return false;
+            }
+            switch (IssuedType) {
+                case "Employee":
+                    {
+
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").show();
+                        $("#FredId").hide();
+                        $("#Other").hide();
+                        $("#BankId").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "Vendor":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").show();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#Other").hide();
+                        $("#BankId").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "Customer":
+                    {
+                        $("#CustId").show();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#Other").hide();
+                        $("#BankId").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "FF":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").show();
+                        $("#Other").hide();
+                        $("#BankId").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "Bank":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#BankId").show();
+                        $("#Other").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+                case "Other":
+                    {
+                        $("#CustId").hide();
+                        $("#VendId").hide();
+                        $("#EmpId").hide();
+                        $("#FredId").hide();
+                        $("#Other").show();
+                        $("#BankId").hide();
+                        $("#LblIssuto").show();
+                        break;
+                    }
+            }
+            return false;
+        })
+        $("#NatureOfDoc").change(function () {
+            var NatureOfDoc = $("#NatureOfDoc").val();
+            if(NatureOfDoc.toString() =="Other")
+            {
+                $("#NOFOther").show();
+            }
+            else
+            {
+                $("#NOFOther").hide();
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#submit").click(function () {
+            var DocName = $("#DocName").val();
+            var IssType = $("#IssType").val();
+            var NatureOfDocOther = $("#NatureOfDoc").val();
+            var StockLocation = $("#StockLocation").val();
+            if (DocName == "") {
+                alert("Please Enter Doc Name");
+                return false;
+            }
+            if (IssType == "") {
+                alert("Please Select Doc To Type");
+                return false;
+            }
+            if (NatureOfDocOther == "") {
+                alert("Please Select Nature Of Doc");
+                return false;
+            }
+            if (StockLocation == "") {
+                alert("Please Select StockLocation");
+                return false;
+            }
+            if ($("#CompCode").val() == "") {
+                alert("Please Select Company");
+                return false;
+            }            
+            $("#Form1").unbind('submit').submit();
+        });
+    });
+</script>
+
+@using (Html.BeginForm("CreateInwardDocument", "BOMAdmin", FormMethod.Post, new { Id = "Form1", enctype = "multipart/form-data" }))
+{
+    <html>
+    <body>
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            <tr>
+                @if (Model.DocId > 0)
+                {
+                    <td>
+                        <label for="DocId">Doc Id </label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.DocId, new { @readonly = "readonly", @class = "form-control", id = "BrandId" })
+                            @Html.ValidationMessageFor(model => model.DocId)
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    @Html.HiddenFor(model => model.DocId)
+                }
+                <td>
+                    <label for="DocName">Doc Name</label>
+                </td>
+                <td>
+                    @Html.HiddenFor(model => model.DocToId, new { id = "DocToI" })
+                    <div class="">
+                        @Html.TextBoxFor(model => model.DocName, new { id = "DocName", @class = "form-control" })
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="IssuedToType">Doc Type</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownListFor(x => x.DocToType, new List<SelectListItem>{
+                        new SelectListItem() {Text = "-- Select Issued Type --", Value=""},
+                        new SelectListItem() {Text = "Employee", Value="Employee"},
+                        new SelectListItem() {Text = "Vendor", Value="Vendor"},
+                        new SelectListItem() {Text = "Customer", Value="Customer"},
+                        new SelectListItem() {Text = "Freight Forwarder", Value="FF"},
+                          new SelectListItem() {Text = "Bank", Value="Bank"},
+                        new SelectListItem() {Text = "Other", Value="Other"}
+                     }, new { id = "IssType", @class = "form-control" })
+                    </div>
+                </td>
+                <td>
+                    <label for="IssuedDate">Doc Date</label>
+                </td>
+                <td>
+                    <div class="">
+                        @if (Model.DocId > 0 && Model.DocDate.ToString() != "1/1/1900 12:00:00 AM")
+                        {
+
+                            @Html.EJ().DatePickerFor(model => model.DocDate).DateFormat("MM/dd/yyyy")
+                        }
+                        else
+                        {
+                            @Html.EJ().DatePickerFor(model => model.DocDate).DateFormat("MM/dd/yyyy").Value("")
+                        }
+                    </div>
+                     </td>
+
+                <td id="LblIssuto">
+                    <label for="IssuedTO">Doc From</label>
+                </td>
+                <td>
+                    <table class="spacing-table" style="border-collapse:separate;border-spacing: 0 5px;">
+
+                        <tr>
+                            <td id="CustId">
+                                <div class="">
+                                    @Html.DropDownList("DocToIdCust", (IEnumerable<SelectListItem>)ViewBag.CustomerList, "--please Select Customer--", new { id = "CustomerID", @class = "drp form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="VendId">
+                                <div class="">
+                                    @Html.DropDownList("DocToIdVend", (IEnumerable<SelectListItem>)ViewBag.VendorList, "--please Select Vendor--", new { id = "VendorId", @class = "drp1 form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="EmpId">
+                                <div class="">
+                                    @Html.DropDownList("DocToIdEmp", (IEnumerable<SelectListItem>)ViewBag.EmployeeList, "--please Select Employee--", new { id = "EmployeeId", @class = "drp2 form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td id="FredId">
+                                <div class="">
+                                    @Html.DropDownList("DocToIdFF", (IEnumerable<SelectListItem>)ViewBag.FFLst, "--please Select Freight Forwarder--", new { id = "FFID", @class = "drp3 form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="BankId">
+                                <div class="">
+                                    @Html.DropDownList("DocToIdBank", (IEnumerable<SelectListItem>)ViewBag.BankLst, "--please Select Bank--", new { id = "BankIDD", @class = " form-control", @style = "min-width=200px" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="Other">
+                                @Html.TextBoxFor(model => model.DocToOther, new { id = "DocToOther", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.DocToOther)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Stock Location</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("STLocationId", (IEnumerable<SelectListItem>)ViewBag.StockLocation, "--Select Stock Location--", new { id = "StockLocation", @class = "drp4 form-control" })
+                    </div>
+                </td>
+
+                <td>
+                    <label for="Amount">Amount</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.TextBoxFor(model => model.Amount, new { type = "any", id = "Amount", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Amount)
+                    </div>
+                </td>
+                <td>
+                    <label for="Currency">Currency</label>
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("Currency", (IEnumerable<SelectListItem>)ViewBag.Currency, new { @Type = "number", step = "any", style = "width:100px", id = "Currency", @class = "form-control " })
+                        @*@Html.TextBoxFor(model => model.Currency, new { id = "Currency", @class = "form-control", maxlength = "3" })*@
+                        @Html.ValidationMessageFor(model => model.Currency)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="NatureOfDoc">Nature Of Doc</label>
+                </td>
+                <td>
+                    @Html.HiddenFor(model => model.NatureOfDoc, new { id = "NatureOfDochid" })
+                    <div class="">
+                        @Html.DropDownList("NatureOfDocLst", new List<SelectListItem>{
+                        new SelectListItem() {Text = "-- Select Issued Type --", Value=""},
+                        new SelectListItem() {Text = "Paid GST", Value="Paid GST"},
+                        new SelectListItem() {Text = "Deposit Slip", Value="Deposit Slip"},
+                        new SelectListItem() {Text = "Tax inv", Value="Tax inv"},
+                        new SelectListItem() {Text = "Credit Note ", Value="Credit Note"},
+                        new SelectListItem() {Text = "Other", Value="Other"}
+                     }, new { id = "NatureOfDoc", @class = "form-control" })
+                    </div>
+                </td>
+                @*<td id="NOFOther">
+                @Html.TextBoxFor(model => model.NatureOfDocOther, new { id = "NatureOfDocOther", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Amount)
+            </td>*@
+                <td>
+
+                    <label>Company</label>
+
+                </td>
+                <td>
+                    <div class="">
+                        @Html.DropDownList("CompCode", (IEnumerable<SelectListItem>)ViewBag.EWComapnyList, "--please Select Company Code--", new { id = "CompCode", @class = "drp4 form-control" })
+                    </div>
+                </td>
+            </tr>
+        </table>   
+        <br>   
+        <table style="border-collapse:separate;border-spacing: 0 5px;">
+            @if (Model.DocId > 0)
+            {
+                <tr>
+                    <td width="110px">
+                        <label for="Created By">Created By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedBy, new { @readonly = "readonly", id = "CreatedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CreatedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Created Date">Created Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.CreatedDate, new { @readonly = "readonly", id = "CreatedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CreatedDate)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="110px">
+                        <label for="ModifiedBy">Modified By</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedBy, new { @readonly = "readonly", id = "ModifiedBy", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedBy)
+                        </div>
+                    </td>
+                    <td>
+                        <label for="Modified Date">Modified Date</label>
+                    </td>
+                    <td>
+                        <div class="">
+                            @Html.TextBoxFor(model => model.ModifiedDate, new { @readonly = "readonly", id = "ModifiedDate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ModifiedDate)
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+        <br><br>
+@if (Model.DocId > 0)
+{
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <button type="button" class="btn-sx btn-info glyphicon glyphicon-leaf CreateDoc"> Upload</button>
+                    </td>
+                </tr>
+            </table>
+            @if (Model.DocDetailList.Count > 0)
+            {
+                <div style="position:relative">
+                    @(Html.EJ().Grid<SmartSys.BL.BOMAdmin.InwardDocumentModel>("grdDocList")
+         .Datasource(Model.DocDetailList)
+            .AllowPaging()
+            .AllowSorting()
+            .EnableHeaderHover()
+            .AllowResizing()
+            .AllowScrolling()
+            .PageSettings(p => { p.PageSize(20); })
+         
+        .EnableAltRow(true)
+        .AllowSorting(true)
+        .Columns(col =>
+        {
+            col.Field("DocId").HeaderText("Doc Id").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("DocumentTitle").HeaderText("Document Title").TextAlign(TextAlign.Center).Width(150).Add();
+            col.Field("FileName").HeaderText("File Name").Width(160).Add();
+            col.Field("CreatedBy").HeaderText("Created By").Width(180).Add();
+            col.Field("CreatedDate").HeaderText("Created Date").Format("{0:MM/dd/yyyy}").Width(180).Visible(true).Add();
+            col.HeaderText("Open").Template("#OpenDoc").TextAlign(TextAlign.Center).AllowFiltering(false).Width(50).Add();
+
+        })
+           
+
+                    )
+                </div>
+             
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <label>Sorry! There is No Information about Document  Details !!!</label>
+                </div>
+
+            }
+        </div>
+}
+        <table>
+            <tr>
+                <td>
+                    <button style="margin:10px" class="btn-xs btn-info glyphicon glyphicon-hand-left" type="button" onclick="location.href = 'GetInwardDocumentList';" );"> Back</button>
+                        <button type="submit" id="submit" class="btn-xs  btn-info glyphicon glyphicon-save Save"> Save</button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+}
+
+<script id="OpenDoc" type="text/x-jsrender">
+    <a class="btn-xs btn-info  glyphicon glyphicon-download" href="/BOMAdmin/DocDownload?DocId=@Model.DocId&amp;DocumentPath={{:FileName}}">  Open</a>
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $('.CreateDoc').click(function (e) {
+          
+            var path = '@Url.Content("~/BOMAdmin/CreateInwardDocDetail")' + "?DocId=" +  @Model.DocId
+            $("#CreateContactDetails").ejDialog({
+                contentUrl: path,
+                contentType: "ajax"
+            });
+            $("#CreateContactDetails").ejDialog("open");
+
+        });
+
+    });
+</script>
+@{
+
+    Html.EJ()
+        .Dialog("CreateContactDetails")
+        .Title("<a id='Title12'></a>")
+        .Width(900)
+        .Height(400)
+        .ShowOnInit(false)
+        .ContentTemplate(@<p></p>)
+            .Render();
+}
+
+<script>
+        function openDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+        }
+        function openNestedDialog() {
+            $("#CreateContactDetails").ejDialog("open");
+
+        }
+
+</script>
