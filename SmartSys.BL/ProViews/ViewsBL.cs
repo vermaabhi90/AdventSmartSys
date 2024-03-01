@@ -441,6 +441,8 @@ namespace SmartSys.BL.ProViews
                             ActionPoint.OverDueDays = Convert.ToInt32(dr["OverDueDays"].ToString());
                             ActionPoint.AssignedBy = dr["AssignedBy"].ToString();
                             ActionPoint.Resource = dr["Resource"].ToString();
+                            ActionPoint.Customer = dr["CustomerName"].ToString();
+                            ActionPoint.Vendor = dr["VendorName"].ToString();
                             ActionPoint.ModifiedByName = dr["ModifiedBy"].ToString();
                             ActionPoint.ModifiedDate = Convert.ToDateTime(dr["ModifiedDate"].ToString());
                             list.Add(ActionPoint);

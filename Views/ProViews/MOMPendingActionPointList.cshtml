@@ -38,7 +38,7 @@
             contextMenu.DisableDefaultItems();
             contextMenu.CustomContextMenuItems(c =>
             {
-               
+
                 c.AddItem("Open_MOM", "Open MOM");
             });
 
@@ -48,6 +48,8 @@
         .Columns(col =>
         {
             col.Field("ActionPointId").HeaderText("ID").IsPrimaryKey(true).TextAlign(TextAlign.Center).Width(60).Add();
+            col.Field("Customer").HeaderText("Customer").TextAlign(TextAlign.Left).Width(200).Add();
+            col.Field("Vendor").HeaderText("Vendor").TextAlign(TextAlign.Left).Width(200).Add();
             col.Field("ActionDescription").HeaderText("Description").ValidationRules(v => v.AddRule("required", true)).Width(220).Add();
             col.Field("StatusShortCode").HeaderText("Status").TextAlign(TextAlign.Left).Width(100).Add();
             col.Field("MOMId").HeaderText("MOMId").TextAlign(TextAlign.Left).Width(100).Visible(true).Add();
